@@ -11,13 +11,18 @@
 
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = (scope.kff = scope.kff || {});
-
+	
 	/**
 	 *  kff.View
 	 */
 	kff.View = kff.createClass(
 	{
-		mixins: kff.EventsMixin
+		mixins: kff.EventsMixin,
+		staticProperties:
+		{
+			DATA_VIEW_ATTR: 'data-kff-view',
+			DATA_OPTIONS_ATTR: 'data-kff-options'
+		}
 	},
 	{
 		constructor: function(options)
@@ -49,29 +54,30 @@
 		//       ['click', function(e) { ... }]
 		//     ]
 
-		delegateEvents: function(events)
+		delegateEvents: function(events, $element)
 		{
-			var event;
+			var event, i, l;
 			this.undelegateEvents();
 			events = events || this.options.events;	
-			
-			for(var i = 0, l = events.length; i < l; i++)
+			$element = $element || this.$element;
+			for(i = 0, l = events.length; i < l; i++)
 			{
 				event = events[i];
-				if(event.length == 3) this.$element.on(event[0], event[1], kff.bindFn(this, event[2]));
-				else if(event.length == 2) this.$element.on(event[0], kff.bindFn(this, event[1]));
+				if(event.length === 3) $element.on(event[0], event[1], kff.bindFn(this, event[2]));
+				else if(event.length === 2) $element.on(event[0], kff.bindFn(this, event[1]));
 			}
 		},
 
-		undelegateEvents: function(events)
+		undelegateEvents: function(events, $element)
 		{
-			var event;
+			var event, i, l;
 			events = events || this.options.events;	
-			for(var i = 0, l = events.length; i < l; i++)
+			$element = $element || this.$element;
+			for(i = 0, l = events.length; i < l; i++)
 			{
 				event = events[i];
-				if(event.length == 3) this.$element.off(event[0], event[1], kff.bindFn(this, event[2]));
-				else if(event.length == 2) this.$element.off(event[0], kff.bindFn(this, event[1]));
+				if(event.length === 3) $element.off(event[0], event[1], kff.bindFn(this, event[2]));
+				else if(event.length === 2) $element.off(event[0], kff.bindFn(this, event[1]));
 			}
 		},
 
@@ -97,7 +103,7 @@
 		renderSubviews: function()
 		{
 			var viewNames = [], 
-				viewName, viewClass, subView, options, i, l,
+				viewName, viewClass, subView, options, opt, i, l,
 				filter = this.options.filter || undefined;
 				
 			var findViewElements = function(el)
@@ -111,7 +117,7 @@
 						child = children[j];
 						if(child.getAttribute)
 						{
-							viewName = child.getAttribute('data-kff-view');
+							viewName = child.getAttribute(kff.View.DATA_VIEW_ATTR);
 							if(viewName)
 							{
 								if(!filter || (filter && $(child).is(filter)))
@@ -127,8 +133,8 @@
 					}
 				}				
 			};
-
-			findViewElements(this.$element.get(0));
+			
+			if(this.$element.get(0)) findViewElements(this.$element.get(0));
 			
 			// Initialize subviews
 			for(i = 0, l = viewNames.length; i < l; i++)
@@ -136,7 +142,8 @@
 				viewClass = kff.evalObjectPath(viewNames[i].objPath);
 				if(viewClass)
 				{
-					options = viewNames[i].$element.attr('data-kff-options') || {};
+					opt = viewNames[i].$element.attr(kff.View.DATA_OPTIONS_ATTR);
+					options = opt ? JSON.parse(opt) : {};
 					options.element = viewNames[i].$element;
 					options.parentView = this;
 					subView = new viewClass(options);
@@ -148,10 +155,10 @@
 		
 		destroySubviews: function()
 		{
-			var subView, i;
+			var subView, i, l;
 				
 			// Destroy subviews
-			for(i = 0; i < this.subViews.length; i++)
+			for(i = 0, l = this.subViews.length; i < l; i++)
 			{				
 				subView = this.subViews[i];
 				subView.destroy();
@@ -183,16 +190,26 @@
 			options.element = $('body');
 			return kff.PageView._super.constructor.call(this, options);
 		},
+
+		delegateEvents: function(events, $element)
+		{
+			kff.PageView._super.delegateEvents.call(this, events, $element || $(document));
+		},
+
+		undelegateEvents: function(events, $element)
+		{
+			kff.PageView._super.undelegateEvents.call(this, events, $element || $(document));
+		},
 		
 		setState: function(state, silent)
 		{
 			if(!silent) this.trigger('setState');
-		},
-				
+		}		
 	});
 	
-	
-
+	/**
+	 * kff.FrontController
+	 */
 	kff.FrontController = kff.createClass(
 	{
 		constructor: function() 
@@ -230,10 +247,10 @@
 
 		popView: function()
 		{
-			if(this.viewsQueue.length == 0) return;
+			if(this.viewsQueue.length === 0) return;
 
-			var removedView = this.viewsQueue.pop();
-			var lastView = this.getLastView();
+			var removedView = this.viewsQueue.pop(),
+				lastView = this.getLastView();
 			
 			removedView.off('init', kff.bindFn(this, 'cascadeState'));
 			if(lastView)
@@ -246,39 +263,26 @@
 
 		cascadeState: function()
 		{
-			if(this.viewsQueue[0])
-			{
-				this.viewsQueue[0].setState(this.state);
-			}
+			if(this.viewsQueue[0]) this.viewsQueue[0].setState(this.state);
 		},
 
 		setState: function(state)
 		{
-			//console.log('setState');
-			this.newViewCtor = this.createViewFromState(state);
-			//console.log('newViewCtor: ' + this.newViewCtor );
-			var lastViewCtor = this.getLastView() ? this.getLastView().constructor : null;
-			var sharedViewCotr = this.findSharedView(this.newViewCtor, lastViewCtor);
-			
-			var destroyQueue = [];
+			var destroyQueue = [], lastViewCtor, sharedViewCtor, i;
 
-			do 
-			{
-				if(lastViewCtor === sharedViewCotr) break;
-				destroyQueue.push(this.popView());
-			} while(this.getLastView());
+			this.newViewCtor = this.createViewFromState(state);
+			sharedViewCtor = this.findSharedView(this.newViewCtor, lastViewCtor);
 			
-				
-			for(var i = 0; i < destroyQueue.length; i++)
+ 			while(lastViewCtor = this.getLastView() ? this.getLastView().constructor : null)
 			{
-				if(destroyQueue[i + 1])
-				{
-					destroyQueue[i].on('destroy', kff.bindFn(destroyQueue[i + 1], 'destroy'));
-				}
-				else
-				{
-					destroyQueue[i].on('destroy', kff.bindFn(this, 'startInit'));
-				}
+				if(lastViewCtor === sharedViewCtor) break;
+				destroyQueue.push(this.popView());
+			}
+			
+			for(i = 0; i < destroyQueue.length; i++)
+			{
+				if(destroyQueue[i + 1]) destroyQueue[i].on('destroy', kff.bindFn(destroyQueue[i + 1], 'destroy'));
+				else destroyQueue[i].on('destroy', kff.bindFn(this, 'startInit'));
 			};
 
 			if(destroyQueue[0]) destroyQueue[0].destroy();
@@ -287,39 +291,31 @@
 
 		startInit: function()
 		{			
-//			console.log('startInit');
-			var precedingViewCtors = this.getPrecedingViews(this.newViewCtor);
+			var i, l, 
+				precedingViewCtors = this.getPrecedingViews(this.newViewCtor), 
+				from = 0;
 			
-			//console.log('precedingViewCtors: ' + precedingViewCtors);
-			// console.log('this.viewsQueue.length: ' + this.viewsQueue.length);
-			precedingViewCtors.push(this.newViewCtor);
-			for(var i = 0; i < precedingViewCtors.length; i++)
+			for(i = 0, l = precedingViewCtors.length; i < l; i++)
 			{
 				if(i >= this.viewsQueue.length) this.pushView(new precedingViewCtors[i](this));
-			};
-			this.newViewCtor = null;
+				else from = i + 1;
+			}
 			
-//			console.log('this.viewsQueue.length: ' + this.viewsQueue.length);
-
-			if(this.getLastView())
-			{
-				this.getLastView().on('init', kff.bindFn(this, 'cascadeState'));
-			}
-//console.log('ControllerQueue: ' + this.viewsQueue);
-			if(this.viewsQueue[0])
-			{
-				this.viewsQueue[0].init();
-			}
+			this.newViewCtor = null;			
+			if(this.getLastView()) this.getLastView().on('init', kff.bindFn(this, 'cascadeState'));
+			if(this.viewsQueue[from]) this.viewsQueue[from].init();
 		},
 
 		findSharedView: function(c1, c2)
 		{
-			var c1a = this.getPrecedingViews(c1);
-			var c2a = this.getPrecedingViews(c2);
-			var c = null;
-			for(var i = 0, l = c1a.length < c2a.length ? c1a.length : c2a.length; i < l; i++)
+			var i,
+				c1a = this.getPrecedingViews(c1),
+				c2a = this.getPrecedingViews(c2),
+				c = null;
+
+			for(i = 0, l = c1a.length < c2a.length ? c1a.length : c2a.length; i < l; i++)
 			{
-				if(c1a[i] != c2a[i]) break;
+				if(c1a[i] !== c2a[i]) break;
 				c = c1a[i];
 			}
 			return c;
@@ -327,18 +323,17 @@
 
 		getPrecedingViews: function(viewCtor)
 		{
-			var c = viewCtor, a = [];
+			var c = viewCtor, a = [c];
+			
 			while(c)
 			{
 				c = c.precedingView || null;
-				if(typeof c == 'string') c =  kff.evalObjectPath(c);
+				if(typeof c === 'string') c =  kff.evalObjectPath(c);
 				if(c) a.unshift(c);
 			}	
 			return a;
 		}
-
 	});
 
-	
-	
+
 })(this);

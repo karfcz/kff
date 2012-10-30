@@ -48,7 +48,7 @@
 
 		popController: function()
 		{
-			if(this.controllerQueue.length == 0) return;
+			if(this.controllerQueue.length === 0) return;
 
 			var removedController = this.controllerQueue.pop();
 			var lastController = this.getLastController();

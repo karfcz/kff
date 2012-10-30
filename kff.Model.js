@@ -40,7 +40,7 @@
 			{
 				if(this.get(attr) === value) return;
 				changed[attr] = value;
-				if(typeof this.validate == 'function')
+				if(typeof this.validate === 'function')
 				{
 					if(!this.validate(changed)) return;
 				}
@@ -50,7 +50,7 @@
 			{
 				options = value;
 				changed = attr;
-				if(typeof this.validate == 'function')
+				if(typeof this.validate === 'function')
 				{
 					if(!this.validate(changed)) return;
 				}

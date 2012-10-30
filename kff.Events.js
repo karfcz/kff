@@ -11,7 +11,7 @@
 
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = (scope.kff = scope.kff || {});
-
+	
 	kff.Events = kff.createClass(
 	{
 		constructor: function()
@@ -35,8 +35,8 @@
 			}
 			else
 			{
-				if(!this.subscribers[eventType]) this.subscribers[eventType] = [];
-				this.subscribers[eventType].push(fn);	
+				if(!this.subscribers[eventType]) this.subscribers[eventType] = new kff.LinkedList();
+				this.subscribers[eventType].append(fn);
 			}
 		},
 
@@ -47,21 +47,12 @@
 			{
 				for(i = 0, l = eventType.length; i < l; i++)
 				{
-					if(eventType[i])
-					{
-						this.off(eventType[i], fn);
-					}
+					if(eventType[i]) this.off(eventType[i], fn);
 				}
 			}
 			else
 			{
-				if(this.subscribers[eventType] instanceof Array)
-				{
-					for(i = 0, l = this.subscribers[eventType].length; i < l; i++)
-					{
-						if(this.subscribers[eventType][i] && this.subscribers[eventType][i] === fn) delete this.subscribers[eventType][i];
-					}
-				}		
+				if(this.subscribers[eventType] instanceof kff.LinkedList) this.subscribers[eventType].removeVal(fn);
 			}
 		},
 
@@ -72,20 +63,17 @@
 			{
 				for(i = 0, l = eventType.length; i < l; i++)
 				{
-					if(eventType[i])
-					{
-						this.trigger(eventType[i], eventData);
-					}
+					if(eventType[i]) this.trigger(eventType[i], eventData);
 				}
 			}
 			else
 			{
-				if(this.subscribers[eventType] instanceof Array)
+				if(this.subscribers[eventType] instanceof kff.LinkedList)
 				{
-					for(i = 0, l = this.subscribers[eventType].length; i < l; i++)
+					this.subscribers[eventType].each(function(val)
 					{
-						if(this.subscribers[eventType][i] && typeof this.subscribers[eventType][i] === 'function') this.subscribers[eventType][i](eventData);
-					}
+						val.call(null, eventData);
+					});
 				}		
 			}
 		}
