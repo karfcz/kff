@@ -9,6 +9,7 @@ module.exports = function(grunt) {
 					'./kff.LinkedList.js',
 					'./kff.Events.js',
 					'./kff.Model.js',
+					'./kff.ServiceContainer.js',
 					'./kff.View.js'
 				//	'./kff.FrontController.js'
 				],
