@@ -203,7 +203,7 @@
 		
 		setState: function(state, silent)
 		{
-			if(!silent) this.trigger('setState');
+			if(!silent) this.trigger('setState', state);
 		}		
 	});
 	
@@ -269,8 +269,10 @@
 		setState: function(state)
 		{
 			var destroyQueue = [], lastViewCtor, sharedViewCtor, i;
-
+			
+			this.state = state;
 			this.newViewCtor = this.createViewFromState(state);
+			lastViewCtor = this.getLastView() ? this.getLastView().constructor : null;
 			sharedViewCtor = this.findSharedView(this.newViewCtor, lastViewCtor);
 			
  			while(lastViewCtor = this.getLastView() ? this.getLastView().constructor : null)
@@ -304,6 +306,7 @@
 			this.newViewCtor = null;			
 			if(this.getLastView()) this.getLastView().on('init', kff.bindFn(this, 'cascadeState'));
 			if(this.viewsQueue[from]) this.viewsQueue[from].init();
+			else this.cascadeState();
 		},
 
 		findSharedView: function(c1, c2)
