@@ -9,7 +9,7 @@
 {
 	var kff;
 
-	if(typeof exports !== 'undefined') kff = exports;
+	if(exports !== undefined) kff = exports;
 	else kff = (scope.kff = scope.kff || {});
 
 	kff.widgets = {};
@@ -114,7 +114,7 @@
 {
 	var kff;
 
-	if(typeof exports !== 'undefined') kff = exports;
+	if(exports !== undefined) kff = exports;
 	else kff = (scope.kff = scope.kff || {});
 	
 	kff.LinkedList = kff.createClass(
@@ -179,7 +179,7 @@
 {
 	var kff;
 
-	if(typeof exports !== 'undefined') kff = exports;
+	if(exports !== undefined) kff = exports;
 	else kff = (scope.kff = scope.kff || {});
 	
 	kff.Events = kff.createClass(
@@ -270,7 +270,7 @@
 {
 	var kff;
 
-	if(typeof exports !== 'undefined') kff = exports;
+	if(exports !== undefined) kff = exports;
 	else kff = (scope.kff = scope.kff || {});
 
 	/**
@@ -335,7 +335,7 @@
 {
 	var kff;
 
-	if(typeof exports !== 'undefined') kff = exports;
+	if(exports !== undefined) kff = exports;
 	else kff = (scope.kff = scope.kff || {});
 
 	/**
@@ -348,6 +348,7 @@
 		{
 			this.config = config || { parameters: {}, services: {} };
 			this.services = {};
+			this.cachedParams = {};
 		},
 		
 		getService: function(service)
@@ -361,7 +362,7 @@
 			return this.createService(service);
 		},
 		
-		existsService: function(serviceName)
+		hasService: function(serviceName)
 		{
 			return this.config.services.hasOwnProperty(serviceName);
 		},
@@ -372,10 +373,7 @@
 			
 			serviceConfig = this.config.services[serviceName];
 			
-			if(typeof serviceConfig.constructor !== 'function') serviceConfig.constructor = kff.evalObjectPath(serviceConfig.constructor);
-			
-			Ctor = serviceConfig.constructor;
-			
+			Ctor = this.getServiceConstructor(serviceName);			
 			Temp = function(){};			
 			Temp.prototype = Ctor.prototype;
 			service = new Temp();
@@ -393,6 +391,14 @@
 			return service;
 		},
 		
+		getServiceConstructor: function(serviceName)
+		{
+			var serviceConfig;
+			serviceConfig = this.config.services[serviceName];
+			if(typeof serviceConfig.constructor !== 'function') serviceConfig.constructor = kff.evalObjectPath(serviceConfig.constructor);
+			return serviceConfig.constructor;
+		},
+		
 		resolveParameters: function(params)
 		{
 			var ret, i, l, config;
@@ -407,17 +413,19 @@
 					if(params.length === 0) ret = this;
 					else ret = this.getService(params);
 				}
-				else if(params.indexOf('%') !== -1)
+				else if(this.cachedParams[params] !== undefined) return this.cachedParams[params];
+				else 
 				{
-					params = params.replace(/%([^%]+)%/g, function(match, p1)
+					ret = params.replace('%%', 'escpersign');
+					ret = ret.replace(/%([^%]+)%/g, function(match, p1)
 					{
 						if(config.parameters[p1]) return config.parameters[p1];
-						else return null;
+						else return '';
 					});
+					ret = ret.replace('escpersign', '%');
 					
-					ret = params;
+					this.cachedParams[ret];					
 				}
-				else ret = params;
 			}
 			else if(params instanceof Array)
 			{
@@ -456,7 +464,7 @@
 {
 	var kff;
 
-	if(typeof exports !== 'undefined') kff = exports;
+	if(exports !== undefined) kff = exports;
 	else kff = (scope.kff = scope.kff || {});
 	
 	/**
@@ -474,26 +482,33 @@
 	{
 		constructor: function(options)
 		{
+			options = options || {};
 			this.events = new kff.Events();
 			this.options = {
 				element: null,	
 				events: []
 			};
-
+			this.setOptions(options);
+			this.viewFactory = options.viewFactory || new kff.ViewFactory();
+			this.subViews = [];
+			return this;
+		},
+		
+		setOptions: function(options)
+		{
+			options = options || {};
 			if(options.events)
 			{
 				this.options.events = this.options.events.concat(options.events);
 				delete options.events;
 			}
-
-			$.extend(this.options, options);
-			
-			this.$element = $(this.options.element);
-
-			this.subViews = [];
-			return this;
+			if(options.element)
+			{
+				this.$element = $(options.element);
+				delete options.element;	
+			}
+			$.extend(this.options, options);			
 		},
-
 
 		//     [
 		//       ['mousedown, mouseup', '.title', 'edit'],
@@ -586,14 +601,14 @@
 			// Initialize subviews
 			for(i = 0, l = viewNames.length; i < l; i++)
 			{
-				viewClass = kff.evalObjectPath(viewNames[i].objPath);
-				if(viewClass)
+				viewName = viewNames[i].objPath;
+				opt = viewNames[i].$element.attr(kff.View.DATA_OPTIONS_ATTR);
+				options = opt ? JSON.parse(opt) : {};
+				options.element = viewNames[i].$element;
+				options.parentView = this;
+				subView = this.viewFactory.createView(viewName, options);
+				if(subView instanceof kff.View)
 				{
-					opt = viewNames[i].$element.attr(kff.View.DATA_OPTIONS_ATTR);
-					options = opt ? JSON.parse(opt) : {};
-					options.element = viewNames[i].$element;
-					options.parentView = this;
-					subView = new viewClass(options);
 					this.subViews.push(subView);
 					subView.init();
 				}
@@ -634,6 +649,7 @@
 	{
 		constructor: function(options)
 		{
+			options = options || {};
 			options.element = $('body');
 			return kff.PageView._super.constructor.call(this, options);
 		},
@@ -659,10 +675,12 @@
 	 */
 	kff.FrontController = kff.createClass(
 	{
-		constructor: function() 
+		constructor: function(options)
 		{
+			options = options || {};
 			this.views = null;
 			this.viewsQueue = [];
+			this.viewFactory = options.viewFactory || new kff.ViewFactory();
 		},
 
 		init: function()
@@ -687,8 +705,8 @@
 			this.viewsQueue.push(view);
 			if(lastView)
 			{
-				lastView.on('init', kff.bindFn(view, 'init'));
-				lastView.on('setState', kff.bindFn(view, 'setState'));
+				lastView.instance.on('init', kff.bindFn(view.instance, 'init'));
+				lastView.instance.on('setState', kff.bindFn(view.instance, 'setState'));
 			}
 		},
 
@@ -699,18 +717,18 @@
 			var removedView = this.viewsQueue.pop(),
 				lastView = this.getLastView();
 			
-			removedView.off('init', kff.bindFn(this, 'cascadeState'));
+			removedView.instance.off('init', kff.bindFn(this, 'cascadeState'));
 			if(lastView)
 			{
-				lastView.off('init', kff.bindFn(removedView, 'init'));
-				lastView.off('setState', kff.bindFn(removedView, 'setState'));
+				lastView.instance.off('init', kff.bindFn(removedView.instance, 'init'));
+				lastView.instance.off('setState', kff.bindFn(removedView.instance, 'setState'));
 			}
 			return removedView;
 		},
 
 		cascadeState: function()
 		{
-			if(this.viewsQueue[0]) this.viewsQueue[0].setState(this.state);
+			if(this.viewsQueue[0]) this.viewsQueue[0].instance.setState(this.state);
 		},
 
 		setState: function(state)
@@ -719,10 +737,10 @@
 			
 			this.state = state;
 			this.newViewCtor = this.createViewFromState(state);
-			lastViewCtor = this.getLastView() ? this.getLastView().constructor : null;
+			lastViewCtor = this.getLastView() ? this.getLastView().name : null;
 			sharedViewCtor = this.findSharedView(this.newViewCtor, lastViewCtor);
 			
- 			while(lastViewCtor = this.getLastView() ? this.getLastView().constructor : null)
+ 			while(lastViewCtor = this.getLastView() ? this.getLastView().name : null)
 			{
 				if(lastViewCtor === sharedViewCtor) break;
 				destroyQueue.push(this.popView());
@@ -730,11 +748,11 @@
 			
 			for(i = 0; i < destroyQueue.length; i++)
 			{
-				if(destroyQueue[i + 1]) destroyQueue[i].on('destroy', kff.bindFn(destroyQueue[i + 1], 'destroy'));
-				else destroyQueue[i].on('destroy', kff.bindFn(this, 'startInit'));
+				if(destroyQueue[i + 1]) destroyQueue[i].instance.on('destroy', kff.bindFn(destroyQueue[i + 1].instance, 'destroy'));
+				else destroyQueue[i].instance.on('destroy', kff.bindFn(this, 'startInit'));
 			};
 
-			if(destroyQueue[0]) destroyQueue[0].destroy();
+			if(destroyQueue[0]) destroyQueue[0].instance.destroy();
 			else this.startInit();
 		},
 
@@ -746,13 +764,13 @@
 			
 			for(i = 0, l = precedingViewCtors.length; i < l; i++)
 			{
-				if(i >= this.viewsQueue.length) this.pushView(new precedingViewCtors[i](this));
+				if(i >= this.viewsQueue.length) this.pushView({ name: precedingViewCtors[i], instance: this.viewFactory.createView(precedingViewCtors[i])});
 				else from = i + 1;
 			}
 			
 			this.newViewCtor = null;			
-			if(this.getLastView()) this.getLastView().on('init', kff.bindFn(this, 'cascadeState'));
-			if(this.viewsQueue[from]) this.viewsQueue[from].init();
+			if(this.getLastView()) this.getLastView().instance.on('init', kff.bindFn(this, 'cascadeState'));
+			if(this.viewsQueue[from]) this.viewsQueue[from].instance.init();
 			else this.cascadeState();
 		},
 
@@ -777,8 +795,7 @@
 			
 			while(c)
 			{
-				c = c.precedingView || null;
-				if(typeof c === 'string') c =  kff.evalObjectPath(c);
+				c = this.viewFactory.getServiceConstructor(c).precedingView || null;
 				if(c) a.unshift(c);
 			}	
 			return a;
@@ -786,4 +803,41 @@
 	});
 
 
+	/**
+	 * kff.ViewFactory
+	 */
+	kff.ViewFactory = kff.createClass(
+	{
+		constructor: function(options)
+		{
+			options = options || {};
+			this.serviceContainer = options.serviceContainer || null;
+		},
+
+		createView: function(viewName, options)
+		{
+			var view = null, viewClass;
+			options = options || {};
+			
+			if(typeof viewName !== 'function' && this.serviceContainer && this.serviceContainer.hasService(viewName)) view = this.serviceContainer.getService(viewName);
+			else
+			{
+				if(typeof viewName !== 'function') viewClass = kff.evalObjectPath(viewName);
+				else viewClass = viewName;
+				if(viewClass) view = new viewClass({ viewFactory: this });
+			}
+			if(view instanceof kff.View) view.setOptions(options);
+			return view;
+		},
+		
+		getServiceConstructor: function(viewName)
+		{
+			if(typeof viewName === 'function') return viewName;
+			if(this.serviceContainer && this.serviceContainer.hasService(viewName)) return this.serviceContainer.getServiceConstructor(viewName);
+			else return kff.evalObjectPath(viewName);
+		}
+		
+	});
+	
+	
 })(this);

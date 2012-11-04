@@ -9,7 +9,7 @@
 {
 	var kff;
 
-	if(typeof exports !== 'undefined') kff = exports;
+	if(exports !== undefined) kff = exports;
 	else kff = (scope.kff = scope.kff || {});
 
 	/**
@@ -22,6 +22,7 @@
 		{
 			this.config = config || { parameters: {}, services: {} };
 			this.services = {};
+			this.cachedParams = {};
 		},
 		
 		getService: function(service)
@@ -35,7 +36,7 @@
 			return this.createService(service);
 		},
 		
-		existsService: function(serviceName)
+		hasService: function(serviceName)
 		{
 			return this.config.services.hasOwnProperty(serviceName);
 		},
@@ -46,10 +47,7 @@
 			
 			serviceConfig = this.config.services[serviceName];
 			
-			if(typeof serviceConfig.constructor !== 'function') serviceConfig.constructor = kff.evalObjectPath(serviceConfig.constructor);
-			
-			Ctor = serviceConfig.constructor;
-			
+			Ctor = this.getServiceConstructor(serviceName);			
 			Temp = function(){};			
 			Temp.prototype = Ctor.prototype;
 			service = new Temp();
@@ -67,6 +65,14 @@
 			return service;
 		},
 		
+		getServiceConstructor: function(serviceName)
+		{
+			var serviceConfig;
+			serviceConfig = this.config.services[serviceName];
+			if(typeof serviceConfig.constructor !== 'function') serviceConfig.constructor = kff.evalObjectPath(serviceConfig.constructor);
+			return serviceConfig.constructor;
+		},
+		
 		resolveParameters: function(params)
 		{
 			var ret, i, l, config;
@@ -81,17 +87,19 @@
 					if(params.length === 0) ret = this;
 					else ret = this.getService(params);
 				}
-				else if(params.indexOf('%') !== -1)
+				else if(this.cachedParams[params] !== undefined) return this.cachedParams[params];
+				else 
 				{
-					params = params.replace(/%([^%]+)%/g, function(match, p1)
+					ret = params.replace('%%', 'escpersign');
+					ret = ret.replace(/%([^%]+)%/g, function(match, p1)
 					{
 						if(config.parameters[p1]) return config.parameters[p1];
-						else return null;
+						else return '';
 					});
+					ret = ret.replace('escpersign', '%');
 					
-					ret = params;
+					this.cachedParams[ret];					
 				}
-				else ret = params;
 			}
 			else if(params instanceof Array)
 			{
