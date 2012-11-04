@@ -9,7 +9,7 @@
 {
 	var kff;
 
-	if(exports !== undefined) kff = exports;
+	if(typeof exports !== 'undefined') kff = exports;
 	else kff = (scope.kff = scope.kff || {});
 
 	/**
@@ -69,7 +69,8 @@
 		{
 			var serviceConfig;
 			serviceConfig = this.config.services[serviceName];
-			if(typeof serviceConfig.constructor !== 'function') serviceConfig.constructor = kff.evalObjectPath(serviceConfig.constructor);
+			if(!serviceConfig) return null;
+			if(typeof serviceConfig.constructor !== 'function') serviceConfig.constructor = kff.evalObjectPath(serviceConfig.constructor);	
 			return serviceConfig.constructor;
 		},
 		
@@ -109,7 +110,7 @@
 					ret[i] = this.resolveParameters(params[i]);
 				}
 			}
-			else if(Object(params) === params)
+			else if(typeof params !== 'function' && Object(params) === params)
 			{
 				ret = {};
 				for(i in params)

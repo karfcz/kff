@@ -9,7 +9,7 @@
 {
 	var kff;
 
-	if(exports !== undefined) kff = exports;
+	if(typeof exports !== 'undefined') kff = exports;
 	else kff = (scope.kff = scope.kff || {});
 
 	/**

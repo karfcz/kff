@@ -9,7 +9,7 @@
 {
 	var kff;
 
-	if(exports !== undefined) kff = exports;
+	if(typeof exports !== 'undefined') kff = exports;
 	else kff = (scope.kff = scope.kff || {});
 	
 	/**
@@ -340,7 +340,7 @@
 			
 			while(c)
 			{
-				c = this.viewFactory.getServiceConstructor(c).precedingView || null;
+				c = this.viewFactory.getPrecedingView(c);
 				if(c) a.unshift(c);
 			}	
 			return a;
@@ -357,6 +357,7 @@
 		{
 			options = options || {};
 			this.serviceContainer = options.serviceContainer || null;
+			this.precedingViews = options.precedingViews || {};
 		},
 
 		createView: function(viewName, options)
@@ -380,9 +381,20 @@
 			if(typeof viewName === 'function') return viewName;
 			if(this.serviceContainer && this.serviceContainer.hasService(viewName)) return this.serviceContainer.getServiceConstructor(viewName);
 			else return kff.evalObjectPath(viewName);
+		},
+		
+		getPrecedingView: function(viewName)
+		{
+			var viewCtor;
+			if(typeof viewName === 'string' && this.precedingViews[viewName] !== undefined) return this.precedingViews[viewName];
+			else
+			{
+				viewCtor = this.getServiceConstructor(viewName);
+				if(viewCtor && viewCtor.precedingView) return viewCtor.precedingView;
+			}
+			return null;
 		}
 		
 	});
-	
 	
 })(this);

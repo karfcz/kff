@@ -9,7 +9,7 @@
 {
 	var kff;
 
-	if(exports !== undefined) kff = exports;
+	if(typeof exports !== 'undefined') kff = exports;
 	else kff = (scope.kff = scope.kff || {});
 
 	kff.widgets = {};
@@ -114,7 +114,7 @@
 {
 	var kff;
 
-	if(exports !== undefined) kff = exports;
+	if(typeof exports !== 'undefined') kff = exports;
 	else kff = (scope.kff = scope.kff || {});
 	
 	kff.LinkedList = kff.createClass(
@@ -179,7 +179,7 @@
 {
 	var kff;
 
-	if(exports !== undefined) kff = exports;
+	if(typeof exports !== 'undefined') kff = exports;
 	else kff = (scope.kff = scope.kff || {});
 	
 	kff.Events = kff.createClass(
@@ -270,7 +270,7 @@
 {
 	var kff;
 
-	if(exports !== undefined) kff = exports;
+	if(typeof exports !== 'undefined') kff = exports;
 	else kff = (scope.kff = scope.kff || {});
 
 	/**
@@ -335,7 +335,7 @@
 {
 	var kff;
 
-	if(exports !== undefined) kff = exports;
+	if(typeof exports !== 'undefined') kff = exports;
 	else kff = (scope.kff = scope.kff || {});
 
 	/**
@@ -395,7 +395,8 @@
 		{
 			var serviceConfig;
 			serviceConfig = this.config.services[serviceName];
-			if(typeof serviceConfig.constructor !== 'function') serviceConfig.constructor = kff.evalObjectPath(serviceConfig.constructor);
+			if(!serviceConfig) return null;
+			if(typeof serviceConfig.constructor !== 'function') serviceConfig.constructor = kff.evalObjectPath(serviceConfig.constructor);	
 			return serviceConfig.constructor;
 		},
 		
@@ -435,7 +436,7 @@
 					ret[i] = this.resolveParameters(params[i]);
 				}
 			}
-			else if(Object(params) === params)
+			else if(typeof params !== 'function' && Object(params) === params)
 			{
 				ret = {};
 				for(i in params)
@@ -464,7 +465,7 @@
 {
 	var kff;
 
-	if(exports !== undefined) kff = exports;
+	if(typeof exports !== 'undefined') kff = exports;
 	else kff = (scope.kff = scope.kff || {});
 	
 	/**
@@ -795,7 +796,7 @@
 			
 			while(c)
 			{
-				c = this.viewFactory.getServiceConstructor(c).precedingView || null;
+				c = this.viewFactory.getPrecedingView(c);
 				if(c) a.unshift(c);
 			}	
 			return a;
@@ -812,6 +813,7 @@
 		{
 			options = options || {};
 			this.serviceContainer = options.serviceContainer || null;
+			this.precedingViews = options.precedingViews || {};
 		},
 
 		createView: function(viewName, options)
@@ -835,9 +837,20 @@
 			if(typeof viewName === 'function') return viewName;
 			if(this.serviceContainer && this.serviceContainer.hasService(viewName)) return this.serviceContainer.getServiceConstructor(viewName);
 			else return kff.evalObjectPath(viewName);
+		},
+		
+		getPrecedingView: function(viewName)
+		{
+			var viewCtor;
+			if(typeof viewName === 'string' && this.precedingViews[viewName] !== undefined) return this.precedingViews[viewName];
+			else
+			{
+				viewCtor = this.getServiceConstructor(viewName);
+				if(viewCtor && viewCtor.precedingView) return viewCtor.precedingView;
+			}
+			return null;
 		}
 		
 	});
-	
 	
 })(this);
