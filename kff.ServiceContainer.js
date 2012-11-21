@@ -74,10 +74,16 @@
 		
 		getServiceConstructor: function(serviceName)
 		{
-			var serviceConfig;
+			var serviceConfig, ctor;
 			serviceConfig = this.config.services[serviceName];
 			if(!serviceConfig) return null;
-			if(typeof serviceConfig.constructor !== 'function') serviceConfig.constructor = kff.evalObjectPath(serviceConfig.constructor);	
+			if(!serviceConfig.hasOwnProperty('constructor'))
+			{
+				ctor = kff.evalObjectPath(serviceName);
+				if(typeof ctor === 'function') serviceConfig.constructor = ctor;
+			}
+			else if(typeof serviceConfig.constructor === 'string') serviceConfig.constructor = kff.evalObjectPath(serviceConfig.constructor);
+			if(typeof serviceConfig.constructor !== 'function') throw new TypeError('expected function');
 			return serviceConfig.constructor;
 		},
 		

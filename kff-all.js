@@ -13,6 +13,11 @@
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 	kff.widgets = {};
 	
+	/**
+	 * Extends constructor function (class) from parent constructor using prototype inherinatce
+	 * @param {function} child Child class
+	 * @param {function} parent Parent class
+	 */
 	kff.extend = function(child, parent)
 	{
 		var F = function(){};
@@ -20,12 +25,23 @@
 		child.prototype = new F();
 		child.prototype.constructor = child;
 	};
-
+	
+	/**
+	 * Mixins (using a shallow copy) properties from one object to another
+	 * @param {Object} obj Object to be extended
+	 * @param {Object} properties Object by which to extend
+	 */
 	kff.mixins = function(obj, properties)
 	{
 		for(var key in properties) if(properties.hasOwnProperty(key)) obj[key] = properties[key];
 	};
 
+	/**
+	 * Factory for creating a class
+	 * @param {Object} meta Object with metadata describing inheritance and static properties of the class
+	 * @param {Object} properties Properties of a class prototype (or class members)
+	 * @returns {function} A constructor function (class)
+	 */
 	kff.createClass = function(meta, properties)
 	{
 		var constructor;
@@ -399,10 +415,16 @@
 		
 		getServiceConstructor: function(serviceName)
 		{
-			var serviceConfig;
+			var serviceConfig, ctor;
 			serviceConfig = this.config.services[serviceName];
 			if(!serviceConfig) return null;
-			if(typeof serviceConfig.constructor !== 'function') serviceConfig.constructor = kff.evalObjectPath(serviceConfig.constructor);	
+			if(!serviceConfig.hasOwnProperty('constructor'))
+			{
+				ctor = kff.evalObjectPath(serviceName);
+				if(typeof ctor === 'function') serviceConfig.constructor = ctor;
+			}
+			else if(typeof serviceConfig.constructor === 'string') serviceConfig.constructor = kff.evalObjectPath(serviceConfig.constructor);
+			if(typeof serviceConfig.constructor !== 'function') throw new TypeError('expected function');
 			return serviceConfig.constructor;
 		},
 		
