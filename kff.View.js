@@ -10,7 +10,7 @@
 	var kff;
 
 	if(typeof exports !== 'undefined') kff = exports;
-	else kff = (scope.kff = scope.kff || {});
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 	
 	/**
 	 *  kff.View

@@ -10,7 +10,8 @@ describe('kff.ServiceContainer', function()
 		parameters:
 		{
 			kocka: 'kočka',
-			pes: 'pes'
+			pes: 'pes',
+			numeric: 42.05
 		},
 		services:
 		{
@@ -89,6 +90,12 @@ describe('kff.ServiceContainer', function()
 			a.should.equal('Proč kočka není %pes, ale kočka?');
 			a = container.resolveParameters('Proč %kocka% není %%pes, ale %kocka%?');
 			a.should.equal('Proč kočka není %pes, ale kočka?');
+		});	
+		
+		it('should interpolate single numeric parameter', function()
+		{
+			var a = container.resolveParameters('%numeric%');
+			a.should.equal(42.05);
 		});	
 		
 	});

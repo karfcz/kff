@@ -10,13 +10,20 @@
 	var kff;
 
 	if(typeof exports !== 'undefined') kff = exports;
-	else kff = (scope.kff = scope.kff || {});
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 	/**
 	 *  kff.ServiceContainer
 	 *
 	 */
 	kff.ServiceContainer = kff.createClass(
+	{
+		staticProperties:
+		{
+			singleParamRegex: /^%[^%]+%$/g,
+			multipleParamsRegex: /%([^%]+)%/g
+		}
+	},
 	{
 		constructor: function(config)
 		{
@@ -51,7 +58,7 @@
 			Temp = function(){};			
 			Temp.prototype = Ctor.prototype;
 			service = new Temp();
-			ret = Ctor.apply(service, this.resolveParameters(serviceConfig.args));	
+			ret = Ctor.apply(service, this.resolveParameters(serviceConfig.args || []));	
 			if(Object(ret) === ret) service = ret;
 			
 			calls = serviceConfig.calls;
@@ -82,24 +89,30 @@
 			
 			if(typeof params === 'string')
 			{
-				if(params[0] === '@')
+				if(params.charAt(0) === '@')
 				{
 					params = params.slice(1);
 					if(params.length === 0) ret = this;
 					else ret = this.getService(params);
 				}
-				else if(this.cachedParams[params] !== undefined) return this.cachedParams[params];
+				else if(this.cachedParams[params] !== undefined) ret = this.cachedParams[params];
 				else 
 				{
-					ret = params.replace('%%', 'escpersign');
-					ret = ret.replace(/%([^%]+)%/g, function(match, p1)
+					if(params.search(kff.ServiceContainer.singleParamRegex) !== -1)
 					{
-						if(config.parameters[p1]) return config.parameters[p1];
-						else return '';
-					});
-					ret = ret.replace('escpersign', '%');
-					
-					this.cachedParams[ret];					
+						ret = config.parameters[params.slice(1, -1)];
+					}
+					else
+					{
+						ret = params.replace('%%', 'escpersign');
+						ret = ret.replace(kff.ServiceContainer.multipleParamsRegex, function(match, p1)
+						{
+							if(config.parameters[p1]) return config.parameters[p1];
+							else return '';
+						});
+						ret = ret.replace('escpersign', '%');
+					}
+					this.cachedParams[params] = ret;					
 				}
 			}
 			else if(params instanceof Array)

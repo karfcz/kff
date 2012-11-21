@@ -10,10 +10,14 @@
 	var kff;
 
 	if(typeof exports !== 'undefined') kff = exports;
-	else kff = (scope.kff = scope.kff || {});
-
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 	kff.widgets = {};
 	
+	/**
+	 * Extends constructor function (class) from parent constructor using prototype inherinatce
+	 * @param {function} child Child class
+	 * @param {function} parent Parent class
+	 */
 	kff.extend = function(child, parent)
 	{
 		var F = function(){};
@@ -21,12 +25,23 @@
 		child.prototype = new F();
 		child.prototype.constructor = child;
 	};
-
+	
+	/**
+	 * Mixins (using a shallow copy) properties from one object to another
+	 * @param {Object} obj Object to be extended
+	 * @param {Object} properties Object by which to extend
+	 */
 	kff.mixins = function(obj, properties)
 	{
 		for(var key in properties) if(properties.hasOwnProperty(key)) obj[key] = properties[key];
 	};
 
+	/**
+	 * Factory for creating a class
+	 * @param {Object} meta Object with metadata describing inheritance and static properties of the class
+	 * @param {Object} properties Properties of a class prototype (or class members)
+	 * @returns {function} A constructor function (class)
+	 */
 	kff.createClass = function(meta, properties)
 	{
 		var constructor;
@@ -76,8 +91,8 @@
 	kff.bindFn = function(obj, fnName)
 	{
 		if(typeof obj[fnName] !== 'function') throw new TypeError("expected function");
-		if(!obj.boundFns) obj.boundFns = {};
-		if(obj.boundFns[fnName]) return obj.boundFns[fnName];
+		if(!('boundFns' in obj)) obj.boundFns = {};
+		if(fnName in obj.boundFns) return obj.boundFns[fnName];
 		else obj.boundFns[fnName] = function(){ return obj[fnName].apply(obj, arguments); };
 		return obj.boundFns[fnName];
 	};
@@ -88,9 +103,9 @@
 	};
 	
 
-	kff.evalObjectPath = function(path)
+	kff.evalObjectPath = function(path, obj)
 	{
-		var obj = scope;
+		obj = obj || scope;
 		var parts = path.split('.');
 		while(parts.length)
 		{
