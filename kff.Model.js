@@ -57,7 +57,35 @@
 				for(var key in changed) this.attrs[key] = changed[key];
 			}
 			this.trigger('change', { changedAttributes: changed });
-		}
+		},
+		
+		toJson: function(serializeAttrs)
+		{
+			var obj = {};
+			for(var key in this.attrs)
+			{
+				if((!serializeAttrs || $.inArray(key, serializeAttrs) !== -1) && this.attrs.hasOwnProperty(key))
+				{
+					if('toJson' in this.attrs[key]) obj[key] = this.attrs[key].toJson();
+					else obj[key] = this.attrs[key];
+				}
+			}
+			return obj;
+		},
+		
+		fromJson: function(obj)
+		{
+			var attrs = {};
+			for(var key in this.attrs)
+			{
+				if(this.attrs.hasOwnProperty(key) && obj.hasOwnProperty(key))
+				{
+					if('fromJson' in this.attrs[key]) this.attrs[key].fromJson(obj[key]);
+					else this.attrs[key] = obj[key];
+				}
+			}
+			this.set(this.attrs);
+		}		
 
 	});
 
