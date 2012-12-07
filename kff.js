@@ -90,7 +90,7 @@
 
 	kff.bindFn = function(obj, fnName)
 	{
-		if(typeof obj[fnName] !== 'function') throw new TypeError("expected function");
+		if(typeof obj[fnName] !== 'function') throw new TypeError("Expected function: " + fnName + ' (kff.bindFn)');
 		if(!('boundFns' in obj)) obj.boundFns = {};
 		if(fnName in obj.boundFns) return obj.boundFns[fnName];
 		else obj.boundFns[fnName] = function(){ return obj[fnName].apply(obj, arguments); };
