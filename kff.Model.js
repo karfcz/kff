@@ -61,6 +61,11 @@
 				}
 				for(var key in changed) this.attrs[key] = changed[key];
 			}
+			
+			for(var attr in changed)
+			{
+				this.trigger('change:' + attr, { changedAttributes: changed });
+			}
 			this.trigger('change', { changedAttributes: changed });
 		},
 		

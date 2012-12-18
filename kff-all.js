@@ -92,13 +92,18 @@
 		return constructor;
 	};
 
+	/**
+	 * Binds function to an object. Adds _boundFns object width references to bound methods for caching purposes.
+	 * @param {Object} obj Object to which bind a function
+	 * @param {fnName} (String) Method name to bind
+	 */
 	kff.bindFn = function(obj, fnName)
 	{
 		if(typeof obj[fnName] !== 'function') throw new TypeError("Expected function: " + fnName + ' (kff.bindFn)');
-		if(!('boundFns' in obj)) obj.boundFns = {};
-		if(fnName in obj.boundFns) return obj.boundFns[fnName];
-		else obj.boundFns[fnName] = function(){ return obj[fnName].apply(obj, arguments); };
-		return obj.boundFns[fnName];
+		if(!('_boundFns' in obj)) obj._boundFns = {};
+		if(fnName in obj._boundFns) return obj._boundFns[fnName];
+		else obj._boundFns[fnName] = function(){ return obj[fnName].apply(obj, arguments); };
+		return obj._boundFns[fnName];
 	};
 
 	kff.classMixin = {
@@ -111,12 +116,6 @@
 		}
 	};
 	
-	kff.isTouchDevice = function()
-	{
-		return !!('ontouchstart' in window);
-	};
-	
-
 	kff.evalObjectPath = function(path, obj)
 	{
 		obj = obj || scope;
@@ -491,6 +490,11 @@
 					if(!this.validate(changed)) return;
 				}
 				for(var key in changed) this.attrs[key] = changed[key];
+			}
+			
+			for(var attr in changed)
+			{
+				this.trigger('change:' + attr, { changedAttributes: changed });
 			}
 			this.trigger('change', { changedAttributes: changed });
 		},
