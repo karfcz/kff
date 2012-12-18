@@ -458,6 +458,11 @@
 			this.attrs = {};
 		},
 
+		has: function(attr)
+		{
+			return attr in this.attrs;
+		},
+
 		get: function(attr)
 		{
 			return this.attrs[attr];
