@@ -11,6 +11,17 @@ describe('kff.Events', function()
 		events.trigger('testEvent');
 	});
 
+	it('should bind event handler that catches triggered event only once', function()
+	{
+		var events = new kff.Events, count = 0;
+		events.one('testEvent', function(){
+			count++;
+		});
+		events.trigger('testEvent');
+		events.trigger('testEvent');
+		count.should.equal(1);
+	});
+
 	it('should bind two event handlers that both catch triggered event', function(done)
 	{
 		var events = new kff.Events;

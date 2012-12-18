@@ -17,6 +17,7 @@
 		constructor: function()
 		{
 			this.subscribers = {};
+			this.oneSubscribers = {};
 		},
 
 		on: function(eventType, fn)
@@ -38,6 +39,13 @@
 				if(!this.subscribers[eventType]) this.subscribers[eventType] = new kff.LinkedList();
 				this.subscribers[eventType].append(fn);
 			}
+		},
+
+		one: function(eventType, fn)
+		{
+			if(!(eventType in this.oneSubscribers)) this.oneSubscribers[eventType] = [];
+			this.oneSubscribers[eventType].push(fn);
+			this.on(eventType, fn);
 		},
 
 		off: function(eventType, fn)
@@ -74,17 +82,26 @@
 					{
 						val.call(null, eventData);
 					});
-				}		
+					
+					// Remove "one" subscribers:
+					if(eventType in this.oneSubscribers)
+					{
+						for(i = 0, l = this.oneSubscribers[eventType].length; i < l; i++)
+						{
+							this.off(eventType, this.oneSubscribers[eventType][i]);
+						}
+						this.oneSubscribers[eventType] = [];
+					}
+				}	
 			}
 		}
 	});
 	
 	kff.EventsMixin = {
 		on: function(eventType, fn){ return this.events.on(eventType, fn); },
+		one: function(eventType, fn){ return this.events.one(eventType, fn); },
 		off: function(eventType, fn){ return this.events.off(eventType, fn); },
 		trigger: function(eventType, eventData){ return this.events.trigger(eventType, eventData); }
 	};
-
-
-
+	
 })(this);
