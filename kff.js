@@ -67,11 +67,15 @@
 		if(meta.extend) kff.extend(constructor, meta.extend);
 
 		// Concatenate properties from properties objects and mixin objects
-		if(meta.mixins)
+		if(!('mixins' in meta))
 		{
-			if(!(meta.mixins instanceof Array)) meta.mixins = [meta.mixins];
-			for(var i = 0, l = meta.mixins.length; i < l; i++) kff.mixins(properties, meta.mixins[i]);
+			meta.mixins = [];
 		}
+		else if(!(meta.mixins instanceof Array)) meta.mixins = [meta.mixins];
+		
+		meta.mixins.push(kff.classMixin);
+		
+		for(var i = 0, l = meta.mixins.length; i < l; i++) kff.mixins(properties, meta.mixins[i]);
 
 		// Static properties of constructor
 		if(meta.staticProperties)
@@ -97,6 +101,16 @@
 		return obj.boundFns[fnName];
 	};
 
+	kff.classMixin = {
+		f: function(fnName)
+		{
+			var obj = this;
+			if(typeof fnName === 'string') return kff.bindFn(obj, fnName);
+			if(typeof fnName === 'function') return function(){ return fnName.apply(obj, arguments); };
+			throw new TypeError("Expected function: " + fnName + ' (kff.f)');
+		}
+	};
+	
 	kff.isTouchDevice = function()
 	{
 		return !!('ontouchstart' in window);

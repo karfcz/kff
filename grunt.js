@@ -6,11 +6,11 @@ module.exports = function(grunt) {
 			kff: {
 				src: [
 					'./kff.js',
+					'./kff.Events.js',
 					'./kff.LinkedList.js',
 					'./kff.Collection.js',
-					//'./kff.ArrayList.js',
-					'./kff.Events.js',
 					'./kff.Model.js',
+					//'./kff.ArrayList.js',
 					'./kff.ServiceContainer.js',
 					'./kff.View.js'
 				//	'./kff.FrontController.js'

@@ -67,11 +67,15 @@
 		if(meta.extend) kff.extend(constructor, meta.extend);
 
 		// Concatenate properties from properties objects and mixin objects
-		if(meta.mixins)
+		if(!('mixins' in meta))
 		{
-			if(!(meta.mixins instanceof Array)) meta.mixins = [meta.mixins];
-			for(var i = 0, l = meta.mixins.length; i < l; i++) kff.mixins(properties, meta.mixins[i]);
+			meta.mixins = [];
 		}
+		else if(!(meta.mixins instanceof Array)) meta.mixins = [meta.mixins];
+		
+		meta.mixins.push(kff.classMixin);
+		
+		for(var i = 0, l = meta.mixins.length; i < l; i++) kff.mixins(properties, meta.mixins[i]);
 
 		// Static properties of constructor
 		if(meta.staticProperties)
@@ -97,6 +101,16 @@
 		return obj.boundFns[fnName];
 	};
 
+	kff.classMixin = {
+		f: function(fnName)
+		{
+			var obj = this;
+			if(typeof fnName === 'string') return kff.bindFn(obj, fnName);
+			if(typeof fnName === 'function') return function(){ return fnName.apply(obj, arguments); };
+			throw new TypeError("Expected function: " + fnName + ' (kff.f)');
+		}
+	};
+	
 	kff.isTouchDevice = function()
 	{
 		return !!('ontouchstart' in window);
@@ -115,200 +129,6 @@
 		return obj;
 	};
 
-
-})(this);
-
-/**
- *  KFF Javascript microframework
- *  Copyright (c) 2008-2012 Karel Fučík
- *  Released under the MIT license.
- *  http://www.opensource.org/licenses/mit-license.php
- */
-
-(function(scope)
-{
-	var kff;
-
-	if(typeof exports !== 'undefined') kff = exports;
-	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
-	
-	kff.LinkedList = kff.createClass(
-	{
-		constructor: function()	
-		{
-			this.tail = this.head = { next: null };
-			this.count = 0;
-		},
-		
-		each: function(fn)
-		{
-			var node = this.head.next;
-			while(node)
-			{
-				fn.call(null, node.val);
-				node = node.next;
-			}
-		},
-		
-		append: function(val)
-		{
-			var node = { val: val, next: null };
-			this.tail.next = node;
-			this.tail = node;
-			this.count++;
-		},
-		
-		removeVal: function(val)
-		{
-			var node = this.head.next, prev = this.head, ret = false;
-			while(node)
-			{
-				if(node.val === val)
-				{
-					if(node.next) prev.next = node.next;
-					else
-					{
-						prev.next = null;
-						this.tail = prev;
-					}
-					this.count--;
-					ret = true;
-				}
-				else prev = node;
-				node = node.next;
-			}
-			return ret;
-		}
-	});
-
-})(this);
-
-/**
- *  KFF Javascript microframework
- *  Copyright (c) 2008-2012 Karel Fučík
- *  Released under the MIT license.
- *  http://www.opensource.org/licenses/mit-license.php
- */
-
-(function(scope)
-{
-	var kff;
-
-	if(typeof exports !== 'undefined') kff = exports;
-	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
-
-	/**
-	 *  kff.Collection
-	 *
-	 */
-	kff.Collection = kff.createClass(
-	{ 
-		extend: kff.LinkedList,
-		mixins: kff.EventsMixin
-	},
-	{ 
-		constructor: function(options)
-		{
-			options = options || {};
-			this.valFactory = options.valFactory || null;
-			this.valType = options.valType || kff.Model;
-			this.serializeAttrs = options.serializeAttrs || null;
-			this.events = new kff.Events();
-			kff.LinkedList.call(this);
-			return this;
-		},
-		
-		toJson: function()
-		{
-			var node = this.head, obj = [];
-			while(node = node.next)
-			{
-				if(node.val && node.val.toJson) obj.push(node.val.toJson(this.serializeAttrs));
-				else obj.push(node.val);
-			}
-			return obj;
-		},
-		
-		fromJson: function(obj)
-		{
-			var val, valFactory = this.valFactory;
-			for(var i = 0; i < obj.length; i++)
-			{
-				if(valFactory) val = valFactory(val);
-				else val = new this.valType();
-				val.fromJson(obj[i]);
-				this.append(val);
-			}
-			this.trigger('change');
-		},
-		
-		findByAttr: function(attr, value)
-		{
-			var ret;
-			this.each(function(val)
-			{
-				if(val && val.get(attr) === value) ret = val;
-			});
-			return ret;
-		},
-		
-		empty: function()
-		{
-			this.tail = this.head = { next: null };
-			this.count = 0;
-			this.trigger('change');
-		},
-
-		sort: function(compareFunction)
-		{
-			var arr = [], az, bz;
-			this.each(function(item)
-			{
-				arr.push(item);
-			});
-			arr.sort(compareFunction);
-			this.empty();
-			for(var i = 0; i < arr.length; i++)
-			{
-				this.append(arr[i]);
-			}
-			this.trigger('change');
-		},
-		
-		clone: function()
-		{
-			var clon = new kff.Collection(this.options);
-			this.each(function(item){
-				clon.append(item);
-			});
-			return clon;
-		},
-		
-		shuffle: function()
-		{
-			var arr = [], az, bz, len, i, p, t;
-			this.each(function(item)
-			{
-				arr.push(item);
-			});
-
-			len = arr.length, i = len;
-			while(i--)
-			{
-				p = parseInt(Math.random()*len);
-				t = arr[i];
-				arr[i] = arr[p];
-				arr[p] = t;
-			}
-			this.empty();
-			for(var i = 0; i < arr.length; i++)
-			{
-				this.append(arr[i]);
-			}
-			this.trigger('change');
-		}	
-		
-	});
 
 })(this);
 
@@ -416,6 +236,212 @@
 
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
+	
+	kff.LinkedList = kff.createClass(
+	{
+		constructor: function()	
+		{
+			this.tail = this.head = { next: null };
+			this.count = 0;
+		},
+		
+		each: function(fn)
+		{
+			var node = this.head.next;
+			while(node)
+			{
+				fn.call(null, node.val);
+				node = node.next;
+			}
+		},
+		
+		append: function(val)
+		{
+			var node = { val: val, next: null };
+			this.tail.next = node;
+			this.tail = node;
+			this.count++;
+		},
+		
+		removeVal: function(val)
+		{
+			var node = this.head.next, prev = this.head, ret = false;
+			while(node)
+			{
+				if(node.val === val)
+				{
+					if(node.next) prev.next = node.next;
+					else
+					{
+						prev.next = null;
+						this.tail = prev;
+					}
+					this.count--;
+					ret = true;
+				}
+				else prev = node;
+				node = node.next;
+			}
+			return ret;
+		}
+	});
+
+})(this);
+
+/**
+ *  KFF Javascript microframework
+ *  Copyright (c) 2008-2012 Karel Fučík
+ *  Released under the MIT license.
+ *  http://www.opensource.org/licenses/mit-license.php
+ */
+
+(function(scope)
+{
+	var kff;
+
+	if(typeof exports !== 'undefined') kff = exports;
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
+
+	/**
+	 *  kff.Collection
+	 *
+	 */
+	kff.Collection = kff.createClass(
+	{ 
+		extend: kff.LinkedList,
+		mixins: kff.EventsMixin
+	},
+	{ 
+		constructor: function(options)
+		{
+			options = options || {};
+			this.valFactory = options.valFactory || null;
+			this.valType = options.valType || kff.Model;
+			this.serializeAttrs = options.serializeAttrs || null;
+			this.events = new kff.Events();
+			kff.LinkedList.call(this);
+			return this;
+		},
+
+		append: function(val)
+		{
+			kff.Collection._super.append.call(this, val);
+			this.trigger('change', { addedValue: val });
+		},
+		
+		removeVal: function(val)
+		{
+			if(kff.Collection._super.removeVal.call(this, val)) this.trigger('change', { removedValue: val });
+		},
+				
+		toJson: function()
+		{
+			var node = this.head, obj = [];
+			while(node = node.next)
+			{
+				if(node.val && node.val.toJson) obj.push(node.val.toJson(this.serializeAttrs));
+				else obj.push(node.val);
+			}
+			return obj;
+		},
+		
+		fromJson: function(obj)
+		{
+			var val, valFactory = this.valFactory;
+			this.empty();
+			for(var i = 0; i < obj.length; i++)
+			{
+				if(valFactory) val = valFactory(obj[i]);
+				else val = new this.valType();
+				val.fromJson(obj[i]);
+				this.append(val);
+			}
+			this.trigger('change');
+		},
+		
+		findByAttr: function(attr, value)
+		{
+			var ret;
+			this.each(function(val)
+			{
+				if(val && val.get(attr) === value) ret = val;
+			});
+			return ret;
+		},
+		
+		empty: function()
+		{
+			this.tail = this.head = { next: null };
+			this.count = 0;
+			this.trigger('change');
+		},
+
+		sort: function(compareFunction)
+		{
+			var arr = [], az, bz;
+			this.each(function(item)
+			{
+				arr.push(item);
+			});
+			arr.sort(compareFunction);
+			this.empty();
+			for(var i = 0; i < arr.length; i++)
+			{
+				this.append(arr[i]);
+			}
+			this.trigger('change');
+		},
+		
+		clone: function()
+		{
+			var clon = new kff.Collection(this.options);
+			this.each(function(item){
+				clon.append(item);
+			});
+			return clon;
+		},
+		
+		shuffle: function()
+		{
+			var arr = [], az, bz, len, i, p, t;
+			this.each(function(item)
+			{
+				arr.push(item);
+			});
+
+			len = arr.length, i = len;
+			while(i--)
+			{
+				p = parseInt(Math.random()*len);
+				t = arr[i];
+				arr[i] = arr[p];
+				arr[p] = t;
+			}
+			this.empty();
+			for(var i = 0; i < arr.length; i++)
+			{
+				this.append(arr[i]);
+			}
+			this.trigger('change');
+		}	
+		
+	});
+
+})(this);
+
+/**
+ *  KFF Javascript microframework
+ *  Copyright (c) 2008-2012 Karel Fučík
+ *  Released under the MIT license.
+ *  http://www.opensource.org/licenses/mit-license.php
+ */
+
+(function(scope)
+{
+	var kff;
+
+	if(typeof exports !== 'undefined') kff = exports;
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 	/**
 	 *  kff.Model
@@ -471,7 +497,7 @@
 			{
 				if((!serializeAttrs || $.inArray(key, serializeAttrs) !== -1) && this.attrs.hasOwnProperty(key))
 				{
-					if('toJson' in this.attrs[key]) obj[key] = this.attrs[key].toJson();
+					if(this.attrs[key] && typeof this.attrs[key] === 'object' && 'toJson' in this.attrs[key]) obj[key] = this.attrs[key].toJson();
 					else obj[key] = this.attrs[key];
 				}
 			}
@@ -485,7 +511,7 @@
 			{
 				if(this.attrs.hasOwnProperty(key) && obj.hasOwnProperty(key))
 				{
-					if('fromJson' in this.attrs[key]) this.attrs[key].fromJson(obj[key]);
+					if(this.attrs[key] && typeof this.attrs[key] === 'object' && 'fromJson' in this.attrs[key]) this.attrs[key].fromJson(obj[key]);
 					else this.attrs[key] = obj[key];
 				}
 			}
@@ -801,6 +827,7 @@
 				subView = this.viewFactory.createView(viewName, options);
 				if(subView instanceof kff.View)
 				{
+					subView.viewFactory = this.viewFactory;
 					this.subViews.push(subView);
 					subView.init();
 				}

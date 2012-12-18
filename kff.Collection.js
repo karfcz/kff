@@ -32,7 +32,18 @@
 			kff.LinkedList.call(this);
 			return this;
 		},
+
+		append: function(val)
+		{
+			kff.Collection._super.append.call(this, val);
+			this.trigger('change', { addedValue: val });
+		},
 		
+		removeVal: function(val)
+		{
+			if(kff.Collection._super.removeVal.call(this, val)) this.trigger('change', { removedValue: val });
+		},
+				
 		toJson: function()
 		{
 			var node = this.head, obj = [];
@@ -47,9 +58,10 @@
 		fromJson: function(obj)
 		{
 			var val, valFactory = this.valFactory;
+			this.empty();
 			for(var i = 0; i < obj.length; i++)
 			{
-				if(valFactory) val = valFactory(val);
+				if(valFactory) val = valFactory(obj[i]);
 				else val = new this.valType();
 				val.fromJson(obj[i]);
 				this.append(val);

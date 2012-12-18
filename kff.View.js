@@ -154,6 +154,7 @@
 				subView = this.viewFactory.createView(viewName, options);
 				if(subView instanceof kff.View)
 				{
+					subView.viewFactory = this.viewFactory;
 					this.subViews.push(subView);
 					subView.init();
 				}

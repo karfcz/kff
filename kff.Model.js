@@ -66,7 +66,7 @@
 			{
 				if((!serializeAttrs || $.inArray(key, serializeAttrs) !== -1) && this.attrs.hasOwnProperty(key))
 				{
-					if('toJson' in this.attrs[key]) obj[key] = this.attrs[key].toJson();
+					if(this.attrs[key] && typeof this.attrs[key] === 'object' && 'toJson' in this.attrs[key]) obj[key] = this.attrs[key].toJson();
 					else obj[key] = this.attrs[key];
 				}
 			}
@@ -80,7 +80,7 @@
 			{
 				if(this.attrs.hasOwnProperty(key) && obj.hasOwnProperty(key))
 				{
-					if('fromJson' in this.attrs[key]) this.attrs[key].fromJson(obj[key]);
+					if(this.attrs[key] && typeof this.attrs[key] === 'object' && 'fromJson' in this.attrs[key]) this.attrs[key].fromJson(obj[key]);
 					else this.attrs[key] = obj[key];
 				}
 			}
