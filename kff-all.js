@@ -95,7 +95,7 @@
 	/**
 	 * Binds function to an object. Adds _boundFns object width references to bound methods for caching purposes.
 	 * @param {Object} obj Object to which bind a function
-	 * @param {fnName} (String) Method name to bind
+	 * @param {string} fnName Method name to bind
 	 */
 	kff.bindFn = function(obj, fnName)
 	{
@@ -115,7 +115,18 @@
 			throw new TypeError("Expected function: " + fnName + ' (kff.f)');
 		}
 	};
-	
+
+	/**
+	 * Evaluates object path recursively and returns last property in chain
+	 *
+	 * Example:
+	 * window.something = { foo: { bar: 42 } };
+	 * kff.evalObjectPath('something.foo.bar', window) === 42 // true
+	 *
+	 * @param {string} path object path (like 'something.foo.bar')
+	 * @param {Object} obj Object to start with (like window)
+	 * @returns {mixed} Property at the end of object chain or null if not found
+	 */	
 	kff.evalObjectPath = function(path, obj)
 	{
 		obj = obj || scope;
@@ -254,23 +265,36 @@
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 	
 	kff.LinkedList = kff.createClass(
+	/** @lends kff.LinkedList */
 	{
+		/**
+		 * Class representing a linked list data structure
+		 * @constructs
+		 */		
 		constructor: function()	
 		{
 			this.tail = this.head = { next: null };
 			this.count = 0;
 		},
 		
+		/**
+		 * Iterates over each item in the list
+		 * @param {function} fn function to be called on each item. Takes one argument - the iterated item
+		 */
 		each: function(fn)
 		{
 			var node = this.head.next;
 			while(node)
 			{
-				fn.call(null, node.val);
+				if(fn.call(null, node.val) === false) break;
 				node = node.next;
 			}
 		},
 		
+		/**
+		 * Appends an item at the end of the list
+		 * @param {mixed} val Item to be appended
+		 */
 		append: function(val)
 		{
 			var node = { val: val, next: null };
@@ -279,6 +303,11 @@
 			this.count++;
 		},
 		
+		/**
+		 * Removes item from the list
+		 * @param {mixed} val Reference to the item to be removed
+		 * @returns {mixed} removed item or false if not found
+		 */
 		removeVal: function(val)
 		{
 			var node = this.head.next, prev = this.head, ret = false;
@@ -299,7 +328,17 @@
 				node = node.next;
 			}
 			return ret;
+		},
+
+		/**
+		 * Removes all items from list
+		 */		
+		empty: function()
+		{
+			this.tail = this.head = { next: null };
+			this.count = 0;
 		}
+		
 	});
 
 })(this);
@@ -318,16 +357,20 @@
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
-	/**
-	 *  kff.Collection
-	 *
-	 */
 	kff.Collection = kff.createClass(
 	{ 
 		extend: kff.LinkedList,
 		mixins: kff.EventsMixin
 	},
+	/** @lends kff.Collection */
 	{ 
+		/**
+		 * Class representing collection of models
+		 * @constructs
+		 * @param {Object} options Options config
+		 * @param {function} options.valFactory Factory function for creating new collection items (optional)
+		 * @param {function} options.valType Type (class or constructor function) of collection items
+		 */		
 		constructor: function(options)
 		{
 			options = options || {};
@@ -338,29 +381,54 @@
 			kff.LinkedList.call(this);
 			return this;
 		},
-
+		
+		/**
+		 * Appends an item at the end of collection
+		 * @param {mixed} val Item to be appended
+		 */
 		append: function(val)
 		{
 			kff.Collection._super.append.call(this, val);
 			this.trigger('change', { addedValue: val });
 		},
-		
+
+		/**
+		 * Removes item from collection
+		 * @param {mixed} val Reference to the item to be removed
+		 * @returns {mixed} removed item or false if not found
+		 */		
 		removeVal: function(val)
 		{
-			if(kff.Collection._super.removeVal.call(this, val)) this.trigger('change', { removedValue: val });
+			var ret = kff.Collection._super.removeVal.call(this, val);
+			if(ret) this.trigger('change', { removedValue: val });
+			return ret;
 		},
-				
+
+		/**
+		 * Creates a JSON representation of collection. 
+		 *
+		 * If item of collection is object, tries to call toJson on it as well.
+		 * This function returns plain object, not stringified JSON.
+		 * Collection is represented as array in JSON.
+		 *
+		 * @returns {Array} Array representation of collection
+		 */
 		toJson: function()
 		{
-			var node = this.head, obj = [];
-			while(node = node.next)
+			var serializeAttrs = this.serializeAttrs, obj = [];
+			this.each(function(val)
 			{
-				if(node.val && node.val.toJson) obj.push(node.val.toJson(this.serializeAttrs));
-				else obj.push(node.val);
-			}
+				if(val && val.toJson) obj.push(val.toJson(serializeAttrs));
+				else obj.push(val);
+			});			
 			return obj;
 		},
-		
+
+		/**
+		 * Reads collection from JSON (in fact JavaScript array)
+		 *
+		 * @param {Array} obj Array to read from
+		 */		
 		fromJson: function(obj)
 		{
 			var val, valFactory = this.valFactory;
@@ -375,23 +443,42 @@
 			this.trigger('change');
 		},
 		
+		/**
+		 * Search in collection for model with given attribute value
+		 * @param {string} attr Attribute name
+		 * @param {mixed} value Attribute value
+		 * @returns {mixed} First found item or null
+		 */
 		findByAttr: function(attr, value)
 		{
-			var ret;
+			var ret = null;
 			this.each(function(val)
 			{
-				if(val && val.get(attr) === value) ret = val;
+				if(val && val.get(attr) === value)
+				{
+					ret = val;
+					return false;
+				}
 			});
 			return ret;
 		},
 		
+		/**
+		 * Removes all items from collection
+		 */		
 		empty: function()
 		{
-			this.tail = this.head = { next: null };
-			this.count = 0;
+			kff.Collection._super.empty.call(this);
 			this.trigger('change');
 		},
 
+		/**
+		 * Sorts collection using a compare function
+		 * 
+		 * Comapre function follows the same specification as in standard Array.sort function
+		 *
+		 * @param {function} compareFunction Compare function
+		 */		
 		sort: function(compareFunction)
 		{
 			var arr = [], az, bz;
@@ -408,6 +495,10 @@
 			this.trigger('change');
 		},
 		
+		/**
+		 * Creates clone of the collection. Clone is shallow copy (objects in collections are not cloned)
+		 * @returns {kff.Collection} Cloned collection
+		 */
 		clone: function()
 		{
 			var clon = new kff.Collection(this.options);
@@ -417,6 +508,9 @@
 			return clon;
 		},
 		
+		/**
+		 * Randomizes order of items in collection
+		 */
 		shuffle: function()
 		{
 			var arr = [], az, bz, len, i, p, t;
@@ -428,13 +522,13 @@
 			len = arr.length, i = len;
 			while(i--)
 			{
-				p = parseInt(Math.random()*len);
+				p = parseInt(Math.random()*len, 10);
 				t = arr[i];
 				arr[i] = arr[p];
 				arr[p] = t;
 			}
 			this.empty();
-			for(var i = 0; i < arr.length; i++)
+			for(i = 0; i < arr.length; i++)
 			{
 				this.append(arr[i]);
 			}
@@ -459,31 +553,50 @@
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
-	/**
-	 *  kff.Model
-	 *
-	 */
 	kff.Model = kff.createClass(
 	{
 		mixins: kff.EventsMixin
 	},
+	/** @lends kff.Model */
 	{
+		/**
+		 * Class representing a model
+		 * @constructs
+		 */
 		constructor: function()
 		{
 			this.events = new kff.Events();
 			this.attrs = {};
 		},
 
+		/**
+		 * Checks if the model has given attribute
+		 * @param {string} attr Attribute name
+		 * @returns {boolean} True if found, false otherwise
+		 */		
 		has: function(attr)
 		{
 			return attr in this.attrs;
 		},
 
+		/**
+		 * Returns value of given attribute
+		 * @param {string} attr Attribute name
+		 * @returns {mixed} Attribute value
+		 */		
 		get: function(attr)
 		{
 			return this.attrs[attr];
 		},
 
+		/**
+		 * Sets value of given attribute.
+		 *
+		 * Triggers change event.
+		 *
+		 * @param {string} attr Attribute name
+		 * @param {mixed} value Attribute value
+		 */		
 		set: function(attr, value, options)
 		{
 			var changed = {};
@@ -509,13 +622,22 @@
 				for(var key in changed) this.attrs[key] = changed[key];
 			}
 			
-			for(var attr in changed)
+			for(var changedAttr in changed)
 			{
-				this.trigger('change:' + attr, { changedAttributes: changed });
+				this.trigger('change:' + changedAttr, { changedAttributes: changed });
 			}
 			this.trigger('change', { changedAttributes: changed });
 		},
-		
+
+		/**
+		 * Creates a JSON representation of model attributes.
+		 *
+		 * If an attribute is type of Object, tries to call toJson on it too.
+		 * This function returns plain object, not stringified JSON.
+		 *
+		 * @param {Array.<string>} serializeAttrs If used, only these attributes will be exported
+		 * @returns {Object} Plain JavaScript object representation of attributes
+		 */
 		toJson: function(serializeAttrs)
 		{
 			var obj = {};
@@ -529,7 +651,15 @@
 			}
 			return obj;
 		},
-		
+
+		/**
+		 * Reads model's attributes from plain JavaScript object
+		 *
+		 * If an attribute is type of Object, tries to read appropriate property using its fromJson method.
+		 * This function returns plain object, not stringified JSON.
+		 *
+		 * @param {Object} obj Plain object to read from
+		 */
 		fromJson: function(obj)
 		{
 			var attrs = {};
@@ -562,10 +692,6 @@
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
-	/**
-	 *  kff.ServiceContainer
-	 *
-	 */
 	kff.ServiceContainer = kff.createClass(
 	{
 		staticProperties:
@@ -574,7 +700,13 @@
 			multipleParamsRegex: /%([^%]+)%/g
 		}
 	},
+	/** @lends kff.ServiceContainer */
 	{
+		/**
+		 * Simple dependency injection (or service) container class.
+		 * @constructs
+		 * @param {Object} config Configuration object
+		 */		
 		constructor: function(config)
 		{
 			this.config = config || { parameters: {}, services: {} };
@@ -582,22 +714,37 @@
 			this.cachedParams = {};
 		},
 		
+		/**
+		 * Returns instance of service class.
+		 * @param {string} service Service name (service config to be found in config.services[service])
+		 * @returns {Object} Instance of service
+		 */		
 		getService: function(service)
 		{
 			if(!this.config.services[service]) throw('Service ' + service + ' not defined');
 			if(this.config.services[service].shared)
 			{
-				if(typeof this.services[service] === 'undefined') this.services[service] = this.createService(service);;
+				if(typeof this.services[service] === 'undefined') this.services[service] = this.createService(service);
 				return this.services[service];
 			}
 			return this.createService(service);
 		},
 		
+		/**
+		 * Checks if given serviceName exists in container declaration
+		 * @param {string} serviceName Service name
+		 * @returns {boolean} True if service exists, false otherwise
+		 */		
 		hasService: function(serviceName)
 		{
 			return this.config.services.hasOwnProperty(serviceName);
 		},
 		
+		/**
+		 * Creates instance of service
+		 * @param {string} serviceName Name of service to be instantiated
+		 * @returns {Object} Instance of service
+		 */		
 		createService: function(serviceName)
 		{
 			var serviceConfig, Ctor, Temp, service, ret, i, l, calls;
@@ -622,6 +769,11 @@
 			return service;
 		},
 		
+		/**
+		 * Returns constructor function for given service name.
+		 * @param {string} serviceName Service name
+		 * @returns {function} Constructor function for service
+		 */		
 		getServiceConstructor: function(serviceName)
 		{
 			var serviceConfig, ctor;
@@ -637,6 +789,23 @@
 			return serviceConfig.constructor;
 		},
 		
+		/**
+		 * Evaluates parameter defined in container configuration.
+		 *
+		 * Parameter could be:
+		 *
+		 * - a string - see below
+		 * - an Array or Object - iterates over properties and evaluates them recursively
+		 *
+		 * String parameters refers to parameters defined in config.parameters section
+		 * If parameter is a string, it could have these special chars:
+		 * '@serviceName' - resolves to instance of service
+		 * '%parameterName%' - resolves to reference to parameter parameterName
+		 * '%someParameter% some %otherParameter% some more string' - resolves to string with 'inner parameters' resolved to strings as well
+		 *
+		 * @param {string|Array|Object} params Parameters to be resolved
+		 * @returns {mixed} Resolved parameter value
+		 */		
 		resolveParameters: function(params)
 		{
 			var ret, i, l, config;
@@ -879,6 +1048,22 @@
 		}
 
 	});
+	
+})(this);
+
+/**
+ *  KFF Javascript microframework
+ *  Copyright (c) 2008-2012 Karel Fučík
+ *  Released under the MIT license.
+ *  http://www.opensource.org/licenses/mit-license.php
+ */
+
+(function(scope)
+{
+	var kff;
+
+	if(typeof exports !== 'undefined') kff = exports;
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 	/**
 	 * kff.PageView
@@ -914,6 +1099,87 @@
 			if(!silent) this.trigger('setState', state);
 		}		
 	});
+		
+})(this);
+
+/**
+ *  KFF Javascript microframework
+ *  Copyright (c) 2008-2012 Karel Fučík
+ *  Released under the MIT license.
+ *  http://www.opensource.org/licenses/mit-license.php
+ */
+
+(function(scope)
+{
+	var kff;
+
+	if(typeof exports !== 'undefined') kff = exports;
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
+
+	/**
+	 * kff.ViewFactory
+	 */
+	kff.ViewFactory = kff.createClass(
+	{
+		constructor: function(options)
+		{
+			options = options || {};
+			this.serviceContainer = options.serviceContainer || null;
+			this.precedingViews = options.precedingViews || {};
+		},
+
+		createView: function(viewName, options)
+		{
+			var view = null, viewClass;
+			options = options || {};
+			
+			if(typeof viewName !== 'function' && this.serviceContainer && this.serviceContainer.hasService(viewName)) view = this.serviceContainer.getService(viewName);
+			else
+			{
+				if(typeof viewName !== 'function') viewClass = kff.evalObjectPath(viewName);
+				else viewClass = viewName;
+				if(viewClass) view = new viewClass({ viewFactory: this });
+			}
+			if(view instanceof kff.View) view.setOptions(options);
+			return view;
+		},
+		
+		getServiceConstructor: function(viewName)
+		{
+			if(typeof viewName === 'function') return viewName;
+			if(this.serviceContainer && this.serviceContainer.hasService(viewName)) return this.serviceContainer.getServiceConstructor(viewName);
+			else return kff.evalObjectPath(viewName);
+		},
+		
+		getPrecedingView: function(viewName)
+		{
+			var viewCtor;
+			if(typeof viewName === 'string' && this.precedingViews[viewName] !== undefined) return this.precedingViews[viewName];
+			else
+			{
+				viewCtor = this.getServiceConstructor(viewName);
+				if(viewCtor && viewCtor.precedingView) return viewCtor.precedingView;
+			}
+			return null;
+		}
+		
+	});
+	
+})(this);
+
+/**
+ *  KFF Javascript microframework
+ *  Copyright (c) 2008-2012 Karel Fučík
+ *  Released under the MIT license.
+ *  http://www.opensource.org/licenses/mit-license.php
+ */
+
+(function(scope)
+{
+	var kff;
+
+	if(typeof exports !== 'undefined') kff = exports;
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 	
 	/**
 	 * kff.FrontController
@@ -985,7 +1251,7 @@
 			lastViewCtor = this.getLastView() ? this.getLastView().name : null;
 			sharedViewCtor = this.findSharedView(this.newViewCtor, lastViewCtor);
 			
- 			while(lastViewCtor = this.getLastView() ? this.getLastView().name : null)
+			while((lastViewCtor = this.getLastView() ? this.getLastView().name : null) !== null)
 			{
 				if(lastViewCtor === sharedViewCtor) break;
 				destroyQueue.push(this.popView());
@@ -995,7 +1261,7 @@
 			{
 				if(destroyQueue[i + 1]) destroyQueue[i].instance.on('destroy', kff.bindFn(destroyQueue[i + 1].instance, 'destroy'));
 				else destroyQueue[i].instance.on('destroy', kff.bindFn(this, 'startInit'));
-			};
+			}
 
 			if(destroyQueue[0]) destroyQueue[0].instance.destroy();
 			else this.startInit();
@@ -1045,56 +1311,6 @@
 			}	
 			return a;
 		}
-	});
-
-
-	/**
-	 * kff.ViewFactory
-	 */
-	kff.ViewFactory = kff.createClass(
-	{
-		constructor: function(options)
-		{
-			options = options || {};
-			this.serviceContainer = options.serviceContainer || null;
-			this.precedingViews = options.precedingViews || {};
-		},
-
-		createView: function(viewName, options)
-		{
-			var view = null, viewClass;
-			options = options || {};
-			
-			if(typeof viewName !== 'function' && this.serviceContainer && this.serviceContainer.hasService(viewName)) view = this.serviceContainer.getService(viewName);
-			else
-			{
-				if(typeof viewName !== 'function') viewClass = kff.evalObjectPath(viewName);
-				else viewClass = viewName;
-				if(viewClass) view = new viewClass({ viewFactory: this });
-			}
-			if(view instanceof kff.View) view.setOptions(options);
-			return view;
-		},
-		
-		getServiceConstructor: function(viewName)
-		{
-			if(typeof viewName === 'function') return viewName;
-			if(this.serviceContainer && this.serviceContainer.hasService(viewName)) return this.serviceContainer.getServiceConstructor(viewName);
-			else return kff.evalObjectPath(viewName);
-		},
-		
-		getPrecedingView: function(viewName)
-		{
-			var viewCtor;
-			if(typeof viewName === 'string' && this.precedingViews[viewName] !== undefined) return this.precedingViews[viewName];
-			else
-			{
-				viewCtor = this.getServiceConstructor(viewName);
-				if(viewCtor && viewCtor.precedingView) return viewCtor.precedingView;
-			}
-			return null;
-		}
-		
 	});
 	
 })(this);

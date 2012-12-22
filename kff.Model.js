@@ -12,31 +12,50 @@
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
-	/**
-	 *  kff.Model
-	 *
-	 */
 	kff.Model = kff.createClass(
 	{
 		mixins: kff.EventsMixin
 	},
+	/** @lends kff.Model */
 	{
+		/**
+		 * Class representing a model
+		 * @constructs
+		 */
 		constructor: function()
 		{
 			this.events = new kff.Events();
 			this.attrs = {};
 		},
 
+		/**
+		 * Checks if the model has given attribute
+		 * @param {string} attr Attribute name
+		 * @returns {boolean} True if found, false otherwise
+		 */		
 		has: function(attr)
 		{
 			return attr in this.attrs;
 		},
 
+		/**
+		 * Returns value of given attribute
+		 * @param {string} attr Attribute name
+		 * @returns {mixed} Attribute value
+		 */		
 		get: function(attr)
 		{
 			return this.attrs[attr];
 		},
 
+		/**
+		 * Sets value of given attribute.
+		 *
+		 * Triggers change event.
+		 *
+		 * @param {string} attr Attribute name
+		 * @param {mixed} value Attribute value
+		 */		
 		set: function(attr, value, options)
 		{
 			var changed = {};
@@ -62,13 +81,22 @@
 				for(var key in changed) this.attrs[key] = changed[key];
 			}
 			
-			for(var attr in changed)
+			for(var changedAttr in changed)
 			{
-				this.trigger('change:' + attr, { changedAttributes: changed });
+				this.trigger('change:' + changedAttr, { changedAttributes: changed });
 			}
 			this.trigger('change', { changedAttributes: changed });
 		},
-		
+
+		/**
+		 * Creates a JSON representation of model attributes.
+		 *
+		 * If an attribute is type of Object, tries to call toJson on it too.
+		 * This function returns plain object, not stringified JSON.
+		 *
+		 * @param {Array.<string>} serializeAttrs If used, only these attributes will be exported
+		 * @returns {Object} Plain JavaScript object representation of attributes
+		 */
 		toJson: function(serializeAttrs)
 		{
 			var obj = {};
@@ -82,7 +110,15 @@
 			}
 			return obj;
 		},
-		
+
+		/**
+		 * Reads model's attributes from plain JavaScript object
+		 *
+		 * If an attribute is type of Object, tries to read appropriate property using its fromJson method.
+		 * This function returns plain object, not stringified JSON.
+		 *
+		 * @param {Object} obj Plain object to read from
+		 */
 		fromJson: function(obj)
 		{
 			var attrs = {};

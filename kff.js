@@ -95,7 +95,7 @@
 	/**
 	 * Binds function to an object. Adds _boundFns object width references to bound methods for caching purposes.
 	 * @param {Object} obj Object to which bind a function
-	 * @param {fnName} (String) Method name to bind
+	 * @param {string} fnName Method name to bind
 	 */
 	kff.bindFn = function(obj, fnName)
 	{
@@ -115,7 +115,18 @@
 			throw new TypeError("Expected function: " + fnName + ' (kff.f)');
 		}
 	};
-	
+
+	/**
+	 * Evaluates object path recursively and returns last property in chain
+	 *
+	 * Example:
+	 * window.something = { foo: { bar: 42 } };
+	 * kff.evalObjectPath('something.foo.bar', window) === 42 // true
+	 *
+	 * @param {string} path object path (like 'something.foo.bar')
+	 * @param {Object} obj Object to start with (like window)
+	 * @returns {mixed} Property at the end of object chain or null if not found
+	 */	
 	kff.evalObjectPath = function(path, obj)
 	{
 		obj = obj || scope;

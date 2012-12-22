@@ -12,8 +12,10 @@ module.exports = function(grunt) {
 					'./kff.Model.js',
 					//'./kff.ArrayList.js',
 					'./kff.ServiceContainer.js',
-					'./kff.View.js'
-				//	'./kff.FrontController.js'
+					'./kff.View.js',
+					'./kff.PageView.js',
+					'./kff.ViewFactory.js',
+					'./kff.FrontController.js'
 				],
 				dest: 'kff-all.js'
 			}

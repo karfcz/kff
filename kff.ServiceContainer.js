@@ -12,10 +12,6 @@
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
-	/**
-	 *  kff.ServiceContainer
-	 *
-	 */
 	kff.ServiceContainer = kff.createClass(
 	{
 		staticProperties:
@@ -24,7 +20,13 @@
 			multipleParamsRegex: /%([^%]+)%/g
 		}
 	},
+	/** @lends kff.ServiceContainer */
 	{
+		/**
+		 * Simple dependency injection (or service) container class.
+		 * @constructs
+		 * @param {Object} config Configuration object
+		 */		
 		constructor: function(config)
 		{
 			this.config = config || { parameters: {}, services: {} };
@@ -32,22 +34,37 @@
 			this.cachedParams = {};
 		},
 		
+		/**
+		 * Returns instance of service class.
+		 * @param {string} service Service name (service config to be found in config.services[service])
+		 * @returns {Object} Instance of service
+		 */		
 		getService: function(service)
 		{
 			if(!this.config.services[service]) throw('Service ' + service + ' not defined');
 			if(this.config.services[service].shared)
 			{
-				if(typeof this.services[service] === 'undefined') this.services[service] = this.createService(service);;
+				if(typeof this.services[service] === 'undefined') this.services[service] = this.createService(service);
 				return this.services[service];
 			}
 			return this.createService(service);
 		},
 		
+		/**
+		 * Checks if given serviceName exists in container declaration
+		 * @param {string} serviceName Service name
+		 * @returns {boolean} True if service exists, false otherwise
+		 */		
 		hasService: function(serviceName)
 		{
 			return this.config.services.hasOwnProperty(serviceName);
 		},
 		
+		/**
+		 * Creates instance of service
+		 * @param {string} serviceName Name of service to be instantiated
+		 * @returns {Object} Instance of service
+		 */		
 		createService: function(serviceName)
 		{
 			var serviceConfig, Ctor, Temp, service, ret, i, l, calls;
@@ -72,6 +89,11 @@
 			return service;
 		},
 		
+		/**
+		 * Returns constructor function for given service name.
+		 * @param {string} serviceName Service name
+		 * @returns {function} Constructor function for service
+		 */		
 		getServiceConstructor: function(serviceName)
 		{
 			var serviceConfig, ctor;
@@ -87,6 +109,23 @@
 			return serviceConfig.constructor;
 		},
 		
+		/**
+		 * Evaluates parameter defined in container configuration.
+		 *
+		 * Parameter could be:
+		 *
+		 * - a string - see below
+		 * - an Array or Object - iterates over properties and evaluates them recursively
+		 *
+		 * String parameters refers to parameters defined in config.parameters section
+		 * If parameter is a string, it could have these special chars:
+		 * '@serviceName' - resolves to instance of service
+		 * '%parameterName%' - resolves to reference to parameter parameterName
+		 * '%someParameter% some %otherParameter% some more string' - resolves to string with 'inner parameters' resolved to strings as well
+		 *
+		 * @param {string|Array|Object} params Parameters to be resolved
+		 * @returns {mixed} Resolved parameter value
+		 */		
 		resolveParameters: function(params)
 		{
 			var ret, i, l, config;
