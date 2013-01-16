@@ -2,6 +2,17 @@ module.exports = function(grunt) {
 
 	// Project configuration.
 	grunt.initConfig({
+		// browserify: {
+		// 	"kff-all-bf.js": {
+		// 		//requires: ['traverse'],
+		// 		entries: ['kff.js', 'kff.*.js']
+		// 		// prepend: ['<banner:meta.banner>'],
+		// 		// append: [],
+		// 		// hook: function (bundle) {
+		// 		//   // Do something with bundle
+		// 		// }
+		// 	}
+		// },
 		concat: {
 			kff: {
 				src: [
@@ -15,6 +26,8 @@ module.exports = function(grunt) {
 					'./kff.View.js',
 					'./kff.PageView.js',
 					'./kff.ViewFactory.js',
+					'./kff.Route.js',
+					'./kff.Router.js',
 					'./kff.FrontController.js'
 				],
 				dest: 'kff-all.js'
@@ -40,6 +53,7 @@ module.exports = function(grunt) {
 		}
 	});
 
+	//grunt.loadNpmTasks('grunt-browserify');
 	// Default task.
 	grunt.registerTask('default', 'concat min');
 

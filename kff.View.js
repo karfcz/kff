@@ -21,7 +21,8 @@
 		staticProperties:
 		{
 			DATA_VIEW_ATTR: 'data-kff-view',
-			DATA_OPTIONS_ATTR: 'data-kff-options'
+			DATA_OPTIONS_ATTR: 'data-kff-options',
+			DATA_RENDERED_ATTR: 'data-kff-rendered'
 		}
 	},
 	{
@@ -51,6 +52,11 @@
 			{
 				this.$element = $(options.element);
 				delete options.element;	
+			}
+			if(options.viewFactory)
+			{
+				this.viewFactory = options.viewFactory;
+				delete options.viewFactory;	
 			}
 			$.extend(this.options, options);			
 		},
@@ -110,7 +116,7 @@
 		renderSubviews: function()
 		{
 			var viewNames = [], 
-				viewName, viewClass, subView, options, opt, i, l,
+				viewName, viewClass, subView, options, opt, i, l, rendered,
 				filter = this.options.filter || undefined;
 				
 			var findViewElements = function(el)
@@ -124,17 +130,21 @@
 						child = children[j];
 						if(child.getAttribute)
 						{
-							viewName = child.getAttribute(kff.View.DATA_VIEW_ATTR);
-							if(viewName)
+							rendered = child.getAttribute(kff.View.DATA_RENDERED_ATTR);
+							if(!rendered)
 							{
-								if(!filter || (filter && $(child).is(filter)))
+								viewName = child.getAttribute(kff.View.DATA_VIEW_ATTR);
+								if(viewName)
 								{
-									viewNames.push({ objPath: viewName, $element: $(child) });	
-								}						
-							}
-							else
-							{
-								findViewElements(child);
+									if(!filter || (filter && $(child).is(filter)))
+									{
+										viewNames.push({ objPath: viewName, $element: $(child) });	
+									}						
+								}
+								else
+								{
+									findViewElements(child);
+								}
 							}
 						}
 					}
@@ -157,6 +167,7 @@
 					subView.viewFactory = this.viewFactory;
 					this.subViews.push(subView);
 					subView.init();
+					viewNames[i].$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 				}
 			}			
 		},
@@ -169,6 +180,7 @@
 			for(i = 0, l = this.subViews.length; i < l; i++)
 			{				
 				subView = this.subViews[i];
+				if(subView.$element) subView.$element.removeAttr(kff.View.DATA_RENDERED_ATTR);
 				subView.destroy();
 				delete this.subViews[i];
 			}			

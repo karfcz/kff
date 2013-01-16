@@ -105,7 +105,7 @@
 				if(typeof ctor === 'function') serviceConfig.constructor = ctor;
 			}
 			else if(typeof serviceConfig.constructor === 'string') serviceConfig.constructor = kff.evalObjectPath(serviceConfig.constructor);
-			if(typeof serviceConfig.constructor !== 'function') throw new TypeError('expected function');
+			if(typeof serviceConfig.constructor !== 'function') throw new TypeError('expected function in getServiceConstructor: ' + serviceConfig.constructor);
 			return serviceConfig.constructor;
 		},
 		

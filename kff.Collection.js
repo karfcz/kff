@@ -95,7 +95,7 @@
 				val.fromJson(obj[i]);
 				this.append(val);
 			}
-			this.trigger('change');
+			this.trigger('change', { fromJson: true });
 		},
 		
 		/**

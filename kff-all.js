@@ -440,7 +440,7 @@
 				val.fromJson(obj[i]);
 				this.append(val);
 			}
-			this.trigger('change');
+			this.trigger('change', { fromJson: true });
 		},
 		
 		/**
@@ -785,7 +785,7 @@
 				if(typeof ctor === 'function') serviceConfig.constructor = ctor;
 			}
 			else if(typeof serviceConfig.constructor === 'string') serviceConfig.constructor = kff.evalObjectPath(serviceConfig.constructor);
-			if(typeof serviceConfig.constructor !== 'function') throw new TypeError('expected function');
+			if(typeof serviceConfig.constructor !== 'function') throw new TypeError('expected function in getServiceConstructor: ' + serviceConfig.constructor);
 			return serviceConfig.constructor;
 		},
 		
@@ -889,7 +889,8 @@
 		staticProperties:
 		{
 			DATA_VIEW_ATTR: 'data-kff-view',
-			DATA_OPTIONS_ATTR: 'data-kff-options'
+			DATA_OPTIONS_ATTR: 'data-kff-options',
+			DATA_RENDERED_ATTR: 'data-kff-rendered'
 		}
 	},
 	{
@@ -919,6 +920,11 @@
 			{
 				this.$element = $(options.element);
 				delete options.element;	
+			}
+			if(options.viewFactory)
+			{
+				this.viewFactory = options.viewFactory;
+				delete options.viewFactory;	
 			}
 			$.extend(this.options, options);			
 		},
@@ -978,7 +984,7 @@
 		renderSubviews: function()
 		{
 			var viewNames = [], 
-				viewName, viewClass, subView, options, opt, i, l,
+				viewName, viewClass, subView, options, opt, i, l, rendered,
 				filter = this.options.filter || undefined;
 				
 			var findViewElements = function(el)
@@ -992,17 +998,21 @@
 						child = children[j];
 						if(child.getAttribute)
 						{
-							viewName = child.getAttribute(kff.View.DATA_VIEW_ATTR);
-							if(viewName)
+							rendered = child.getAttribute(kff.View.DATA_RENDERED_ATTR);
+							if(!rendered)
 							{
-								if(!filter || (filter && $(child).is(filter)))
+								viewName = child.getAttribute(kff.View.DATA_VIEW_ATTR);
+								if(viewName)
 								{
-									viewNames.push({ objPath: viewName, $element: $(child) });	
-								}						
-							}
-							else
-							{
-								findViewElements(child);
+									if(!filter || (filter && $(child).is(filter)))
+									{
+										viewNames.push({ objPath: viewName, $element: $(child) });	
+									}						
+								}
+								else
+								{
+									findViewElements(child);
+								}
 							}
 						}
 					}
@@ -1025,6 +1035,7 @@
 					subView.viewFactory = this.viewFactory;
 					this.subViews.push(subView);
 					subView.init();
+					viewNames[i].$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 				}
 			}			
 		},
@@ -1037,6 +1048,7 @@
 			for(i = 0, l = this.subViews.length; i < l; i++)
 			{				
 				subView = this.subViews[i];
+				if(subView.$element) subView.$element.removeAttr(kff.View.DATA_RENDERED_ATTR);
 				subView.destroy();
 				delete this.subViews[i];
 			}			
@@ -1172,6 +1184,161 @@
  *  Copyright (c) 2008-2012 Karel Fučík
  *  Released under the MIT license.
  *  http://www.opensource.org/licenses/mit-license.php
+ *
+ *  Parts of kff.Router code from https://github.com/visionmedia/page.js
+ *  Copyright (c) 2012 TJ Holowaychuk <tj@vision-media.ca>
+ */
+
+(function(scope)
+{
+	var kff;
+
+	if(typeof exports !== 'undefined') kff = exports;
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
+
+	kff.Route = kff.createClass(
+	/** @lends kff.Route */
+	{
+		constructor: function(pattern, target)
+		{
+			this.pattern = pattern;
+			this.target = target;
+			this.keys = null;
+			this.regexp = this.compileRegex();
+		},
+
+		getTarget: function()
+		{
+			return this.target;
+		},
+
+		match: function(path, params)
+		{
+			var keys = this.keys,
+				qsIndex = path.indexOf('?'),
+				pathname = ~qsIndex ? path.slice(0, qsIndex) : path,
+				m = this.regexp.exec(pathname);
+
+			if (!m) return false;
+
+			for (var i = 1, len = m.length; i < len; ++i) {
+				var key = keys[i - 1];
+
+				var val = 'string' == typeof m[i]
+					? decodeURIComponent(m[i])
+					: m[i];
+
+				if (key) {
+					params[key.name] = undefined !== params[key.name]
+						? params[key.name]
+						: val;
+				} else {
+					params.push(val);
+				}
+			}
+
+			return true;
+		},
+
+		/**
+		 * Normalize the given path string,
+		 * returning a regular expression.
+		 *
+		 * An empty array should be passed,
+		 * which will contain the placeholder
+		 * key names. For example "/user/:id" will
+		 * then contain ["id"].
+		 *
+		 * @param  {String|RegExp|Array} path
+		 * @param  {Array} keys
+		 * @param  {Boolean} sensitive
+		 * @param  {Boolean} strict
+		 * @return {RegExp}
+		 * @api private
+		 */
+		compileRegex: function(sensitive, strict)
+		{
+			var keys = this.keys = [];
+			var path;
+
+			path = this.pattern
+				.concat(strict ? '' : '/?')
+				.replace(/\/\(/g, '(?:/')
+				.replace(/(\/)?(\.)?:(\w+)(?:(\(.*?\)))?(\?)?/g, function(_, slash, format, key, capture, optional){
+					keys.push({ name: key, optional: !! optional });
+					slash = slash || '';
+					return ''
+						+ (optional ? '' : slash)
+						+ '(?:'
+						+ (optional ? slash : '')
+						+ (format || '') + (capture || (format && '([^/.]+?)' || '([^/]+?)')) + ')'
+						+ (optional || '');
+				})
+				.replace(/([\/.])/g, '\\$1')
+				.replace(/\*/g, '(.*)');
+			return new RegExp('^' + path + '$', sensitive ? '' : 'i');
+		}
+
+
+	});
+
+})(this);
+
+/**
+ *  KFF Javascript microframework
+ *  Copyright (c) 2008-2012 Karel Fučík
+ *  Released under the MIT license.
+ *  http://www.opensource.org/licenses/mit-license.php
+ *
+ */
+
+(function(scope)
+{
+	var kff;
+
+	if(typeof exports !== 'undefined') kff = exports;
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
+
+	kff.Router = kff.createClass(
+	/** @lends kff.Router */
+	{
+		constructor: function(options)
+		{
+			this.options = options || {};
+			this.routes = [];
+			this.buildRoutes();
+		},
+
+		buildRoutes: function()
+		{
+			this.routes = [];
+			var routesConfig = this.options.routes;
+			for(var key in routesConfig)
+			{
+				this.routes.push(new kff.Route(key, routesConfig[key]));
+			}
+		},
+
+		match: function(path)
+		{
+			var params;
+			for(var i = 0, l = this.routes.length; i < l; i++)
+			{
+				params = [];
+				if(this.routes[i].match(path, params)) return { target: this.routes[i].getTarget(), params: params };
+			}
+			return null;
+		}
+
+	});
+
+})(this);
+
+/**
+ *  KFF Javascript microframework
+ *  Copyright (c) 2008-2012 Karel Fučík
+ *  Released under the MIT license.
+ *  http://www.opensource.org/licenses/mit-license.php
  */
 
 (function(scope)
@@ -1275,7 +1442,7 @@
 			
 			for(i = 0, l = precedingViewCtors.length; i < l; i++)
 			{
-				if(i >= this.viewsQueue.length) this.pushView({ name: precedingViewCtors[i], instance: this.viewFactory.createView(precedingViewCtors[i])});
+				if(i >= this.viewsQueue.length) this.pushView({ name: precedingViewCtors[i], instance: this.viewFactory.createView(precedingViewCtors[i], { viewFactory: this.viewFactory })});
 				else from = i + 1;
 			}
 			
