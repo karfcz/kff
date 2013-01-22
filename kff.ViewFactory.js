@@ -28,7 +28,7 @@
 		{
 			var view = null, viewClass;
 			options = options || {};
-			
+
 			if(typeof viewName !== 'function' && this.serviceContainer && this.serviceContainer.hasService(viewName)) view = this.serviceContainer.getService(viewName);
 			else
 			{
@@ -39,14 +39,14 @@
 			if(view instanceof kff.View) view.setOptions(options);
 			return view;
 		},
-		
+
 		getServiceConstructor: function(viewName)
 		{
 			if(typeof viewName === 'function') return viewName;
 			if(this.serviceContainer && this.serviceContainer.hasService(viewName)) return this.serviceContainer.getServiceConstructor(viewName);
 			else return kff.evalObjectPath(viewName);
 		},
-		
+
 		getPrecedingView: function(viewName)
 		{
 			var viewCtor;
@@ -58,7 +58,7 @@
 			}
 			return null;
 		}
-		
+
 	});
-	
+
 })(this);

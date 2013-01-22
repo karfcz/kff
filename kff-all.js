@@ -1144,7 +1144,7 @@
 		{
 			var view = null, viewClass;
 			options = options || {};
-			
+
 			if(typeof viewName !== 'function' && this.serviceContainer && this.serviceContainer.hasService(viewName)) view = this.serviceContainer.getService(viewName);
 			else
 			{
@@ -1155,14 +1155,14 @@
 			if(view instanceof kff.View) view.setOptions(options);
 			return view;
 		},
-		
+
 		getServiceConstructor: function(viewName)
 		{
 			if(typeof viewName === 'function') return viewName;
 			if(this.serviceContainer && this.serviceContainer.hasService(viewName)) return this.serviceContainer.getServiceConstructor(viewName);
 			else return kff.evalObjectPath(viewName);
 		},
-		
+
 		getPrecedingView: function(viewName)
 		{
 			var viewCtor;
@@ -1174,9 +1174,9 @@
 			}
 			return null;
 		}
-		
+
 	});
-	
+
 })(this);
 
 /**
@@ -1347,7 +1347,7 @@
 
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
-	
+
 	/**
 	 * kff.FrontController
 	 */
@@ -1356,6 +1356,7 @@
 		constructor: function(options)
 		{
 			options = options || {};
+			this.options = options;
 			this.views = null;
 			this.viewsQueue = [];
 			this.viewFactory = options.viewFactory || new kff.ViewFactory();
@@ -1379,7 +1380,7 @@
 
 		pushView: function(view)
 		{
-			var lastView = this.getLastView();			
+			var lastView = this.getLastView();
 			this.viewsQueue.push(view);
 			if(lastView)
 			{
@@ -1394,7 +1395,7 @@
 
 			var removedView = this.viewsQueue.pop(),
 				lastView = this.getLastView();
-			
+
 			removedView.instance.off('init', kff.bindFn(this, 'cascadeState'));
 			if(lastView)
 			{
@@ -1411,19 +1412,19 @@
 
 		setState: function(state)
 		{
-			var destroyQueue = [], lastViewCtor, sharedViewCtor, i;
-			
+			var destroyQueue = [], lastViewName, sharedViewName, i;
+
 			this.state = state;
-			this.newViewCtor = this.createViewFromState(state);
-			lastViewCtor = this.getLastView() ? this.getLastView().name : null;
-			sharedViewCtor = this.findSharedView(this.newViewCtor, lastViewCtor);
-			
-			while((lastViewCtor = this.getLastView() ? this.getLastView().name : null) !== null)
+			this.newViewName = this.createViewFromState(state);
+			lastViewName = this.getLastView() ? this.getLastView().name : null;
+			sharedViewName = this.findSharedView(this.newViewName, lastViewName);
+
+			while((lastViewName = this.getLastView() ? this.getLastView().name : null) !== null)
 			{
-				if(lastViewCtor === sharedViewCtor) break;
+				if(lastViewName === sharedViewName) break;
 				destroyQueue.push(this.popView());
 			}
-			
+
 			for(i = 0; i < destroyQueue.length; i++)
 			{
 				if(destroyQueue[i + 1]) destroyQueue[i].instance.on('destroy', kff.bindFn(destroyQueue[i + 1].instance, 'destroy'));
@@ -1435,18 +1436,18 @@
 		},
 
 		startInit: function()
-		{			
-			var i, l, 
-				precedingViewCtors = this.getPrecedingViews(this.newViewCtor), 
+		{
+			var i, l,
+				precedingViewNames = this.getPrecedingViews(this.newViewName),
 				from = 0;
-			
-			for(i = 0, l = precedingViewCtors.length; i < l; i++)
+
+			for(i = 0, l = precedingViewNames.length; i < l; i++)
 			{
-				if(i >= this.viewsQueue.length) this.pushView({ name: precedingViewCtors[i], instance: this.viewFactory.createView(precedingViewCtors[i], { viewFactory: this.viewFactory })});
+				if(i >= this.viewsQueue.length) this.pushView({ name: precedingViewNames[i], instance: this.viewFactory.createView(precedingViewNames[i], { viewFactory: this.viewFactory })});
 				else from = i + 1;
 			}
-			
-			this.newViewCtor = null;			
+
+			this.newViewName = null;
 			if(this.getLastView()) this.getLastView().instance.on('init', kff.bindFn(this, 'cascadeState'));
 			if(this.viewsQueue[from]) this.viewsQueue[from].instance.init();
 			else this.cascadeState();
@@ -1467,17 +1468,17 @@
 			return c;
 		},
 
-		getPrecedingViews: function(viewCtor)
+		getPrecedingViews: function(viewName)
 		{
-			var c = viewCtor, a = [c];
-			
+			var c = viewName, a = [c];
+
 			while(c)
 			{
 				c = this.viewFactory.getPrecedingView(c);
 				if(c) a.unshift(c);
-			}	
+			}
 			return a;
 		}
 	});
-	
+
 })(this);
