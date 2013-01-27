@@ -4,7 +4,7 @@ kff.View.helpers = {
 	},
 
 	bold: function(v) {
-		return '<strong> ' + v + '</strong>';
+		return '<strong>' + v + '</strong>';
 	},
 
 	toInt: function(v)
@@ -54,6 +54,7 @@ kff.BindingView = kff.createClass(
 	{
 		this.destroyBinding();
 		kff.BindingView._super.destroy.call(this, true);
+		this.destroyBoundViews();
 		if(!silent) this.trigger('destroy');
 	},
 
@@ -63,18 +64,10 @@ kff.BindingView = kff.createClass(
 		var names = name.split(/\s+/);
 		var modelStruct, attrName;
 		this.boundModelStructs = [];
-		// console.log('name ', name )
 		for(var i = 0, l = names.length; i < l; i++)
 		{
 			name = names[i];
-			name = name.replace(/^\./, '*.');
-			name = name.replace(/\.$/, '.*');
-			//if(this.options.bindingIndex) name = name.replace(/^\*/, this.options.bindingIndex);
-
-			// console.log('name', name);
-			//if(this.options.bindingIndex) name = name.replace(/^\./, this.options.bindingIndex + '.');
-			// console.log('replacedName: ', name)
-			name = name.split('.');
+			name = name.replace(/^\./, '*.').replace(/\.$/, '.*').split('.');
 			if(name.length > 1)
 			{
 				attrName =  name.pop();
@@ -83,11 +76,14 @@ kff.BindingView = kff.createClass(
 					attr: attrName,
 					model: this.getModel(name)
 				};
-				// console.log('modelStruct ', modelStruct )
-				if(modelStruct.model instanceof kff.Model) modelStruct.model.on('change' + (modelStruct.attr === null ? '' : ':' + modelStruct.attr), this.f('modelChange'));
+				if(modelStruct.model instanceof kff.Model)
+				{
+					this.initModel(modelStruct);
+					this.boundModelStructs[i] = modelStruct;
+				}
 				else if(modelStruct.model instanceof kff.Collection) this.initCollection(modelStruct);
-				this.boundModelStructs[i] = modelStruct;
-				this.models['*'] = modelStruct.model;
+
+				if(!this.models['*']) this.models['*'] = modelStruct.model;
 			}
 		}
 
@@ -126,16 +122,19 @@ kff.BindingView = kff.createClass(
 		this.parsers = [];
 	},
 
+	initModel: function(modelStruct)
+	{
+		modelStruct.model.on('change' + (modelStruct.attr === null ? '' : ':' + modelStruct.attr), this.f('modelChange'));
+	},
+
 	initCollection: function(modelStruct)
 	{
-		// console.log('initCollection')
 		this.boundCollectionStruct = {
 			attr: modelStruct.attr,
 			collection: modelStruct.model
 		};
+		this.renderSubViews = function(){};
 	},
-
-	renderSubViews: function(){},
 
 	renderBoundViews: function()
 	{
@@ -150,14 +149,23 @@ kff.BindingView = kff.createClass(
 		this.refreshBoundViews();
 	},
 
+	destroyBoundViews: function()
+	{
+		if(this.$elements) this.$elements.remove();
+		this.$elements = null;
+		if(this.$anchor)
+		{
+			this.$anchor.after(this.$element);
+			this.$anchor.remove();
+		}
+	},
+
 	refreshBoundViews: function()
 	{
-		// console.log('refreshBoundViews')
 		if(this.$elements) this.$elements.remove();
 		this.$elements = $([]);
 
 		var i = 0, $element;
-
 
 		this.boundCollectionStruct.collection.each(this.f(function(item)
 		{
@@ -166,7 +174,6 @@ kff.BindingView = kff.createClass(
 			i++;
 			this.$elements = this.$elements.add($element);
 		}));
-
 
 		// Initialize subviews
 		var viewName = this.$element.attr(kff.View.DATA_VIEW_ATTR);
@@ -190,9 +197,9 @@ kff.BindingView = kff.createClass(
 			}
 		}));
 
-		// console.log('$elements ', this.$elements)
-
 		this.$anchor.after(this.$elements);
+
+		for(i = 0, l = this.subViews.length; i < l; i++) this.subViews[i].refresh();
 	},
 
 	getModel: function(modelPath)
@@ -200,32 +207,40 @@ kff.BindingView = kff.createClass(
 		var modelIndex;
 		if(typeof modelPath === 'string') modelPath = modelPath.split('.');
 
-		// console.log('modelPath: ', modelPath)
-
 		modelIndex = parseInt(modelPath[0]);
 
-		// console.log('modelIndex: ', modelIndex)
-
 		if(this.boundCollectionStruct && !isNaN(modelIndex)) return this.boundCollectionStruct.collection.findByIndex(modelIndex);
-
 
 		return kff.BindingView._super.getModel.call(this, modelPath);
 	},
 
 	modelChange: function()
 	{
-		var modelValues = this.computeValues();
+		var modelValues = this.computeValues(), formattedValues = [], i, l;
 		if(!this.compareValues(modelValues, this.currentValues))
 		{
-			this.refresh(this.format(this.concat(modelValues)));
+			for(i = 0, l = modelValues.length; i < l; i++) formattedValues[i] = this.format(modelValues[i]);
+			this.refresh(this.concat(formattedValues), modelValues);
 			this.currentValues = modelValues;
 		}
 	},
 
 	updateModel: function(value)
 	{
-		this.currentValues[0] = this.parse(value);
-		if(this.boundModelStructs[0]) this.boundModelStructs[0].model.set(this.boundModelStructs[0].attr, this.currentValues[0]);
+		var i, l, item;
+		if(value instanceof Array)
+		{
+			for(i = 0, l = value.length; i < l; i++) this.currentValues[i] = this.parse(value[i]);
+		}
+		else
+		{
+			for(i = 0, l = this.currentValues.length; i < l; i++) this.currentValues[i] = this.parse(value);
+		}
+		for(i = 0, l = this.currentValues.length; i < l; i++)
+		{
+			item = this.boundModelStructs[i];
+			if(item) item.model.set(item.attr, this.currentValues[i]);
+		}
 	},
 
 	compareValues: function(values1, values2)
@@ -239,10 +254,12 @@ kff.BindingView = kff.createClass(
 
 	computeValues: function()
 	{
-		var values = [];
+		var values = [], item;
 		for(var i = 0, l = this.boundModelStructs.length; i < l; i++)
 		{
-			values[i] = this.boundModelStructs[i].model.get(this.boundModelStructs[i].attr);
+			item = this.boundModelStructs[i];
+			if(item.attr === '*') values[i] = null; // TODO: merge all changed values of model (or all???)
+			else values[i] = item.model.get(item.attr);
 		}
 		return values;
 	},
@@ -250,7 +267,7 @@ kff.BindingView = kff.createClass(
 	concat: function(values)
 	{
 		if(values.length === 1) return values[0];
-		else return values.join('');
+		else return values.join(' ');
 	},
 
 	format: function(value)
@@ -413,3 +430,44 @@ kff.AttributeView = kff.createClass(
 		if(this.attribute) this.$element.attr(this.attribute, this.prefix + value);
 	}
 });
+
+/**
+ * kff.OptionView
+ */
+
+kff.OptionView = kff.createClass(
+{
+	extend: kff.BindingView
+},
+{
+	initBinding: function()
+	{
+		this.text = this.$element.attr('data-kff-text') || null;
+		kff.OptionView._super.initBinding.call(this);
+	},
+
+	refresh: function()
+	{
+		this.$element.attr('value', this.options.bindingIndex);
+		this.$element.text(this.boundModelStructs[0].model.get(this.text));
+	}
+});
+
+/**
+ * kff.TemplateView
+ */
+
+// kff.TemplateView = kff.createClass(
+// {
+// 	extend: kff.BindingView
+// },
+// {
+// 	refresh: function(value)
+// 	{
+// 		thit.destroySubViews();
+// 		if(this.options.template && this.models['*'])
+// 		{
+// 			this.$element.html(this.options.template(this.models['*'].toJson()));
+// 		}
+// 	}
+// });
