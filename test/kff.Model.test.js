@@ -30,5 +30,21 @@ describe('kff.Model', function()
 		obj.get('two').should.equal('twoValue');
 		obj.get('three').should.equal('threeValue');
 	});
-	
+
+
+	describe('#mget', function()
+	{
+		var obj = new kff.Model();
+		var obj2 = new kff.Model();
+		obj.set('obj2', obj2);
+		obj2.set('prop', 'prop');
+
+		it('should deep get property "obj.obj2.prop" with value "prop"', function()
+		{
+			obj.mget('obj2.prop').should.equal('prop');
+		});
+
+	});
+
+
 });

@@ -11,7 +11,7 @@
 
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
-	
+
 	/**
 	 *  kff.View
 	 */
@@ -31,15 +31,17 @@
 			options = options || {};
 			this.events = new kff.Events();
 			this.options = {
-				element: null,	
+				element: null,
+				models: null,
 				events: []
 			};
+			this.models = {};
 			this.setOptions(options);
 			this.viewFactory = options.viewFactory || new kff.ViewFactory();
 			this.subViews = [];
 			return this;
 		},
-		
+
 		setOptions: function(options)
 		{
 			options = options || {};
@@ -51,14 +53,39 @@
 			if(options.element)
 			{
 				this.$element = $(options.element);
-				delete options.element;	
+				delete options.element;
 			}
 			if(options.viewFactory)
 			{
 				this.viewFactory = options.viewFactory;
-				delete options.viewFactory;	
+				delete options.viewFactory;
 			}
-			$.extend(this.options, options);			
+			if(options.models)
+			{
+				this.models = options.models;
+				delete options.models;
+			}
+			$.extend(this.options, options);
+		},
+
+		getModel: function(modelPath)
+		{
+			var model;
+			if(typeof modelPath === 'string') modelPath = modelPath.split('.');
+
+			model = modelPath.shift();
+
+			if(this.models && model in this.models)
+			{
+				if(modelPath.length > 0) return this.models[model].mget(modelPath);
+				else return this.models[model];
+			}
+			if(this.options.parentView)
+			{
+				modelPath.unshift(model);
+				return this.options.parentView.getModel(modelPath);
+			}
+			return null;
 		},
 
 		//     [
@@ -71,7 +98,7 @@
 		{
 			var event, i, l;
 			this.undelegateEvents();
-			events = events || this.options.events;	
+			events = events || this.options.events;
 			$element = $element || this.$element;
 			for(i = 0, l = events.length; i < l; i++)
 			{
@@ -84,7 +111,7 @@
 		undelegateEvents: function(events, $element)
 		{
 			var event, i, l;
-			events = events || this.options.events;	
+			events = events || this.options.events;
 			$element = $element || this.$element;
 			for(i = 0, l = events.length; i < l; i++)
 			{
@@ -92,6 +119,11 @@
 				if(event.length === 3) $element.off(event[0], event[1], kff.bindFn(this, event[2]));
 				else if(event.length === 2) $element.off(event[0], kff.bindFn(this, event[1]));
 			}
+		},
+
+		addEvents: function(events)
+		{
+			this.options.events = this.options.events.concat(events);
 		},
 
 		init: function()
@@ -115,10 +147,10 @@
 
 		renderSubviews: function()
 		{
-			var viewNames = [], 
+			var viewNames = [],
 				viewName, viewClass, subView, options, opt, i, l, rendered,
 				filter = this.options.filter || undefined;
-				
+
 			var findViewElements = function(el)
 			{
 				var j, k, children, child;
@@ -138,8 +170,8 @@
 								{
 									if(!filter || (filter && $(child).is(filter)))
 									{
-										viewNames.push({ objPath: viewName, $element: $(child) });	
-									}						
+										viewNames.push({ objPath: viewName, $element: $(child) });
+									}
 								}
 								else
 								{
@@ -148,11 +180,11 @@
 							}
 						}
 					}
-				}				
+				}
 			};
-			
+
 			if(this.$element.get(0)) findViewElements(this.$element.get(0));
-			
+
 			// Initialize subviews
 			for(i = 0, l = viewNames.length; i < l; i++)
 			{
@@ -169,28 +201,28 @@
 					subView.init();
 					viewNames[i].$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 				}
-			}			
+			}
 		},
-		
+
 		destroySubviews: function()
 		{
 			var subView, i, l;
-				
+
 			// Destroy subviews
 			for(i = 0, l = this.subViews.length; i < l; i++)
-			{				
+			{
 				subView = this.subViews[i];
 				if(subView.$element) subView.$element.removeAttr(kff.View.DATA_RENDERED_ATTR);
 				subView.destroy();
 				delete this.subViews[i];
-			}			
+			}
 			this.subViews = [];
 		},
-		
+
 		refresh: function()
 		{
 		}
 
 	});
-	
+
 })(this);

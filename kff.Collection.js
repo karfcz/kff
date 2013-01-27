@@ -13,19 +13,19 @@
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 	kff.Collection = kff.createClass(
-	{ 
+	{
 		extend: kff.LinkedList,
 		mixins: kff.EventsMixin
 	},
 	/** @lends kff.Collection */
-	{ 
+	{
 		/**
 		 * Class representing collection of models
 		 * @constructs
 		 * @param {Object} options Options config
 		 * @param {function} options.valFactory Factory function for creating new collection items (optional)
 		 * @param {function} options.valType Type (class or constructor function) of collection items
-		 */		
+		 */
 		constructor: function(options)
 		{
 			options = options || {};
@@ -36,7 +36,7 @@
 			kff.LinkedList.call(this);
 			return this;
 		},
-		
+
 		/**
 		 * Appends an item at the end of collection
 		 * @param {mixed} val Item to be appended
@@ -51,7 +51,7 @@
 		 * Removes item from collection
 		 * @param {mixed} val Reference to the item to be removed
 		 * @returns {mixed} removed item or false if not found
-		 */		
+		 */
 		removeVal: function(val)
 		{
 			var ret = kff.Collection._super.removeVal.call(this, val);
@@ -60,7 +60,7 @@
 		},
 
 		/**
-		 * Creates a JSON representation of collection. 
+		 * Creates a JSON representation of collection.
 		 *
 		 * If item of collection is object, tries to call toJson on it as well.
 		 * This function returns plain object, not stringified JSON.
@@ -75,7 +75,7 @@
 			{
 				if(val && val.toJson) obj.push(val.toJson(serializeAttrs));
 				else obj.push(val);
-			});			
+			});
 			return obj;
 		},
 
@@ -83,7 +83,7 @@
 		 * Reads collection from JSON (in fact JavaScript array)
 		 *
 		 * @param {Array} obj Array to read from
-		 */		
+		 */
 		fromJson: function(obj)
 		{
 			var val, valFactory = this.valFactory;
@@ -97,7 +97,7 @@
 			}
 			this.trigger('change', { fromJson: true });
 		},
-		
+
 		/**
 		 * Search in collection for model with given attribute value
 		 * @param {string} attr Attribute name
@@ -117,10 +117,25 @@
 			});
 			return ret;
 		},
-		
+
+		findByIndex: function(index)
+		{
+			var ret = null, i = 0;
+			this.each(function(val)
+			{
+				if(i === index)
+				{
+					ret = val;
+					return false;
+				}
+				i++;
+			});
+			return ret;
+		},
+
 		/**
 		 * Removes all items from collection
-		 */		
+		 */
 		empty: function()
 		{
 			kff.Collection._super.empty.call(this);
@@ -129,11 +144,11 @@
 
 		/**
 		 * Sorts collection using a compare function
-		 * 
+		 *
 		 * Comapre function follows the same specification as in standard Array.sort function
 		 *
 		 * @param {function} compareFunction Compare function
-		 */		
+		 */
 		sort: function(compareFunction)
 		{
 			var arr = [], az, bz;
@@ -149,7 +164,7 @@
 			}
 			this.trigger('change');
 		},
-		
+
 		/**
 		 * Creates clone of the collection. Clone is shallow copy (objects in collections are not cloned)
 		 * @returns {kff.Collection} Cloned collection
@@ -162,7 +177,7 @@
 			});
 			return clon;
 		},
-		
+
 		/**
 		 * Randomizes order of items in collection
 		 */
@@ -188,8 +203,8 @@
 				this.append(arr[i]);
 			}
 			this.trigger('change');
-		}	
-		
+		}
+
 	});
 
 })(this);

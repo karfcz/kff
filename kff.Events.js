@@ -11,7 +11,7 @@
 
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
-	
+
 	kff.Events = kff.createClass(
 	{
 		constructor: function()
@@ -82,7 +82,7 @@
 					{
 						val.call(null, eventData);
 					});
-					
+
 					// Remove "one" subscribers:
 					if(eventType in this.oneSubscribers)
 					{
@@ -92,16 +92,16 @@
 						}
 						this.oneSubscribers[eventType] = [];
 					}
-				}	
+				}
 			}
 		}
 	});
-	
+
 	kff.EventsMixin = {
 		on: function(eventType, fn){ return this.events.on(eventType, fn); },
 		one: function(eventType, fn){ return this.events.one(eventType, fn); },
 		off: function(eventType, fn){ return this.events.off(eventType, fn); },
 		trigger: function(eventType, eventData){ return this.events.trigger(eventType, eventData); }
 	};
-	
+
 })(this);

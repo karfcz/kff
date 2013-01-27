@@ -32,7 +32,7 @@
 		 * Checks if the model has given attribute
 		 * @param {string} attr Attribute name
 		 * @returns {boolean} True if found, false otherwise
-		 */		
+		 */
 		has: function(attr)
 		{
 			return attr in this.attrs;
@@ -42,10 +42,28 @@
 		 * Returns value of given attribute
 		 * @param {string} attr Attribute name
 		 * @returns {mixed} Attribute value
-		 */		
+		 */
 		get: function(attr)
 		{
 			return this.attrs[attr];
+		},
+
+		/**
+		 * Returns value of given attribute using deep lookup (object.attribute.some.value)
+		 * @param {string} attrPath Attribute path
+		 * @returns {mixed} Attribute value
+		 */
+		mget: function(attrPath)
+		{
+			var attr;
+			if(typeof attrPath === 'string') attrPath = attrPath.split('.');
+			attr = this.get(attrPath.shift());
+			if(attrPath.length > 0)
+			{
+				if(attr instanceof kff.Model) return attr.mget(attrPath);
+				else return kff.evalObjectPath(attrPath, attr);
+			}
+			else return attr;
 		},
 
 		/**
@@ -55,7 +73,7 @@
 		 *
 		 * @param {string} attr Attribute name
 		 * @param {mixed} value Attribute value
-		 */		
+		 */
 		set: function(attr, value, options)
 		{
 			var changed = {};
@@ -69,7 +87,7 @@
 					if(!this.validate(changed)) return;
 				}
 				this.attrs[attr] = value;
-			} 
+			}
 			else if(attr === Object(attr))
 			{
 				options = value;
@@ -80,7 +98,7 @@
 				}
 				for(var key in changed) this.attrs[key] = changed[key];
 			}
-			
+
 			for(var changedAttr in changed)
 			{
 				this.trigger('change:' + changedAttr, { changedAttributes: changed });
@@ -131,7 +149,7 @@
 				}
 			}
 			this.set(this.attrs);
-		}		
+		}
 
 	});
 
