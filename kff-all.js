@@ -1195,6 +1195,13 @@ kff.View.helpers = {
 		return v;
 	},
 
+	toBoolean: function(v)
+	{
+		var parsed = parseInt(v);
+		if(!isNaN(parsed)) return !!parsed;
+		return v === 'true';
+	},
+
 	negate: function(v)
 	{
 		return !v;
@@ -1537,6 +1544,38 @@ kff.CheckView = kff.createClass(
 	}
 });
 
+/**
+ * kff.RadioView
+ */
+
+kff.RadioView = kff.createClass(
+{
+	extend: kff.BindingView
+},
+{
+	constructor: function(options)
+	{
+		options = options || {};
+		options.events = [
+			['click change', 'inputChange']
+		];
+		kff.BindingView.call(this, options);
+	},
+
+	inputChange: function(event)
+	{
+		setTimeout(this.f(function()
+		{
+			if(this.$element.is(':checked')) this.updateModel(this.$element.val());
+		}), 0);
+	},
+
+	refresh: function(value)
+	{
+		this.$element.prop('checked', this.parse(this.$element.val()) === value);
+	}
+});
+
 
 /**
  * kff.TextView
@@ -1623,14 +1662,16 @@ kff.OptionView = kff.createClass(
 {
 	initBinding: function()
 	{
-		this.text = this.$element.attr('data-kff-text') || null;
+		this.textAttr = this.$element.attr('data-kff-text') || null;
+		this.valueAttr = this.$element.attr('data-kff-value') || null;
 		kff.OptionView._super.initBinding.call(this);
 	},
 
 	refresh: function()
 	{
-		this.$element.attr('value', this.options.bindingIndex);
-		this.$element.text(this.boundModelStructs[0].model.get(this.text));
+		var firstModel = this.boundModelStructs[0].model;
+		this.$element.attr('value', this.valueAttr ? firstModel.get(this.valueAttr) : this.options.bindingIndex);
+		this.$element.text(firstModel.get(this.textAttr));
 	}
 });
 
