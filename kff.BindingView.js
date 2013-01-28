@@ -69,52 +69,37 @@ kff.BindingView = kff.createClass(
 	{
 		var name = this.$element.attr('data-kff-bind');
 		var names = name.split(/\s+/);
-		var modelStruct, attrName;
+		var modelStruct, attrName, collection;
 		this.boundModelStructs = [];
 		for(var i = 0, l = names.length; i < l; i++)
 		{
 			name = names[i];
-			name = name.replace(/^\./, '*.').replace(/\.$/, '.*').split('.');
-			if(name.length > 1)
+			name = name.replace(/^\./, '*.').split('.');
+
+			modelStruct = {
+				attr: null,
+				model: this.getModel([].concat(name))
+			};
+
+			if(modelStruct.model instanceof kff.Collection)
 			{
-				attrName =  name.pop();
-				if(attrName === '*') attrName = null;
-				modelStruct = {
-					attr: attrName,
-					model: this.getModel(name)
-				};
+				this.initCollection(modelStruct);
+			}
+			else
+			{
+				modelStruct.attr =  name.pop();
+				modelStruct.model = this.getModel(name);
 				if(modelStruct.model instanceof kff.Model)
 				{
 					this.initModel(modelStruct);
 					this.boundModelStructs[i] = modelStruct;
 				}
-				else if(modelStruct.model instanceof kff.Collection) this.initCollection(modelStruct);
-
-				if(!this.models['*']) this.models['*'] = modelStruct.model;
 			}
+			if(!this.models['*']) this.models['*'] = modelStruct.model;
 		}
 
-		var formatStr = this.$element.attr('data-kff-format');
-		if(formatStr)
-		{
-			var formatArr = formatStr.split(/\s+/);
-			this.formatters = [];
-			for(i = 0, l = formatArr.length; i < l; i++)
-			{
-				if(formatArr[i] in kff.View.helpers) this.formatters.push(kff.View.helpers[formatArr[i]]);
-			}
-		}
-
-		var parseStr = this.$element.attr('data-kff-parse');
-		if(parseStr)
-		{
-			var parseArr = parseStr.split(/\s+/);
-			this.parsers = [];
-			for(i = 0, l = parseArr.length; i < l; i++)
-			{
-				if(parseArr[i] in kff.View.helpers) this.parsers.push(kff.View.helpers[parseArr[i]]);
-			}
-		}
+		this.initFormatters();
+		this.initParsers();
 	},
 
 	destroyBinding: function()
@@ -127,6 +112,34 @@ kff.BindingView = kff.createClass(
 		this.currentValues = [];
 		this.formatters = [];
 		this.parsers = [];
+	},
+
+	initFormatters: function()
+	{
+		var formatStr = this.$element.attr('data-kff-format');
+		if(formatStr)
+		{
+			var formatArr = formatStr.split(/\s+/);
+			this.formatters = [];
+			for(var i = 0, l = formatArr.length; i < l; i++)
+			{
+				if(formatArr[i] in kff.View.helpers) this.formatters.push(kff.View.helpers[formatArr[i]]);
+			}
+		}
+	},
+
+	initParsers: function()
+	{
+		var parseStr = this.$element.attr('data-kff-parse');
+		if(parseStr)
+		{
+			var parseArr = parseStr.split(/\s+/);
+			this.parsers = [];
+			for(var i = 0, l = parseArr.length; i < l; i++)
+			{
+				if(parseArr[i] in kff.View.helpers) this.parsers.push(kff.View.helpers[parseArr[i]]);
+			}
+		}
 	},
 
 	initModel: function(modelStruct)
@@ -294,8 +307,6 @@ kff.BindingView = kff.createClass(
 		}
 		return value;
 	}
-
-
 });
 
 /**
@@ -473,7 +484,6 @@ kff.AttributeView = kff.createClass(
 /**
  * kff.OptionView
  */
-
 kff.OptionView = kff.createClass(
 {
 	extend: kff.BindingView
