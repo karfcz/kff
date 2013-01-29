@@ -11,34 +11,35 @@
 
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
-	
+
 	kff.LinkedList = kff.createClass(
 	/** @lends kff.LinkedList */
 	{
 		/**
 		 * Class representing a linked list data structure
 		 * @constructs
-		 */		
-		constructor: function()	
+		 */
+		constructor: function()
 		{
 			this.tail = this.head = { next: null };
 			this.count = 0;
 		},
-		
+
 		/**
 		 * Iterates over each item in the list
 		 * @param {function} fn function to be called on each item. Takes one argument - the iterated item
 		 */
 		each: function(fn)
 		{
-			var node = this.head.next;
+			var node = this.head.next, i = 0;
 			while(node)
 			{
-				if(fn.call(null, node.val) === false) break;
+				if(fn.call(null, node.val, i) === false) break;
 				node = node.next;
+				i++;
 			}
 		},
-		
+
 		/**
 		 * Appends an item at the end of the list
 		 * @param {mixed} val Item to be appended
@@ -50,7 +51,7 @@
 			this.tail = node;
 			this.count++;
 		},
-		
+
 		/**
 		 * Removes item from the list
 		 * @param {mixed} val Reference to the item to be removed
@@ -80,13 +81,13 @@
 
 		/**
 		 * Removes all items from list
-		 */		
+		 */
 		empty: function()
 		{
 			this.tail = this.head = { next: null };
 			this.count = 0;
 		}
-		
+
 	});
 
 })(this);
