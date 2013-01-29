@@ -460,19 +460,19 @@ kff.ClassView = kff.createClass(
 });
 
 /**
- * kff.AttributeView
+ * kff.AttrView
  */
 
-kff.AttributeView = kff.createClass(
+kff.AttrView = kff.createClass(
 {
 	extend: kff.BindingView
 },
 {
 	initBinding: function()
 	{
-		this.attribute = this.$element.attr('data-kff-attribute');
+		this.attribute = this.$element.attr('data-kff-attr');
 		this.prefix = this.$element.attr('data-kff-prefix') || '';
-		kff.AttributeView._super.initBinding.call(this);
+		kff.AttrView._super.initBinding.call(this);
 	},
 
 	refresh: function(value)
