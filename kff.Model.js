@@ -139,6 +139,7 @@
 		 */
 		fromJson: function(obj)
 		{
+			if(!obj) return;
 			var attrs = {};
 			for(var key in this.attrs)
 			{

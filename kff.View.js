@@ -22,7 +22,8 @@
 		{
 			DATA_VIEW_ATTR: 'data-kff-view',
 			DATA_OPTIONS_ATTR: 'data-kff-options',
-			DATA_RENDERED_ATTR: 'data-kff-rendered'
+			DATA_RENDERED_ATTR: 'data-kff-rendered',
+			DATA_BIND_ATTR: 'data-kff-bind'
 		}
 	},
 	{
@@ -59,6 +60,10 @@
 			{
 				this.viewFactory = options.viewFactory;
 				delete options.viewFactory;
+			}
+			if(options.parentView)
+			{
+				this.parentView = options.parentView;
 			}
 			if(options.models)
 			{
@@ -166,6 +171,11 @@
 							if(!rendered)
 							{
 								viewName = child.getAttribute(kff.View.DATA_VIEW_ATTR);
+								if(!viewName && child.getAttribute(kff.View.DATA_BIND_ATTR))
+								{
+									viewName = 'kff.BindingView';
+									child.setAttribute(kff.View.DATA_VIEW_ATTR, viewName);
+								}
 								if(viewName)
 								{
 									if(!filter || (filter && $(child).is(filter)))
