@@ -59,7 +59,6 @@
 			if(options.viewFactory)
 			{
 				this.viewFactory = options.viewFactory;
-				delete options.viewFactory;
 			}
 			if(options.parentView)
 			{

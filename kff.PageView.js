@@ -18,7 +18,7 @@
 	kff.PageView = kff.createClass(
 	{
 		extend: kff.View,
-		staticProperties: 
+		staticProperties:
 		{
 			precedingView: null
 		}
@@ -28,7 +28,7 @@
 		{
 			options = options || {};
 			options.element = $('body');
-			return kff.PageView._super.constructor.call(this, options);
+			return kff.View.call(this, options);
 		},
 
 		delegateEvents: function(events, $element)
@@ -40,11 +40,11 @@
 		{
 			kff.PageView._super.undelegateEvents.call(this, events, $element || $(document));
 		},
-		
+
 		setState: function(state, silent)
 		{
 			if(!silent) this.trigger('setState', state);
-		}		
+		}
 	});
-		
+
 })(this);

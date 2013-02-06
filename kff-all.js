@@ -962,7 +962,6 @@
 			if(options.viewFactory)
 			{
 				this.viewFactory = options.viewFactory;
-				delete options.viewFactory;
 			}
 			if(options.parentView)
 			{
@@ -1160,7 +1159,7 @@
 	kff.PageView = kff.createClass(
 	{
 		extend: kff.View,
-		staticProperties: 
+		staticProperties:
 		{
 			precedingView: null
 		}
@@ -1170,7 +1169,7 @@
 		{
 			options = options || {};
 			options.element = $('body');
-			return kff.PageView._super.constructor.call(this, options);
+			return kff.View.call(this, options);
 		},
 
 		delegateEvents: function(events, $element)
@@ -1182,13 +1181,13 @@
 		{
 			kff.PageView._super.undelegateEvents.call(this, events, $element || $(document));
 		},
-		
+
 		setState: function(state, silent)
 		{
 			if(!silent) this.trigger('setState', state);
-		}		
+		}
 	});
-		
+
 })(this);
 
 (function(scope)
@@ -1255,7 +1254,7 @@
 			var modifierName, modifierParams;
 			var dataBind = this.$element.attr(kff.View.DATA_BIND_ATTR);
 
-			var regex = /([.a-zA-Z0-9]+):?([a-zA-Z0-9]+)?(\([a-zA-Z0-9,\s\*]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?/g;
+			var regex = /([.a-zA-Z0-9]+):?([a-zA-Z0-9]+)?(\([^\(\))]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?/g;
 
 			this.modelBinders = [];
 
@@ -1278,7 +1277,7 @@
 
 				for(var i = 4, l = result.length; i < l && result[i]; i++)
 				{
-					subresults = result[i].match(/([a-zA-Z0-9]+)\(([a-zA-Z0-9\s,]*)\)/);
+					subresults = result[i].match(/([a-zA-Z0-9]+)\(([^,\(\)]*)\)/);
 
 					modifierName = subresults[1];
 					modifierParams = [];
@@ -1530,6 +1529,7 @@
 			{
 				value = this.parse(value);
 			}
+			if(this.compareValues(value, this.currentValue)) return;
 			this.currentValue = value;
 			this.model.set(this.attr, this.currentValue);
 		},
@@ -1571,7 +1571,7 @@
 		{
 			options = options || {};
 			options.events = [
-				['keypress drop change', 'inputChange']
+				['keydown drop change', 'inputChange']
 			];
 			kff.Binder.call(this, options);
 		},
@@ -1728,13 +1728,14 @@
 		init: function()
 		{
 			this.attribute = this.params[0] || null;
+			this.prefix = this.params[1] || null;
 			// this.prefix = this.$element.attr('data-kff-prefix') || '';
 			kff.AttrBinder._super.init.call(this);
 		},
 
 		refresh: function()
 		{
-			if(this.attribute) this.$element.attr(this.attribute, this.getFormattedValue());
+			if(this.attribute) this.$element.attr(this.attribute, this.prefix + this.getFormattedValue());
 		}
 	});
 
@@ -1815,6 +1816,7 @@
 	kff.BindingView.binders.check = kff.CheckBinder;
 	kff.BindingView.binders.radio = kff.RadioBinder;
 	kff.BindingView.binders.html = kff.HtmlBinder;
+	kff.BindingView.binders.attr = kff.AttrBinder;
 
 
 })(this);

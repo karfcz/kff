@@ -62,7 +62,7 @@
 			var modifierName, modifierParams;
 			var dataBind = this.$element.attr(kff.View.DATA_BIND_ATTR);
 
-			var regex = /([.a-zA-Z0-9]+):?([a-zA-Z0-9]+)?(\([a-zA-Z0-9,\s\*]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?/g;
+			var regex = /([.a-zA-Z0-9]+):?([a-zA-Z0-9]+)?(\([^\(\))]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?/g;
 
 			this.modelBinders = [];
 
@@ -85,7 +85,7 @@
 
 				for(var i = 4, l = result.length; i < l && result[i]; i++)
 				{
-					subresults = result[i].match(/([a-zA-Z0-9]+)\(([a-zA-Z0-9\s,]*)\)/);
+					subresults = result[i].match(/([a-zA-Z0-9]+)\(([^,\(\)]*)\)/);
 
 					modifierName = subresults[1];
 					modifierParams = [];
@@ -337,6 +337,7 @@
 			{
 				value = this.parse(value);
 			}
+			if(this.compareValues(value, this.currentValue)) return;
 			this.currentValue = value;
 			this.model.set(this.attr, this.currentValue);
 		},
@@ -378,7 +379,7 @@
 		{
 			options = options || {};
 			options.events = [
-				['keypress drop change', 'inputChange']
+				['keydown drop change', 'inputChange']
 			];
 			kff.Binder.call(this, options);
 		},
@@ -535,13 +536,14 @@
 		init: function()
 		{
 			this.attribute = this.params[0] || null;
+			this.prefix = this.params[1] || null;
 			// this.prefix = this.$element.attr('data-kff-prefix') || '';
 			kff.AttrBinder._super.init.call(this);
 		},
 
 		refresh: function()
 		{
-			if(this.attribute) this.$element.attr(this.attribute, this.getFormattedValue());
+			if(this.attribute) this.$element.attr(this.attribute, this.prefix + this.getFormattedValue());
 		}
 	});
 
@@ -622,6 +624,7 @@
 	kff.BindingView.binders.check = kff.CheckBinder;
 	kff.BindingView.binders.radio = kff.RadioBinder;
 	kff.BindingView.binders.html = kff.HtmlBinder;
+	kff.BindingView.binders.attr = kff.AttrBinder;
 
 
 })(this);
