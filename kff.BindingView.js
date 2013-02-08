@@ -120,7 +120,7 @@
 				}
 				else
 				{
-					if(!binderName) break;
+					if(!binderName || !(binderName in kff.BindingView.binders)) break;
 
 					attr = name.pop();
 					model = this.getModel(name);
@@ -431,6 +431,39 @@
 	});
 
 	/**
+	 * kff.ClickBinder
+	 */
+
+	kff.ClickBinder = kff.createClass(
+	{
+		extend: kff.Binder
+	},
+	{
+		constructor: function(options)
+		{
+			options = options || {};
+			options.events = [
+				['click', 'click']
+			];
+			kff.Binder.call(this, options);
+		},
+
+		init: function()
+		{
+			this.value = this.params[0] || null;
+			kff.ClickBinder._super.init.call(this);
+		},
+
+		click: function(event)
+		{
+			setTimeout(this.f(function()
+			{
+				this.updateModel(this.value);
+			}), 0);
+		}
+	});
+
+	/**
 	 * kff.RadioBinder
 	 */
 
@@ -515,12 +548,19 @@
 		init: function()
 		{
 			this.className = this.params[0] || null;
+			this.equalsTo = this.params[1] || null;
 			kff.ClassBinder._super.init.call(this);
 		},
 
 		refresh: function()
 		{
-			if(this.className) this.$element[this.values[this.valueIndex] ? 'addClass' : 'removeClass'](this.className);
+			if(this.className) this.$element[this.matchValue() ? 'addClass' : 'removeClass'](this.className);
+		},
+
+		matchValue: function()
+		{
+			if(this.equalsTo) return this.values[this.valueIndex] === this.equalsTo;
+			else return this.values[this.valueIndex];
 		}
 	});
 
@@ -625,6 +665,7 @@
 	kff.BindingView.binders.radio = kff.RadioBinder;
 	kff.BindingView.binders.html = kff.HtmlBinder;
 	kff.BindingView.binders.attr = kff.AttrBinder;
+	kff.BindingView.binders.click = kff.ClickBinder;
 
 
 })(this);
