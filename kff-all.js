@@ -984,7 +984,11 @@
 
 			if(this.models && model in this.models)
 			{
-				if(modelPath.length > 0) return this.models[model].mget(modelPath);
+				if(modelPath.length > 0)
+				{
+					if(this.models[model] instanceof kff.Model) return this.models[model].mget(modelPath);
+					else return null;
+				}
 				else return this.models[model];
 			}
 			if(this.options.parentView)
@@ -1277,23 +1281,26 @@
 
 				for(var i = 4, l = result.length; i < l && result[i]; i++)
 				{
-					subresults = result[i].match(/([a-zA-Z0-9]+)\(([^,\(\)]*)\)/);
+					subresults = result[i].match(/([a-zA-Z0-9]+)\(([^\(\)]*)\)/);
 
-					modifierName = subresults[1];
-					modifierParams = [];
-
-					if(subresults[2])
+					if(subresults)
 					{
-						modifierParams = subresults[2].split(/\s*,\s*/);
-					}
+						modifierName = subresults[1];
+						modifierParams = [];
 
-					switch(modifierName){
-						case 'f':
-							this.parseModifiers(modifierParams, formatters);
-							break;
-						case 'p':
-							this.parseModifiers(modifierParams, parsers);
-							break;
+						if(subresults[2])
+						{
+							modifierParams = subresults[2].split(/\s*,\s*/);
+						}
+
+						switch(modifierName){
+							case 'f':
+								this.parseModifiers(modifierParams, formatters);
+								break;
+							case 'p':
+								this.parseModifiers(modifierParams, parsers);
+								break;
+						}
 					}
 				}
 
@@ -1304,7 +1311,6 @@
 					if(!this.options.isBoundView)
 					{
 						this.collectionBinder = {
-						//	attr: null,
 							collection: model
 						};
 						this.renderSubViews = function(){};
@@ -1316,6 +1322,12 @@
 
 					attr = name.pop();
 					model = this.getModel(name);
+
+					// Special binding for collection count property
+					if(model instanceof kff.Collection && attr === 'count')
+					{
+						model = this.bindCollectionCount(model);
+					}
 
 					if(model instanceof kff.Model)
 					{
@@ -1347,6 +1359,34 @@
 			}
 		},
 
+		bindCollectionCount: function(collection)
+		{
+			var model = new kff.Model();
+			var handler = function(){
+				model.set('count', collection.count);
+			}
+			handler();
+
+			if(!this.boundCollectionCounts) this.boundCollectionCounts = [];
+			this.boundCollectionCounts.push({
+				collection: collection,
+				handler: handler
+			})
+			collection.on('change', handler);
+			return model;
+		},
+
+		destroyCollectionCountBindings: function()
+		{
+			if(this.boundCollectionCounts)
+			{
+				for(var i = 0, l = this.boundCollectionCounts.length; i < l; i++)
+				{
+					this.boundCollectionCounts[i].collection.off('change', this.boundCollectionCounts[i].handler);
+				}
+			}
+		},
+
 		parseModifiers: function(modifierParams, modifiers)
 		{
 			for(var j = 0; j < modifierParams.length; j++)
@@ -1363,6 +1403,7 @@
 			}
 			this.modelBinders = {};
 			this.values = {};
+			this.destroyCollectionCountBindings();
 		},
 
 		renderBoundViews: function()
@@ -1751,7 +1792,7 @@
 
 		matchValue: function()
 		{
-			if(this.equalsTo) return this.values[this.valueIndex] === this.equalsTo;
+			if(this.equalsTo) return this.values[this.valueIndex] === this.parse(this.equalsTo);
 			else return this.values[this.valueIndex];
 		}
 	});
@@ -1807,9 +1848,21 @@
 			return v;
 		},
 
+		'boolean': function(v)
+		{
+			var parsed = parseInt(v, 10);
+			if(!isNaN(parsed)) return !!parsed;
+			return v === 'true';
+		},
+
 		'not': function(v)
 		{
 			return !v;
+		},
+
+		'null': function(v)
+		{
+			return v === null || v === 'null' ? null : v;
 		},
 
 		'int': function(v)
@@ -1826,12 +1879,6 @@
 			return v;
 		},
 
-		'boolean': function(v)
-		{
-			var parsed = parseInt(v);
-			if(!isNaN(parsed)) return !!parsed;
-			return v === 'true';
-		},
 
 		'uppercase': function(v)
 		{

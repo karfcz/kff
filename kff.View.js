@@ -81,7 +81,11 @@
 
 			if(this.models && model in this.models)
 			{
-				if(modelPath.length > 0) return this.models[model].mget(modelPath);
+				if(modelPath.length > 0)
+				{
+					if(this.models[model] instanceof kff.Model) return this.models[model].mget(modelPath);
+					else return null;
+				}
 				else return this.models[model];
 			}
 			if(this.options.parentView)
