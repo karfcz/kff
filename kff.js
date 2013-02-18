@@ -1,9 +1,3 @@
-/**
- *  KFF Javascript microframework
- *  Copyright (c) 2008-2012 Karel Fučík
- *  Released under the MIT license.
- *  http://www.opensource.org/licenses/mit-license.php
- */
 
 (function(scope)
 {
@@ -12,7 +6,7 @@
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 	kff.widgets = {};
-	
+
 	/**
 	 * Extends constructor function (class) from parent constructor using prototype inherinatce
 	 * @param {function} child Child class
@@ -25,7 +19,7 @@
 		child.prototype = new F();
 		child.prototype.constructor = child;
 	};
-	
+
 	/**
 	 * Mixins (using a shallow copy) properties from one object to another
 	 * @param {Object} obj Object to be extended
@@ -62,7 +56,7 @@
 			if(meta.extend) constructor = function(){ meta.extend.apply(this, arguments); };
 			else constructor = function(){};
 		}
-		
+
 		// Extend from parent class
 		if(meta.extend) kff.extend(constructor, meta.extend);
 
@@ -72,9 +66,9 @@
 			meta.mixins = [];
 		}
 		else if(!(meta.mixins instanceof Array)) meta.mixins = [meta.mixins];
-		
+
 		meta.mixins.push(kff.classMixin);
-		
+
 		for(var i = 0, l = meta.mixins.length; i < l; i++) kff.mixins(properties, meta.mixins[i]);
 
 		// Static properties of constructor
@@ -82,7 +76,7 @@
 		{
 			kff.mixins(constructor, meta.staticProperties);
 		}
-		
+
 		// Add properties to prototype
 		kff.mixins(constructor.prototype, properties);
 
@@ -126,7 +120,7 @@
 	 * @param {string} path object path (like 'something.foo.bar')
 	 * @param {Object} obj Object to start with (like window)
 	 * @returns {mixed} Property at the end of object chain or null if not found
-	 */	
+	 */
 	kff.evalObjectPath = function(path, obj)
 	{
 		obj = obj || scope;

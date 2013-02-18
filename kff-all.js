@@ -1,9 +1,3 @@
-/**
- *  KFF Javascript microframework
- *  Copyright (c) 2008-2012 Karel Fučík
- *  Released under the MIT license.
- *  http://www.opensource.org/licenses/mit-license.php
- */
 
 (function(scope)
 {
@@ -12,7 +6,7 @@
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 	kff.widgets = {};
-	
+
 	/**
 	 * Extends constructor function (class) from parent constructor using prototype inherinatce
 	 * @param {function} child Child class
@@ -25,7 +19,7 @@
 		child.prototype = new F();
 		child.prototype.constructor = child;
 	};
-	
+
 	/**
 	 * Mixins (using a shallow copy) properties from one object to another
 	 * @param {Object} obj Object to be extended
@@ -62,7 +56,7 @@
 			if(meta.extend) constructor = function(){ meta.extend.apply(this, arguments); };
 			else constructor = function(){};
 		}
-		
+
 		// Extend from parent class
 		if(meta.extend) kff.extend(constructor, meta.extend);
 
@@ -72,9 +66,9 @@
 			meta.mixins = [];
 		}
 		else if(!(meta.mixins instanceof Array)) meta.mixins = [meta.mixins];
-		
+
 		meta.mixins.push(kff.classMixin);
-		
+
 		for(var i = 0, l = meta.mixins.length; i < l; i++) kff.mixins(properties, meta.mixins[i]);
 
 		// Static properties of constructor
@@ -82,7 +76,7 @@
 		{
 			kff.mixins(constructor, meta.staticProperties);
 		}
-		
+
 		// Add properties to prototype
 		kff.mixins(constructor.prototype, properties);
 
@@ -126,7 +120,7 @@
 	 * @param {string} path object path (like 'something.foo.bar')
 	 * @param {Object} obj Object to start with (like window)
 	 * @returns {mixed} Property at the end of object chain or null if not found
-	 */	
+	 */
 	kff.evalObjectPath = function(path, obj)
 	{
 		obj = obj || scope;
@@ -142,12 +136,6 @@
 
 })(this);
 
-/**
- *  KFF Javascript microframework
- *  Copyright (c) 2008-2012 Karel Fučík
- *  Released under the MIT license.
- *  http://www.opensource.org/licenses/mit-license.php
- */
 
 (function(scope)
 {
@@ -250,12 +238,6 @@
 
 })(this);
 
-/**
- *  KFF Javascript microframework
- *  Copyright (c) 2008-2012 Karel Fučík
- *  Released under the MIT license.
- *  http://www.opensource.org/licenses/mit-license.php
- */
 
 (function(scope)
 {
@@ -344,12 +326,6 @@
 
 })(this);
 
-/**
- *  KFF Javascript microframework
- *  Copyright (c) 2008-2012 Karel Fučík
- *  Released under the MIT license.
- *  http://www.opensource.org/licenses/mit-license.php
- */
 
 (function(scope)
 {
@@ -555,19 +531,17 @@
 
 })(this);
 
-/**
- *  KFF Javascript microframework
- *  Copyright (c) 2008-2012 Karel Fučík
- *  Released under the MIT license.
- *  http://www.opensource.org/licenses/mit-license.php
- */
-
 (function(scope)
 {
 	var kff;
 
 	if(typeof exports !== 'undefined') kff = exports;
+	/**
+	 * @namespace kff KFFnamespace
+	 */
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
+
+
 
 	kff.Model = kff.createClass(
 	{
@@ -587,6 +561,7 @@
 
 		/**
 		 * Checks if the model has given attribute
+		 *
 		 * @param {string} attr Attribute name
 		 * @returns {boolean} True if found, false otherwise
 		 */
@@ -713,12 +688,6 @@
 
 })(this);
 
-/**
- *  KFF Javascript microframework
- *  Copyright (c) 2008-2012 Karel Fučík
- *  Released under the MIT license.
- *  http://www.opensource.org/licenses/mit-license.php
- */
 
 (function(scope)
 {
@@ -741,19 +710,19 @@
 		 * Simple dependency injection (or service) container class.
 		 * @constructs
 		 * @param {Object} config Configuration object
-		 */		
+		 */
 		constructor: function(config)
 		{
 			this.config = config || { parameters: {}, services: {} };
 			this.services = {};
 			this.cachedParams = {};
 		},
-		
+
 		/**
 		 * Returns instance of service class.
 		 * @param {string} service Service name (service config to be found in config.services[service])
 		 * @returns {Object} Instance of service
-		 */		
+		 */
 		getService: function(service)
 		{
 			if(!this.config.services[service]) throw('Service ' + service + ' not defined');
@@ -764,35 +733,35 @@
 			}
 			return this.createService(service);
 		},
-		
+
 		/**
 		 * Checks if given serviceName exists in container declaration
 		 * @param {string} serviceName Service name
 		 * @returns {boolean} True if service exists, false otherwise
-		 */		
+		 */
 		hasService: function(serviceName)
 		{
 			return this.config.services.hasOwnProperty(serviceName);
 		},
-		
+
 		/**
 		 * Creates instance of service
 		 * @param {string} serviceName Name of service to be instantiated
 		 * @returns {Object} Instance of service
-		 */		
+		 */
 		createService: function(serviceName)
 		{
 			var serviceConfig, Ctor, Temp, service, ret, i, l, calls;
-			
+
 			serviceConfig = this.config.services[serviceName];
-			
-			Ctor = this.getServiceConstructor(serviceName);			
-			Temp = function(){};			
+
+			Ctor = this.getServiceConstructor(serviceName);
+			Temp = function(){};
 			Temp.prototype = Ctor.prototype;
 			service = new Temp();
-			ret = Ctor.apply(service, this.resolveParameters(serviceConfig.args || []));	
+			ret = Ctor.apply(service, this.resolveParameters(serviceConfig.args || []));
 			if(Object(ret) === ret) service = ret;
-			
+
 			calls = serviceConfig.calls;
 			if(calls instanceof Array)
 			{
@@ -803,12 +772,12 @@
 			}
 			return service;
 		},
-		
+
 		/**
 		 * Returns constructor function for given service name.
 		 * @param {string} serviceName Service name
 		 * @returns {function} Constructor function for service
-		 */		
+		 */
 		getServiceConstructor: function(serviceName)
 		{
 			var serviceConfig, ctor;
@@ -823,7 +792,7 @@
 			if(typeof serviceConfig.constructor !== 'function') throw new TypeError('expected function in getServiceConstructor: ' + serviceConfig.constructor);
 			return serviceConfig.constructor;
 		},
-		
+
 		/**
 		 * Evaluates parameter defined in container configuration.
 		 *
@@ -840,13 +809,13 @@
 		 *
 		 * @param {string|Array|Object} params Parameters to be resolved
 		 * @returns {mixed} Resolved parameter value
-		 */		
+		 */
 		resolveParameters: function(params)
 		{
 			var ret, i, l, config;
-			
+
 			config = this.config;
-			
+
 			if(typeof params === 'string')
 			{
 				if(params.charAt(0) === '@')
@@ -856,7 +825,7 @@
 					else ret = this.getService(params);
 				}
 				else if(this.cachedParams[params] !== undefined) ret = this.cachedParams[params];
-				else 
+				else
 				{
 					if(params.search(kff.ServiceContainer.singleParamRegex) !== -1)
 					{
@@ -872,7 +841,7 @@
 						});
 						ret = ret.replace('escpersign', '%');
 					}
-					this.cachedParams[params] = ret;					
+					this.cachedParams[params] = ret;
 				}
 			}
 			else if(params instanceof Array)
@@ -901,12 +870,6 @@
 
 })(this);
 
-/**
- *  KFF Javascript microframework
- *  Copyright (c) 2008-2012 Karel Fučík
- *  Released under the MIT license.
- *  http://www.opensource.org/licenses/mit-license.php
- */
 
 (function(scope)
 {
@@ -1143,12 +1106,6 @@
 
 })(this);
 
-/**
- *  KFF Javascript microframework
- *  Copyright (c) 2008-2012 Karel Fučík
- *  Released under the MIT license.
- *  http://www.opensource.org/licenses/mit-license.php
- */
 
 (function(scope)
 {
@@ -1240,7 +1197,7 @@
 		{
 			for(var b in this.modelBinders)
 			{
-				for(var i = 0, mb = this.modelBinders[b], l = mb.length; i < l; i++) mb[i].modelChange();
+				for(var i = 0, mb = this.modelBinders[b], l = mb.length; i < l; i++) mb[i].modelChange(true);
 			}
 		},
 
@@ -1526,11 +1483,11 @@
 
 		undelegateEvents: kff.View.prototype.undelegateEvents,
 
-		modelChange: function()
+		modelChange: function(force)
 		{
 			var modelValue = this.model.get(this.attr);
 
-			if(!this.compareValues(modelValue, this.currentValue))
+			if(!this.compareValues(modelValue, this.currentValue) || force === true)
 			{
 				this.values[this.valueIndex] = this.format(modelValue);
 				this.currentValue = modelValue;
@@ -1844,7 +1801,7 @@
 	{
 		'index': function(v)
 		{
-			if(this.options && this.options.bindingIndex) return this.options.bindingIndex;
+			if(this.options && this.options.bindingIndex !== null) return this.options.bindingIndex;
 			return v;
 		},
 
@@ -1908,12 +1865,7 @@
 
 
 })(this);
-/**
- *  KFF Javascript microframework
- *  Copyright (c) 2008-2012 Karel Fučík
- *  Released under the MIT license.
- *  http://www.opensource.org/licenses/mit-license.php
- */
+
 
 (function(scope)
 {
@@ -1973,7 +1925,7 @@
 
 })(this);
 
-/**
+/*
  *  KFF Javascript microframework
  *  Copyright (c) 2008-2012 Karel Fučík
  *  Released under the MIT license.
@@ -2078,13 +2030,6 @@
 
 })(this);
 
-/**
- *  KFF Javascript microframework
- *  Copyright (c) 2008-2012 Karel Fučík
- *  Released under the MIT license.
- *  http://www.opensource.org/licenses/mit-license.php
- *
- */
 
 (function(scope)
 {
@@ -2128,12 +2073,6 @@
 
 })(this);
 
-/**
- *  KFF Javascript microframework
- *  Copyright (c) 2008-2012 Karel Fučík
- *  Released under the MIT license.
- *  http://www.opensource.org/licenses/mit-license.php
- */
 
 (function(scope)
 {

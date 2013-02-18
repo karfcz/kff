@@ -44,7 +44,7 @@
 		{
 			for(var b in this.modelBinders)
 			{
-				for(var i = 0, mb = this.modelBinders[b], l = mb.length; i < l; i++) mb[i].modelChange();
+				for(var i = 0, mb = this.modelBinders[b], l = mb.length; i < l; i++) mb[i].modelChange(true);
 			}
 		},
 
@@ -330,11 +330,11 @@
 
 		undelegateEvents: kff.View.prototype.undelegateEvents,
 
-		modelChange: function()
+		modelChange: function(force)
 		{
 			var modelValue = this.model.get(this.attr);
 
-			if(!this.compareValues(modelValue, this.currentValue))
+			if(!this.compareValues(modelValue, this.currentValue) || force === true)
 			{
 				this.values[this.valueIndex] = this.format(modelValue);
 				this.currentValue = modelValue;
@@ -648,7 +648,7 @@
 	{
 		'index': function(v)
 		{
-			if(this.options && this.options.bindingIndex) return this.options.bindingIndex;
+			if(this.options && this.options.bindingIndex !== null) return this.options.bindingIndex;
 			return v;
 		},
 

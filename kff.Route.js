@@ -1,4 +1,4 @@
-/**
+/*
  *  KFF Javascript microframework
  *  Copyright (c) 2008-2012 Karel Fučík
  *  Released under the MIT license.

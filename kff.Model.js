@@ -1,16 +1,14 @@
-/**
- *  KFF Javascript microframework
- *  Copyright (c) 2008-2012 Karel Fučík
- *  Released under the MIT license.
- *  http://www.opensource.org/licenses/mit-license.php
- */
-
 (function(scope)
 {
 	var kff;
 
 	if(typeof exports !== 'undefined') kff = exports;
+	/**
+	 * @namespace kff KFFnamespace
+	 */
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
+
+
 
 	kff.Model = kff.createClass(
 	{
@@ -30,6 +28,7 @@
 
 		/**
 		 * Checks if the model has given attribute
+		 *
 		 * @param {string} attr Attribute name
 		 * @returns {boolean} True if found, false otherwise
 		 */
