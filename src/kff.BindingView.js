@@ -28,6 +28,7 @@
 			options = options || {};
 			this.modelBinders = {};
 			this.collectionBinder = null;
+			this.bindingIndex = null;
 
 			this.values = {};
 			this.formatters = [];
@@ -50,6 +51,12 @@
 			{
 				for(var i = 0, mb = this.modelBinders[b], l = mb.length; i < l; i++) mb[i].modelChange(true);
 			}
+		},
+
+		refreshBinders: function()
+		{
+			this.modelChange();
+			kff.BindingView._super.refreshBinders.call(this);
 		},
 
 		destroy: function(silent)
@@ -148,7 +155,6 @@
 						var modelBinder = new kff.BindingView.binders[binderName]({
 							view: this,
 							$element: this.$element,
-							bindingIndex: this.options.bindingIndex,
 							valueIndex: valueIndex,
 							values: this.values[binderName],
 							params: binderParams,
@@ -264,7 +270,14 @@
 				}
 
 				this.subViews[i].destroy();
+				this.subViews.splice(i, 1);
 				this.$elements.eq(i).remove();
+				this.$elements.splice(i, 1);
+				for(var i = 0, l = this.subViews.length; i < l; i++)
+				{
+					this.subViews[i].setBindingIndex(i);
+				}
+				this.refreshBinders();
 			}
 			else
 			{
@@ -287,13 +300,14 @@
 
 			this.subViewOptions.element = $element;
 			this.subViewOptions.models = { '*': item };
-			this.subViewOptions.bindingIndex = i;
+			// this.subViewOptions.bindingIndex = i;
 			this.subViewOptions.isBoundView = true;
 			var subView = this.viewFactory.createView(this.subViewName, this.subViewOptions);
 			if(subView instanceof kff.View)
 			{
 				subView.viewFactory = this.viewFactory;
 				this.subViews.push(subView);
+				subView.setBindingIndex(i);
 				subView.init();
 				$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 				subView.refresh();
@@ -311,6 +325,18 @@
 			if(this.collectionBinder && !isNaN(modelIndex)) return this.collectionBinder.collection.findByIndex(modelIndex);
 
 			return kff.BindingView._super.getModel.call(this, modelPath);
+		},
+
+		getBindingIndex: function()
+		{
+			if(this.bindingIndex !== null) return this.bindingIndex;
+			if(this.parentView instanceof kff.BindingView) return this.parentView.getBindingIndex();
+			return null;
+		},
+
+		setBindingIndex: function(index)
+		{
+			this.bindingIndex = index;
 		},
 
 		concat: function(values)

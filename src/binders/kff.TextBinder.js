@@ -12,6 +12,15 @@
 	},
 	/** @lends kff.TextBinder.prototype */
 	{
+		/**
+			@constructs
+		*/
+		constructor: function(options)
+		{
+			options = options || {};
+			kff.Binder.call(this, options);
+		},
+
 		init: function()
 		{
 			kff.TextBinder._super.init.call(this);

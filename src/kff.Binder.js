@@ -26,6 +26,7 @@
 			this.valueIndex = options.valueIndex;
 			this.params = options.params;
 			this.currentValue = null;
+			this.bindingIndex = null;
 		},
 
 		init: function()
@@ -111,6 +112,11 @@
 				value = this.parsers[i].call(this, value);
 			}
 			return value;
+		},
+
+		getBindingIndex: function()
+		{
+			return this.view.getBindingIndex();
 		}
 
 	});

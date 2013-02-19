@@ -323,7 +323,13 @@
 		/**
 			Method for refreshing the view. Does nothing in this base class, it's intended to be overloaded in subclasses.
 		 */
-		refresh: function(){}
+		refresh: function(){},
+
+		refreshBinders: function()
+		{
+			for(var i = 0, l = this.subViews.length; i < l; i++) this.subViews[i].refreshBinders();
+		}
+
 
 	});
 
@@ -332,7 +338,7 @@
 	{
 		'index': function(v)
 		{
-			if(this.options && this.options.bindingIndex !== null) return this.options.bindingIndex;
+			if(this.getBindingIndex() !== null) return this.getBindingIndex();
 			return v;
 		},
 

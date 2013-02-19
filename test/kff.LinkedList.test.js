@@ -21,7 +21,7 @@ describe('kff.LinkedList', function()
 		list.removeVal('B');
 		list.count.should.eql(1);
 	});
-	
+
 	it('should append two values then remove first one from linked list', function()
 	{
 		var list = new kff.LinkedList();
@@ -29,9 +29,9 @@ describe('kff.LinkedList', function()
 		list.append('B');
 		list.removeVal('A');
 		list.count.should.eql(1);
-		(list.tail.next === null).should.be.true;
+		list.indexOf('B').should.eql(0);
 	});
-	
+
 	it('should append two values to linked list then remove both', function()
 	{
 		var list = new kff.LinkedList();
@@ -40,8 +40,6 @@ describe('kff.LinkedList', function()
 		list.removeVal('A');
 		list.removeVal('B');
 		list.count.should.eql(0);
-		(list.tail.next === null).should.be.true;
-		list.tail.should.equal(list.head);
 	});
-	
+
 });

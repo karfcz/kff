@@ -80,7 +80,23 @@
 		{
 			this.tail = this.head = { next: null };
 			this.count = 0;
+		},
+
+		indexOf: function(val)
+		{
+			var node = this.head.next, prev = this.head, i = 0;
+			while(node)
+			{
+				if(node.val === val)
+				{
+					return i;
+				}
+				node = node.next;
+				i++;
+			}
+			return -1;
 		}
+
 
 	});
 

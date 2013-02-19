@@ -18,10 +18,10 @@ module.exports = function(grunt) {
 				src: [
 					'./src/kff.js',
 					'./src/kff.Events.js',
-					'./src/kff.LinkedList.js',
+					//'./src/kff.LinkedList.js',
+					'./src/kff.ArrayList.js',
 					'./src/kff.Collection.js',
 					'./src/kff.Model.js',
-					//'./src/kff.ArrayList.js',
 					'./src/kff.ServiceContainer.js',
 					'./src/kff.View.js',
 					'./src/kff.PageView.js',

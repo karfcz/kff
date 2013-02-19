@@ -270,6 +270,12 @@
 
 })(this);
 
+/**
+ *  KFF Javascript microframework
+ *  Copyright (c) 2008-2012 Karel Fučík
+ *  Released under the MIT license.
+ *  http://www.opensource.org/licenses/mit-license.php
+ */
 
 (function(scope)
 {
@@ -279,79 +285,71 @@
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 	kff.LinkedList = kff.createClass(
-	/** @lends kff.LinkedList */
 	{
-		/**
-		 * Class representing a linked list data structure
-		 * @constructs
-		 */
 		constructor: function()
 		{
-			this.tail = this.head = { next: null };
-			this.count = 0;
+			this.array = [];
+			this.count = this.array.length;
 		},
 
-		/**
-		 * Iterates over each item in the list
-		 * @param {function} fn function to be called on each item. Takes one argument - the iterated item
-		 */
 		each: function(fn)
 		{
-			var node = this.head.next, i = 0;
-			while(node)
+			var a = this.array, l = a.length, i = 0;
+			for(; i < l; i++)
 			{
-				if(fn.call(null, node.val, i) === false) break;
-				node = node.next;
-				i++;
+				if(fn.call(null, a[i], i) === false) break;
 			}
 		},
 
-		/**
-		 * Appends an item at the end of the list
-		 * @param {mixed} val Item to be appended
-		 */
 		append: function(val)
 		{
-			var node = { val: val, next: null };
-			this.tail.next = node;
-			this.tail = node;
+			this.array.push(val);
 			this.count++;
 		},
 
-		/**
-		 * Removes item from the list
-		 * @param {mixed} val Reference to the item to be removed
-		 * @returns {mixed} removed item or false if not found
-		 */
 		removeVal: function(val)
 		{
-			var node = this.head.next, prev = this.head, ret = false;
-			while(node)
-			{
-				if(node.val === val)
-				{
-					if(node.next) prev.next = node.next;
-					else
-					{
-						prev.next = null;
-						this.tail = prev;
-					}
-					this.count--;
-					ret = true;
-				}
-				else prev = node;
-				node = node.next;
-			}
-			return ret;
+			var i = this.indexOf(val);
+			if(i === -1) return false;
+
+			this.array.splice(i, 1);
+			this.count--;
+
+			return true;
+		},
+
+		empty: function()
+		{
+			this.array = [];
+			this.count = 0;
+		},
+
+		indexOf: function(val)
+		{
+			var i = 0, a = this.array, l = a.length;
+			if(a.indexOf) return a.indexOf(val);
+			for(; i < l; i++) if(a[i] === val) return val;
+			return -1;
 		},
 
 		/**
-		 * Removes all items from list
+			Returns an item at given position
+
 		 */
-		empty: function()
+		findByIndex: function(index)
 		{
-			this.tail = this.head = { next: null };
-			this.count = 0;
+			return this.array[index];
+		},
+
+		/**
+			Sorts list using a compare function. The compare function follows the same specification
+			as the standard Array.sort function
+
+			@param {function} compareFunction Compare function
+		 */
+		sort: function(compareFunction)
+		{
+			this.array.sort(compareFunction);
 		}
 
 	});
@@ -479,28 +477,6 @@
 		},
 
 		/**
-			Returns an item at given position
-
-			@param {string} attr Attribute name
-			@param {mixed} value Attribute value
-			@returns {mixed} First found item or null
-		 */
-		findByIndex: function(index)
-		{
-			var ret = null, i = 0;
-			this.each(function(val)
-			{
-				if(i === index)
-				{
-					ret = val;
-					return false;
-				}
-				i++;
-			});
-			return ret;
-		},
-
-		/**
 			Removes all items from collection
 
 			@param {Boolean} silent If true, do not trigger event
@@ -520,17 +496,7 @@
 		 */
 		sort: function(compareFunction, silent)
 		{
-			var arr = [], az, bz;
-			this.each(function(item)
-			{
-				arr.push(item);
-			});
-			arr.sort(compareFunction);
-			this.empty();
-			for(var i = 0; i < arr.length; i++)
-			{
-				this.append(arr[i]);
-			}
+			kff.Collection._super.sort.call(this);
 			if(!silent) this.trigger('change');
 		},
 
@@ -1251,7 +1217,13 @@
 		/**
 			Method for refreshing the view. Does nothing in this base class, it's intended to be overloaded in subclasses.
 		 */
-		refresh: function(){}
+		refresh: function(){},
+
+		refreshBinders: function()
+		{
+			for(var i = 0, l = this.subViews.length; i < l; i++) this.subViews[i].refreshBinders();
+		}
+
 
 	});
 
@@ -1260,7 +1232,7 @@
 	{
 		'index': function(v)
 		{
-			if(this.options && this.options.bindingIndex !== null) return this.options.bindingIndex;
+			if(this.getBindingIndex() !== null) return this.getBindingIndex();
 			return v;
 		},
 
@@ -1406,6 +1378,7 @@
 			options = options || {};
 			this.modelBinders = {};
 			this.collectionBinder = null;
+			this.bindingIndex = null;
 
 			this.values = {};
 			this.formatters = [];
@@ -1428,6 +1401,12 @@
 			{
 				for(var i = 0, mb = this.modelBinders[b], l = mb.length; i < l; i++) mb[i].modelChange(true);
 			}
+		},
+
+		refreshBinders: function()
+		{
+			this.modelChange();
+			kff.BindingView._super.refreshBinders.call(this);
 		},
 
 		destroy: function(silent)
@@ -1526,7 +1505,6 @@
 						var modelBinder = new kff.BindingView.binders[binderName]({
 							view: this,
 							$element: this.$element,
-							bindingIndex: this.options.bindingIndex,
 							valueIndex: valueIndex,
 							values: this.values[binderName],
 							params: binderParams,
@@ -1642,7 +1620,14 @@
 				}
 
 				this.subViews[i].destroy();
+				this.subViews.splice(i, 1);
 				this.$elements.eq(i).remove();
+				this.$elements.splice(i, 1);
+				for(var i = 0, l = this.subViews.length; i < l; i++)
+				{
+					this.subViews[i].setBindingIndex(i);
+				}
+				this.refreshBinders();
 			}
 			else
 			{
@@ -1665,13 +1650,14 @@
 
 			this.subViewOptions.element = $element;
 			this.subViewOptions.models = { '*': item };
-			this.subViewOptions.bindingIndex = i;
+			// this.subViewOptions.bindingIndex = i;
 			this.subViewOptions.isBoundView = true;
 			var subView = this.viewFactory.createView(this.subViewName, this.subViewOptions);
 			if(subView instanceof kff.View)
 			{
 				subView.viewFactory = this.viewFactory;
 				this.subViews.push(subView);
+				subView.setBindingIndex(i);
 				subView.init();
 				$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 				subView.refresh();
@@ -1689,6 +1675,18 @@
 			if(this.collectionBinder && !isNaN(modelIndex)) return this.collectionBinder.collection.findByIndex(modelIndex);
 
 			return kff.BindingView._super.getModel.call(this, modelPath);
+		},
+
+		getBindingIndex: function()
+		{
+			if(this.bindingIndex !== null) return this.bindingIndex;
+			if(this.parentView instanceof kff.BindingView) return this.parentView.getBindingIndex();
+			return null;
+		},
+
+		setBindingIndex: function(index)
+		{
+			this.bindingIndex = index;
 		},
 
 		concat: function(values)
@@ -1727,6 +1725,7 @@
 			this.valueIndex = options.valueIndex;
 			this.params = options.params;
 			this.currentValue = null;
+			this.bindingIndex = null;
 		},
 
 		init: function()
@@ -1812,6 +1811,11 @@
 				value = this.parsers[i].call(this, value);
 			}
 			return value;
+		},
+
+		getBindingIndex: function()
+		{
+			return this.view.getBindingIndex();
 		}
 
 	});
@@ -2061,6 +2065,15 @@
 	},
 	/** @lends kff.TextBinder.prototype */
 	{
+		/**
+			@constructs
+		*/
+		constructor: function(options)
+		{
+			options = options || {};
+			kff.Binder.call(this, options);
+		},
+
 		init: function()
 		{
 			kff.TextBinder._super.init.call(this);

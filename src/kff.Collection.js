@@ -119,28 +119,6 @@
 		},
 
 		/**
-			Returns an item at given position
-
-			@param {string} attr Attribute name
-			@param {mixed} value Attribute value
-			@returns {mixed} First found item or null
-		 */
-		findByIndex: function(index)
-		{
-			var ret = null, i = 0;
-			this.each(function(val)
-			{
-				if(i === index)
-				{
-					ret = val;
-					return false;
-				}
-				i++;
-			});
-			return ret;
-		},
-
-		/**
 			Removes all items from collection
 
 			@param {Boolean} silent If true, do not trigger event
@@ -160,17 +138,7 @@
 		 */
 		sort: function(compareFunction, silent)
 		{
-			var arr = [], az, bz;
-			this.each(function(item)
-			{
-				arr.push(item);
-			});
-			arr.sort(compareFunction);
-			this.empty();
-			for(var i = 0; i < arr.length; i++)
-			{
-				this.append(arr[i]);
-			}
+			kff.Collection._super.sort.call(this);
 			if(!silent) this.trigger('change');
 		},
 
