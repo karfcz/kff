@@ -11,14 +11,15 @@
 		extend: kff.LinkedList,
 		mixins: kff.EventsMixin
 	},
-	/** @lends kff.Collection */
+	/** @lends kff.Collection.prototype	*/
 	{
 		/**
-		 * Class representing collection of models
-		 * @constructs
-		 * @param {Object} options Options config
-		 * @param {function} options.valFactory Factory function for creating new collection items (optional)
-		 * @param {function} options.valType Type (class or constructor function) of collection items
+			Class representing a collection of models.
+
+			@constructs
+			@param {Object} options Options object
+			@param {function} options.valFactory Factory function for creating new collection items (optional)
+			@param {function} options.valType Type (class or constructor function) of collection items
 		 */
 		constructor: function(options)
 		{
@@ -32,8 +33,9 @@
 		},
 
 		/**
-		 * Appends an item at the end of collection
-		 * @param {mixed} val Item to be appended
+			Appends the item at the end of the collection
+
+			@param {mixed} val Item to be appended
 		 */
 		append: function(val)
 		{
@@ -42,9 +44,10 @@
 		},
 
 		/**
-		 * Removes item from collection
-		 * @param {mixed} val Reference to the item to be removed
-		 * @returns {mixed} removed item or false if not found
+			Removes the item from the collection
+
+			@param {mixed} val Reference to the item to be removed
+			@returns {mixed} Removed item or false if not found
 		 */
 		removeVal: function(val)
 		{
@@ -54,13 +57,12 @@
 		},
 
 		/**
-		 * Creates a JSON representation of collection.
-		 *
-		 * If item of collection is object, tries to call toJson on it as well.
-		 * This function returns plain object, not stringified JSON.
-		 * Collection is represented as array in JSON.
-		 *
-		 * @returns {Array} Array representation of collection
+			Creates a JSON representation of collection (= array object).
+
+			If item of collection is object, tries to call toJson on it recursively.
+			This function returns a plain object, not a stringified JSON.
+
+			@returns {Array} Array representation of collection
 		 */
 		toJson: function()
 		{
@@ -74,9 +76,9 @@
 		},
 
 		/**
-		 * Reads collection from JSON (in fact JavaScript array)
-		 *
-		 * @param {Array} obj Array to read from
+			Reads collection from JSON representation (= from JavaScript array)
+
+			@param {Array} obj Array to read from
 		 */
 		fromJson: function(obj)
 		{
@@ -93,10 +95,11 @@
 		},
 
 		/**
-		 * Search in collection for model with given attribute value
-		 * @param {string} attr Attribute name
-		 * @param {mixed} value Attribute value
-		 * @returns {mixed} First found item or null
+			Finds an item with given attribute value
+
+			@param {string} attr Attribute name
+			@param {mixed} value Attribute value
+			@returns {mixed} First found item or null
 		 */
 		findByAttr: function(attr, value)
 		{
@@ -112,6 +115,13 @@
 			return ret;
 		},
 
+		/**
+			Returns an item at given position
+
+			@param {string} attr Attribute name
+			@param {mixed} value Attribute value
+			@returns {mixed} First found item or null
+		 */
 		findByIndex: function(index)
 		{
 			var ret = null, i = 0;
@@ -128,7 +138,7 @@
 		},
 
 		/**
-		 * Removes all items from collection
+			Removes all items from collection
 		 */
 		empty: function()
 		{
@@ -137,11 +147,10 @@
 		},
 
 		/**
-		 * Sorts collection using a compare function
-		 *
-		 * Comapre function follows the same specification as in standard Array.sort function
-		 *
-		 * @param {function} compareFunction Compare function
+			Sorts collection using a compare function. The compare function follows the same specification 
+			as the standard Array.sort function
+
+			@param {function} compareFunction Compare function
 		 */
 		sort: function(compareFunction)
 		{
@@ -160,8 +169,9 @@
 		},
 
 		/**
-		 * Creates clone of the collection. Clone is shallow copy (objects in collections are not cloned)
-		 * @returns {kff.Collection} Cloned collection
+			Creates a clone (shallow copy) of the collection.
+
+			@returns {kff.Collection} Cloned collection
 		 */
 		clone: function()
 		{
@@ -173,7 +183,7 @@
 		},
 
 		/**
-		 * Randomizes order of items in collection
+			Randomizes items in the collection.
 		 */
 		shuffle: function()
 		{

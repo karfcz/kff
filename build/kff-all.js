@@ -4,11 +4,15 @@
 	var kff;
 
 	if(typeof exports !== 'undefined') kff = exports;
+	/**
+	 * @namespace kff KFFnamespace
+	 */
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 	kff.widgets = {};
 
 	/**
 	 * Extends constructor function (class) from parent constructor using prototype inherinatce
+	 * @public
 	 * @param {function} child Child class
 	 * @param {function} parent Parent class
 	 */
@@ -145,13 +149,23 @@
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 	kff.Events = kff.createClass(
+	/** @lends kff.Events.prototype */	
 	{
+		/**
+			@constructs
+		*/
 		constructor: function()
 		{
 			this.subscribers = {};
 			this.oneSubscribers = {};
 		},
 
+		/**
+			Binds event handler.
+
+			@param {string|Array} eventType Event name(s)
+			@param {function} fn Event handler
+		*/
 		on: function(eventType, fn)
 		{
 			this.off(eventType, fn);
@@ -173,6 +187,12 @@
 			}
 		},
 
+		/**
+			Binds event handler that will be executed only once.
+
+			@param {string|Array} eventType Event name(s)
+			@param {function} fn Event handler
+		*/
 		one: function(eventType, fn)
 		{
 			if(!(eventType in this.oneSubscribers)) this.oneSubscribers[eventType] = [];
@@ -180,6 +200,12 @@
 			this.on(eventType, fn);
 		},
 
+		/**
+			Unbinds event handler.
+
+			@param {string|Array} eventType Event name(s)
+			@param {function} fn Event handler
+		*/
 		off: function(eventType, fn)
 		{
 			var i, l;
@@ -196,6 +222,12 @@
 			}
 		},
 
+		/**
+			Triggers an event.
+
+			@param {string|Array} eventType Event name(s)
+			@param {mixed} eventData Arbitrary data that will be passed to the event handlers as an argument
+		*/
 		trigger: function(eventType, eventData)
 		{
 			var i, l;
@@ -339,14 +371,15 @@
 		extend: kff.LinkedList,
 		mixins: kff.EventsMixin
 	},
-	/** @lends kff.Collection */
+	/** @lends kff.Collection.prototype	*/
 	{
 		/**
-		 * Class representing collection of models
-		 * @constructs
-		 * @param {Object} options Options config
-		 * @param {function} options.valFactory Factory function for creating new collection items (optional)
-		 * @param {function} options.valType Type (class or constructor function) of collection items
+			Class representing a collection of models.
+
+			@constructs
+			@param {Object} options Options object
+			@param {function} options.valFactory Factory function for creating new collection items (optional)
+			@param {function} options.valType Type (class or constructor function) of collection items
 		 */
 		constructor: function(options)
 		{
@@ -360,8 +393,9 @@
 		},
 
 		/**
-		 * Appends an item at the end of collection
-		 * @param {mixed} val Item to be appended
+			Appends the item at the end of the collection
+
+			@param {mixed} val Item to be appended
 		 */
 		append: function(val)
 		{
@@ -370,9 +404,10 @@
 		},
 
 		/**
-		 * Removes item from collection
-		 * @param {mixed} val Reference to the item to be removed
-		 * @returns {mixed} removed item or false if not found
+			Removes the item from the collection
+
+			@param {mixed} val Reference to the item to be removed
+			@returns {mixed} Removed item or false if not found
 		 */
 		removeVal: function(val)
 		{
@@ -382,13 +417,12 @@
 		},
 
 		/**
-		 * Creates a JSON representation of collection.
-		 *
-		 * If item of collection is object, tries to call toJson on it as well.
-		 * This function returns plain object, not stringified JSON.
-		 * Collection is represented as array in JSON.
-		 *
-		 * @returns {Array} Array representation of collection
+			Creates a JSON representation of collection (= array object).
+
+			If item of collection is object, tries to call toJson on it recursively.
+			This function returns a plain object, not a stringified JSON.
+
+			@returns {Array} Array representation of collection
 		 */
 		toJson: function()
 		{
@@ -402,9 +436,9 @@
 		},
 
 		/**
-		 * Reads collection from JSON (in fact JavaScript array)
-		 *
-		 * @param {Array} obj Array to read from
+			Reads collection from JSON representation (= from JavaScript array)
+
+			@param {Array} obj Array to read from
 		 */
 		fromJson: function(obj)
 		{
@@ -421,10 +455,11 @@
 		},
 
 		/**
-		 * Search in collection for model with given attribute value
-		 * @param {string} attr Attribute name
-		 * @param {mixed} value Attribute value
-		 * @returns {mixed} First found item or null
+			Finds an item with given attribute value
+
+			@param {string} attr Attribute name
+			@param {mixed} value Attribute value
+			@returns {mixed} First found item or null
 		 */
 		findByAttr: function(attr, value)
 		{
@@ -440,6 +475,13 @@
 			return ret;
 		},
 
+		/**
+			Returns an item at given position
+
+			@param {string} attr Attribute name
+			@param {mixed} value Attribute value
+			@returns {mixed} First found item or null
+		 */
 		findByIndex: function(index)
 		{
 			var ret = null, i = 0;
@@ -456,7 +498,7 @@
 		},
 
 		/**
-		 * Removes all items from collection
+			Removes all items from collection
 		 */
 		empty: function()
 		{
@@ -465,11 +507,10 @@
 		},
 
 		/**
-		 * Sorts collection using a compare function
-		 *
-		 * Comapre function follows the same specification as in standard Array.sort function
-		 *
-		 * @param {function} compareFunction Compare function
+			Sorts collection using a compare function. The compare function follows the same specification 
+			as the standard Array.sort function
+
+			@param {function} compareFunction Compare function
 		 */
 		sort: function(compareFunction)
 		{
@@ -488,8 +529,9 @@
 		},
 
 		/**
-		 * Creates clone of the collection. Clone is shallow copy (objects in collections are not cloned)
-		 * @returns {kff.Collection} Cloned collection
+			Creates a clone (shallow copy) of the collection.
+
+			@returns {kff.Collection} Cloned collection
 		 */
 		clone: function()
 		{
@@ -501,7 +543,7 @@
 		},
 
 		/**
-		 * Randomizes order of items in collection
+			Randomizes items in the collection.
 		 */
 		shuffle: function()
 		{
@@ -536,34 +578,39 @@
 	var kff;
 
 	if(typeof exports !== 'undefined') kff = exports;
-	/**
-	 * @namespace kff KFFnamespace
-	 */
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
-
-
 
 	kff.Model = kff.createClass(
 	{
 		mixins: kff.EventsMixin
 	},
-	/** @lends kff.Model */
+	/** @lends kff.Model.prototype */
 	{
 		/**
-		 * Class representing a model
-		 * @constructs
+			Base class for models
+			@constructs
 		 */
 		constructor: function()
 		{
+			/**
+				Events object (used by mixed-in methods)
+				@private
+			*/
 			this.events = new kff.Events();
+
+			/**
+				Attributes of model
+				@private
+			*/
 			this.attrs = {};
 		},
 
 		/**
-		 * Checks if the model has given attribute
-		 *
-		 * @param {string} attr Attribute name
-		 * @returns {boolean} True if found, false otherwise
+			Checks if the model has given attribute
+
+			@public
+			@param {string} attr Attribute name
+			@returns {boolean} True if found, false otherwise
 		 */
 		has: function(attr)
 		{
@@ -571,9 +618,10 @@
 		},
 
 		/**
-		 * Returns value of given attribute
-		 * @param {string} attr Attribute name
-		 * @returns {mixed} Attribute value
+			Returns the value of given attribute
+
+			@param {string} attr Attribute name
+			@returns {mixed} Attribute value
 		 */
 		get: function(attr)
 		{
@@ -581,9 +629,14 @@
 		},
 
 		/**
-		 * Returns value of given attribute using deep lookup (object.attribute.some.value)
-		 * @param {string} attrPath Attribute path
-		 * @returns {mixed} Attribute value
+			Returns the value of given attribute using deep lookup (object.attribute.some.value)
+
+			@param {string} attrPath Attribute path
+			@returns {mixed} Attribute value
+		 	@example
+		 	obj.mget('one.two.three');
+		 	// equals to:
+		 	obj.get('one').get('two').get('three');
 		 */
 		mget: function(attrPath)
 		{
@@ -599,12 +652,10 @@
 		},
 
 		/**
-		 * Sets value of given attribute.
-		 *
-		 * Triggers change event.
-		 *
-		 * @param {string} attr Attribute name
-		 * @param {mixed} value Attribute value
+			Sets the value(s) of given attribute(s). Triggers change event.
+
+			@param {string} attr Attribute name
+			@param {mixed} value Attribute value
 		 */
 		set: function(attr, value, options)
 		{
@@ -639,13 +690,11 @@
 		},
 
 		/**
-		 * Creates a JSON representation of model attributes.
-		 *
-		 * If an attribute is type of Object, tries to call toJson on it too.
-		 * This function returns plain object, not stringified JSON.
-		 *
-		 * @param {Array.<string>} serializeAttrs If used, only these attributes will be exported
-		 * @returns {Object} Plain JavaScript object representation of attributes
+			Exports a JSON representation of model attributes. If an attribute is type of Object, tries to call a toJson 
+			method recursively.	This function returns a plain javascript object, not the stringified JSON.
+
+			@param {Array.<string>} serializeAttrs Array of attribute names to be exported or all if omitted.
+			@returns {Object} Plain JavaScript object representation of object's attributes
 		 */
 		toJson: function(serializeAttrs)
 		{
@@ -662,12 +711,12 @@
 		},
 
 		/**
-		 * Reads model's attributes from plain JavaScript object
-		 *
-		 * If an attribute is type of Object, tries to read appropriate property using its fromJson method.
-		 * This function returns plain object, not stringified JSON.
-		 *
-		 * @param {Object} obj Plain object to read from
+			Imports model's attributes from JSON (plain JavaScript object).
+
+			If an attribute is type of Object, tries to read appropriate property using its fromJson method.
+			This function returns plain object, not stringified JSON.
+
+			@param {Object} obj Plain JS object to read attributes from
 		 */
 		fromJson: function(obj)
 		{
@@ -704,7 +753,7 @@
 			multipleParamsRegex: /%([^%]+)%/g
 		}
 	},
-	/** @lends kff.ServiceContainer */
+	/** @lends kff.ServiceContainer.prototype */
 	{
 		/**
 		 * Simple dependency injection (or service) container class.
@@ -878,21 +927,48 @@
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
-	/**
-	 *  kff.View
-	 */
 	kff.View = kff.createClass(
 	{
 		mixins: kff.EventsMixin,
+
 		staticProperties:
+		/** @lends kff.View */
 		{
+			/**
+				Data-attribute name used for view names
+				@constant
+			*/
 			DATA_VIEW_ATTR: 'data-kff-view',
+
+			/**
+				Data-attribute name used for view options (as JSON serialized object)
+				@constant
+			*/
 			DATA_OPTIONS_ATTR: 'data-kff-options',
+
+			/**
+				Data-attribute name used for marking of rendered views
+				@constant
+			*/
 			DATA_RENDERED_ATTR: 'data-kff-rendered',
+
+			/**
+				Data-attribute name used for data-binding
+				@constant
+			*/
 			DATA_BIND_ATTR: 'data-kff-bind'
 		}
 	},
+	/** @lends kff.View.prototype */
 	{
+		/**
+			Base class for views
+
+			@constructs
+			@param {Object} options Options object
+			@param {DOM Element|jQuery} options.element A DOM element that will be a root element of the view
+			@param {Array} options.models Array of model instances to be used by the view
+		 */
 		constructor: function(options)
 		{
 			options = options || {};
@@ -909,6 +985,16 @@
 			return this;
 		},
 
+		/**
+			Sets internal options
+
+			@private
+			@param {Object} options Options object
+			@param {Array} options.events Array of event bindings
+			@param {kff.ViewFactory} options.viewFactory An instance of kff.ViewFactory class for creating subviews
+			@param {kff.View} options.parentView A parent view (the view bound to some of the ascendant DOM elements)
+			@param {Array} options.models Array of model instances to be used by the view
+		 */
 		setOptions: function(options)
 		{
 			options = options || {};
@@ -938,6 +1024,16 @@
 			$.extend(this.options, options);
 		},
 
+		/**
+			Returns a model object bound to the view or to the parent view.
+
+			Accepts the model name as a string or key path in the form of "modelName.attribute.nextAttribute etc.".
+			Will search for "modelName" in current view, then in parent view etc. When found, returns a value of
+			"attribute.nextAtrribute" using model's	mget method.
+
+			@param {string} modelPath Key path of model in the form of "modelName.attribute.nextAttribute etc.".
+			@return {mixed} A model instance or attribute value or null if not found.
+		 */
 		getModel: function(modelPath)
 		{
 			var model;
@@ -962,12 +1058,22 @@
 			return null;
 		},
 
-		//     [
-		//       ['mousedown, mouseup', '.title', 'edit'],
-		//       ['click',  '.button', 'save' ],
-		//       ['click', function(e) { ... }]
-		//     ]
+		/**
+			Binds DOM events to the view element. Accepts array of arrays in the form:
 
+			[
+				['mousedown, mouseup', '.title', 'edit'],
+				['click',  '.button', 'save' ],
+				['click', function(e) { ... }]
+			]
+
+			The first item is name of DOM event (or comma separated event names).
+			The second item is a CSS experession (jquery expression) relative to the view element for event delegation (optional)
+			The third item is the view method name (string) that acts as an event handler
+
+			@param {Array} events Array of arrays of binding config
+			@param {jQuery} $element A jQuery object that holds the DOM element to bind. If not provided, the view element will be used.
+		 */
 		delegateEvents: function(events, $element)
 		{
 			var event, i, l;
@@ -982,6 +1088,12 @@
 			}
 		},
 
+		/**
+			Unbinds DOM events from the view element. Accepts array of arrays as in the delegateEvents method.
+
+			@param {Array} events Array of arrays of binding config
+			@param {jQuery} $element A jQuery object that holds the DOM element to unbind. If not provided, the view element will be used.
+		 */
 		undelegateEvents: function(events, $element)
 		{
 			var event, i, l;
@@ -995,23 +1107,33 @@
 			}
 		},
 
+		/**
+			Adds events config to the internal events array.
+
+			@private
+			@param {Array} events Array of arrays of binding config
+		 */
 		addEvents: function(events)
 		{
 			this.options.events = this.options.events.concat(events);
 		},
 
+		/**
+			Initializes the view. Calls the render method. Should not be overloaded by subclasses.
+
+			@private
+			@param
+		 */
 		init: function()
 		{
 			this.render();
 		},
 
-		destroy: function(silent)
-		{
-			this.destroySubviews();
-			this.undelegateEvents();
-			if(!silent) this.trigger('destroy');
-		},
+		/**
+			Renders the view. It will be called automatically. Should not be called directly.
 
+			@param {Boolean} silent If true, the 'render' event won't be called
+		 */
 		render: function(silent)
 		{
 			this.delegateEvents();
@@ -1019,6 +1141,11 @@
 			if(!silent) this.trigger('init');
 		},
 
+		/**
+			Renders subviews. Will find all DOM descendats with kff.View.DATA_KFF_VIEW (or kff.View.DATA_BIND_ATTR) attribute
+			and initializes subviews on them. If an element has the kff.View.DATA_BIND_ATTR but not the kff.View.DATA_KFF_VIEW
+			attribute, adds kff.View.DATA_KFF_VIEW attribute = "kff.BindingView" and inits implicit data-binding.
+		 */
 		renderSubviews: function()
 		{
 			var viewNames = [],
@@ -1083,6 +1210,22 @@
 			}
 		},
 
+		/**
+			Destroys the view (destroys all subviews and unbinds previously bound DOM events.
+			It will be called automatically. Should not be called directly.
+
+			@param {Boolean} silent If true, the 'destroy' event won't be called
+		 */
+		destroy: function(silent)
+		{
+			this.destroySubviews();
+			this.undelegateEvents();
+			if(!silent) this.trigger('destroy');
+		},
+
+		/**
+			Destroys the subviews. It will be called automatically. Should not be called directly.
+		 */
 		destroySubviews: function()
 		{
 			var subView, i, l;
@@ -1098,9 +1241,10 @@
 			this.subViews = [];
 		},
 
-		refresh: function()
-		{
-		}
+		/**
+			Method for refreshing the view. Does nothing in this base class, it's intended to be overloaded in subclasses.
+		 */
+		refresh: function(){}
 
 	});
 
@@ -1114,9 +1258,6 @@
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
-	/**
-	 * kff.PageView
-	 */
 	kff.PageView = kff.createClass(
 	{
 		extend: kff.View,
@@ -1125,7 +1266,12 @@
 			precedingView: null
 		}
 	},
+	/** @lends kff.PageView.prototype */	
 	{
+		/**
+			@constructs
+			@augments kff.View
+		*/
 		constructor: function(options)
 		{
 			options = options || {};
@@ -1159,10 +1305,6 @@
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 
-	/**
-	 * kff.BindingView
-	 */
-
 	kff.BindingView = kff.createClass(
 	{
 		extend: kff.View,
@@ -1171,7 +1313,11 @@
 			binders: {}
 		}
 	},
+	/** @lends kff.BindingView.prototype */
 	{
+		/**
+			@constructs
+		*/		
 		constructor: function(options)
 		{
 			options = options || {};
@@ -1450,7 +1596,11 @@
 
 
 	kff.Binder = kff.createClass(
+	/** @lends kff.Binder.prototype */			
 	{
+		/**
+			@constructs
+		*/		
 		constructor: function(options)
 		{
 			this.options = options;
@@ -1556,15 +1706,15 @@
 
 
 
-	/**
-	 * kff.ValueBinder
-	 */
-
 	kff.ValueBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
+	/** @lends kff.ValueBinder.prototype */				
 	{
+		/**
+			@constructs
+		*/		
 		constructor: function(options)
 		{
 			options = options || {};
@@ -1588,15 +1738,15 @@
 		}
 	});
 
-	/**
-	 * kff.CheckBinder
-	 */
-
 	kff.CheckBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
+	/** @lends kff.CheckBinder.prototype */				
 	{
+		/**
+			@constructs
+		*/		
 		constructor: function(options)
 		{
 			options = options || {};
@@ -1620,15 +1770,15 @@
 		}
 	});
 
-	/**
-	 * kff.ClickBinder
-	 */
-
 	kff.ClickBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
+	/** @lends kff.ClickBinder.prototype */				
 	{
+		/**
+			@constructs
+		*/		
 		constructor: function(options)
 		{
 			options = options || {};
@@ -1653,15 +1803,15 @@
 		}
 	});
 
-	/**
-	 * kff.RadioBinder
-	 */
-
 	kff.RadioBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
+	/** @lends kff.RadioBinder.prototype */				
 	{
+		/**
+			@constructs
+		*/		
 		constructor: function(options)
 		{
 			options = options || {};
@@ -1689,14 +1839,12 @@
 	});
 
 
-	/**
-	 * kff.TextBinder
-	 */
-
+	/** @class */
 	kff.TextBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
+	/** @lends kff.TextBinder.prototype */				
 	{
 		init: function()
 		{
@@ -1710,14 +1858,12 @@
 	});
 
 
-	/**
-	 * kff.HtmlBinder
-	 */
-
+	/** @class */
 	kff.HtmlBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
+	/** @lends kff.HtmlBinder.prototype */				
 	{
 		refresh: function()
 		{
@@ -1726,14 +1872,12 @@
 	});
 
 
-	/**
-	 * kff.ClassBinder
-	 */
-
+	/** @class */
 	kff.ClassBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
+	/** @lends kff.ClassBinder.prototype */				
 	{
 		init: function()
 		{
@@ -1754,14 +1898,13 @@
 		}
 	});
 
-	/**
-	 * kff.AttrBinder
-	 */
 
+	/** @class */
 	kff.AttrBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
+	/** @lends kff.AttrBinder.prototype */				
 	{
 		init: function()
 		{
@@ -1874,11 +2017,12 @@
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
-	/**
-	 * kff.ViewFactory
-	 */
 	kff.ViewFactory = kff.createClass(
+	/** @lends kff.ViewFactory.prototype */
 	{
+		/**
+			@constructs
+		*/
 		constructor: function(options)
 		{
 			options = options || {};
@@ -1943,8 +2087,11 @@
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 	kff.Route = kff.createClass(
-	/** @lends kff.Route */
+	/** @lends kff.Route.prototype */
 	{
+		/**
+			@constructs
+		*/
 		constructor: function(pattern, target)
 		{
 			this.pattern = pattern;
@@ -2039,8 +2186,11 @@
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 	kff.Router = kff.createClass(
-	/** @lends kff.Router */
+	/** @lends kff.Router.prototype */
 	{
+		/**
+			@constructs
+		*/
 		constructor: function(options)
 		{
 			this.options = options || {};
@@ -2081,11 +2231,12 @@
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
-	/**
-	 * kff.FrontController
-	 */
 	kff.FrontController = kff.createClass(
+	/** @lends kff.FrontController.prototype */	
 	{
+		/**
+			@constructs
+		*/
 		constructor: function(options)
 		{
 			options = options || {};

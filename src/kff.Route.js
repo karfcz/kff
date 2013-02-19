@@ -16,8 +16,11 @@
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 	kff.Route = kff.createClass(
-	/** @lends kff.Route */
+	/** @lends kff.Route.prototype */
 	{
+		/**
+			@constructs
+		*/
 		constructor: function(pattern, target)
 		{
 			this.pattern = pattern;

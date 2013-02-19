@@ -7,13 +7,23 @@
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 	kff.Events = kff.createClass(
+	/** @lends kff.Events.prototype */	
 	{
+		/**
+			@constructs
+		*/
 		constructor: function()
 		{
 			this.subscribers = {};
 			this.oneSubscribers = {};
 		},
 
+		/**
+			Binds event handler.
+
+			@param {string|Array} eventType Event name(s)
+			@param {function} fn Event handler
+		*/
 		on: function(eventType, fn)
 		{
 			this.off(eventType, fn);
@@ -35,6 +45,12 @@
 			}
 		},
 
+		/**
+			Binds event handler that will be executed only once.
+
+			@param {string|Array} eventType Event name(s)
+			@param {function} fn Event handler
+		*/
 		one: function(eventType, fn)
 		{
 			if(!(eventType in this.oneSubscribers)) this.oneSubscribers[eventType] = [];
@@ -42,6 +58,12 @@
 			this.on(eventType, fn);
 		},
 
+		/**
+			Unbinds event handler.
+
+			@param {string|Array} eventType Event name(s)
+			@param {function} fn Event handler
+		*/
 		off: function(eventType, fn)
 		{
 			var i, l;
@@ -58,6 +80,12 @@
 			}
 		},
 
+		/**
+			Triggers an event.
+
+			@param {string|Array} eventType Event name(s)
+			@param {mixed} eventData Arbitrary data that will be passed to the event handlers as an argument
+		*/
 		trigger: function(eventType, eventData)
 		{
 			var i, l;

@@ -1,5 +1,5 @@
 var should = require('should');
-var kff = require('../kff-all.js');
+var kff = require('../build/kff-all.js');
 
 
 describe('kff.LinkedList', function()

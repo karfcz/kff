@@ -14,7 +14,7 @@
 			multipleParamsRegex: /%([^%]+)%/g
 		}
 	},
-	/** @lends kff.ServiceContainer */
+	/** @lends kff.ServiceContainer.prototype */
 	{
 		/**
 		 * Simple dependency injection (or service) container class.

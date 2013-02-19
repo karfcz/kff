@@ -16,28 +16,28 @@ module.exports = function(grunt) {
 		concat: {
 			kff: {
 				src: [
-					'./kff.js',
-					'./kff.Events.js',
-					'./kff.LinkedList.js',
-					'./kff.Collection.js',
-					'./kff.Model.js',
-					//'./kff.ArrayList.js',
-					'./kff.ServiceContainer.js',
-					'./kff.View.js',
-					'./kff.PageView.js',
-					'./kff.BindingView.js',
-					'./kff.ViewFactory.js',
-					'./kff.Route.js',
-					'./kff.Router.js',
-					'./kff.FrontController.js'
+					'./src/kff.js',
+					'./src/kff.Events.js',
+					'./src/kff.LinkedList.js',
+					'./src/kff.Collection.js',
+					'./src/kff.Model.js',
+					//'./src/kff.ArrayList.js',
+					'./src/kff.ServiceContainer.js',
+					'./src/kff.View.js',
+					'./src/kff.PageView.js',
+					'./src/kff.BindingView.js',
+					'./src/kff.ViewFactory.js',
+					'./src/kff.Route.js',
+					'./src/kff.Router.js',
+					'./src/kff.FrontController.js'
 				],
-				dest: 'kff-all.js'
+				dest: './build/kff-all.js'
 			}
 		},
 		min: {
 			kff: {
-				src: ['kff-all.js'],
-				dest: 'kff-all.min.js'
+				src: ['./build/kff-all.js'],
+				dest: './build/kff-all.min.js'
 			}
 		},
 		watch: {

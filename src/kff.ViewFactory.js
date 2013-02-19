@@ -7,11 +7,12 @@
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
-	/**
-	 * kff.ViewFactory
-	 */
 	kff.ViewFactory = kff.createClass(
+	/** @lends kff.ViewFactory.prototype */
 	{
+		/**
+			@constructs
+		*/
 		constructor: function(options)
 		{
 			options = options || {};

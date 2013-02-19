@@ -4,11 +4,15 @@
 	var kff;
 
 	if(typeof exports !== 'undefined') kff = exports;
+	/**
+	 * @namespace kff KFFnamespace
+	 */
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 	kff.widgets = {};
 
 	/**
 	 * Extends constructor function (class) from parent constructor using prototype inherinatce
+	 * @public
 	 * @param {function} child Child class
 	 * @param {function} parent Parent class
 	 */

@@ -3,34 +3,39 @@
 	var kff;
 
 	if(typeof exports !== 'undefined') kff = exports;
-	/**
-	 * @namespace kff KFFnamespace
-	 */
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
-
-
 
 	kff.Model = kff.createClass(
 	{
 		mixins: kff.EventsMixin
 	},
-	/** @lends kff.Model */
+	/** @lends kff.Model.prototype */
 	{
 		/**
-		 * Class representing a model
-		 * @constructs
+			Base class for models
+			@constructs
 		 */
 		constructor: function()
 		{
+			/**
+				Events object (used by mixed-in methods)
+				@private
+			*/
 			this.events = new kff.Events();
+
+			/**
+				Attributes of model
+				@private
+			*/
 			this.attrs = {};
 		},
 
 		/**
-		 * Checks if the model has given attribute
-		 *
-		 * @param {string} attr Attribute name
-		 * @returns {boolean} True if found, false otherwise
+			Checks if the model has given attribute
+
+			@public
+			@param {string} attr Attribute name
+			@returns {boolean} True if found, false otherwise
 		 */
 		has: function(attr)
 		{
@@ -38,9 +43,10 @@
 		},
 
 		/**
-		 * Returns value of given attribute
-		 * @param {string} attr Attribute name
-		 * @returns {mixed} Attribute value
+			Returns the value of given attribute
+
+			@param {string} attr Attribute name
+			@returns {mixed} Attribute value
 		 */
 		get: function(attr)
 		{
@@ -48,9 +54,14 @@
 		},
 
 		/**
-		 * Returns value of given attribute using deep lookup (object.attribute.some.value)
-		 * @param {string} attrPath Attribute path
-		 * @returns {mixed} Attribute value
+			Returns the value of given attribute using deep lookup (object.attribute.some.value)
+
+			@param {string} attrPath Attribute path
+			@returns {mixed} Attribute value
+		 	@example
+		 	obj.mget('one.two.three');
+		 	// equals to:
+		 	obj.get('one').get('two').get('three');
 		 */
 		mget: function(attrPath)
 		{
@@ -66,12 +77,10 @@
 		},
 
 		/**
-		 * Sets value of given attribute.
-		 *
-		 * Triggers change event.
-		 *
-		 * @param {string} attr Attribute name
-		 * @param {mixed} value Attribute value
+			Sets the value(s) of given attribute(s). Triggers change event.
+
+			@param {string} attr Attribute name
+			@param {mixed} value Attribute value
 		 */
 		set: function(attr, value, options)
 		{
@@ -106,13 +115,11 @@
 		},
 
 		/**
-		 * Creates a JSON representation of model attributes.
-		 *
-		 * If an attribute is type of Object, tries to call toJson on it too.
-		 * This function returns plain object, not stringified JSON.
-		 *
-		 * @param {Array.<string>} serializeAttrs If used, only these attributes will be exported
-		 * @returns {Object} Plain JavaScript object representation of attributes
+			Exports a JSON representation of model attributes. If an attribute is type of Object, tries to call a toJson 
+			method recursively.	This function returns a plain javascript object, not the stringified JSON.
+
+			@param {Array.<string>} serializeAttrs Array of attribute names to be exported or all if omitted.
+			@returns {Object} Plain JavaScript object representation of object's attributes
 		 */
 		toJson: function(serializeAttrs)
 		{
@@ -129,12 +136,12 @@
 		},
 
 		/**
-		 * Reads model's attributes from plain JavaScript object
-		 *
-		 * If an attribute is type of Object, tries to read appropriate property using its fromJson method.
-		 * This function returns plain object, not stringified JSON.
-		 *
-		 * @param {Object} obj Plain object to read from
+			Imports model's attributes from JSON (plain JavaScript object).
+
+			If an attribute is type of Object, tries to read appropriate property using its fromJson method.
+			This function returns plain object, not stringified JSON.
+
+			@param {Object} obj Plain JS object to read attributes from
 		 */
 		fromJson: function(obj)
 		{

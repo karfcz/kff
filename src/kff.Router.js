@@ -7,8 +7,11 @@
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 	kff.Router = kff.createClass(
-	/** @lends kff.Router */
+	/** @lends kff.Router.prototype */
 	{
+		/**
+			@constructs
+		*/
 		constructor: function(options)
 		{
 			this.options = options || {};

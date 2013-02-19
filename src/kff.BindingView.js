@@ -6,10 +6,6 @@
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 
-	/**
-	 * kff.BindingView
-	 */
-
 	kff.BindingView = kff.createClass(
 	{
 		extend: kff.View,
@@ -18,7 +14,11 @@
 			binders: {}
 		}
 	},
+	/** @lends kff.BindingView.prototype */
 	{
+		/**
+			@constructs
+		*/		
 		constructor: function(options)
 		{
 			options = options || {};
@@ -297,7 +297,11 @@
 
 
 	kff.Binder = kff.createClass(
+	/** @lends kff.Binder.prototype */			
 	{
+		/**
+			@constructs
+		*/		
 		constructor: function(options)
 		{
 			this.options = options;
@@ -403,15 +407,15 @@
 
 
 
-	/**
-	 * kff.ValueBinder
-	 */
-
 	kff.ValueBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
+	/** @lends kff.ValueBinder.prototype */				
 	{
+		/**
+			@constructs
+		*/		
 		constructor: function(options)
 		{
 			options = options || {};
@@ -435,15 +439,15 @@
 		}
 	});
 
-	/**
-	 * kff.CheckBinder
-	 */
-
 	kff.CheckBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
+	/** @lends kff.CheckBinder.prototype */				
 	{
+		/**
+			@constructs
+		*/		
 		constructor: function(options)
 		{
 			options = options || {};
@@ -467,15 +471,15 @@
 		}
 	});
 
-	/**
-	 * kff.ClickBinder
-	 */
-
 	kff.ClickBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
+	/** @lends kff.ClickBinder.prototype */				
 	{
+		/**
+			@constructs
+		*/		
 		constructor: function(options)
 		{
 			options = options || {};
@@ -500,15 +504,15 @@
 		}
 	});
 
-	/**
-	 * kff.RadioBinder
-	 */
-
 	kff.RadioBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
+	/** @lends kff.RadioBinder.prototype */				
 	{
+		/**
+			@constructs
+		*/		
 		constructor: function(options)
 		{
 			options = options || {};
@@ -536,14 +540,12 @@
 	});
 
 
-	/**
-	 * kff.TextBinder
-	 */
-
+	/** @class */
 	kff.TextBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
+	/** @lends kff.TextBinder.prototype */				
 	{
 		init: function()
 		{
@@ -557,14 +559,12 @@
 	});
 
 
-	/**
-	 * kff.HtmlBinder
-	 */
-
+	/** @class */
 	kff.HtmlBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
+	/** @lends kff.HtmlBinder.prototype */				
 	{
 		refresh: function()
 		{
@@ -573,14 +573,12 @@
 	});
 
 
-	/**
-	 * kff.ClassBinder
-	 */
-
+	/** @class */
 	kff.ClassBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
+	/** @lends kff.ClassBinder.prototype */				
 	{
 		init: function()
 		{
@@ -601,14 +599,13 @@
 		}
 	});
 
-	/**
-	 * kff.AttrBinder
-	 */
 
+	/** @class */
 	kff.AttrBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
+	/** @lends kff.AttrBinder.prototype */				
 	{
 		init: function()
 		{

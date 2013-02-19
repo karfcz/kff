@@ -6,9 +6,6 @@
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
-	/**
-	 * kff.PageView
-	 */
 	kff.PageView = kff.createClass(
 	{
 		extend: kff.View,
@@ -17,7 +14,12 @@
 			precedingView: null
 		}
 	},
+	/** @lends kff.PageView.prototype */	
 	{
+		/**
+			@constructs
+			@augments kff.View
+		*/
 		constructor: function(options)
 		{
 			options = options || {};

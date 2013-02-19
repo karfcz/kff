@@ -6,11 +6,12 @@
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
-	/**
-	 * kff.FrontController
-	 */
 	kff.FrontController = kff.createClass(
+	/** @lends kff.FrontController.prototype */	
 	{
+		/**
+			@constructs
+		*/
 		constructor: function(options)
 		{
 			options = options || {};

@@ -6,21 +6,48 @@
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
-	/**
-	 *  kff.View
-	 */
 	kff.View = kff.createClass(
 	{
 		mixins: kff.EventsMixin,
+
 		staticProperties:
+		/** @lends kff.View */
 		{
+			/**
+				Data-attribute name used for view names
+				@constant
+			*/
 			DATA_VIEW_ATTR: 'data-kff-view',
+
+			/**
+				Data-attribute name used for view options (as JSON serialized object)
+				@constant
+			*/
 			DATA_OPTIONS_ATTR: 'data-kff-options',
+
+			/**
+				Data-attribute name used for marking of rendered views
+				@constant
+			*/
 			DATA_RENDERED_ATTR: 'data-kff-rendered',
+
+			/**
+				Data-attribute name used for data-binding
+				@constant
+			*/
 			DATA_BIND_ATTR: 'data-kff-bind'
 		}
 	},
+	/** @lends kff.View.prototype */
 	{
+		/**
+			Base class for views
+
+			@constructs
+			@param {Object} options Options object
+			@param {DOM Element|jQuery} options.element A DOM element that will be a root element of the view
+			@param {Array} options.models Array of model instances to be used by the view
+		 */
 		constructor: function(options)
 		{
 			options = options || {};
@@ -37,6 +64,16 @@
 			return this;
 		},
 
+		/**
+			Sets internal options
+
+			@private
+			@param {Object} options Options object
+			@param {Array} options.events Array of event bindings
+			@param {kff.ViewFactory} options.viewFactory An instance of kff.ViewFactory class for creating subviews
+			@param {kff.View} options.parentView A parent view (the view bound to some of the ascendant DOM elements)
+			@param {Array} options.models Array of model instances to be used by the view
+		 */
 		setOptions: function(options)
 		{
 			options = options || {};
@@ -66,6 +103,16 @@
 			$.extend(this.options, options);
 		},
 
+		/**
+			Returns a model object bound to the view or to the parent view.
+
+			Accepts the model name as a string or key path in the form of "modelName.attribute.nextAttribute etc.".
+			Will search for "modelName" in current view, then in parent view etc. When found, returns a value of
+			"attribute.nextAtrribute" using model's	mget method.
+
+			@param {string} modelPath Key path of model in the form of "modelName.attribute.nextAttribute etc.".
+			@return {mixed} A model instance or attribute value or null if not found.
+		 */
 		getModel: function(modelPath)
 		{
 			var model;
@@ -90,12 +137,22 @@
 			return null;
 		},
 
-		//     [
-		//       ['mousedown, mouseup', '.title', 'edit'],
-		//       ['click',  '.button', 'save' ],
-		//       ['click', function(e) { ... }]
-		//     ]
+		/**
+			Binds DOM events to the view element. Accepts array of arrays in the form:
 
+			[
+				['mousedown, mouseup', '.title', 'edit'],
+				['click',  '.button', 'save' ],
+				['click', function(e) { ... }]
+			]
+
+			The first item is name of DOM event (or comma separated event names).
+			The second item is a CSS experession (jquery expression) relative to the view element for event delegation (optional)
+			The third item is the view method name (string) that acts as an event handler
+
+			@param {Array} events Array of arrays of binding config
+			@param {jQuery} $element A jQuery object that holds the DOM element to bind. If not provided, the view element will be used.
+		 */
 		delegateEvents: function(events, $element)
 		{
 			var event, i, l;
@@ -110,6 +167,12 @@
 			}
 		},
 
+		/**
+			Unbinds DOM events from the view element. Accepts array of arrays as in the delegateEvents method.
+
+			@param {Array} events Array of arrays of binding config
+			@param {jQuery} $element A jQuery object that holds the DOM element to unbind. If not provided, the view element will be used.
+		 */
 		undelegateEvents: function(events, $element)
 		{
 			var event, i, l;
@@ -123,23 +186,33 @@
 			}
 		},
 
+		/**
+			Adds events config to the internal events array.
+
+			@private
+			@param {Array} events Array of arrays of binding config
+		 */
 		addEvents: function(events)
 		{
 			this.options.events = this.options.events.concat(events);
 		},
 
+		/**
+			Initializes the view. Calls the render method. Should not be overloaded by subclasses.
+
+			@private
+			@param
+		 */
 		init: function()
 		{
 			this.render();
 		},
 
-		destroy: function(silent)
-		{
-			this.destroySubviews();
-			this.undelegateEvents();
-			if(!silent) this.trigger('destroy');
-		},
+		/**
+			Renders the view. It will be called automatically. Should not be called directly.
 
+			@param {Boolean} silent If true, the 'render' event won't be called
+		 */
 		render: function(silent)
 		{
 			this.delegateEvents();
@@ -147,6 +220,11 @@
 			if(!silent) this.trigger('init');
 		},
 
+		/**
+			Renders subviews. Will find all DOM descendats with kff.View.DATA_KFF_VIEW (or kff.View.DATA_BIND_ATTR) attribute
+			and initializes subviews on them. If an element has the kff.View.DATA_BIND_ATTR but not the kff.View.DATA_KFF_VIEW
+			attribute, adds kff.View.DATA_KFF_VIEW attribute = "kff.BindingView" and inits implicit data-binding.
+		 */
 		renderSubviews: function()
 		{
 			var viewNames = [],
@@ -211,6 +289,22 @@
 			}
 		},
 
+		/**
+			Destroys the view (destroys all subviews and unbinds previously bound DOM events.
+			It will be called automatically. Should not be called directly.
+
+			@param {Boolean} silent If true, the 'destroy' event won't be called
+		 */
+		destroy: function(silent)
+		{
+			this.destroySubviews();
+			this.undelegateEvents();
+			if(!silent) this.trigger('destroy');
+		},
+
+		/**
+			Destroys the subviews. It will be called automatically. Should not be called directly.
+		 */
 		destroySubviews: function()
 		{
 			var subView, i, l;
@@ -226,9 +320,10 @@
 			this.subViews = [];
 		},
 
-		refresh: function()
-		{
-		}
+		/**
+			Method for refreshing the view. Does nothing in this base class, it's intended to be overloaded in subclasses.
+		 */
+		refresh: function(){}
 
 	});
 
