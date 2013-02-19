@@ -327,4 +327,61 @@
 
 	});
 
+
+	kff.View.helpers =
+	{
+		'index': function(v)
+		{
+			if(this.options && this.options.bindingIndex !== null) return this.options.bindingIndex;
+			return v;
+		},
+
+		'boolean': function(v)
+		{
+			var parsed = parseInt(v, 10);
+			if(!isNaN(parsed)) return !!parsed;
+			return v === 'true';
+		},
+
+		'not': function(v)
+		{
+			return !v;
+		},
+
+		'null': function(v)
+		{
+			return v === null || v === 'null' ? null : v;
+		},
+
+		'int': function(v)
+		{
+			v = parseInt(v, 10);
+			if(isNaN(v)) v = 0;
+			return v;
+		},
+
+		'float': function(v)
+		{
+			v = parseFloat(v);
+			if(isNaN(v)) v = 0;
+			return v;
+		},
+
+
+		'uppercase': function(v)
+		{
+			return (v || '').toUpperCase();
+		},
+
+		'lowercase': function(v)
+		{
+			return (v || '').toLowerCase();
+		},
+
+		'strong': function(v)
+		{
+			return '<strong>' + v + '</strong>';
+		}
+	};
+
 })(this);

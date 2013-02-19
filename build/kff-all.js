@@ -1248,6 +1248,63 @@
 
 	});
 
+
+	kff.View.helpers =
+	{
+		'index': function(v)
+		{
+			if(this.options && this.options.bindingIndex !== null) return this.options.bindingIndex;
+			return v;
+		},
+
+		'boolean': function(v)
+		{
+			var parsed = parseInt(v, 10);
+			if(!isNaN(parsed)) return !!parsed;
+			return v === 'true';
+		},
+
+		'not': function(v)
+		{
+			return !v;
+		},
+
+		'null': function(v)
+		{
+			return v === null || v === 'null' ? null : v;
+		},
+
+		'int': function(v)
+		{
+			v = parseInt(v, 10);
+			if(isNaN(v)) v = 0;
+			return v;
+		},
+
+		'float': function(v)
+		{
+			v = parseFloat(v);
+			if(isNaN(v)) v = 0;
+			return v;
+		},
+
+
+		'uppercase': function(v)
+		{
+			return (v || '').toUpperCase();
+		},
+
+		'lowercase': function(v)
+		{
+			return (v || '').toLowerCase();
+		},
+
+		'strong': function(v)
+		{
+			return '<strong>' + v + '</strong>';
+		}
+	};
+
 })(this);
 
 
@@ -1266,11 +1323,15 @@
 			precedingView: null
 		}
 	},
-	/** @lends kff.PageView.prototype */	
+	/** @lends kff.PageView.prototype */
 	{
 		/**
+			Class for the full page view. PageViews behave as normal views but can be used by FrontController as
+			targets for routing.
+
 			@constructs
 			@augments kff.View
+			@param {Object} options Options object (see kff.View for details)
 		*/
 		constructor: function(options)
 		{
@@ -1279,16 +1340,27 @@
 			return kff.View.call(this, options);
 		},
 
+		/**
+			@see kff.View#delegateEvents
+		*/
 		delegateEvents: function(events, $element)
 		{
 			kff.PageView._super.delegateEvents.call(this, events, $element || $(document));
 		},
 
+		/**
+			@see kff.View#undelegateEvents
+		*/
 		undelegateEvents: function(events, $element)
 		{
 			kff.PageView._super.undelegateEvents.call(this, events, $element || $(document));
 		},
 
+		/**
+			Sets a new state of the view. Called by the front controller.
+
+			@param {Object} state The state object (POJO)
+		*/
 		setState: function(state, silent)
 		{
 			if(!silent) this.trigger('setState', state);
@@ -1317,7 +1389,7 @@
 	{
 		/**
 			@constructs
-		*/		
+		*/
 		constructor: function(options)
 		{
 			options = options || {};
@@ -1593,14 +1665,21 @@
 		}
 	});
 
+})(this);
+(function(scope)
+{
+	var kff;
+
+	if(typeof exports !== 'undefined') kff = exports;
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 
 	kff.Binder = kff.createClass(
-	/** @lends kff.Binder.prototype */			
+	/** @lends kff.Binder.prototype */
 	{
 		/**
 			@constructs
-		*/		
+		*/
 		constructor: function(options)
 		{
 			this.options = options;
@@ -1704,17 +1783,24 @@
 
 	});
 
+})(this);
+(function(scope)
+{
+	var kff;
+
+	if(typeof exports !== 'undefined') kff = exports;
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 
 	kff.ValueBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
-	/** @lends kff.ValueBinder.prototype */				
+	/** @lends kff.ValueBinder.prototype */
 	{
 		/**
 			@constructs
-		*/		
+		*/
 		constructor: function(options)
 		{
 			options = options || {};
@@ -1742,11 +1828,11 @@
 	{
 		extend: kff.Binder
 	},
-	/** @lends kff.CheckBinder.prototype */				
+	/** @lends kff.CheckBinder.prototype */
 	{
 		/**
 			@constructs
-		*/		
+		*/
 		constructor: function(options)
 		{
 			options = options || {};
@@ -1774,11 +1860,11 @@
 	{
 		extend: kff.Binder
 	},
-	/** @lends kff.ClickBinder.prototype */				
+	/** @lends kff.ClickBinder.prototype */
 	{
 		/**
 			@constructs
-		*/		
+		*/
 		constructor: function(options)
 		{
 			options = options || {};
@@ -1807,11 +1893,11 @@
 	{
 		extend: kff.Binder
 	},
-	/** @lends kff.RadioBinder.prototype */				
+	/** @lends kff.RadioBinder.prototype */
 	{
 		/**
 			@constructs
-		*/		
+		*/
 		constructor: function(options)
 		{
 			options = options || {};
@@ -1844,7 +1930,7 @@
 	{
 		extend: kff.Binder
 	},
-	/** @lends kff.TextBinder.prototype */				
+	/** @lends kff.TextBinder.prototype */
 	{
 		init: function()
 		{
@@ -1863,7 +1949,7 @@
 	{
 		extend: kff.Binder
 	},
-	/** @lends kff.HtmlBinder.prototype */				
+	/** @lends kff.HtmlBinder.prototype */
 	{
 		refresh: function()
 		{
@@ -1877,7 +1963,7 @@
 	{
 		extend: kff.Binder
 	},
-	/** @lends kff.ClassBinder.prototype */				
+	/** @lends kff.ClassBinder.prototype */
 	{
 		init: function()
 		{
@@ -1904,7 +1990,7 @@
 	{
 		extend: kff.Binder
 	},
-	/** @lends kff.AttrBinder.prototype */				
+	/** @lends kff.AttrBinder.prototype */
 	{
 		init: function()
 		{
@@ -1939,62 +2025,6 @@
 	// 		}
 	// 	}
 	// });
-
-	kff.View.helpers =
-	{
-		'index': function(v)
-		{
-			if(this.options && this.options.bindingIndex !== null) return this.options.bindingIndex;
-			return v;
-		},
-
-		'boolean': function(v)
-		{
-			var parsed = parseInt(v, 10);
-			if(!isNaN(parsed)) return !!parsed;
-			return v === 'true';
-		},
-
-		'not': function(v)
-		{
-			return !v;
-		},
-
-		'null': function(v)
-		{
-			return v === null || v === 'null' ? null : v;
-		},
-
-		'int': function(v)
-		{
-			v = parseInt(v, 10);
-			if(isNaN(v)) v = 0;
-			return v;
-		},
-
-		'float': function(v)
-		{
-			v = parseFloat(v);
-			if(isNaN(v)) v = 0;
-			return v;
-		},
-
-
-		'uppercase': function(v)
-		{
-			return (v || '').toUpperCase();
-		},
-
-		'lowercase': function(v)
-		{
-			return (v || '').toLowerCase();
-		},
-
-		'strong': function(v)
-		{
-			return '<strong>' + v + '</strong>';
-		}
-	};
 
 
 	kff.BindingView.binders.text = kff.TextBinder;
