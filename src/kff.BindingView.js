@@ -255,6 +255,17 @@
 				this.$elements = this.$elements.add($element);
 				$last.after($element);
 			}
+			if(event && 'removedValue' in event)
+			{
+				if(!this.$elements) this.$elements = $([]);
+				for(var i = 0, l = this.subViews.length; i < l; i++)
+				{
+					if(event.removedValue === this.subViews[i].models['*']) break;
+				}
+
+				this.subViews[i].destroy();
+				this.$elements.eq(i).remove();
+			}
 			else
 			{
 				this.destroySubviews();
