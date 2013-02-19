@@ -396,23 +396,25 @@
 			Appends the item at the end of the collection
 
 			@param {mixed} val Item to be appended
+			@param {Boolean} silent If true, do not trigger event
 		 */
-		append: function(val)
+		append: function(val, silent)
 		{
 			kff.Collection._super.append.call(this, val);
-			this.trigger('change', { addedValue: val });
+			if(!silent) this.trigger('change', { addedValue: val });
 		},
 
 		/**
 			Removes the item from the collection
 
 			@param {mixed} val Reference to the item to be removed
+			@param {Boolean} silent If true, do not trigger event
 			@returns {mixed} Removed item or false if not found
 		 */
-		removeVal: function(val)
+		removeVal: function(val, silent)
 		{
 			var ret = kff.Collection._super.removeVal.call(this, val);
-			if(ret) this.trigger('change', { removedValue: val });
+			if(ret && !silent) this.trigger('change', { removedValue: val });
 			return ret;
 		},
 
@@ -439,8 +441,9 @@
 			Reads collection from JSON representation (= from JavaScript array)
 
 			@param {Array} obj Array to read from
+			@param {Boolean} silent If true, do not trigger event
 		 */
-		fromJson: function(obj)
+		fromJson: function(obj, silent)
 		{
 			var val, valFactory = this.valFactory;
 			this.empty();
@@ -448,10 +451,10 @@
 			{
 				if(valFactory) val = valFactory(obj[i]);
 				else val = new this.valType();
-				val.fromJson(obj[i]);
+				val.fromJson(obj[i], silent);
 				this.append(val);
 			}
-			this.trigger('change', { fromJson: true });
+			if(!silent) this.trigger('change', { fromJson: true });
 		},
 
 		/**
@@ -499,20 +502,23 @@
 
 		/**
 			Removes all items from collection
+
+			@param {Boolean} silent If true, do not trigger event
 		 */
-		empty: function()
+		empty: function(silent)
 		{
 			kff.Collection._super.empty.call(this);
-			this.trigger('change');
+			if(!silent) this.trigger('change');
 		},
 
 		/**
-			Sorts collection using a compare function. The compare function follows the same specification 
+			Sorts collection using a compare function. The compare function follows the same specification
 			as the standard Array.sort function
 
 			@param {function} compareFunction Compare function
+			@param {Boolean} silent If true, do not trigger event
 		 */
-		sort: function(compareFunction)
+		sort: function(compareFunction, silent)
 		{
 			var arr = [], az, bz;
 			this.each(function(item)
@@ -525,7 +531,7 @@
 			{
 				this.append(arr[i]);
 			}
-			this.trigger('change');
+			if(!silent) this.trigger('change');
 		},
 
 		/**
@@ -544,8 +550,10 @@
 
 		/**
 			Randomizes items in the collection.
+
+			@param {Boolean} silent If true, do not trigger event
 		 */
-		shuffle: function()
+		shuffle: function(silent)
 		{
 			var arr = [], az, bz, len, i, p, t;
 			this.each(function(item)
@@ -566,7 +574,7 @@
 			{
 				this.append(arr[i]);
 			}
-			this.trigger('change');
+			if(!silent) this.trigger('change');
 		}
 
 	});
@@ -590,7 +598,7 @@
 			Base class for models
 			@constructs
 		 */
-		constructor: function()
+		constructor: function(attrs)
 		{
 			/**
 				Events object (used by mixed-in methods)
@@ -603,6 +611,8 @@
 				@private
 			*/
 			this.attrs = {};
+
+			if(attrs) this.set(attrs);
 		},
 
 		/**
@@ -656,8 +666,9 @@
 
 			@param {string} attr Attribute name
 			@param {mixed} value Attribute value
+			@param {Boolean} silent If true, do not trigger event
 		 */
-		set: function(attr, value, options)
+		set: function(attr, value, silent)
 		{
 			var changed = {};
 
@@ -665,32 +676,27 @@
 			{
 				if(this.get(attr) === value) return;
 				changed[attr] = value;
-				if(typeof this.validate === 'function')
-				{
-					if(!this.validate(changed)) return;
-				}
 				this.attrs[attr] = value;
 			}
-			else if(attr === Object(attr))
+			else if(attr !== null && attr instanceof Object)
 			{
-				options = value;
+				silent = value;
 				changed = attr;
-				if(typeof this.validate === 'function')
-				{
-					if(!this.validate(changed)) return;
-				}
 				for(var key in changed) this.attrs[key] = changed[key];
 			}
 
-			for(var changedAttr in changed)
+			if(!silent)
 			{
-				this.trigger('change:' + changedAttr, { changedAttributes: changed });
+				for(var changedAttr in changed)
+				{
+					this.trigger('change:' + changedAttr, { changedAttributes: changed });
+				}
+				this.trigger('change', { changedAttributes: changed });
 			}
-			this.trigger('change', { changedAttributes: changed });
 		},
 
 		/**
-			Exports a JSON representation of model attributes. If an attribute is type of Object, tries to call a toJson 
+			Exports a JSON representation of model attributes. If an attribute is type of Object, tries to call a toJson
 			method recursively.	This function returns a plain javascript object, not the stringified JSON.
 
 			@param {Array.<string>} serializeAttrs Array of attribute names to be exported or all if omitted.
@@ -717,8 +723,9 @@
 			This function returns plain object, not stringified JSON.
 
 			@param {Object} obj Plain JS object to read attributes from
+			@param {Boolean} silent If true, do not trigger event
 		 */
-		fromJson: function(obj)
+		fromJson: function(obj, silent)
 		{
 			if(!obj) return;
 			var attrs = {};
@@ -730,7 +737,7 @@
 					else this.attrs[key] = obj[key];
 				}
 			}
-			this.set(this.attrs);
+			this.set(this.attrs, silent);
 		}
 
 	});
@@ -1382,7 +1389,11 @@
 		extend: kff.View,
 		staticProperties:
 		{
-			binders: {}
+			binders: {},
+			registerBinder: function(alias, binder)
+			{
+				kff.BindingView.binders[alias] = binder;
+			}
 		}
 	},
 	/** @lends kff.BindingView.prototype */
@@ -1612,18 +1623,29 @@
 			}
 		},
 
-		refreshBoundViews: function()
+		refreshBoundViews: function(event)
 		{
-			this.destroySubviews();
-			if(this.$elements) this.$elements.remove();
-			this.$elements = $([]);
-
-			this.collectionBinder.collection.each(this.f(function(item, i)
+			if(event && 'addedValue' in event)
 			{
-				this.$elements = this.$elements.add(this.createSubView(item, i));
-			}));
+				if(!this.$elements) this.$elements = $([]);
+				var $last = this.$elements.length === 0 ? this.$anchor : this.$elements.eq(this.$elements.length - 1);
+				var $element = this.createSubView(event.addedValue, this.collectionBinder.collection.count - 1);
+				this.$elements = this.$elements.add($element);
+				$last.after($element);
+			}
+			else
+			{
+				this.destroySubviews();
+				if(this.$elements) this.$elements.remove();
+				this.$elements = $([]);
 
-			this.$anchor.after(this.$elements);
+				this.collectionBinder.collection.each(this.f(function(item, i)
+				{
+					this.$elements = this.$elements.add(this.createSubView(item, i));
+				}));
+
+				this.$anchor.after(this.$elements);
+			}
 		},
 
 		createSubView: function(item, i)
@@ -1792,37 +1814,38 @@
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 
-	kff.ValueBinder = kff.createClass(
+	/** @class */
+	kff.AttrBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
-	/** @lends kff.ValueBinder.prototype */
+	/** @lends kff.AttrBinder.prototype */
 	{
-		/**
-			@constructs
-		*/
-		constructor: function(options)
+		init: function()
 		{
-			options = options || {};
-			options.events = [
-				['keydown drop change', 'inputChange']
-			];
-			kff.Binder.call(this, options);
-		},
-
-		inputChange: function(event)
-		{
-			setTimeout(this.f(function()
-			{
-				this.updateModel(this.$element.val());
-			}), 0);
+			this.attribute = this.params[0] || null;
+			this.prefix = this.params[1] || null;
+			// this.prefix = this.$element.attr('data-kff-prefix') || '';
+			kff.AttrBinder._super.init.call(this);
 		},
 
 		refresh: function()
 		{
-			this.$element.val(this.getFormattedValue());
+			if(this.attribute) this.$element.attr(this.attribute, this.prefix + this.getFormattedValue());
 		}
 	});
+
+	kff.BindingView.registerBinder('attr', kff.AttrBinder);
+
+
+})(this);
+(function(scope)
+{
+	var kff;
+
+	if(typeof exports !== 'undefined') kff = exports;
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
+
 
 	kff.CheckBinder = kff.createClass(
 	{
@@ -1856,6 +1879,56 @@
 		}
 	});
 
+	kff.BindingView.registerBinder('check', kff.CheckBinder);
+
+
+})(this);
+(function(scope)
+{
+	var kff;
+
+	if(typeof exports !== 'undefined') kff = exports;
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
+
+	/** @class */
+	kff.ClassBinder = kff.createClass(
+	{
+		extend: kff.Binder
+	},
+	/** @lends kff.ClassBinder.prototype */
+	{
+		init: function()
+		{
+			this.className = this.params[0] || null;
+			this.equalsTo = this.params[1] || null;
+			kff.ClassBinder._super.init.call(this);
+		},
+
+		refresh: function()
+		{
+			if(this.className) this.$element[this.matchValue() ? 'addClass' : 'removeClass'](this.className);
+		},
+
+		matchValue: function()
+		{
+			if(this.equalsTo) return this.values[this.valueIndex] === this.parse(this.equalsTo);
+			else return this.values[this.valueIndex];
+		}
+	});
+
+
+	kff.BindingView.registerBinder('class', kff.ClassBinder);
+
+
+})(this);
+(function(scope)
+{
+	var kff;
+
+	if(typeof exports !== 'undefined') kff = exports;
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
+
+
 	kff.ClickBinder = kff.createClass(
 	{
 		extend: kff.Binder
@@ -1888,6 +1961,41 @@
 			}), 0);
 		}
 	});
+
+	kff.BindingView.registerBinder('click', kff.ClickBinder);
+
+
+})(this);
+(function(scope)
+{
+	var kff;
+
+	if(typeof exports !== 'undefined') kff = exports;
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
+
+
+	/** @class */
+	kff.HtmlBinder = kff.createClass(
+	{
+		extend: kff.Binder
+	},
+	/** @lends kff.HtmlBinder.prototype */
+	{
+		refresh: function()
+		{
+			this.$element.html(this.values.join(' '));
+		}
+	});
+
+	kff.BindingView.registerBinder('html', kff.HtmlBinder);
+
+})(this);
+(function(scope)
+{
+	var kff;
+
+	if(typeof exports !== 'undefined') kff = exports;
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 	kff.RadioBinder = kff.createClass(
 	{
@@ -1924,6 +2032,16 @@
 		}
 	});
 
+	kff.BindingView.registerBinder('radio', kff.RadioBinder);
+
+
+})(this);
+(function(scope)
+{
+	var kff;
+
+	if(typeof exports !== 'undefined') kff = exports;
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 	/** @class */
 	kff.TextBinder = kff.createClass(
@@ -1944,97 +2062,51 @@
 	});
 
 
-	/** @class */
-	kff.HtmlBinder = kff.createClass(
+	kff.BindingView.registerBinder('text', kff.TextBinder);
+
+
+})(this);
+(function(scope)
+{
+	var kff;
+
+	if(typeof exports !== 'undefined') kff = exports;
+	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
+
+
+	kff.ValueBinder = kff.createClass(
 	{
 		extend: kff.Binder
 	},
-	/** @lends kff.HtmlBinder.prototype */
+	/** @lends kff.ValueBinder.prototype */
 	{
-		refresh: function()
+		/**
+			@constructs
+		*/
+		constructor: function(options)
 		{
-			this.$element.html(this.values.join(' '));
-		}
-	});
+			options = options || {};
+			options.events = [
+				['keydown drop change', 'inputChange']
+			];
+			kff.Binder.call(this, options);
+		},
 
-
-	/** @class */
-	kff.ClassBinder = kff.createClass(
-	{
-		extend: kff.Binder
-	},
-	/** @lends kff.ClassBinder.prototype */
-	{
-		init: function()
+		inputChange: function(event)
 		{
-			this.className = this.params[0] || null;
-			this.equalsTo = this.params[1] || null;
-			kff.ClassBinder._super.init.call(this);
+			setTimeout(this.f(function()
+			{
+				this.updateModel(this.$element.val());
+			}), 0);
 		},
 
 		refresh: function()
 		{
-			if(this.className) this.$element[this.matchValue() ? 'addClass' : 'removeClass'](this.className);
-		},
-
-		matchValue: function()
-		{
-			if(this.equalsTo) return this.values[this.valueIndex] === this.parse(this.equalsTo);
-			else return this.values[this.valueIndex];
+			this.$element.val(this.getFormattedValue());
 		}
 	});
 
-
-	/** @class */
-	kff.AttrBinder = kff.createClass(
-	{
-		extend: kff.Binder
-	},
-	/** @lends kff.AttrBinder.prototype */
-	{
-		init: function()
-		{
-			this.attribute = this.params[0] || null;
-			this.prefix = this.params[1] || null;
-			// this.prefix = this.$element.attr('data-kff-prefix') || '';
-			kff.AttrBinder._super.init.call(this);
-		},
-
-		refresh: function()
-		{
-			if(this.attribute) this.$element.attr(this.attribute, this.prefix + this.getFormattedValue());
-		}
-	});
-
-
-	/**
-	 * kff.TemplateView
-	 */
-
-	// kff.TemplateView = kff.createClass(
-	// {
-	// 	extend: kff.Binder
-	// },
-	// {
-	// 	refresh: function(value)
-	// 	{
-	// 		thit.destroySubViews();
-	// 		if(this.options.template && this.models['*'])
-	// 		{
-	// 			this.$element.html(this.options.template(this.models['*'].toJson()));
-	// 		}
-	// 	}
-	// });
-
-
-	kff.BindingView.binders.text = kff.TextBinder;
-	kff.BindingView.binders['class'] = kff.ClassBinder;
-	kff.BindingView.binders.val = kff.ValueBinder;
-	kff.BindingView.binders.check = kff.CheckBinder;
-	kff.BindingView.binders.radio = kff.RadioBinder;
-	kff.BindingView.binders.html = kff.HtmlBinder;
-	kff.BindingView.binders.attr = kff.AttrBinder;
-	kff.BindingView.binders.click = kff.ClickBinder;
+	kff.BindingView.registerBinder('val', kff.ValueBinder);
 
 
 })(this);

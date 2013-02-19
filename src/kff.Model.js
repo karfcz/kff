@@ -15,7 +15,7 @@
 			Base class for models
 			@constructs
 		 */
-		constructor: function()
+		constructor: function(attrs)
 		{
 			/**
 				Events object (used by mixed-in methods)
@@ -28,6 +28,8 @@
 				@private
 			*/
 			this.attrs = {};
+
+			if(attrs) this.set(attrs);
 		},
 
 		/**
@@ -81,8 +83,9 @@
 
 			@param {string} attr Attribute name
 			@param {mixed} value Attribute value
+			@param {Boolean} silent If true, do not trigger event
 		 */
-		set: function(attr, value, options)
+		set: function(attr, value, silent)
 		{
 			var changed = {};
 
@@ -90,32 +93,27 @@
 			{
 				if(this.get(attr) === value) return;
 				changed[attr] = value;
-				if(typeof this.validate === 'function')
-				{
-					if(!this.validate(changed)) return;
-				}
 				this.attrs[attr] = value;
 			}
-			else if(attr === Object(attr))
+			else if(attr !== null && attr instanceof Object)
 			{
-				options = value;
+				silent = value;
 				changed = attr;
-				if(typeof this.validate === 'function')
-				{
-					if(!this.validate(changed)) return;
-				}
 				for(var key in changed) this.attrs[key] = changed[key];
 			}
 
-			for(var changedAttr in changed)
+			if(!silent)
 			{
-				this.trigger('change:' + changedAttr, { changedAttributes: changed });
+				for(var changedAttr in changed)
+				{
+					this.trigger('change:' + changedAttr, { changedAttributes: changed });
+				}
+				this.trigger('change', { changedAttributes: changed });
 			}
-			this.trigger('change', { changedAttributes: changed });
 		},
 
 		/**
-			Exports a JSON representation of model attributes. If an attribute is type of Object, tries to call a toJson 
+			Exports a JSON representation of model attributes. If an attribute is type of Object, tries to call a toJson
 			method recursively.	This function returns a plain javascript object, not the stringified JSON.
 
 			@param {Array.<string>} serializeAttrs Array of attribute names to be exported or all if omitted.
@@ -142,8 +140,9 @@
 			This function returns plain object, not stringified JSON.
 
 			@param {Object} obj Plain JS object to read attributes from
+			@param {Boolean} silent If true, do not trigger event
 		 */
-		fromJson: function(obj)
+		fromJson: function(obj, silent)
 		{
 			if(!obj) return;
 			var attrs = {};
@@ -155,7 +154,7 @@
 					else this.attrs[key] = obj[key];
 				}
 			}
-			this.set(this.attrs);
+			this.set(this.attrs, silent);
 		}
 
 	});

@@ -11,7 +11,11 @@
 		extend: kff.View,
 		staticProperties:
 		{
-			binders: {}
+			binders: {},
+			registerBinder: function(alias, binder)
+			{
+				kff.BindingView.binders[alias] = binder;
+			}
 		}
 	},
 	/** @lends kff.BindingView.prototype */
@@ -241,18 +245,29 @@
 			}
 		},
 
-		refreshBoundViews: function()
+		refreshBoundViews: function(event)
 		{
-			this.destroySubviews();
-			if(this.$elements) this.$elements.remove();
-			this.$elements = $([]);
-
-			this.collectionBinder.collection.each(this.f(function(item, i)
+			if(event && 'addedValue' in event)
 			{
-				this.$elements = this.$elements.add(this.createSubView(item, i));
-			}));
+				if(!this.$elements) this.$elements = $([]);
+				var $last = this.$elements.length === 0 ? this.$anchor : this.$elements.eq(this.$elements.length - 1);
+				var $element = this.createSubView(event.addedValue, this.collectionBinder.collection.count - 1);
+				this.$elements = this.$elements.add($element);
+				$last.after($element);
+			}
+			else
+			{
+				this.destroySubviews();
+				if(this.$elements) this.$elements.remove();
+				this.$elements = $([]);
 
-			this.$anchor.after(this.$elements);
+				this.collectionBinder.collection.each(this.f(function(item, i)
+				{
+					this.$elements = this.$elements.add(this.createSubView(item, i));
+				}));
+
+				this.$anchor.after(this.$elements);
+			}
 		},
 
 		createSubView: function(item, i)

@@ -36,23 +36,25 @@
 			Appends the item at the end of the collection
 
 			@param {mixed} val Item to be appended
+			@param {Boolean} silent If true, do not trigger event
 		 */
-		append: function(val)
+		append: function(val, silent)
 		{
 			kff.Collection._super.append.call(this, val);
-			this.trigger('change', { addedValue: val });
+			if(!silent) this.trigger('change', { addedValue: val });
 		},
 
 		/**
 			Removes the item from the collection
 
 			@param {mixed} val Reference to the item to be removed
+			@param {Boolean} silent If true, do not trigger event
 			@returns {mixed} Removed item or false if not found
 		 */
-		removeVal: function(val)
+		removeVal: function(val, silent)
 		{
 			var ret = kff.Collection._super.removeVal.call(this, val);
-			if(ret) this.trigger('change', { removedValue: val });
+			if(ret && !silent) this.trigger('change', { removedValue: val });
 			return ret;
 		},
 
@@ -79,8 +81,9 @@
 			Reads collection from JSON representation (= from JavaScript array)
 
 			@param {Array} obj Array to read from
+			@param {Boolean} silent If true, do not trigger event
 		 */
-		fromJson: function(obj)
+		fromJson: function(obj, silent)
 		{
 			var val, valFactory = this.valFactory;
 			this.empty();
@@ -88,10 +91,10 @@
 			{
 				if(valFactory) val = valFactory(obj[i]);
 				else val = new this.valType();
-				val.fromJson(obj[i]);
+				val.fromJson(obj[i], silent);
 				this.append(val);
 			}
-			this.trigger('change', { fromJson: true });
+			if(!silent) this.trigger('change', { fromJson: true });
 		},
 
 		/**
@@ -139,20 +142,23 @@
 
 		/**
 			Removes all items from collection
+
+			@param {Boolean} silent If true, do not trigger event
 		 */
-		empty: function()
+		empty: function(silent)
 		{
 			kff.Collection._super.empty.call(this);
-			this.trigger('change');
+			if(!silent) this.trigger('change');
 		},
 
 		/**
-			Sorts collection using a compare function. The compare function follows the same specification 
+			Sorts collection using a compare function. The compare function follows the same specification
 			as the standard Array.sort function
 
 			@param {function} compareFunction Compare function
+			@param {Boolean} silent If true, do not trigger event
 		 */
-		sort: function(compareFunction)
+		sort: function(compareFunction, silent)
 		{
 			var arr = [], az, bz;
 			this.each(function(item)
@@ -165,7 +171,7 @@
 			{
 				this.append(arr[i]);
 			}
-			this.trigger('change');
+			if(!silent) this.trigger('change');
 		},
 
 		/**
@@ -184,8 +190,10 @@
 
 		/**
 			Randomizes items in the collection.
+
+			@param {Boolean} silent If true, do not trigger event
 		 */
-		shuffle: function()
+		shuffle: function(silent)
 		{
 			var arr = [], az, bz, len, i, p, t;
 			this.each(function(item)
@@ -206,7 +214,7 @@
 			{
 				this.append(arr[i]);
 			}
-			this.trigger('change');
+			if(!silent) this.trigger('change');
 		}
 
 	});
