@@ -285,7 +285,7 @@
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 	kff.List = kff.createClass(
-	/** @lends kff.List */
+	/** @lends kff.List.prototype */
 	{
 		/**
 			Class representing a list data structure
@@ -379,6 +379,25 @@
 		sort: function(compareFunction)
 		{
 			this.array.sort(compareFunction);
+		},
+
+		/**
+			Randomizes items in the list.
+		 */
+		shuffle: function()
+		{
+			var arr = this.array,
+				len = arr.length,
+				i = len,
+				p, t;
+
+			while(i--)
+			{
+				p = parseInt(Math.random()*len, 10);
+				t = arr[i];
+				arr[i] = arr[p];
+				arr[p] = t;
+			}
 		}
 
 	});
@@ -404,6 +423,7 @@
 			Class representing a collection of models.
 
 			@constructs
+			@augments kff.List
 			@param {Object} options Options object
 			@param {function} options.valFactory Factory function for creating new collection items (optional)
 			@param {function} options.valType Type (class or constructor function) of collection items
@@ -550,25 +570,7 @@
 		 */
 		shuffle: function(silent)
 		{
-			var arr = [], az, bz, len, i, p, t;
-			this.each(function(item)
-			{
-				arr.push(item);
-			});
-
-			len = arr.length, i = len;
-			while(i--)
-			{
-				p = parseInt(Math.random()*len, 10);
-				t = arr[i];
-				arr[i] = arr[p];
-				arr[p] = t;
-			}
-			this.empty();
-			for(i = 0; i < arr.length; i++)
-			{
-				this.append(arr[i]);
-			}
+			kff.Collection._super.shuffle.call(this);
 			if(!silent) this.trigger('change');
 		}
 
@@ -1421,21 +1423,7 @@
 			this.initBinding();
 			if(this.collectionBinder) this.renderBoundViews();
 			kff.BindingView._super.render.call(this, silent);
-			this.modelChange();
-		},
-
-		modelChange: function()
-		{
-			for(var b in this.modelBinders)
-			{
-				for(var i = 0, mb = this.modelBinders[b], l = mb.length; i < l; i++) mb[i].modelChange(true);
-			}
-		},
-
-		refreshBinders: function()
-		{
-			this.modelChange();
-			kff.BindingView._super.refreshBinders.call(this);
+			this.refreshOwnBinders();
 		},
 
 		destroy: function(silent)
@@ -1679,7 +1667,6 @@
 
 			this.subViewOptions.element = $element;
 			this.subViewOptions.models = { '*': item };
-			// this.subViewOptions.bindingIndex = i;
 			this.subViewOptions.isBoundView = true;
 			var subView = this.viewFactory.createView(this.subViewName, this.subViewOptions);
 			if(subView instanceof kff.View)
@@ -1704,6 +1691,20 @@
 			if(this.collectionBinder && !isNaN(modelIndex)) return this.collectionBinder.collection.findByIndex(modelIndex);
 
 			return kff.BindingView._super.getModel.call(this, modelPath);
+		},
+
+		refreshOwnBinders: function()
+		{
+			for(var b in this.modelBinders)
+			{
+				for(var i = 0, mb = this.modelBinders[b], l = mb.length; i < l; i++) mb[i].modelChange(true);
+			}
+		},
+
+		refreshBinders: function()
+		{
+			this.refreshOwnBinders();
+			kff.BindingView._super.refreshBinders.call(this);
 		},
 
 		getBindingIndex: function()

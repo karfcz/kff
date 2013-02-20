@@ -213,7 +213,7 @@ ul.inheritsList
 	
 	<li><a href="../symbols/kff.HtmlBinder.html">kff.HtmlBinder</a></li>
 	
-	<li><a href="../symbols/kff.LinkedList.html">kff.LinkedList</a></li>
+	<li><a href="../symbols/kff.List.html">kff.List</a></li>
 	
 	<li><a href="../symbols/kff.Model.html">kff.Model</a></li>
 	
@@ -263,21 +263,27 @@ ul.inheritsList
 						
 							<li><a href="../symbols/kff.BindingView.html#destroyCollectionCountBindings">destroyCollectionCountBindings</a></li>
 						
+							<li><a href="../symbols/kff.BindingView.html#getBindingIndex">getBindingIndex</a></li>
+						
 							<li><a href="../symbols/kff.BindingView.html#getModel">getModel</a></li>
 						
 							<li><a href="../symbols/kff.BindingView.html#initBinding">initBinding</a></li>
 						
-							<li><a href="../symbols/kff.BindingView.html#modelChange">modelChange</a></li>
-						
 							<li><a href="../symbols/kff.BindingView.html#parseModifiers">parseModifiers</a></li>
 						
+							<li><a href="../symbols/kff.BindingView.html#refreshBinders">refreshBinders</a></li>
+						
 							<li><a href="../symbols/kff.BindingView.html#refreshBoundViews">refreshBoundViews</a></li>
+						
+							<li><a href="../symbols/kff.BindingView.html#refreshOwnBinders">refreshOwnBinders</a></li>
 						
 							<li><a href="../symbols/kff.BindingView.html#render">render</a></li>
 						
 							<li><a href="../symbols/kff.BindingView.html#renderBoundViews">renderBoundViews</a></li>
 						
 							<li><a href="../symbols/kff.BindingView.html#renderSubViews">renderSubViews</a></li>
+						
+							<li><a href="../symbols/kff.BindingView.html#setBindingIndex">setBindingIndex</a></li>
 						
 					</ul>
 				
@@ -439,6 +445,18 @@ ul.inheritsList
 								
 							</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#getBindingIndex">getBindingIndex</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#getModel">getModel</a></b>(modelPath)
 								</div>
 								<div class="description"></div>
@@ -463,18 +481,6 @@ ul.inheritsList
 								
 							</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#modelChange">modelChange</a></b>()
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">
-								
-								
-							</td>
-							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#parseModifiers">parseModifiers</a></b>(modifierParams, modifiers)
 								</div>
 								<div class="description"></div>
@@ -487,7 +493,31 @@ ul.inheritsList
 								
 							</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#refreshBoundViews">refreshBoundViews</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#refreshBinders">refreshBinders</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#refreshBoundViews">refreshBoundViews</a></b>(event)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#refreshOwnBinders">refreshOwnBinders</a></b>()
 								</div>
 								<div class="description"></div>
 							</td>
@@ -524,6 +554,18 @@ ul.inheritsList
 							</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#renderSubViews">renderSubViews</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#setBindingIndex">setBindingIndex</a></b>(index)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -813,6 +855,31 @@ ul.inheritsList
 
 					<hr />
 				
+					<a name="getBindingIndex"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getBindingIndex</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="getModel"> </a>
 					<div class="fixedFont">
 					
@@ -854,31 +921,6 @@ ul.inheritsList
 					
 					
 					<b>initBinding</b>()
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="modelChange"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>modelChange</b>()
 					
 					</div>
 					<div class="description">
@@ -941,11 +983,72 @@ ul.inheritsList
 
 					<hr />
 				
+					<a name="refreshBinders"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>refreshBinders</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="refreshBoundViews"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>refreshBoundViews</b>()
+					<b>refreshBoundViews</b>(event)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>event</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="refreshOwnBinders"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>refreshOwnBinders</b>()
 					
 					</div>
 					<div class="description">
@@ -1050,6 +1153,42 @@ ul.inheritsList
 						
 						
 
+					<hr />
+				
+					<a name="setBindingIndex"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setBindingIndex</b>(index)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>index</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
 					
 				
 			
@@ -1064,7 +1203,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Tue Feb 19 2013 10:50:04 GMT+0100 (Střední Evropa (běžný čas))
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Feb 20 2013 14:02:47 GMT+0100 (Střední Evropa (běžný čas))
 		</div>
 	</body>
 </html>

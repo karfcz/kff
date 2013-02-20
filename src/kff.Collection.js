@@ -17,6 +17,7 @@
 			Class representing a collection of models.
 
 			@constructs
+			@augments kff.List
 			@param {Object} options Options object
 			@param {function} options.valFactory Factory function for creating new collection items (optional)
 			@param {function} options.valType Type (class or constructor function) of collection items
@@ -163,25 +164,7 @@
 		 */
 		shuffle: function(silent)
 		{
-			var arr = [], az, bz, len, i, p, t;
-			this.each(function(item)
-			{
-				arr.push(item);
-			});
-
-			len = arr.length, i = len;
-			while(i--)
-			{
-				p = parseInt(Math.random()*len, 10);
-				t = arr[i];
-				arr[i] = arr[p];
-				arr[p] = t;
-			}
-			this.empty();
-			for(i = 0; i < arr.length; i++)
-			{
-				this.append(arr[i]);
-			}
+			kff.Collection._super.shuffle.call(this);
 			if(!silent) this.trigger('change');
 		}
 

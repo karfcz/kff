@@ -13,7 +13,7 @@
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 	kff.List = kff.createClass(
-	/** @lends kff.List */
+	/** @lends kff.List.prototype */
 	{
 		/**
 			Class representing a list data structure
@@ -107,6 +107,25 @@
 		sort: function(compareFunction)
 		{
 			this.array.sort(compareFunction);
+		},
+
+		/**
+			Randomizes items in the list.
+		 */
+		shuffle: function()
+		{
+			var arr = this.array,
+				len = arr.length,
+				i = len,
+				p, t;
+
+			while(i--)
+			{
+				p = parseInt(Math.random()*len, 10);
+				t = arr[i];
+				arr[i] = arr[p];
+				arr[p] = t;
+			}
 		}
 
 	});

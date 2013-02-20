@@ -42,21 +42,7 @@
 			this.initBinding();
 			if(this.collectionBinder) this.renderBoundViews();
 			kff.BindingView._super.render.call(this, silent);
-			this.modelChange();
-		},
-
-		modelChange: function()
-		{
-			for(var b in this.modelBinders)
-			{
-				for(var i = 0, mb = this.modelBinders[b], l = mb.length; i < l; i++) mb[i].modelChange(true);
-			}
-		},
-
-		refreshBinders: function()
-		{
-			this.modelChange();
-			kff.BindingView._super.refreshBinders.call(this);
+			this.refreshOwnBinders();
 		},
 
 		destroy: function(silent)
@@ -300,7 +286,6 @@
 
 			this.subViewOptions.element = $element;
 			this.subViewOptions.models = { '*': item };
-			// this.subViewOptions.bindingIndex = i;
 			this.subViewOptions.isBoundView = true;
 			var subView = this.viewFactory.createView(this.subViewName, this.subViewOptions);
 			if(subView instanceof kff.View)
@@ -325,6 +310,20 @@
 			if(this.collectionBinder && !isNaN(modelIndex)) return this.collectionBinder.collection.findByIndex(modelIndex);
 
 			return kff.BindingView._super.getModel.call(this, modelPath);
+		},
+
+		refreshOwnBinders: function()
+		{
+			for(var b in this.modelBinders)
+			{
+				for(var i = 0, mb = this.modelBinders[b], l = mb.length; i < l; i++) mb[i].modelChange(true);
+			}
+		},
+
+		refreshBinders: function()
+		{
+			this.refreshOwnBinders();
+			kff.BindingView._super.refreshBinders.call(this);
 		},
 
 		getBindingIndex: function()
