@@ -12,14 +12,23 @@
 	if(typeof exports !== 'undefined') kff = exports;
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
-	kff.LinkedList = kff.createClass(
+	kff.List = kff.createClass(
+	/** @lends kff.List */
 	{
+		/**
+			Class representing a list data structure
+			@constructs
+		 */
 		constructor: function()
 		{
 			this.array = [];
 			this.count = this.array.length;
 		},
 
+		/**
+			Iterates over each item in the list
+			@param {function} fn A callback function to be called on each item. Takes two arguments - the iterated item and its index
+		 */
 		each: function(fn)
 		{
 			var a = this.array, l = a.length, i = 0;
@@ -29,12 +38,21 @@
 			}
 		},
 
+		/**
+			Appends an item at the end of the list
+			@param {mixed} val Item to be appended
+		 */
 		append: function(val)
 		{
 			this.array.push(val);
 			this.count++;
 		},
 
+		/**
+			Removes item from the list
+			@param {mixed} val Reference to the item to be removed
+			@returns {Boolean} True if item was removed or false if not found
+		 */
 		removeVal: function(val)
 		{
 			var i = this.indexOf(val);
@@ -46,12 +64,21 @@
 			return true;
 		},
 
+		/**
+			Removes all items from the list
+		 */
 		empty: function()
 		{
 			this.array = [];
 			this.count = 0;
 		},
 
+		/**
+			Returns an index of given item
+
+			@param {mixed} val Value to be found
+			@returns {number} index of the item or -1 if not found
+		 */
 		indexOf: function(val)
 		{
 			var i = 0, a = this.array, l = a.length;
@@ -63,6 +90,8 @@
 		/**
 			Returns an item at given position
 
+			@param {number} index Index of item
+			@returns {mixed} Item at given position (or undefined if not found)
 		 */
 		findByIndex: function(index)
 		{

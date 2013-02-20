@@ -7,7 +7,7 @@
 	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
 
 	kff.Events = kff.createClass(
-	/** @lends kff.Events.prototype */	
+	/** @lends kff.Events.prototype */
 	{
 		/**
 			@constructs
@@ -40,7 +40,7 @@
 			}
 			else
 			{
-				if(!this.subscribers[eventType]) this.subscribers[eventType] = new kff.LinkedList();
+				if(!this.subscribers[eventType]) this.subscribers[eventType] = new kff.List();
 				this.subscribers[eventType].append(fn);
 			}
 		},
@@ -76,7 +76,7 @@
 			}
 			else
 			{
-				if(this.subscribers[eventType] instanceof kff.LinkedList) this.subscribers[eventType].removeVal(fn);
+				if(this.subscribers[eventType] instanceof kff.List) this.subscribers[eventType].removeVal(fn);
 			}
 		},
 
@@ -98,7 +98,7 @@
 			}
 			else
 			{
-				if(this.subscribers[eventType] instanceof kff.LinkedList)
+				if(this.subscribers[eventType] instanceof kff.List)
 				{
 					this.subscribers[eventType].each(function(val)
 					{

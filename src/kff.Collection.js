@@ -8,7 +8,7 @@
 
 	kff.Collection = kff.createClass(
 	{
-		extend: kff.LinkedList,
+		extend: kff.List,
 		mixins: kff.EventsMixin
 	},
 	/** @lends kff.Collection.prototype	*/
@@ -28,7 +28,7 @@
 			this.valType = options.valType || kff.Model;
 			this.serializeAttrs = options.serializeAttrs || null;
 			this.events = new kff.Events();
-			kff.LinkedList.call(this);
+			kff.List.call(this);
 			return this;
 		},
 
