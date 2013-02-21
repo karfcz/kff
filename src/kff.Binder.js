@@ -39,6 +39,9 @@
 		{
 			this.model.off('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
 			this.undelegateEvents.call(this, this.options.events);
+			this.currentValue = null;
+			this.values[this.valueIndex] = null;
+			// this.refresh(); // Vrácení do původního stavu dělá problém s bindingy v kolekcích
 		},
 
 		delegateEvents: kff.View.prototype.delegateEvents,

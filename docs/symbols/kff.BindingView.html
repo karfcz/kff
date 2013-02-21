@@ -249,7 +249,11 @@ ul.inheritsList
 					<h2>Methods</h2>
 					<ul class="methodList">
 						
+							<li><a href="../symbols/kff.BindingView.html#addSubViewAt">addSubViewAt</a></li>
+						
 							<li><a href="../symbols/kff.BindingView.html#bindCollectionCount">bindCollectionCount</a></li>
+						
+							<li><a href="../symbols/kff.BindingView.html#collectionItemChange">collectionItemChange</a></li>
 						
 							<li><a href="../symbols/kff.BindingView.html#concat">concat</a></li>
 						
@@ -276,6 +280,12 @@ ul.inheritsList
 							<li><a href="../symbols/kff.BindingView.html#refreshBoundViews">refreshBoundViews</a></li>
 						
 							<li><a href="../symbols/kff.BindingView.html#refreshOwnBinders">refreshOwnBinders</a></li>
+						
+							<li>kff.BindingView.<a href="../symbols/kff.BindingView.html#.registerBinder">registerBinder</a></li>
+						
+							<li><a href="../symbols/kff.BindingView.html#reindexSubviews">reindexSubviews</a></li>
+						
+							<li><a href="../symbols/kff.BindingView.html#removeSubViewAt">removeSubViewAt</a></li>
 						
 							<li><a href="../symbols/kff.BindingView.html#render">render</a></li>
 						
@@ -305,6 +315,8 @@ ul.inheritsList
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
 				
+				<br />Extends
+					<a href="../symbols/kff.View.html">kff.View</a>.<br />
 				
 			
 				
@@ -331,7 +343,7 @@ ul.inheritsList
 							<div class="fixedFont">
 								<b><a href="../symbols/kff.BindingView.html#constructor">kff.BindingView</a></b>(options)
 							</div>
-							<div class="description"></div>
+							<div class="description">Specialized View class for two-way data binding.</div>
 						</td>
 					</tr>
 				</tbody>
@@ -361,7 +373,31 @@ ul.inheritsList
 								
 							</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#addSubViewAt">addSubViewAt</a></b>(collectionIndex, renderIndex)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#bindCollectionCount">bindCollectionCount</a></b>(collection)
+								</div>
+								<div class="description">Special binding for Collection count property which is not bindable in a standard way.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#collectionItemChange">collectionItemChange</a></b>(event)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -399,7 +435,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#destroy">destroy</a></b>(silent)
 								</div>
-								<div class="description"></div>
+								<div class="description">Destroys the view including bindings.</div>
 							</td>
 						</tr>
 					
@@ -411,7 +447,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#destroyBinding">destroyBinding</a></b>()
 								</div>
-								<div class="description"></div>
+								<div class="description">Destroys all bindings</div>
 							</td>
 						</tr>
 					
@@ -423,7 +459,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#destroyBoundViews">destroyBoundViews</a></b>()
 								</div>
-								<div class="description"></div>
+								<div class="description">Destroys previously bound views.</div>
 							</td>
 						</tr>
 					
@@ -435,7 +471,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#destroyCollectionCountBindings">destroyCollectionCountBindings</a></b>()
 								</div>
-								<div class="description"></div>
+								<div class="description">Destroys all collectin count bindings previously created by the bindCollectionCount method</div>
 							</td>
 						</tr>
 					
@@ -471,7 +507,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#initBinding">initBinding</a></b>()
 								</div>
-								<div class="description"></div>
+								<div class="description">Initializes all bindings.</div>
 							</td>
 						</tr>
 					
@@ -483,7 +519,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#parseModifiers">parseModifiers</a></b>(modifierParams, modifiers)
 								</div>
-								<div class="description"></div>
+								<div class="description">Parses modifier parameters of binding.</div>
 							</td>
 						</tr>
 					
@@ -507,7 +543,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#refreshBoundViews">refreshBoundViews</a></b>(event)
 								</div>
-								<div class="description"></div>
+								<div class="description">Updates bound views when collection changes.</div>
 							</td>
 						</tr>
 					
@@ -526,10 +562,22 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">
 								
+								&lt;static&gt; 
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont">kff.BindingView.<b><a href="../symbols/kff.BindingView.html#.registerBinder">registerBinder</a></b>(alias, binder)
+								</div>
+								<div class="description">Registers binder class</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
 								
 							</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#render">render</a></b>(silent)
+								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#reindexSubviews">reindexSubviews</a></b>(from, to)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -541,9 +589,33 @@ ul.inheritsList
 								
 							</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#renderBoundViews">renderBoundViews</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#removeSubViewAt">removeSubViewAt</a></b>(renderIndex)
 								</div>
 								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#render">render</a></b>(silent)
+								</div>
+								<div class="description">Renders the view and inits bindings.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#renderBoundViews">renderBoundViews</a></b>()
+								</div>
+								<div class="description">Renders "bound" views.</div>
 							</td>
 						</tr>
 					
@@ -576,6 +648,10 @@ ul.inheritsList
 				
 				
 				
+				<dl class="inheritsList">
+				<dt>Methods borrowed from class <a href="../symbols/kff.View.html">kff.View</a>: </dt><dd><a href="../symbols/kff.View.html#delegateEvents">delegateEvents</a>, <a href="../symbols/kff.View.html#destroySubviews">destroySubviews</a>, <a href="../symbols/kff.View.html#refresh">refresh</a>, <a href="../symbols/kff.View.html#renderSubviews">renderSubviews</a>, <a href="../symbols/kff.View.html#undelegateEvents">undelegateEvents</a></dd>
+				</dl>
+				
 			
 <!-- ============================== events summary ======================== -->
 			
@@ -592,7 +668,7 @@ ul.inheritsList
 				</div>
 				
 				<div class="description">
-					
+					Specialized View class for two-way data binding.
 					
 				</div>
 				
@@ -630,11 +706,11 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
-					<a name="bindCollectionCount"> </a>
+					<a name="addSubViewAt"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>bindCollectionCount</b>(collection)
+					<b>addSubViewAt</b>(collectionIndex, renderIndex)
 					
 					</div>
 					<div class="description">
@@ -650,7 +726,87 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>collection</b>
+									<b>collectionIndex</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>renderIndex</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="bindCollectionCount"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>bindCollectionCount</b>(collection)
+					
+					</div>
+					<div class="description">
+						Special binding for Collection count property which is not bindable in a standard way.
+			Creates a proxy model object that observes the collection for a change event and mirrors the
+			count property of collection in the count attribute of the proxy model.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/kff.Collection.html">kff.Collection</a>}</span> <b>collection</b>
+									
+								</dt>
+								<dd>The collection to be observed</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="collectionItemChange"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>collectionItemChange</b>(event)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>event</b>
 									
 								</dt>
 								<dd></dd>
@@ -752,7 +908,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						
+						Destroys the view including bindings.
 						
 						
 					</div>
@@ -764,10 +920,10 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>silent</b>
+									<span class="light fixedFont">{Boolean}</span> <b>silent</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>If true, does not trigger events</dd>
 							
 							</dl>
 						
@@ -788,7 +944,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						
+						Destroys all bindings
 						
 						
 					</div>
@@ -813,7 +969,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						
+						Destroys previously bound views.
 						
 						
 					</div>
@@ -838,7 +994,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						
+						Destroys all collectin count bindings previously created by the bindCollectionCount method
 						
 						
 					</div>
@@ -924,7 +1080,9 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						
+						Initializes all bindings.
+
+			Parses data-kff-bind attribute of view element and creates appropriate binder objects.
 						
 						
 					</div>
@@ -949,7 +1107,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						
+						Parses modifier parameters of binding. Used to create parsers and formatters.
 						
 						
 					</div>
@@ -961,16 +1119,16 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>modifierParams</b>
+									<span class="light fixedFont">{Array}</span> <b>modifierParams</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>An arrray with modifier names</dd>
 							
 								<dt>
-									<b>modifiers</b>
+									<span class="light fixedFont">{Array}</span> <b>modifiers</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>An empty array that will be filled by modifier classes that corresponds to modifier names</dd>
 							
 							</dl>
 						
@@ -1016,7 +1174,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						
+						Updates bound views when collection changes.
 						
 						
 					</div>
@@ -1028,10 +1186,10 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>event</b>
+									<span class="light fixedFont">{Object}</span> <b>event</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>An event triggered by collection change</dd>
 							
 							</dl>
 						
@@ -1069,11 +1227,53 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="render"> </a>
+					<a name=".registerBinder"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">kff.BindingView.</span><b>registerBinder</b>(alias, binder)
+					
+					</div>
+					<div class="description">
+						Registers binder class
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>alias</b>
+									
+								</dt>
+								<dd>Alias name used in binding data-attributes</dd>
+							
+								<dt>
+									<span class="light fixedFont">{<a href="../symbols/kff.Binder.html">kff.Binder</a>}</span> <b>binder</b>
+									
+								</dt>
+								<dd>Binder class to register</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="reindexSubviews"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>render</b>(silent)
+					<b>reindexSubviews</b>(from, to)
 					
 					</div>
 					<div class="description">
@@ -1089,10 +1289,88 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>silent</b>
+									<b>from</b>
 									
 								</dt>
 								<dd></dd>
+							
+								<dt>
+									<b>to</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="removeSubViewAt"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>removeSubViewAt</b>(renderIndex)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>renderIndex</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="render"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>render</b>(silent)
+					
+					</div>
+					<div class="description">
+						Renders the view and inits bindings.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Boolean}</span> <b>silent</b>
+									
+								</dt>
+								<dd>If true, does not trigger events</dd>
 							
 							</dl>
 						
@@ -1113,7 +1391,10 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						
+						Renders "bound" views.
+			This method generates DOM elements corresponding to each item in the bound collection and
+			creates the bindingView for each element. If the collection changes, it reflects those changes
+			automatically in real time.
 						
 						
 					</div>
@@ -1203,7 +1484,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Feb 20 2013 14:02:47 GMT+0100 (Střední Evropa (běžný čas))
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu Feb 21 2013 22:05:47 GMT+0100 (Střední Evropa (běžný čas))
 		</div>
 	</body>
 </html>

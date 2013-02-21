@@ -106,9 +106,9 @@
 			{
 				for(var changedAttr in changed)
 				{
-					this.trigger('change:' + changedAttr, { changedAttributes: changed });
+					this.trigger('change:' + changedAttr, { model: this, changedAttributes: changed });
 				}
-				this.trigger('change', { changedAttributes: changed });
+				this.trigger('change', { model: this, changedAttributes: changed });
 			}
 		},
 
