@@ -1970,6 +1970,42 @@ kff.AttrBinder = kff.createClass(
 kff.BindingView.registerBinder('attr', kff.AttrBinder);
 
 
+/** @class */
+kff.BlurBinder = kff.createClass(
+{
+	extend: kff.Binder
+},
+/** @lends kff.BlurBinder.prototype */
+{
+	/**
+		@constructs
+	*/
+	constructor: function(options)
+	{
+		options = options || {};
+		options.events = [
+			['blur', 'blur']
+		];
+		kff.Binder.call(this, options);
+	},
+
+	init: function()
+	{
+		this.value = this.params[0] || null;
+		kff.BlurBinder._super.init.call(this);
+	},
+
+	blur: function(event)
+	{
+		setTimeout(this.f(function()
+		{
+			this.updateModel(this.value);
+		}), 0);
+	}
+});
+
+kff.BindingView.registerBinder('blur', kff.BlurBinder);
+
 kff.CheckBinder = kff.createClass(
 {
 	extend: kff.Binder
@@ -2070,6 +2106,41 @@ kff.ClickBinder = kff.createClass(
 kff.BindingView.registerBinder('click', kff.ClickBinder);
 
 
+
+kff.DoubleClickBinder = kff.createClass(
+{
+	extend: kff.Binder
+},
+/** @lends kff.DoubleClickBinder.prototype */
+{
+	/**
+		@constructs
+	*/
+	constructor: function(options)
+	{
+		options = options || {};
+		options.events = [
+			['dblclick', 'dblclick']
+		];
+		kff.Binder.call(this, options);
+	},
+
+	init: function()
+	{
+		this.value = this.params[0] || null;
+		kff.DoubleClickBinder._super.init.call(this);
+	},
+
+	dblclick: function(event)
+	{
+		setTimeout(this.f(function()
+		{
+			this.updateModel(this.value);
+		}), 0);
+	}
+});
+
+kff.BindingView.registerBinder('dblclick', kff.DoubleClickBinder);
 
 /** @class */
 kff.HtmlBinder = kff.createClass(
@@ -2385,16 +2456,41 @@ kff.FrontController = kff.createClass(
 		this.views = null;
 		this.viewsQueue = [];
 		this.viewFactory = options.viewFactory || new kff.ViewFactory();
+		this.router = options.router || null;
 	},
 
 	init: function()
 	{
-
+		if(this.router) $(window).bind('hashchange', this.f('hashChange')).trigger('hashchange');
 	},
 
 	createViewFromState: function(state)
 	{
-		return null;
+		if(this.router)
+		{
+			var path = state.path;
+			var result;
+
+			if(path === '') path = '#';
+
+			result = this.router.match(path);
+			if(result)
+			{
+				state.params = result.params;
+				return result.target;
+			}
+			return this.options.defaultView;
+		}
+		else return null;
+	},
+
+	hashChange: function(event)
+	{
+		var hash = location.hash;
+		if(hash.indexOf('#') !== 0 && hash != '') return false;
+
+		this.setState({ path: hash, params: {} });
+		return false;
 	},
 
 	getLastView: function()

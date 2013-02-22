@@ -12,16 +12,41 @@ kff.FrontController = kff.createClass(
 		this.views = null;
 		this.viewsQueue = [];
 		this.viewFactory = options.viewFactory || new kff.ViewFactory();
+		this.router = options.router || null;
 	},
 
 	init: function()
 	{
-
+		if(this.router) $(window).bind('hashchange', this.f('hashChange')).trigger('hashchange');
 	},
 
 	createViewFromState: function(state)
 	{
-		return null;
+		if(this.router)
+		{
+			var path = state.path;
+			var result;
+
+			if(path === '') path = '#';
+
+			result = this.router.match(path);
+			if(result)
+			{
+				state.params = result.params;
+				return result.target;
+			}
+			return this.options.defaultView;
+		}
+		else return null;
+	},
+
+	hashChange: function(event)
+	{
+		var hash = location.hash;
+		if(hash.indexOf('#') !== 0 && hash != '') return false;
+
+		this.setState({ path: hash, params: {} });
+		return false;
 	},
 
 	getLastView: function()
