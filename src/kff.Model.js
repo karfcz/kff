@@ -27,7 +27,7 @@
 				Attributes of model
 				@private
 			*/
-			this.attrs = {};
+			this.attrs = this.attrs || {};
 
 			if(attrs) this.set(attrs);
 		},
