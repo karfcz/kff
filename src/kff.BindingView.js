@@ -78,13 +78,13 @@ kff.BindingView = kff.createClass(
 	*/
 	initBinding: function()
 	{
-		var model, attr, result, subresults, name, binderName, binderParams, formatters, parsers;
+		var model, attr, result, subresults, name, binderName, binderParams, formatters, parsers, getters, setters;
 		var modifierName, modifierParams;
 		var dataBind = this.$element.attr(kff.View.DATA_BIND_ATTR);
 
 		var regex = /([.a-zA-Z0-9]+):?([a-zA-Z0-9]+)?(\([^\(\))]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?/g;
 
-		this.modelBinders = [];
+		this.modelBinders = {};
 
 		while((result = regex.exec(dataBind)) !== null)
 		{
@@ -102,6 +102,8 @@ kff.BindingView = kff.createClass(
 
 			formatters = [];
 			parsers = [];
+			setters = [];
+			getters = [];
 
 			for(var i = 4, l = result.length; i < l && result[i]; i++)
 			{
@@ -123,6 +125,12 @@ kff.BindingView = kff.createClass(
 							break;
 						case 'p':
 							this.parseModifiers(modifierParams, parsers);
+							break;
+						case 'set':
+							this.parseSetters(modifierParams, setters);
+							break;
+						case 'get':
+							this.parseSetters(modifierParams, getters);
 							break;
 					}
 				}
@@ -170,7 +178,9 @@ kff.BindingView = kff.createClass(
 						attr: attr,
 						model: model,
 						formatters: formatters,
-						parsers: parsers
+						parsers: parsers,
+						setters: setters,
+						getters: getters
 					});
 
 					this.modelBinders[binderName].push(modelBinder);
@@ -194,14 +204,15 @@ kff.BindingView = kff.createClass(
 		var model = new kff.Model();
 		var handler = function(){
 			model.set('count', collection.count);
-		}
+		};
+
 		handler();
 
 		if(!this.boundCollectionCounts) this.boundCollectionCounts = [];
 		this.boundCollectionCounts.push({
 			collection: collection,
 			handler: handler
-		})
+		});
 		collection.on('change', handler);
 		return model;
 	},
@@ -231,6 +242,20 @@ kff.BindingView = kff.createClass(
 		for(var j = 0; j < modifierParams.length; j++)
 		{
 			if(kff.View.helpers[modifierParams[j]]) modifiers.push(kff.View.helpers[modifierParams[j]]);
+		}
+	},
+
+	/**
+		Parses modifier parameters of binding. Used to create parsers and formatters.
+
+		@param {Array} modifierParams An arrray with modifier names
+		@param {Array} modifiers An empty array that will be filled by modifier classes that corresponds to modifier names
+	*/
+	parseSetters: function(modifierParams, modifiers)
+	{
+		for(var j = 0; j < modifierParams.length; j++)
+		{
+			modifiers.push(modifierParams[j]);
 		}
 	},
 
@@ -319,15 +344,23 @@ kff.BindingView = kff.createClass(
 			}
 
 			var renderIndex = i;
+			var realIndex = null;
 
 			// Find real index in collection:
 			for(var i = 0, l = this.subViewsMap.length; i < l; i++)
 			{
-				if(this.subViewsMap[i].renderIndex === renderIndex) break;
+				if(this.subViewsMap[i].renderIndex === renderIndex)
+				{
+					realIndex = i;
+					break;
+				}
 			}
 
-			this.removeSubViewAt(renderIndex);
-			this.subViewsMap.splice(i, 1);
+			if(realIndex)
+			{
+				if(this.subViewsMap[i].rendered) this.removeSubViewAt(renderIndex);
+				this.subViewsMap.splice(i, 1);
+			}
 			this.reindexSubviews(renderIndex);
 		}
 		else
@@ -362,7 +395,7 @@ kff.BindingView = kff.createClass(
 			var j = 0;
 			var filter = !!item[this.collectionFilter]();
 
-			if(filter !== this.subViewsMap[i].rendered || !this.subViewsMap[i].rendered)
+			if(!this.subViewsMap[i].rendered || filter !== this.subViewsMap[i].rendered)
 			{
 				if(filter)
 				{
@@ -375,7 +408,7 @@ kff.BindingView = kff.createClass(
 				else if(this.subViewsMap[i].rendered)
 				{
 					this.subViewsMap[i].rendered = false;
-					this.removeSubViewAt(this.subViewsMap[i].renderIndex)
+					this.removeSubViewAt(this.subViewsMap[i].renderIndex);
 				}
 			}
 		}
@@ -468,7 +501,7 @@ kff.BindingView = kff.createClass(
 		var modelIndex;
 		if(typeof modelPath === 'string') modelPath = modelPath.split('.');
 
-		modelIndex = parseInt(modelPath[0]);
+		modelIndex = parseInt(modelPath[0], 10);
 
 		if(this.collectionBinder && !isNaN(modelIndex)) return this.collectionBinder.collection.findByIndex(modelIndex);
 

@@ -70,7 +70,7 @@ kff.List = kff.createClass(
 	{
 		var i = 0, a = this.array, l = a.length;
 		if(a.indexOf) return a.indexOf(val);
-		for(; i < l; i++) if(a[i] === val) return val;
+		for(; i < l; i++) if(a[i] === val) return i;
 		return -1;
 	},
 

@@ -15,6 +15,8 @@ kff.Binder = kff.createClass(
 		this.model = options.model;
 		this.parsers = options.parsers;
 		this.formatters = options.formatters;
+		this.setter = (options.setters instanceof Array && options.setters.length > 0) ? options.setters[0] : null;
+		this.getter = (options.getters instanceof Array && options.getters.length > 0) ? options.getters[0] : null;
 		this.values = options.values;
 		this.valueIndex = options.valueIndex;
 		this.params = options.params;
@@ -43,7 +45,9 @@ kff.Binder = kff.createClass(
 
 	modelChange: function(force)
 	{
-		var modelValue = this.model.get(this.attr);
+		var modelValue;
+		if(this.getter && typeof this.model[this.getter] === 'function') modelValue = this.model[this.getter]();
+		else modelValue = this.model.get(this.attr);
 
 		if(!this.compareValues(modelValue, this.currentValue) || force === true)
 		{
@@ -87,7 +91,8 @@ kff.Binder = kff.createClass(
 		}
 		if(this.compareValues(value, this.currentValue)) return;
 		this.currentValue = value;
-		this.model.set(this.attr, this.currentValue);
+		if(this.setter && typeof this.model[this.setter] === 'function') this.model[this.setter](this.currentValue);
+		else this.model.set(this.attr, this.currentValue);
 	},
 
 	refresh: function(value){},
