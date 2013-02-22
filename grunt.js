@@ -16,6 +16,7 @@ module.exports = function(grunt) {
 		concat: {
 			kff: {
 				src: [
+					'./src/kff-prologue',
 					'./src/kff.js',
 					'./src/kff.Events.js',
 					//'./src/kff.LinkedList.js',
@@ -32,7 +33,8 @@ module.exports = function(grunt) {
 					'./src/kff.ViewFactory.js',
 					'./src/kff.Route.js',
 					'./src/kff.Router.js',
-					'./src/kff.FrontController.js'
+					'./src/kff.FrontController.js',
+					'./src/kff-epilogue'
 				],
 				dest: './build/kff-all.js'
 			}

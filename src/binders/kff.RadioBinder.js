@@ -1,46 +1,37 @@
-(function(scope)
+
+kff.RadioBinder = kff.createClass(
 {
-	var kff;
-
-	if(typeof exports !== 'undefined') kff = exports;
-	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
-
-	kff.RadioBinder = kff.createClass(
+	extend: kff.Binder
+},
+/** @lends kff.RadioBinder.prototype */
+{
+	/**
+		@constructs
+	*/
+	constructor: function(options)
 	{
-		extend: kff.Binder
+		options = options || {};
+		options.events = [
+			['click', 'inputChange']
+		];
+		kff.Binder.call(this, options);
 	},
-	/** @lends kff.RadioBinder.prototype */
+
+	inputChange: function(event)
 	{
-		/**
-			@constructs
-		*/
-		constructor: function(options)
+		setTimeout(this.f(function()
 		{
-			options = options || {};
-			options.events = [
-				['click', 'inputChange']
-			];
-			kff.Binder.call(this, options);
-		},
-
-		inputChange: function(event)
-		{
-			setTimeout(this.f(function()
+			if(this.$element.is(':checked'))
 			{
-				if(this.$element.is(':checked'))
-				{
-					this.updateModel(this.$element.val());
-				}
-			}), 0);
-		},
+				this.updateModel(this.$element.val());
+			}
+		}), 0);
+	},
 
-		refresh: function()
-		{
-			this.$element.prop('checked', this.parse(this.$element.val()) === this.currentValue);
-		}
-	});
+	refresh: function()
+	{
+		this.$element.prop('checked', this.parse(this.$element.val()) === this.currentValue);
+	}
+});
 
-	kff.BindingView.registerBinder('radio', kff.RadioBinder);
-
-
-})(this);
+kff.BindingView.registerBinder('radio', kff.RadioBinder);

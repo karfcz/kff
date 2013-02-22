@@ -1,39 +1,29 @@
-(function(scope)
+
+/** @class */
+kff.TextBinder = kff.createClass(
 {
-	var kff;
-
-	if(typeof exports !== 'undefined') kff = exports;
-	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
-
-	/** @class */
-	kff.TextBinder = kff.createClass(
+	extend: kff.Binder
+},
+/** @lends kff.TextBinder.prototype */
+{
+	/**
+		@constructs
+	*/
+	constructor: function(options)
 	{
-		extend: kff.Binder
+		options = options || {};
+		kff.Binder.call(this, options);
 	},
-	/** @lends kff.TextBinder.prototype */
+
+	init: function()
 	{
-		/**
-			@constructs
-		*/
-		constructor: function(options)
-		{
-			options = options || {};
-			kff.Binder.call(this, options);
-		},
+		kff.TextBinder._super.init.call(this);
+	},
 
-		init: function()
-		{
-			kff.TextBinder._super.init.call(this);
-		},
+	refresh: function(value)
+	{
+		this.$element.text(this.values.join(' '));
+	}
+});
 
-		refresh: function(value)
-		{
-			this.$element.text(this.values.join(' '));
-		}
-	});
-
-
-	kff.BindingView.registerBinder('text', kff.TextBinder);
-
-
-})(this);
+kff.BindingView.registerBinder('text', kff.TextBinder);

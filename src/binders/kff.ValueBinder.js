@@ -1,44 +1,34 @@
-(function(scope)
+
+kff.ValueBinder = kff.createClass(
 {
-	var kff;
-
-	if(typeof exports !== 'undefined') kff = exports;
-	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
-
-
-	kff.ValueBinder = kff.createClass(
+	extend: kff.Binder
+},
+/** @lends kff.ValueBinder.prototype */
+{
+	/**
+		@constructs
+	*/
+	constructor: function(options)
 	{
-		extend: kff.Binder
+		options = options || {};
+		options.events = [
+			['keydown drop change', 'inputChange']
+		];
+		kff.Binder.call(this, options);
 	},
-	/** @lends kff.ValueBinder.prototype */
+
+	inputChange: function(event)
 	{
-		/**
-			@constructs
-		*/
-		constructor: function(options)
+		setTimeout(this.f(function()
 		{
-			options = options || {};
-			options.events = [
-				['keydown drop change', 'inputChange']
-			];
-			kff.Binder.call(this, options);
-		},
+			this.updateModel(this.$element.val());
+		}), 0);
+	},
 
-		inputChange: function(event)
-		{
-			setTimeout(this.f(function()
-			{
-				this.updateModel(this.$element.val());
-			}), 0);
-		},
+	refresh: function()
+	{
+		this.$element.val(this.getFormattedValue());
+	}
+});
 
-		refresh: function()
-		{
-			this.$element.val(this.getFormattedValue());
-		}
-	});
-
-	kff.BindingView.registerBinder('val', kff.ValueBinder);
-
-
-})(this);
+kff.BindingView.registerBinder('val', kff.ValueBinder);

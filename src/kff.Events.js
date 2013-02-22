@@ -1,129 +1,120 @@
 
-(function(scope)
+kff.Events = kff.createClass(
+/** @lends kff.Events.prototype */
 {
-	var kff;
-
-	if(typeof exports !== 'undefined') kff = exports;
-	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
-
-	kff.Events = kff.createClass(
-	/** @lends kff.Events.prototype */
+	/**
+		@constructs
+	*/
+	constructor: function()
 	{
-		/**
-			@constructs
-		*/
-		constructor: function()
-		{
-			this.subscribers = {};
-			this.oneSubscribers = {};
-		},
+		this.subscribers = {};
+		this.oneSubscribers = {};
+	},
 
-		/**
-			Binds event handler.
+	/**
+		Binds event handler.
 
-			@param {string|Array} eventType Event name(s)
-			@param {function} fn Event handler
-		*/
-		on: function(eventType, fn)
+		@param {string|Array} eventType Event name(s)
+		@param {function} fn Event handler
+	*/
+	on: function(eventType, fn)
+	{
+		this.off(eventType, fn);
+		if(eventType instanceof Array)
 		{
-			this.off(eventType, fn);
-			if(eventType instanceof Array)
+			for(var i = 0, l = eventType.length; i < l; i++)
 			{
-				for(var i = 0, l = eventType.length; i < l; i++)
+				if(eventType[i])
 				{
-					if(eventType[i])
-					{
-						if(!this.subscribers[eventType[i]]) this.subscribers[eventType[i]] = [];
-						this.subscribers[eventType[i]].push(fn);
-					}
-				}
-			}
-			else
-			{
-				if(!this.subscribers[eventType]) this.subscribers[eventType] = new kff.List();
-				this.subscribers[eventType].append(fn);
-			}
-		},
-
-		/**
-			Binds event handler that will be executed only once.
-
-			@param {string|Array} eventType Event name(s)
-			@param {function} fn Event handler
-		*/
-		one: function(eventType, fn)
-		{
-			if(!(eventType in this.oneSubscribers)) this.oneSubscribers[eventType] = [];
-			this.oneSubscribers[eventType].push(fn);
-			this.on(eventType, fn);
-		},
-
-		/**
-			Unbinds event handler.
-
-			@param {string|Array} eventType Event name(s)
-			@param {function} fn Event handler
-		*/
-		off: function(eventType, fn)
-		{
-			var i, l;
-			if(eventType instanceof Array)
-			{
-				for(i = 0, l = eventType.length; i < l; i++)
-				{
-					if(eventType[i]) this.off(eventType[i], fn);
-				}
-			}
-			else
-			{
-				if(this.subscribers[eventType] instanceof kff.List) this.subscribers[eventType].removeVal(fn);
-			}
-		},
-
-		/**
-			Triggers an event.
-
-			@param {string|Array} eventType Event name(s)
-			@param {mixed} eventData Arbitrary data that will be passed to the event handlers as an argument
-		*/
-		trigger: function(eventType, eventData)
-		{
-			var i, l;
-			if(eventType instanceof Array)
-			{
-				for(i = 0, l = eventType.length; i < l; i++)
-				{
-					if(eventType[i]) this.trigger(eventType[i], eventData);
-				}
-			}
-			else
-			{
-				if(this.subscribers[eventType] instanceof kff.List)
-				{
-					this.subscribers[eventType].each(function(val)
-					{
-						val.call(null, eventData);
-					});
-
-					// Remove "one" subscribers:
-					if(eventType in this.oneSubscribers)
-					{
-						for(i = 0, l = this.oneSubscribers[eventType].length; i < l; i++)
-						{
-							this.off(eventType, this.oneSubscribers[eventType][i]);
-						}
-						this.oneSubscribers[eventType] = [];
-					}
+					if(!this.subscribers[eventType[i]]) this.subscribers[eventType[i]] = [];
+					this.subscribers[eventType[i]].push(fn);
 				}
 			}
 		}
-	});
+		else
+		{
+			if(!this.subscribers[eventType]) this.subscribers[eventType] = new kff.List();
+			this.subscribers[eventType].append(fn);
+		}
+	},
 
-	kff.EventsMixin = {
-		on: function(eventType, fn){ return this.events.on(eventType, fn); },
-		one: function(eventType, fn){ return this.events.one(eventType, fn); },
-		off: function(eventType, fn){ return this.events.off(eventType, fn); },
-		trigger: function(eventType, eventData){ return this.events.trigger(eventType, eventData); }
-	};
+	/**
+		Binds event handler that will be executed only once.
 
-})(this);
+		@param {string|Array} eventType Event name(s)
+		@param {function} fn Event handler
+	*/
+	one: function(eventType, fn)
+	{
+		if(!(eventType in this.oneSubscribers)) this.oneSubscribers[eventType] = [];
+		this.oneSubscribers[eventType].push(fn);
+		this.on(eventType, fn);
+	},
+
+	/**
+		Unbinds event handler.
+
+		@param {string|Array} eventType Event name(s)
+		@param {function} fn Event handler
+	*/
+	off: function(eventType, fn)
+	{
+		var i, l;
+		if(eventType instanceof Array)
+		{
+			for(i = 0, l = eventType.length; i < l; i++)
+			{
+				if(eventType[i]) this.off(eventType[i], fn);
+			}
+		}
+		else
+		{
+			if(this.subscribers[eventType] instanceof kff.List) this.subscribers[eventType].removeVal(fn);
+		}
+	},
+
+	/**
+		Triggers an event.
+
+		@param {string|Array} eventType Event name(s)
+		@param {mixed} eventData Arbitrary data that will be passed to the event handlers as an argument
+	*/
+	trigger: function(eventType, eventData)
+	{
+		var i, l;
+		if(eventType instanceof Array)
+		{
+			for(i = 0, l = eventType.length; i < l; i++)
+			{
+				if(eventType[i]) this.trigger(eventType[i], eventData);
+			}
+		}
+		else
+		{
+			if(this.subscribers[eventType] instanceof kff.List)
+			{
+				this.subscribers[eventType].each(function(val)
+				{
+					val.call(null, eventData);
+				});
+
+				// Remove "one" subscribers:
+				if(eventType in this.oneSubscribers)
+				{
+					for(i = 0, l = this.oneSubscribers[eventType].length; i < l; i++)
+					{
+						this.off(eventType, this.oneSubscribers[eventType][i]);
+					}
+					this.oneSubscribers[eventType] = [];
+				}
+			}
+		}
+	}
+});
+
+kff.EventsMixin = {
+	on: function(eventType, fn){ return this.events.on(eventType, fn); },
+	one: function(eventType, fn){ return this.events.one(eventType, fn); },
+	off: function(eventType, fn){ return this.events.off(eventType, fn); },
+	trigger: function(eventType, eventData){ return this.events.trigger(eventType, eventData); }
+};

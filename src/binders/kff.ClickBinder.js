@@ -1,45 +1,36 @@
-(function(scope)
+
+kff.ClickBinder = kff.createClass(
 {
-	var kff;
-
-	if(typeof exports !== 'undefined') kff = exports;
-	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
-
-
-	kff.ClickBinder = kff.createClass(
+	extend: kff.Binder
+},
+/** @lends kff.ClickBinder.prototype */
+{
+	/**
+		@constructs
+	*/
+	constructor: function(options)
 	{
-		extend: kff.Binder
+		options = options || {};
+		options.events = [
+			['click', 'click']
+		];
+		kff.Binder.call(this, options);
 	},
-	/** @lends kff.ClickBinder.prototype */
+
+	init: function()
 	{
-		/**
-			@constructs
-		*/
-		constructor: function(options)
+		this.value = this.params[0] || null;
+		kff.ClickBinder._super.init.call(this);
+	},
+
+	click: function(event)
+	{
+		setTimeout(this.f(function()
 		{
-			options = options || {};
-			options.events = [
-				['click', 'click']
-			];
-			kff.Binder.call(this, options);
-		},
+			this.updateModel(this.value);
+		}), 0);
+	}
+});
 
-		init: function()
-		{
-			this.value = this.params[0] || null;
-			kff.ClickBinder._super.init.call(this);
-		},
+kff.BindingView.registerBinder('click', kff.ClickBinder);
 
-		click: function(event)
-		{
-			setTimeout(this.f(function()
-			{
-				this.updateModel(this.value);
-			}), 0);
-		}
-	});
-
-	kff.BindingView.registerBinder('click', kff.ClickBinder);
-
-
-})(this);
