@@ -1,5 +1,4 @@
-var should = require('should');
-var kff = require('../build/kff-all.js');
+if(typeof require === 'function') var kff = require('../build/kff-all.js');
 
 
 describe('kff.List', function()
@@ -18,7 +17,7 @@ describe('kff.List', function()
 		var list = new kff.List();
 		list.append('A');
 		list.append('B');
-		list.removeVal('B');
+		list.remove('B');
 		list.count.should.eql(1);
 	});
 
@@ -27,7 +26,7 @@ describe('kff.List', function()
 		var list = new kff.List();
 		list.append('A');
 		list.append('B');
-		list.removeVal('A');
+		list.remove('A');
 		list.count.should.eql(1);
 		list.indexOf('B').should.eql(0);
 	});
@@ -37,8 +36,8 @@ describe('kff.List', function()
 		var list = new kff.List();
 		list.append('A');
 		list.append('B');
-		list.removeVal('A');
-		list.removeVal('B');
+		list.remove('A');
+		list.remove('B');
 		list.count.should.eql(0);
 	});
 

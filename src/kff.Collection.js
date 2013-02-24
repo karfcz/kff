@@ -86,7 +86,7 @@ kff.Collection = kff.createClass(
 			if(valFactory) val = valFactory(obj[i]);
 			else val = new this.valType();
 			val.fromJson(obj[i], silent);
-			this.append(val);
+			this.append(val, true);
 		}
 		if(!silent) this.trigger('change', { fromJson: true });
 	},

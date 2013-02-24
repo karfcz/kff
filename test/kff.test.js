@@ -1,5 +1,4 @@
-var should = require('should');
-var kff = require('../build/kff-all.js');
+if(typeof require === 'function') var kff = require('../build/kff-all.js');
 
 describe('kff.extends', function()
 {
@@ -49,7 +48,7 @@ describe('kff.createClass', function()
 		getA: function()
 		{
 			return this.a;
-		} 
+		}
 	});
 	var objA = new A();
 
@@ -78,7 +77,7 @@ describe('kff.createClass', function()
 		var objB = new B();
 		objB.should.be.an.instanceof(A);
 		objB.should.be.an.instanceof(B);
-		
+
 		objB.a.should.equal(42);
 		objB.getA().should.equal(42);
 		objB.m1.should.equal(15);

@@ -46,7 +46,7 @@ kff.Binder = kff.createClass(
 	modelChange: function(force)
 	{
 		var modelValue;
-		if(this.getter && typeof this.model[this.getter] === 'function') modelValue = this.model[this.getter]();
+		if(this.getter && typeof this.model[this.getter] === 'function') modelValue = this.model[this.getter](this.attr);
 		else modelValue = this.model.get(this.attr);
 
 		if(!this.compareValues(modelValue, this.currentValue) || force === true)

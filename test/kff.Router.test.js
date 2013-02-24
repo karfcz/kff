@@ -1,5 +1,4 @@
-var should = require('should');
-var kff = require('../build/kff-all.js');
+if(typeof require === 'function') var kff = require('../build/kff-all.js');
 
 describe('kff.Router', function()
 {

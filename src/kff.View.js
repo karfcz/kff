@@ -208,6 +208,7 @@ kff.View = kff.createClass(
 	 */
 	render: function(silent)
 	{
+		this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 		this.delegateEvents();
 		this.renderSubviews();
 		if(!silent) this.trigger('init');
@@ -277,7 +278,6 @@ kff.View = kff.createClass(
 				subView.viewFactory = this.viewFactory;
 				this.subViews.push(subView);
 				subView.init();
-				viewNames[i].$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 			}
 		}
 	},
@@ -290,6 +290,7 @@ kff.View = kff.createClass(
 	 */
 	destroy: function(silent)
 	{
+		this.$element.removeAttr(kff.View.DATA_RENDERED_ATTR);
 		this.destroySubviews();
 		this.undelegateEvents();
 		if(!silent) this.trigger('destroy');
@@ -306,7 +307,6 @@ kff.View = kff.createClass(
 		for(i = 0, l = this.subViews.length; i < l; i++)
 		{
 			subView = this.subViews[i];
-			if(subView.$element) subView.$element.removeAttr(kff.View.DATA_RENDERED_ATTR);
 			subView.destroy();
 			delete this.subViews[i];
 		}

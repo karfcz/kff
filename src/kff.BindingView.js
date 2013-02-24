@@ -281,9 +281,7 @@ kff.BindingView = kff.createClass(
 	*/
 	renderBoundViews: function()
 	{
-		var anchor = document.createTextNode('');
-		if($.browser && $.browser.msie && $.browser.version < 9) anchor = $('<span/>');
-		this.$anchor = $(anchor);
+		this.$anchor = $(document.createTextNode(''));
 		this.$element.before(this.$anchor);
 		this.$element.remove();
 		this.subViewsMap = [];
@@ -356,7 +354,7 @@ kff.BindingView = kff.createClass(
 				}
 			}
 
-			if(realIndex)
+			if(realIndex !== null)
 			{
 				if(this.subViewsMap[i].rendered) this.removeSubViewAt(renderIndex);
 				this.subViewsMap.splice(i, 1);

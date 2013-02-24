@@ -40,7 +40,7 @@ kff.List = kff.createClass(
 		@param {mixed} val Reference to the item to be removed
 		@returns {Boolean} True if item was removed or false if not found
 	 */
-	removeVal: function(val)
+	remove: function(val)
 	{
 		var i = this.indexOf(val);
 		if(i === -1) return false;
@@ -116,3 +116,6 @@ kff.List = kff.createClass(
 	}
 
 });
+
+// Backward-compatible alias:
+kff.List.prototype.removeVal = kff.List.prototype.remove;

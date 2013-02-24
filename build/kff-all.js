@@ -308,7 +308,7 @@ kff.List = kff.createClass(
 		@param {mixed} val Reference to the item to be removed
 		@returns {Boolean} True if item was removed or false if not found
 	 */
-	removeVal: function(val)
+	remove: function(val)
 	{
 		var i = this.indexOf(val);
 		if(i === -1) return false;
@@ -384,6 +384,9 @@ kff.List = kff.createClass(
 	}
 
 });
+
+// Backward-compatible alias:
+kff.List.prototype.removeVal = kff.List.prototype.remove;
 
 
 kff.Collection = kff.createClass(
@@ -473,7 +476,7 @@ kff.Collection = kff.createClass(
 			if(valFactory) val = valFactory(obj[i]);
 			else val = new this.valType();
 			val.fromJson(obj[i], silent);
-			this.append(val);
+			this.append(val, true);
 		}
 		if(!silent) this.trigger('change', { fromJson: true });
 	},
@@ -1088,6 +1091,7 @@ kff.View = kff.createClass(
 	 */
 	render: function(silent)
 	{
+		this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 		this.delegateEvents();
 		this.renderSubviews();
 		if(!silent) this.trigger('init');
@@ -1157,7 +1161,6 @@ kff.View = kff.createClass(
 				subView.viewFactory = this.viewFactory;
 				this.subViews.push(subView);
 				subView.init();
-				viewNames[i].$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 			}
 		}
 	},
@@ -1170,6 +1173,7 @@ kff.View = kff.createClass(
 	 */
 	destroy: function(silent)
 	{
+		this.$element.removeAttr(kff.View.DATA_RENDERED_ATTR);
 		this.destroySubviews();
 		this.undelegateEvents();
 		if(!silent) this.trigger('destroy');
@@ -1186,7 +1190,6 @@ kff.View = kff.createClass(
 		for(i = 0, l = this.subViews.length; i < l; i++)
 		{
 			subView = this.subViews[i];
-			if(subView.$element) subView.$element.removeAttr(kff.View.DATA_RENDERED_ATTR);
 			subView.destroy();
 			delete this.subViews[i];
 		}
@@ -1599,9 +1602,7 @@ kff.BindingView = kff.createClass(
 	*/
 	renderBoundViews: function()
 	{
-		var anchor = document.createTextNode('');
-		if($.browser && $.browser.msie && $.browser.version < 9) anchor = $('<span/>');
-		this.$anchor = $(anchor);
+		this.$anchor = $(document.createTextNode(''));
 		this.$element.before(this.$anchor);
 		this.$element.remove();
 		this.subViewsMap = [];
@@ -1674,7 +1675,7 @@ kff.BindingView = kff.createClass(
 				}
 			}
 
-			if(realIndex)
+			if(realIndex !== null)
 			{
 				if(this.subViewsMap[i].rendered) this.removeSubViewAt(renderIndex);
 				this.subViewsMap.splice(i, 1);
@@ -1908,7 +1909,7 @@ kff.Binder = kff.createClass(
 	modelChange: function(force)
 	{
 		var modelValue;
-		if(this.getter && typeof this.model[this.getter] === 'function') modelValue = this.model[this.getter]();
+		if(this.getter && typeof this.model[this.getter] === 'function') modelValue = this.model[this.getter](this.attr);
 		else modelValue = this.model.get(this.attr);
 
 		if(!this.compareValues(modelValue, this.currentValue) || force === true)
@@ -2138,7 +2139,24 @@ kff.ClickBinder = kff.createClass(
 		{
 			this.updateModel(this.value);
 		}), 0);
+	},
+
+	updateModel: function(value)
+	{
+		var i, l;
+		if(value instanceof Array)
+		{
+			for(i = 0, l = value.length; i < l; i++) value[i] = this.parse(value[i]);
+		}
+		else
+		{
+			value = this.parse(value);
+		}
+		this.currentValue = value;
+		if(this.setter && typeof this.model[this.setter] === 'function') this.model[this.setter](this.currentValue);
+		else this.model.set(this.attr, this.currentValue);
 	}
+
 });
 
 kff.BindingView.registerBinder('click', kff.ClickBinder);
