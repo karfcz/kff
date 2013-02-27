@@ -522,7 +522,7 @@ kff.Collection = kff.createClass(
 	 */
 	sort: function(compareFunction, silent)
 	{
-		kff.Collection._super.sort.call(this);
+		kff.Collection._super.sort.call(this, compareFunction);
 		if(!silent) this.trigger('change');
 	},
 
@@ -2139,6 +2139,7 @@ kff.ClickBinder = kff.createClass(
 		{
 			this.updateModel(this.value);
 		}), 0);
+		event.preventDefault();
 	},
 
 	updateModel: function(value)
