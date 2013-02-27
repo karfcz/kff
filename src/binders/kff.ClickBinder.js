@@ -29,6 +29,7 @@ kff.ClickBinder = kff.createClass(
 		{
 			this.updateModel(this.value);
 		}), 0);
+		event.preventDefault();
 	},
 
 	updateModel: function(value)
