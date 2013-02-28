@@ -45,9 +45,9 @@ kff.Collection = kff.createClass(
 		@param {Boolean} silent If true, do not trigger event
 		@returns {mixed} Removed item or false if not found
 	 */
-	removeVal: function(val, silent)
+	remove: function(val, silent)
 	{
-		var ret = kff.Collection._super.removeVal.call(this, val);
+		var ret = kff.Collection._super.remove.call(this, val);
 		if(ret && !silent) this.trigger('change', { removedValue: val });
 		return ret;
 	},
@@ -162,3 +162,5 @@ kff.Collection = kff.createClass(
 	}
 
 });
+
+kff.Collection.prototype.removeVal = kff.Collection.prototype.remove;

@@ -290,7 +290,7 @@ kff.BindingView = kff.createClass(
 		this.subViewName = this.$element.attr(kff.View.DATA_VIEW_ATTR);
 		var opt = this.$element.attr(kff.View.DATA_OPTIONS_ATTR);
 
-		this.collectionFilter = this.$element.attr('data-kff-filter');
+		this.initCollectionFilter();
 
 		this.subViewOptions = opt ? JSON.parse(opt) : {};
 		this.subViewOptions.parentView = this;
@@ -298,6 +298,31 @@ kff.BindingView = kff.createClass(
 		this.collectionBinder.collection.on('change', this.f('refreshBoundViews'));
 
 		this.refreshBoundViews();
+	},
+
+	initCollectionFilter: function()
+	{
+		var filterName = this.$element.attr('data-kff-filter');
+
+
+		if(filterName)
+		{
+			this.collectionFilter =
+			{
+				model: null,
+				fn: null
+			};
+			filterName = filterName.replace(/^\./, '').split('.');
+			if(filterName.length === 1)
+			{
+				this.collectionFilter.fn = filterName[0];
+			}
+			else
+			{
+				this.collectionFilter.fn =  filterName.pop();
+				this.collectionFilter.model =  this.getModel([].concat(filterName));
+			}
+		}
 	},
 
 	/**
@@ -388,10 +413,13 @@ kff.BindingView = kff.createClass(
 	{
 		var item = event.model;
 		var i = this.collectionBinder.collection.indexOf(item);
-		if(this.collectionFilter && typeof item[this.collectionFilter] === 'function')
+		if(this.collectionFilter)
 		{
+			var filterModel = item;
+			if(this.collectionFilter.model) filterModel = this.collectionFilter.model;
+
 			var j = 0;
-			var filter = !!item[this.collectionFilter]();
+			var filter = !!filterModel[this.collectionFilter.fn].call(filterModel, item);
 
 			if(!this.subViewsMap[i].rendered || filter !== this.subViewsMap[i].rendered)
 			{
