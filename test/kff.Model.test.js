@@ -46,4 +46,41 @@ describe('kff.Model', function()
 	});
 
 
+	describe('#set', function()
+	{
+
+		it('should trigger events for one property set', function(done)
+		{
+			var obj = new kff.Model();
+			var count = 0;
+			obj.on('change:a', function(event){
+				if(event.changedAttributes.a === 42) count++;
+			});
+			obj.on('change', function(event){
+				if(event.changedAttributes.a === 42) count++;
+				if(count === 2) done();
+			});
+			obj.set('a', 42);
+		});
+
+		it('should trigger events for two property set', function(done)
+		{
+			var count = 0;
+			obj.on('change:a', function(event){
+				if(event.changedAttributes.a === 42) count++;
+				if(event.changedAttributes.b === 43) count++;
+			});
+			obj.on('change', function(event){
+				if(event.changedAttributes.a === 42 && event.changedAttributes.b === 43) count++;
+				if(count === 3) done();
+			});
+			obj.set({
+				a: 42,
+				b: 43
+			});
+		});
+
+	});
+
+
 });
