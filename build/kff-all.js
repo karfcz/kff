@@ -1404,7 +1404,7 @@ kff.BindingView = kff.createClass(
 	*/
 	initBinding: function()
 	{
-		var model, attr, result, subresults, name, binderName, binderParams, formatters, parsers, getters, setters;
+		var model, attr, result, subresults, name, binderName, binderParams, formatters, parsers, getters, setters, eventNames;
 		var modifierName, modifierParams;
 		var dataBind = this.$element.attr(kff.View.DATA_BIND_ATTR);
 
@@ -1430,6 +1430,7 @@ kff.BindingView = kff.createClass(
 			parsers = [];
 			setters = [];
 			getters = [];
+			eventNames = [];
 
 			for(var i = 4, l = result.length; i < l && result[i]; i++)
 			{
@@ -1451,6 +1452,9 @@ kff.BindingView = kff.createClass(
 							break;
 						case 'p':
 							this.parseModifiers(modifierParams, parsers);
+							break;
+						case 'on':
+							this.parseSetters(modifierParams, eventNames);
 							break;
 						case 'set':
 							this.parseSetters(modifierParams, setters);
@@ -1506,7 +1510,8 @@ kff.BindingView = kff.createClass(
 						formatters: formatters,
 						parsers: parsers,
 						setters: setters,
-						getters: getters
+						getters: getters,
+						eventNames: eventNames
 					});
 
 					this.modelBinders[binderName].push(modelBinder);
@@ -2054,9 +2059,10 @@ kff.BlurBinder = kff.createClass(
 	*/
 	constructor: function(options)
 	{
+		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'blur';
 		options = options || {};
 		options.events = [
-			['blur', 'blur']
+			[eventNames, 'blur']
 		];
 		kff.Binder.call(this, options);
 	},
@@ -2089,9 +2095,10 @@ kff.CheckBinder = kff.createClass(
 	*/
 	constructor: function(options)
 	{
+		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'click change';
 		options = options || {};
 		options.events = [
-			['click change', 'inputChange']
+			[eventNames, 'inputChange']
 		];
 		kff.Binder.call(this, options);
 	},
@@ -2153,9 +2160,10 @@ kff.ClickBinder = kff.createClass(
 	*/
 	constructor: function(options)
 	{
+		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'click';
 		options = options || {};
 		options.events = [
-			['click', 'click']
+			[eventNames, 'click']
 		];
 		kff.Binder.call(this, options);
 	},
@@ -2208,9 +2216,10 @@ kff.DoubleClickBinder = kff.createClass(
 	*/
 	constructor: function(options)
 	{
+		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'dblclick';
 		options = options || {};
 		options.events = [
-			['dblclick', 'dblclick']
+			[eventNames, 'dblclick']
 		];
 		kff.Binder.call(this, options);
 	},
@@ -2231,6 +2240,62 @@ kff.DoubleClickBinder = kff.createClass(
 });
 
 kff.BindingView.registerBinder('dblclick', kff.DoubleClickBinder);
+
+kff.EventBinder = kff.createClass(
+{
+	extend: kff.Binder
+},
+/** @lends kff.EventBinder.prototype */
+{
+	/**
+		@constructs
+	*/
+	constructor: function(options)
+	{
+		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'click';
+		options = options || {};
+		options.events = [
+			[eventNames, 'click']
+		];
+		kff.Binder.call(this, options);
+	},
+
+	init: function()
+	{
+		this.value = this.params[0] || null;
+		kff.EventBinder._super.init.call(this);
+	},
+
+	click: function(event)
+	{
+		setTimeout(this.f(function()
+		{
+			this.updateModel(this.value);
+		}), 0);
+		event.preventDefault();
+	},
+
+	updateModel: function(value)
+	{
+		var i, l;
+		if(value instanceof Array)
+		{
+			for(i = 0, l = value.length; i < l; i++) value[i] = this.parse(value[i]);
+		}
+		else
+		{
+			value = this.parse(value);
+		}
+		this.currentValue = value;
+		if(this.setter && typeof this.model[this.setter] === 'function') this.model[this.setter](this.currentValue);
+		else this.model.set(this.attr, this.currentValue);
+	}
+
+});
+
+kff.BindingView.registerBinder('event', kff.EventBinder);
+
+
 
 /** @class */
 kff.HtmlBinder = kff.createClass(
@@ -2259,9 +2324,10 @@ kff.RadioBinder = kff.createClass(
 	*/
 	constructor: function(options)
 	{
+		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'click';
 		options = options || {};
 		options.events = [
-			['click', 'inputChange']
+			[eventNames, 'inputChange']
 		];
 		kff.Binder.call(this, options);
 	},
@@ -2327,9 +2393,10 @@ kff.ValueBinder = kff.createClass(
 	*/
 	constructor: function(options)
 	{
+		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'keydown drop change';
 		options = options || {};
 		options.events = [
-			['keydown drop change', 'inputChange']
+			[eventNames, 'inputChange']
 		];
 		kff.Binder.call(this, options);
 	},

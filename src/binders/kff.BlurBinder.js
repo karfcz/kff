@@ -11,9 +11,10 @@ kff.BlurBinder = kff.createClass(
 	*/
 	constructor: function(options)
 	{
+		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'blur';
 		options = options || {};
 		options.events = [
-			['blur', 'blur']
+			[eventNames, 'blur']
 		];
 		kff.Binder.call(this, options);
 	},

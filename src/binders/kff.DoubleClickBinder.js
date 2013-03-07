@@ -10,9 +10,10 @@ kff.DoubleClickBinder = kff.createClass(
 	*/
 	constructor: function(options)
 	{
+		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'dblclick';
 		options = options || {};
 		options.events = [
-			['dblclick', 'dblclick']
+			[eventNames, 'dblclick']
 		];
 		kff.Binder.call(this, options);
 	},

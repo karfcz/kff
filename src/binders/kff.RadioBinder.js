@@ -10,9 +10,10 @@ kff.RadioBinder = kff.createClass(
 	*/
 	constructor: function(options)
 	{
+		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'click';
 		options = options || {};
 		options.events = [
-			['click', 'inputChange']
+			[eventNames, 'inputChange']
 		];
 		kff.Binder.call(this, options);
 	},

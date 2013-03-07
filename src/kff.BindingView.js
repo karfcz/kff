@@ -78,7 +78,7 @@ kff.BindingView = kff.createClass(
 	*/
 	initBinding: function()
 	{
-		var model, attr, result, subresults, name, binderName, binderParams, formatters, parsers, getters, setters;
+		var model, attr, result, subresults, name, binderName, binderParams, formatters, parsers, getters, setters, eventNames;
 		var modifierName, modifierParams;
 		var dataBind = this.$element.attr(kff.View.DATA_BIND_ATTR);
 
@@ -104,6 +104,7 @@ kff.BindingView = kff.createClass(
 			parsers = [];
 			setters = [];
 			getters = [];
+			eventNames = [];
 
 			for(var i = 4, l = result.length; i < l && result[i]; i++)
 			{
@@ -125,6 +126,9 @@ kff.BindingView = kff.createClass(
 							break;
 						case 'p':
 							this.parseModifiers(modifierParams, parsers);
+							break;
+						case 'on':
+							this.parseSetters(modifierParams, eventNames);
 							break;
 						case 'set':
 							this.parseSetters(modifierParams, setters);
@@ -180,7 +184,8 @@ kff.BindingView = kff.createClass(
 						formatters: formatters,
 						parsers: parsers,
 						setters: setters,
-						getters: getters
+						getters: getters,
+						eventNames: eventNames
 					});
 
 					this.modelBinders[binderName].push(modelBinder);
