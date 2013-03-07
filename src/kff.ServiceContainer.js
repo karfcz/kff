@@ -155,7 +155,7 @@ kff.ServiceContainer = kff.createClass(
 				ret[i] = this.resolveParameters(params[i]);
 			}
 		}
-		else if(typeof params !== 'function' && Object(params) === params)
+		else if(typeof params === 'object' && params.constructor === Object)
 		{
 			ret = {};
 			for(i in params)

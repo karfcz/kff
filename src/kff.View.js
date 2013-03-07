@@ -73,12 +73,10 @@ kff.View = kff.createClass(
 		if(options.events)
 		{
 			this.options.events = this.options.events.concat(options.events);
-			delete options.events;
 		}
 		if(options.element)
 		{
 			this.$element = $(options.element);
-			delete options.element;
 		}
 		if(options.viewFactory)
 		{
@@ -91,7 +89,6 @@ kff.View = kff.createClass(
 		if(options.models)
 		{
 			this.models = options.models;
-			delete options.models;
 		}
 		$.extend(this.options, options);
 	},
@@ -225,46 +222,9 @@ kff.View = kff.createClass(
 			viewName, viewClass, subView, options, opt, i, l, rendered,
 			filter = this.options.filter || undefined;
 
-		var findViewElements = function(el)
-		{
-			var j, k, children, child;
-			if(el.hasChildNodes())
-			{
-				children = el.childNodes;
-				for(j = 0, k = children.length; j < k; j++)
-				{
-					child = children[j];
-					if(child.getAttribute)
-					{
-						rendered = child.getAttribute(kff.View.DATA_RENDERED_ATTR);
-						if(!rendered)
-						{
-							viewName = child.getAttribute(kff.View.DATA_VIEW_ATTR);
-							if(!viewName && child.getAttribute(kff.View.DATA_BIND_ATTR))
-							{
-								viewName = 'kff.BindingView';
-								child.setAttribute(kff.View.DATA_VIEW_ATTR, viewName);
-							}
-							if(viewName)
-							{
-								if(!filter || (filter && $(child).is(filter)))
-								{
-									viewNames.push({ objPath: viewName, $element: $(child) });
-								}
-							}
-							else
-							{
-								findViewElements(child);
-							}
-						}
-					}
-				}
-			}
-		};
+		if(this.$element.get(0)) this.findViewElements(this.$element.get(0), viewNames, filter);
 
-		if(this.$element.get(0)) findViewElements(this.$element.get(0));
-
-		// Initialize subviews
+		// Render subviews
 		for(i = 0, l = viewNames.length; i < l; i++)
 		{
 			viewName = viewNames[i].objPath;
@@ -278,6 +238,50 @@ kff.View = kff.createClass(
 				subView.viewFactory = this.viewFactory;
 				this.subViews.push(subView);
 				subView.init();
+			}
+		}
+	},
+
+	/**
+	 * Finds possible subview elements inside an element
+	 * @param  {DOM Element} el Root element from which search starts
+	 * @param  {Array} viewNames Array that will be filled by found elements
+	 *                           (items will be objects { objPath: viewName, $element: jQuery wrapper })
+	 * @param  {string} filter  A jQuery selector for filtering elements (optional)
+	 */
+	findViewElements: function(el, viewNames, filter)
+	{
+		var i, l, children, child, viewName, rendered;
+		if(el.hasChildNodes())
+		{
+			children = el.childNodes;
+			for(i = 0, l = children.length; i < l; i++)
+			{
+				child = children[i];
+				if(child.nodeType === 1)
+				{
+					rendered = child.getAttribute(kff.View.DATA_RENDERED_ATTR);
+					if(!rendered)
+					{
+						viewName = child.getAttribute(kff.View.DATA_VIEW_ATTR);
+						if(!viewName && child.getAttribute(kff.View.DATA_BIND_ATTR))
+						{
+							viewName = 'kff.BindingView';
+							child.setAttribute(kff.View.DATA_VIEW_ATTR, viewName);
+						}
+						if(viewName)
+						{
+							if(!filter || (filter && $(child).is(filter)))
+							{
+								viewNames.push({ objPath: viewName, $element: $(child) });
+							}
+						}
+						else
+						{
+							this.findViewElements(child, viewNames, filter);
+						}
+					}
+				}
 			}
 		}
 	},
