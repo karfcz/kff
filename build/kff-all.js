@@ -2059,7 +2059,7 @@ kff.BlurBinder = kff.createClass(
 	*/
 	constructor: function(options)
 	{
-		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'blur';
+		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'blur';
 		options = options || {};
 		options.events = [
 			[eventNames, 'blur']
@@ -2095,7 +2095,7 @@ kff.CheckBinder = kff.createClass(
 	*/
 	constructor: function(options)
 	{
-		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'click change';
+		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'click change';
 		options = options || {};
 		options.events = [
 			[eventNames, 'inputChange']
@@ -2160,7 +2160,7 @@ kff.ClickBinder = kff.createClass(
 	*/
 	constructor: function(options)
 	{
-		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'click';
+		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'click';
 		options = options || {};
 		options.events = [
 			[eventNames, 'click']
@@ -2216,7 +2216,7 @@ kff.DoubleClickBinder = kff.createClass(
 	*/
 	constructor: function(options)
 	{
-		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'dblclick';
+		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'dblclick';
 		options = options || {};
 		options.events = [
 			[eventNames, 'dblclick']
@@ -2252,7 +2252,7 @@ kff.EventBinder = kff.createClass(
 	*/
 	constructor: function(options)
 	{
-		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'click';
+		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'click';
 		options = options || {};
 		options.events = [
 			[eventNames, 'click']
@@ -2324,7 +2324,7 @@ kff.RadioBinder = kff.createClass(
 	*/
 	constructor: function(options)
 	{
-		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'click';
+		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'click';
 		options = options || {};
 		options.events = [
 			[eventNames, 'inputChange']
@@ -2393,7 +2393,7 @@ kff.ValueBinder = kff.createClass(
 	*/
 	constructor: function(options)
 	{
-		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'keydown drop change';
+		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'keydown drop change';
 		options = options || {};
 		options.events = [
 			[eventNames, 'inputChange']

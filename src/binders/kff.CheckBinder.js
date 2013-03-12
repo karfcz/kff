@@ -10,7 +10,7 @@ kff.CheckBinder = kff.createClass(
 	*/
 	constructor: function(options)
 	{
-		var eventNames = options.eventNames ? options.eventNames.join(' ') : 'click change';
+		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'click change';
 		options = options || {};
 		options.events = [
 			[eventNames, 'inputChange']

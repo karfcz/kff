@@ -1,9 +1,9 @@
 
-kff.ClickBinder = kff.createClass(
+kff.EventBinder = kff.createClass(
 {
 	extend: kff.Binder
 },
-/** @lends kff.ClickBinder.prototype */
+/** @lends kff.EventBinder.prototype */
 {
 	/**
 		@constructs
@@ -21,7 +21,7 @@ kff.ClickBinder = kff.createClass(
 	init: function()
 	{
 		this.value = this.params[0] || null;
-		kff.ClickBinder._super.init.call(this);
+		kff.EventBinder._super.init.call(this);
 	},
 
 	click: function(event)
@@ -51,5 +51,5 @@ kff.ClickBinder = kff.createClass(
 
 });
 
-kff.BindingView.registerBinder('click', kff.ClickBinder);
+kff.BindingView.registerBinder('event', kff.EventBinder);
 
