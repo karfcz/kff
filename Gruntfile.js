@@ -39,18 +39,18 @@ module.exports = function(grunt) {
 				dest: './build/kff-all.js'
 			}
 		},
-		min: {
+		uglify: {
 			kff: {
 				src: ['./build/kff-all.js'],
 				dest: './build/kff-all.min.js'
 			}
 		},
 		watch: {
-	      	files: '<config:concat.kff.src>',
+	      	files: '<% concat.kff.src %>',
 	      	tasks: 'concat min'
 	    },
 	    lint: {
-			files: '<config:concat.kff.src>'
+			files: '<% concat.kff.sr %c>'
 		},
 		jshint: {
 			options: {
@@ -59,8 +59,11 @@ module.exports = function(grunt) {
 		}
 	});
 
-	//grunt.loadNpmTasks('grunt-browserify');
+	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-jshint');
 	// Default task.
-	grunt.registerTask('default', 'concat min');
+	grunt.registerTask('default', ['concat', 'uglify']);
 
 };

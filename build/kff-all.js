@@ -891,39 +891,39 @@ kff.View = kff.createClass(
 	/** @lends kff.View */
 	{
 		/**
-			Data-attribute name used for view names
-			@constant
-		*/
+		 * Data-attribute name used for view names
+		 * @constant
+		 */
 		DATA_VIEW_ATTR: 'data-kff-view',
 
 		/**
-			Data-attribute name used for view options (as JSON serialized object)
-			@constant
-		*/
+		 * Data-attribute name used for view options (as JSON serialized object)
+		 * @constant
+		 */
 		DATA_OPTIONS_ATTR: 'data-kff-options',
 
 		/**
-			Data-attribute name used for marking of rendered views
-			@constant
-		*/
+		 * Data-attribute name used for marking of rendered views
+		 * @constant
+		 */
 		DATA_RENDERED_ATTR: 'data-kff-rendered',
 
 		/**
-			Data-attribute name used for data-binding
-			@constant
-		*/
+		 * Data-attribute name used for data-binding
+		 * @constant
+		 */
 		DATA_BIND_ATTR: 'data-kff-bind'
 	}
 },
 /** @lends kff.View.prototype */
 {
 	/**
-		Base class for views
-
-		@constructs
-		@param {Object} options Options object
-		@param {DOM Element|jQuery} options.element A DOM element that will be a root element of the view
-		@param {Array} options.models Array of model instances to be used by the view
+	 * Base class for views
+	 *
+	 * @constructs
+	 * @param {Object} options Options object
+	 * @param {DOM Element|jQuery} options.element A DOM element that will be a root element of the view
+	 * @param {Array} options.models Array of model instances to be used by the view
 	 */
 	constructor: function(options)
 	{
@@ -942,14 +942,14 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Sets internal options
-
-		@private
-		@param {Object} options Options object
-		@param {Array} options.events Array of event bindings
-		@param {kff.ViewFactory} options.viewFactory An instance of kff.ViewFactory class for creating subviews
-		@param {kff.View} options.parentView A parent view (the view bound to some of the ascendant DOM elements)
-		@param {Array} options.models Array of model instances to be used by the view
+	 * Sets internal options
+	 *
+	 * @private
+	 * @param {Object} options Options object
+	 * @param {Array} options.events Array of event bindings
+	 * @param {kff.ViewFactory} options.viewFactory An instance of kff.ViewFactory class for creating subviews
+	 * @param {kff.View} options.parentView A parent view (the view bound to some of the ascendant DOM elements)
+	 * @param {Array} options.models Array of model instances to be used by the view
 	 */
 	setOptions: function(options)
 	{
@@ -978,14 +978,14 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Returns a model object bound to the view or to the parent view.
-
-		Accepts the model name as a string or key path in the form of "modelName.attribute.nextAttribute etc.".
-		Will search for "modelName" in current view, then in parent view etc. When found, returns a value of
-		"attribute.nextAtrribute" using model's	mget method.
-
-		@param {string} modelPath Key path of model in the form of "modelName.attribute.nextAttribute etc.".
-		@return {mixed} A model instance or attribute value or null if not found.
+	 * Returns a model object bound to the view or to the parent view.
+	 *
+	 * Accepts the model name as a string or key path in the form of "modelName.attribute.nextAttribute etc.".
+	 * Will search for "modelName" in current view, then in parent view etc. When found, returns a value of
+	 * "attribute.nextAtrribute" using model's	mget method.
+	 *
+	 * @param {string} modelPath Key path of model in the form of "modelName.attribute.nextAttribute etc.".
+	 * @return {mixed} A model instance or attribute value or null if not found.
 	 */
 	getModel: function(modelPath)
 	{
@@ -1012,20 +1012,20 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Binds DOM events to the view element. Accepts array of arrays in the form:
-
-		[
-			['mousedown, mouseup', '.title', 'edit'],
-			['click',  '.button', 'save' ],
-			['click', function(e) { ... }]
-		]
-
-		The first item is name of DOM event (or comma separated event names).
-		The second item is a CSS experession (jquery expression) relative to the view element for event delegation (optional)
-		The third item is the view method name (string) that acts as an event handler
-
-		@param {Array} events Array of arrays of binding config
-		@param {jQuery} $element A jQuery object that holds the DOM element to bind. If not provided, the view element will be used.
+	 * Binds DOM events to the view element. Accepts array of arrays in the form:
+	 *
+	 * [
+	 *     ['mousedown, mouseup', '.title', 'edit'],
+	 *     ['click',  '.button', 'save' ],
+	 *     ['click', function(e) { ... }]
+	 * ]
+	 *
+	 * The first item is name of DOM event (or comma separated event names).
+	 * The second item is a CSS experession (jquery expression) relative to the view element for event delegation (optional)
+	 * The third item is the view method name (string) that acts as an event handler
+	 *
+	 * @param {Array} events Array of arrays of binding config
+	 * @param {jQuery} $element A jQuery object that holds the DOM element to bind. If not provided, the view element will be used.
 	 */
 	delegateEvents: function(events, $element)
 	{
@@ -1042,10 +1042,10 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Unbinds DOM events from the view element. Accepts array of arrays as in the delegateEvents method.
-
-		@param {Array} events Array of arrays of binding config
-		@param {jQuery} $element A jQuery object that holds the DOM element to unbind. If not provided, the view element will be used.
+	 * Unbinds DOM events from the view element. Accepts array of arrays as in the delegateEvents method.
+	 *
+	 * @param {Array} events Array of arrays of binding config
+	 * @param {jQuery} $element A jQuery object that holds the DOM element to unbind. If not provided, the view element will be used.
 	 */
 	undelegateEvents: function(events, $element)
 	{
@@ -1061,10 +1061,10 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Adds events config to the internal events array.
-
-		@private
-		@param {Array} events Array of arrays of binding config
+	 * Adds events config to the internal events array.
+	 *
+	 * @private
+	 * @param {Array} events Array of arrays of binding config
 	 */
 	addEvents: function(events)
 	{
@@ -1072,10 +1072,10 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Initializes the view. Calls the render method. Should not be overloaded by subclasses.
-
-		@private
-		@param
+	 * Initializes the view. Calls the render method. Should not be overloaded by subclasses.
+	 *
+	 * @private
+	 * @param
 	 */
 	init: function()
 	{
@@ -1083,9 +1083,9 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Renders the view. It will be called automatically. Should not be called directly.
-
-		@param {Boolean} silent If true, the 'render' event won't be called
+	 * Renders the view. It will be called automatically. Should not be called directly.
+	 *
+	 * @param {Boolean} silent If true, the 'render' event won't be called
 	 */
 	render: function(silent)
 	{
@@ -1096,9 +1096,9 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Renders subviews. Will find all DOM descendats with kff.View.DATA_KFF_VIEW (or kff.View.DATA_BIND_ATTR) attribute
-		and initializes subviews on them. If an element has the kff.View.DATA_BIND_ATTR but not the kff.View.DATA_KFF_VIEW
-		attribute, adds kff.View.DATA_KFF_VIEW attribute = "kff.BindingView" and inits implicit data-binding.
+	 * Renders subviews. Will find all DOM descendats with kff.View.DATA_KFF_VIEW (or kff.View.DATA_BIND_ATTR) attribute
+	 * and initializes subviews on them. If an element has the kff.View.DATA_BIND_ATTR but not the kff.View.DATA_KFF_VIEW
+	 * attribute, adds kff.View.DATA_KFF_VIEW attribute = "kff.BindingView" and inits implicit data-binding.
 	 */
 	renderSubviews: function()
 	{
@@ -1171,10 +1171,10 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Destroys the view (destroys all subviews and unbinds previously bound DOM events.
-		It will be called automatically. Should not be called directly.
-
-		@param {Boolean} silent If true, the 'destroy' event won't be called
+	 * Destroys the view (destroys all subviews and unbinds previously bound DOM events.
+	 * It will be called automatically. Should not be called directly.
+	 *
+	 * @param {Boolean} silent If true, the 'destroy' event won't be called
 	 */
 	destroy: function(silent)
 	{
@@ -1185,7 +1185,7 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Destroys the subviews. It will be called automatically. Should not be called directly.
+	 * Destroys the subviews. It will be called automatically. Should not be called directly.
 	 */
 	destroySubviews: function()
 	{
@@ -1202,7 +1202,7 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Method for refreshing the view. Does nothing in this base class, it's intended to be overloaded in subclasses.
+	 * Method for refreshing the view. Does nothing in this base class, it's intended to be overloaded in subclasses.
 	 */
 	refresh: function(){},
 
@@ -1332,17 +1332,17 @@ kff.BindingView = kff.createClass(
 	/** @lends kff.BindingView */
 	{
 		/**
-			Object hash that holds references to binder classes under short key names
-			@private
+		 * Object hash that holds references to binder classes under short key names
+		 * @private
 		*/
 		binders: {},
 
 		/**
-			Registers binder class
-
-			@param {string} alias Alias name used in binding data-attributes
-			@param {kff.Binder} binder Binder class to register
-		*/
+		 * Registers binder class
+		 *
+		 * @param {string} alias Alias name used in binding data-attributes
+		 * @param {kff.Binder} binder Binder class to register
+		 */
 		registerBinder: function(alias, binder)
 		{
 			kff.BindingView.binders[alias] = binder;
@@ -1352,11 +1352,11 @@ kff.BindingView = kff.createClass(
 /** @lends kff.BindingView.prototype */
 {
 	/**
-		Specialized View class for two-way data binding.
-
-		@constructs
-		@augments kff.View
-	*/
+	 * Specialized View class for two-way data binding.
+	 *
+	 * @constructs
+	 * @augments kff.View
+	 */
 	constructor: function(options)
 	{
 		options = options || {};
@@ -1372,10 +1372,10 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Renders the view and inits bindings.
-
-		@param {Boolean} silent If true, does not trigger events
-	*/
+	 * Renders the view and inits bindings.
+	 *
+	 * @param {Boolean} silent If true, does not trigger events
+	 */
 	render: function(silent)
 	{
 		this.initBinding();
@@ -1385,10 +1385,10 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Destroys the view including bindings.
-
-		@param {Boolean} silent If true, does not trigger events
-	*/
+	 * Destroys the view including bindings.
+	 *
+	 * @param {Boolean} silent If true, does not trigger events
+	 */
 	destroy: function(silent)
 	{
 		this.destroyBinding();
@@ -1398,10 +1398,10 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Initializes all bindings.
-
-		Parses data-kff-bind attribute of view element and creates appropriate binder objects.
-	*/
+	 * Initializes all bindings.
+	 *
+	 * Parses data-kff-bind attribute of view element and creates appropriate binder objects.
+	 */
 	initBinding: function()
 	{
 		var model, attr, result, subresults, name, binderName, binderParams, formatters, parsers, getters, setters, eventNames;
@@ -1524,12 +1524,12 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Special binding for Collection count property which is not bindable in a standard way.
-		Creates a proxy model object that observes the collection for a change event and mirrors the
-		count property of collection in the count attribute of the proxy model.
-
-		@param {kff.Collection} collection The collection to be observed
-	*/
+	 * Special binding for Collection count property which is not bindable in a standard way.
+	 * Creates a proxy model object that observes the collection for a change event and mirrors the
+	 * count property of collection in the count attribute of the proxy model.
+	 *
+	 * @param {kff.Collection} collection The collection to be observed
+	 */
 	bindCollectionCount: function(collection)
 	{
 		var model = new kff.Model();
@@ -1549,8 +1549,8 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Destroys all collectin count bindings previously created by the bindCollectionCount method
-	*/
+	 * Destroys all collectin count bindings previously created by the bindCollectionCount method
+	 */
 	destroyCollectionCountBindings: function()
 	{
 		if(this.boundCollectionCounts)
@@ -1563,11 +1563,11 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Parses modifier parameters of binding. Used to create parsers and formatters.
-
-		@param {Array} modifierParams An arrray with modifier names
-		@param {Array} modifiers An empty array that will be filled by modifier classes that corresponds to modifier names
-	*/
+	 * Parses modifier parameters of binding. Used to create parsers and formatters.
+	 *
+	 * @param {Array} modifierParams An arrray with modifier names
+	 * @param {Array} modifiers An empty array that will be filled by modifier classes that corresponds to modifier names
+	 */
 	parseModifiers: function(modifierParams, modifiers)
 	{
 		for(var j = 0; j < modifierParams.length; j++)
@@ -1577,11 +1577,11 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Parses modifier parameters of binding. Used to create parsers and formatters.
-
-		@param {Array} modifierParams An arrray with modifier names
-		@param {Array} modifiers An empty array that will be filled by modifier classes that corresponds to modifier names
-	*/
+	 * Parses modifier parameters of binding. Used to create parsers and formatters.
+ 	 *
+	 * @param {Array} modifierParams An arrray with modifier names
+	 * @param {Array} modifiers An empty array that will be filled by modifier classes that corresponds to modifier names
+	 */
 	parseSetters: function(modifierParams, modifiers)
 	{
 		for(var j = 0; j < modifierParams.length; j++)
@@ -1591,8 +1591,8 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Destroys all bindings
-	*/
+	 * Destroys all bindings
+	 */
 	destroyBinding: function()
 	{
 		for(var b in this.modelBinders)
@@ -1605,11 +1605,11 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Renders "bound" views.
-		This method generates DOM elements corresponding to each item in the bound collection and
-		creates the bindingView for each element. If the collection changes, it reflects those changes
-		automatically in real time.
-	*/
+	 * Renders "bound" views.
+	 * This method generates DOM elements corresponding to each item in the bound collection and
+	 * creates the bindingView for each element. If the collection changes, it reflects those changes
+	 * automatically in real time.
+	 */
 	renderBoundViews: function()
 	{
 		this.$anchor = $(document.createTextNode(''));
@@ -1631,6 +1631,11 @@ kff.BindingView = kff.createClass(
 		this.refreshBoundViews();
 	},
 
+	/**
+	 * Inits filtering of colelction items
+	 *
+	 * @private
+	 */
 	initCollectionFilter: function()
 	{
 		var filterName = this.$element.attr('data-kff-filter');
@@ -1657,8 +1662,10 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Destroys previously bound views.
-	*/
+	 * Destroys previously bound views.
+	 *
+	 * @private
+	 */
 	destroyBoundViews: function()
 	{
 		if(this.$elements) this.$elements.remove();
@@ -1672,10 +1679,10 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Updates bound views when collection changes.
-
-		@param {Object} event An event triggered by collection change
-	*/
+	 * Updates bound views when collection changes.
+	 *
+	 * @param {Object} event An event triggered by collection change
+	 */
 	refreshBoundViews: function(event)
 	{
 		if(event && 'addedValue' in event)
@@ -1740,6 +1747,12 @@ kff.BindingView = kff.createClass(
 		}
 	},
 
+	/**
+	 * Event handler for collection item change
+	 *
+	 * @private
+	 * @param  {mixed} event Model's event object
+	 */
 	collectionItemChange: function(event)
 	{
 		var item = event.model;
@@ -1775,6 +1788,12 @@ kff.BindingView = kff.createClass(
 		}
 	},
 
+	/**
+	 * Removes a view at given index (rendered index)
+	 *
+	 * @private
+	 * @param  {number} renderIndex Rendered index of item
+	 */
 	removeSubViewAt: function(renderIndex)
 	{
 		this.subViews[renderIndex].destroy();
@@ -1786,6 +1805,13 @@ kff.BindingView = kff.createClass(
 		this.reindexSubviews(renderIndex);
 	},
 
+	/**
+	 * Adds a view at given index
+	 *
+	 * @private
+	 * @param {number} collectionIndex Index of item in the collection
+	 * @param {number} renderIndex     Index of item in the view (view can be filtered)
+	 */
 	addSubViewAt: function(collectionIndex, renderIndex)
 	{
 		var item = this.collectionBinder.collection.findByIndex(collectionIndex);
@@ -1810,6 +1836,13 @@ kff.BindingView = kff.createClass(
 		this.reindexSubviews(renderIndex);
 	},
 
+	/**
+	 * Refreshes view indices when the collection changes
+	 *
+	 * @private
+	 * @param  {nubmer} from Render index at which reindexing starts
+	 * @param  {number} to   Render index at which reindexing ends
+	 */
 	reindexSubviews: function(from, to)
 	{
 		if(!from) from = 0;
@@ -1832,7 +1865,12 @@ kff.BindingView = kff.createClass(
 		}
 	},
 
-
+	/**
+	 * Creates a new subview for item in collection
+	 * @param  {kff.Model} item Item for data-binding
+	 * @param  {number} i 		Binding index
+	 * @return {jQuery} 		JQuery-wrapped DOM element of the view
+	 */
 	createSubView: function(item, i)
 	{
 		var $element = this.$element.clone();
@@ -1853,6 +1891,12 @@ kff.BindingView = kff.createClass(
 		return $element;
 	},
 
+	/**
+	 * Returns model object for given keypath.
+	 *
+	 * @param  {string|Array} modelPath Object keypath
+	 * @return {kff.Model}           	Model found
+	 */
 	getModel: function(modelPath)
 	{
 		var modelIndex;
@@ -1865,6 +1909,11 @@ kff.BindingView = kff.createClass(
 		return kff.BindingView._super.getModel.call(this, modelPath);
 	},
 
+	/**
+	 * Refreshes own data-binders
+	 *
+	 * @private
+	 */
 	refreshOwnBinders: function()
 	{
 		for(var b in this.modelBinders)
@@ -1874,12 +1923,22 @@ kff.BindingView = kff.createClass(
 		if(this.collectionBinder) this.refreshBoundViews();
 	},
 
+	/**
+	 * Refreshes binders
+	 *
+	 * @private
+	 */
 	refreshBinders: function()
 	{
 		this.refreshOwnBinders();
 		kff.BindingView._super.refreshBinders.call(this);
 	},
 
+	/**
+	 * Returns index of item in bound collection (closest collection in the view scope)
+	 *
+	 * @return {number} Item index
+	 */
 	getBindingIndex: function()
 	{
 		if(this.bindingIndex !== null) return this.bindingIndex;
@@ -1887,11 +1946,22 @@ kff.BindingView = kff.createClass(
 		return null;
 	},
 
+	/**
+	 * Sets current binding index
+	 *
+	 * @private
+	 */
 	setBindingIndex: function(index)
 	{
 		this.bindingIndex = index;
 	},
 
+	/**
+	 * Concatenates multiple values using single space as separator.
+	 *
+	 * @param  {Array} values Array of values
+	 * @return {string}       Concatenated string
+	 */
 	concat: function(values)
 	{
 		if(values.length === 1) return values[0];

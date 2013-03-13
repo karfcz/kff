@@ -7,39 +7,39 @@ kff.View = kff.createClass(
 	/** @lends kff.View */
 	{
 		/**
-			Data-attribute name used for view names
-			@constant
-		*/
+		 * Data-attribute name used for view names
+		 * @constant
+		 */
 		DATA_VIEW_ATTR: 'data-kff-view',
 
 		/**
-			Data-attribute name used for view options (as JSON serialized object)
-			@constant
-		*/
+		 * Data-attribute name used for view options (as JSON serialized object)
+		 * @constant
+		 */
 		DATA_OPTIONS_ATTR: 'data-kff-options',
 
 		/**
-			Data-attribute name used for marking of rendered views
-			@constant
-		*/
+		 * Data-attribute name used for marking of rendered views
+		 * @constant
+		 */
 		DATA_RENDERED_ATTR: 'data-kff-rendered',
 
 		/**
-			Data-attribute name used for data-binding
-			@constant
-		*/
+		 * Data-attribute name used for data-binding
+		 * @constant
+		 */
 		DATA_BIND_ATTR: 'data-kff-bind'
 	}
 },
 /** @lends kff.View.prototype */
 {
 	/**
-		Base class for views
-
-		@constructs
-		@param {Object} options Options object
-		@param {DOM Element|jQuery} options.element A DOM element that will be a root element of the view
-		@param {Array} options.models Array of model instances to be used by the view
+	 * Base class for views
+	 *
+	 * @constructs
+	 * @param {Object} options Options object
+	 * @param {DOM Element|jQuery} options.element A DOM element that will be a root element of the view
+	 * @param {Array} options.models Array of model instances to be used by the view
 	 */
 	constructor: function(options)
 	{
@@ -58,14 +58,14 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Sets internal options
-
-		@private
-		@param {Object} options Options object
-		@param {Array} options.events Array of event bindings
-		@param {kff.ViewFactory} options.viewFactory An instance of kff.ViewFactory class for creating subviews
-		@param {kff.View} options.parentView A parent view (the view bound to some of the ascendant DOM elements)
-		@param {Array} options.models Array of model instances to be used by the view
+	 * Sets internal options
+	 *
+	 * @private
+	 * @param {Object} options Options object
+	 * @param {Array} options.events Array of event bindings
+	 * @param {kff.ViewFactory} options.viewFactory An instance of kff.ViewFactory class for creating subviews
+	 * @param {kff.View} options.parentView A parent view (the view bound to some of the ascendant DOM elements)
+	 * @param {Array} options.models Array of model instances to be used by the view
 	 */
 	setOptions: function(options)
 	{
@@ -94,14 +94,14 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Returns a model object bound to the view or to the parent view.
-
-		Accepts the model name as a string or key path in the form of "modelName.attribute.nextAttribute etc.".
-		Will search for "modelName" in current view, then in parent view etc. When found, returns a value of
-		"attribute.nextAtrribute" using model's	mget method.
-
-		@param {string} modelPath Key path of model in the form of "modelName.attribute.nextAttribute etc.".
-		@return {mixed} A model instance or attribute value or null if not found.
+	 * Returns a model object bound to the view or to the parent view.
+	 *
+	 * Accepts the model name as a string or key path in the form of "modelName.attribute.nextAttribute etc.".
+	 * Will search for "modelName" in current view, then in parent view etc. When found, returns a value of
+	 * "attribute.nextAtrribute" using model's	mget method.
+	 *
+	 * @param {string} modelPath Key path of model in the form of "modelName.attribute.nextAttribute etc.".
+	 * @return {mixed} A model instance or attribute value or null if not found.
 	 */
 	getModel: function(modelPath)
 	{
@@ -128,20 +128,20 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Binds DOM events to the view element. Accepts array of arrays in the form:
-
-		[
-			['mousedown, mouseup', '.title', 'edit'],
-			['click',  '.button', 'save' ],
-			['click', function(e) { ... }]
-		]
-
-		The first item is name of DOM event (or comma separated event names).
-		The second item is a CSS experession (jquery expression) relative to the view element for event delegation (optional)
-		The third item is the view method name (string) that acts as an event handler
-
-		@param {Array} events Array of arrays of binding config
-		@param {jQuery} $element A jQuery object that holds the DOM element to bind. If not provided, the view element will be used.
+	 * Binds DOM events to the view element. Accepts array of arrays in the form:
+	 *
+	 * [
+	 *     ['mousedown, mouseup', '.title', 'edit'],
+	 *     ['click',  '.button', 'save' ],
+	 *     ['click', function(e) { ... }]
+	 * ]
+	 *
+	 * The first item is name of DOM event (or comma separated event names).
+	 * The second item is a CSS experession (jquery expression) relative to the view element for event delegation (optional)
+	 * The third item is the view method name (string) that acts as an event handler
+	 *
+	 * @param {Array} events Array of arrays of binding config
+	 * @param {jQuery} $element A jQuery object that holds the DOM element to bind. If not provided, the view element will be used.
 	 */
 	delegateEvents: function(events, $element)
 	{
@@ -158,10 +158,10 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Unbinds DOM events from the view element. Accepts array of arrays as in the delegateEvents method.
-
-		@param {Array} events Array of arrays of binding config
-		@param {jQuery} $element A jQuery object that holds the DOM element to unbind. If not provided, the view element will be used.
+	 * Unbinds DOM events from the view element. Accepts array of arrays as in the delegateEvents method.
+	 *
+	 * @param {Array} events Array of arrays of binding config
+	 * @param {jQuery} $element A jQuery object that holds the DOM element to unbind. If not provided, the view element will be used.
 	 */
 	undelegateEvents: function(events, $element)
 	{
@@ -177,10 +177,10 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Adds events config to the internal events array.
-
-		@private
-		@param {Array} events Array of arrays of binding config
+	 * Adds events config to the internal events array.
+	 *
+	 * @private
+	 * @param {Array} events Array of arrays of binding config
 	 */
 	addEvents: function(events)
 	{
@@ -188,10 +188,10 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Initializes the view. Calls the render method. Should not be overloaded by subclasses.
-
-		@private
-		@param
+	 * Initializes the view. Calls the render method. Should not be overloaded by subclasses.
+	 *
+	 * @private
+	 * @param
 	 */
 	init: function()
 	{
@@ -199,9 +199,9 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Renders the view. It will be called automatically. Should not be called directly.
-
-		@param {Boolean} silent If true, the 'render' event won't be called
+	 * Renders the view. It will be called automatically. Should not be called directly.
+	 *
+	 * @param {Boolean} silent If true, the 'render' event won't be called
 	 */
 	render: function(silent)
 	{
@@ -212,9 +212,9 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Renders subviews. Will find all DOM descendats with kff.View.DATA_KFF_VIEW (or kff.View.DATA_BIND_ATTR) attribute
-		and initializes subviews on them. If an element has the kff.View.DATA_BIND_ATTR but not the kff.View.DATA_KFF_VIEW
-		attribute, adds kff.View.DATA_KFF_VIEW attribute = "kff.BindingView" and inits implicit data-binding.
+	 * Renders subviews. Will find all DOM descendats with kff.View.DATA_KFF_VIEW (or kff.View.DATA_BIND_ATTR) attribute
+	 * and initializes subviews on them. If an element has the kff.View.DATA_BIND_ATTR but not the kff.View.DATA_KFF_VIEW
+	 * attribute, adds kff.View.DATA_KFF_VIEW attribute = "kff.BindingView" and inits implicit data-binding.
 	 */
 	renderSubviews: function()
 	{
@@ -287,10 +287,10 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Destroys the view (destroys all subviews and unbinds previously bound DOM events.
-		It will be called automatically. Should not be called directly.
-
-		@param {Boolean} silent If true, the 'destroy' event won't be called
+	 * Destroys the view (destroys all subviews and unbinds previously bound DOM events.
+	 * It will be called automatically. Should not be called directly.
+	 *
+	 * @param {Boolean} silent If true, the 'destroy' event won't be called
 	 */
 	destroy: function(silent)
 	{
@@ -301,7 +301,7 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Destroys the subviews. It will be called automatically. Should not be called directly.
+	 * Destroys the subviews. It will be called automatically. Should not be called directly.
 	 */
 	destroySubviews: function()
 	{
@@ -318,7 +318,7 @@ kff.View = kff.createClass(
 	},
 
 	/**
-		Method for refreshing the view. Does nothing in this base class, it's intended to be overloaded in subclasses.
+	 * Method for refreshing the view. Does nothing in this base class, it's intended to be overloaded in subclasses.
 	 */
 	refresh: function(){},
 

@@ -6,17 +6,17 @@ kff.BindingView = kff.createClass(
 	/** @lends kff.BindingView */
 	{
 		/**
-			Object hash that holds references to binder classes under short key names
-			@private
+		 * Object hash that holds references to binder classes under short key names
+		 * @private
 		*/
 		binders: {},
 
 		/**
-			Registers binder class
-
-			@param {string} alias Alias name used in binding data-attributes
-			@param {kff.Binder} binder Binder class to register
-		*/
+		 * Registers binder class
+		 *
+		 * @param {string} alias Alias name used in binding data-attributes
+		 * @param {kff.Binder} binder Binder class to register
+		 */
 		registerBinder: function(alias, binder)
 		{
 			kff.BindingView.binders[alias] = binder;
@@ -26,11 +26,11 @@ kff.BindingView = kff.createClass(
 /** @lends kff.BindingView.prototype */
 {
 	/**
-		Specialized View class for two-way data binding.
-
-		@constructs
-		@augments kff.View
-	*/
+	 * Specialized View class for two-way data binding.
+	 *
+	 * @constructs
+	 * @augments kff.View
+	 */
 	constructor: function(options)
 	{
 		options = options || {};
@@ -46,10 +46,10 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Renders the view and inits bindings.
-
-		@param {Boolean} silent If true, does not trigger events
-	*/
+	 * Renders the view and inits bindings.
+	 *
+	 * @param {Boolean} silent If true, does not trigger events
+	 */
 	render: function(silent)
 	{
 		this.initBinding();
@@ -59,10 +59,10 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Destroys the view including bindings.
-
-		@param {Boolean} silent If true, does not trigger events
-	*/
+	 * Destroys the view including bindings.
+	 *
+	 * @param {Boolean} silent If true, does not trigger events
+	 */
 	destroy: function(silent)
 	{
 		this.destroyBinding();
@@ -72,10 +72,10 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Initializes all bindings.
-
-		Parses data-kff-bind attribute of view element and creates appropriate binder objects.
-	*/
+	 * Initializes all bindings.
+	 *
+	 * Parses data-kff-bind attribute of view element and creates appropriate binder objects.
+	 */
 	initBinding: function()
 	{
 		var model, attr, result, subresults, name, binderName, binderParams, formatters, parsers, getters, setters, eventNames;
@@ -198,12 +198,12 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Special binding for Collection count property which is not bindable in a standard way.
-		Creates a proxy model object that observes the collection for a change event and mirrors the
-		count property of collection in the count attribute of the proxy model.
-
-		@param {kff.Collection} collection The collection to be observed
-	*/
+	 * Special binding for Collection count property which is not bindable in a standard way.
+	 * Creates a proxy model object that observes the collection for a change event and mirrors the
+	 * count property of collection in the count attribute of the proxy model.
+	 *
+	 * @param {kff.Collection} collection The collection to be observed
+	 */
 	bindCollectionCount: function(collection)
 	{
 		var model = new kff.Model();
@@ -223,8 +223,8 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Destroys all collectin count bindings previously created by the bindCollectionCount method
-	*/
+	 * Destroys all collectin count bindings previously created by the bindCollectionCount method
+	 */
 	destroyCollectionCountBindings: function()
 	{
 		if(this.boundCollectionCounts)
@@ -237,11 +237,11 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Parses modifier parameters of binding. Used to create parsers and formatters.
-
-		@param {Array} modifierParams An arrray with modifier names
-		@param {Array} modifiers An empty array that will be filled by modifier classes that corresponds to modifier names
-	*/
+	 * Parses modifier parameters of binding. Used to create parsers and formatters.
+	 *
+	 * @param {Array} modifierParams An arrray with modifier names
+	 * @param {Array} modifiers An empty array that will be filled by modifier classes that corresponds to modifier names
+	 */
 	parseModifiers: function(modifierParams, modifiers)
 	{
 		for(var j = 0; j < modifierParams.length; j++)
@@ -251,11 +251,11 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Parses modifier parameters of binding. Used to create parsers and formatters.
-
-		@param {Array} modifierParams An arrray with modifier names
-		@param {Array} modifiers An empty array that will be filled by modifier classes that corresponds to modifier names
-	*/
+	 * Parses modifier parameters of binding. Used to create parsers and formatters.
+ 	 *
+	 * @param {Array} modifierParams An arrray with modifier names
+	 * @param {Array} modifiers An empty array that will be filled by modifier classes that corresponds to modifier names
+	 */
 	parseSetters: function(modifierParams, modifiers)
 	{
 		for(var j = 0; j < modifierParams.length; j++)
@@ -265,8 +265,8 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Destroys all bindings
-	*/
+	 * Destroys all bindings
+	 */
 	destroyBinding: function()
 	{
 		for(var b in this.modelBinders)
@@ -279,11 +279,11 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Renders "bound" views.
-		This method generates DOM elements corresponding to each item in the bound collection and
-		creates the bindingView for each element. If the collection changes, it reflects those changes
-		automatically in real time.
-	*/
+	 * Renders "bound" views.
+	 * This method generates DOM elements corresponding to each item in the bound collection and
+	 * creates the bindingView for each element. If the collection changes, it reflects those changes
+	 * automatically in real time.
+	 */
 	renderBoundViews: function()
 	{
 		this.$anchor = $(document.createTextNode(''));
@@ -305,6 +305,11 @@ kff.BindingView = kff.createClass(
 		this.refreshBoundViews();
 	},
 
+	/**
+	 * Inits filtering of colelction items
+	 *
+	 * @private
+	 */
 	initCollectionFilter: function()
 	{
 		var filterName = this.$element.attr('data-kff-filter');
@@ -331,8 +336,10 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Destroys previously bound views.
-	*/
+	 * Destroys previously bound views.
+	 *
+	 * @private
+	 */
 	destroyBoundViews: function()
 	{
 		if(this.$elements) this.$elements.remove();
@@ -346,10 +353,10 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-		Updates bound views when collection changes.
-
-		@param {Object} event An event triggered by collection change
-	*/
+	 * Updates bound views when collection changes.
+	 *
+	 * @param {Object} event An event triggered by collection change
+	 */
 	refreshBoundViews: function(event)
 	{
 		if(event && 'addedValue' in event)
@@ -414,6 +421,12 @@ kff.BindingView = kff.createClass(
 		}
 	},
 
+	/**
+	 * Event handler for collection item change
+	 *
+	 * @private
+	 * @param  {mixed} event Model's event object
+	 */
 	collectionItemChange: function(event)
 	{
 		var item = event.model;
@@ -449,6 +462,12 @@ kff.BindingView = kff.createClass(
 		}
 	},
 
+	/**
+	 * Removes a view at given index (rendered index)
+	 *
+	 * @private
+	 * @param  {number} renderIndex Rendered index of item
+	 */
 	removeSubViewAt: function(renderIndex)
 	{
 		this.subViews[renderIndex].destroy();
@@ -460,6 +479,13 @@ kff.BindingView = kff.createClass(
 		this.reindexSubviews(renderIndex);
 	},
 
+	/**
+	 * Adds a view at given index
+	 *
+	 * @private
+	 * @param {number} collectionIndex Index of item in the collection
+	 * @param {number} renderIndex     Index of item in the view (view can be filtered)
+	 */
 	addSubViewAt: function(collectionIndex, renderIndex)
 	{
 		var item = this.collectionBinder.collection.findByIndex(collectionIndex);
@@ -484,6 +510,13 @@ kff.BindingView = kff.createClass(
 		this.reindexSubviews(renderIndex);
 	},
 
+	/**
+	 * Refreshes view indices when the collection changes
+	 *
+	 * @private
+	 * @param  {nubmer} from Render index at which reindexing starts
+	 * @param  {number} to   Render index at which reindexing ends
+	 */
 	reindexSubviews: function(from, to)
 	{
 		if(!from) from = 0;
@@ -506,7 +539,12 @@ kff.BindingView = kff.createClass(
 		}
 	},
 
-
+	/**
+	 * Creates a new subview for item in collection
+	 * @param  {kff.Model} item Item for data-binding
+	 * @param  {number} i 		Binding index
+	 * @return {jQuery} 		JQuery-wrapped DOM element of the view
+	 */
 	createSubView: function(item, i)
 	{
 		var $element = this.$element.clone();
@@ -527,6 +565,12 @@ kff.BindingView = kff.createClass(
 		return $element;
 	},
 
+	/**
+	 * Returns model object for given keypath.
+	 *
+	 * @param  {string|Array} modelPath Object keypath
+	 * @return {kff.Model}           	Model found
+	 */
 	getModel: function(modelPath)
 	{
 		var modelIndex;
@@ -539,6 +583,11 @@ kff.BindingView = kff.createClass(
 		return kff.BindingView._super.getModel.call(this, modelPath);
 	},
 
+	/**
+	 * Refreshes own data-binders
+	 *
+	 * @private
+	 */
 	refreshOwnBinders: function()
 	{
 		for(var b in this.modelBinders)
@@ -548,12 +597,22 @@ kff.BindingView = kff.createClass(
 		if(this.collectionBinder) this.refreshBoundViews();
 	},
 
+	/**
+	 * Refreshes binders
+	 *
+	 * @private
+	 */
 	refreshBinders: function()
 	{
 		this.refreshOwnBinders();
 		kff.BindingView._super.refreshBinders.call(this);
 	},
 
+	/**
+	 * Returns index of item in bound collection (closest collection in the view scope)
+	 *
+	 * @return {number} Item index
+	 */
 	getBindingIndex: function()
 	{
 		if(this.bindingIndex !== null) return this.bindingIndex;
@@ -561,11 +620,22 @@ kff.BindingView = kff.createClass(
 		return null;
 	},
 
+	/**
+	 * Sets current binding index
+	 *
+	 * @private
+	 */
 	setBindingIndex: function(index)
 	{
 		this.bindingIndex = index;
 	},
 
+	/**
+	 * Concatenates multiple values using single space as separator.
+	 *
+	 * @param  {Array} values Array of values
+	 * @return {string}       Concatenated string
+	 */
 	concat: function(values)
 	{
 		if(values.length === 1) return values[0];
