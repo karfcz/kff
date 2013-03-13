@@ -43,13 +43,14 @@ kff.Binder = kff.createClass(
 
 	undelegateEvents: kff.View.prototype.undelegateEvents,
 
-	modelChange: function(force)
+	modelChange: function(event)
 	{
 		var modelValue;
 		if(this.getter && typeof this.model[this.getter] === 'function') modelValue = this.model[this.getter](this.attr);
+		else if(event !== true) modelValue = event.changedAttributes[this.attr];
 		else modelValue = this.model.get(this.attr);
 
-		if(!this.compareValues(modelValue, this.currentValue) || force === true)
+		if(event === true || !this.compareValues(modelValue, this.currentValue))
 		{
 			this.values[this.valueIndex] = this.format(modelValue);
 			this.currentValue = modelValue;
