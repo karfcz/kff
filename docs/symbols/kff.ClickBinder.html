@@ -199,6 +199,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/kff.BindingView.html">kff.BindingView</a></li>
 	
+	<li><a href="../symbols/kff.BlurBinder.html">kff.BlurBinder</a></li>
+	
 	<li><a href="../symbols/kff.CheckBinder.html">kff.CheckBinder</a></li>
 	
 	<li><a href="../symbols/kff.ClassBinder.html">kff.ClassBinder</a></li>
@@ -207,7 +209,13 @@ ul.inheritsList
 	
 	<li><a href="../symbols/kff.Collection.html">kff.Collection</a></li>
 	
+	<li><a href="../symbols/kff.DoubleClickBinder.html">kff.DoubleClickBinder</a></li>
+	
+	<li><a href="../symbols/kff.EventBinder.html">kff.EventBinder</a></li>
+	
 	<li><a href="../symbols/kff.Events.html">kff.Events</a></li>
+	
+	<li><a href="../symbols/kff.FocusBinder.html">kff.FocusBinder</a></li>
 	
 	<li><a href="../symbols/kff.FrontController.html">kff.FrontController</a></li>
 	
@@ -246,15 +254,6 @@ ul.inheritsList
 			
 				
 				
-					<h2>Methods</h2>
-					<ul class="methodList">
-						
-							<li><a href="../symbols/kff.ClickBinder.html#click">click</a></li>
-						
-							<li><a href="../symbols/kff.ClickBinder.html#init">init</a></li>
-						
-					</ul>
-				
 			
 			<!-- end method list -->
 			
@@ -273,6 +272,8 @@ ul.inheritsList
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
 				
+				<br />Extends
+					<a href="../symbols/kff.Binder.html">kff.Binder</a>.<br />
 				
 			
 				
@@ -299,7 +300,7 @@ ul.inheritsList
 							<div class="fixedFont">
 								<b><a href="../symbols/kff.ClickBinder.html#constructor">kff.ClickBinder</a></b>(options)
 							</div>
-							<div class="description"></div>
+							<div class="description">One-way data binder (DOM to model) for click event.</div>
 						</td>
 					</tr>
 				</tbody>
@@ -313,44 +314,11 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class kff.ClickBinder.">
-					<caption>Method Summary</caption>
-					<thead>
-						<tr>
-							<th scope="col">Method Attributes</th>
-							<th scope="col">Method Name and Description</th>
-						</tr>
-					</thead>
-					<tbody>
-					
-						<tr>
-							<td class="attributes">
-								
-								
-							</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.ClickBinder.html#click">click</a></b>(event)
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">
-								
-								
-							</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.ClickBinder.html#init">init</a></b>()
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-					</tbody>
-				</table>
 				
 				
+				<dl class="inheritsList">
+				<dt>Methods borrowed from class <a href="../symbols/kff.Binder.html">kff.Binder</a>: </dt><dd><a href="../symbols/kff.Binder.html#compareValues">compareValues</a>, <a href="../symbols/kff.Binder.html#destroy">destroy</a>, <a href="../symbols/kff.Binder.html#format">format</a>, <a href="../symbols/kff.Binder.html#getBindingIndex">getBindingIndex</a>, <a href="../symbols/kff.Binder.html#getFormattedValue">getFormattedValue</a>, <a href="../symbols/kff.Binder.html#init">init</a>, <a href="../symbols/kff.Binder.html#modelChange">modelChange</a>, <a href="../symbols/kff.Binder.html#parse">parse</a>, <a href="../symbols/kff.Binder.html#refresh">refresh</a>, <a href="../symbols/kff.Binder.html#updateModel">updateModel</a></dd>
+				</dl>
 				
 			
 <!-- ============================== events summary ======================== -->
@@ -368,7 +336,7 @@ ul.inheritsList
 				</div>
 				
 				<div class="description">
-					
+					One-way data binder (DOM to model) for click event.Sets model atrribute to defined value when click event occurs.
 					
 				</div>
 				
@@ -380,10 +348,10 @@ ul.inheritsList
 						<dt class="heading">Parameters:</dt>
 						
 							<dt>
-								 <b>options</b>
+								<span class="light fixedFont">{Object}</span>  <b>options</b>
 								
 							</dt>
-								<dd></dd>
+								<dd>Options object</dd>
 						
 						</dl>
 					
@@ -402,72 +370,6 @@ ul.inheritsList
 
 <!-- ============================== method details ========================= -->		
 			
-				<div class="sectionTitle">
-					Method Detail
-				</div>
-				
-					<a name="click"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>click</b>(event)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>event</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="init"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>init</b>()
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
-					
-				
-			
 			
 <!-- ============================== event details ========================= -->		
 			
@@ -479,7 +381,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu Feb 21 2013 22:05:47 GMT+0100 (Střední Evropa (běžný čas))
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu Mar 14 2013 10:18:44 GMT+0100 (Střední Evropa (běžný čas))
 		</div>
 	</body>
 </html>

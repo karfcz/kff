@@ -1,5 +1,4 @@
 
-/** @class */
 kff.ClassBinder = kff.createClass(
 {
 	extend: kff.Binder

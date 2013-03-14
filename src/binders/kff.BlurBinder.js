@@ -1,5 +1,4 @@
 
-/** @class */
 kff.BlurBinder = kff.createClass(
 {
 	extend: kff.EventBinder

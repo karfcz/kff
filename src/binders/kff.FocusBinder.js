@@ -1,5 +1,4 @@
 
-/** @class */
 kff.FocusBinder = kff.createClass(
 {
 	extend: kff.EventBinder

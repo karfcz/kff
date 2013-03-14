@@ -1,5 +1,4 @@
 
-/** @class */
 kff.HtmlBinder = kff.createClass(
 {
 	extend: kff.Binder

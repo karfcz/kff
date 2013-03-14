@@ -199,6 +199,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/kff.BindingView.html">kff.BindingView</a></li>
 	
+	<li><a href="../symbols/kff.BlurBinder.html">kff.BlurBinder</a></li>
+	
 	<li><a href="../symbols/kff.CheckBinder.html">kff.CheckBinder</a></li>
 	
 	<li><a href="../symbols/kff.ClassBinder.html">kff.ClassBinder</a></li>
@@ -207,7 +209,13 @@ ul.inheritsList
 	
 	<li><a href="../symbols/kff.Collection.html">kff.Collection</a></li>
 	
+	<li><a href="../symbols/kff.DoubleClickBinder.html">kff.DoubleClickBinder</a></li>
+	
+	<li><a href="../symbols/kff.EventBinder.html">kff.EventBinder</a></li>
+	
 	<li><a href="../symbols/kff.Events.html">kff.Events</a></li>
+	
+	<li><a href="../symbols/kff.FocusBinder.html">kff.FocusBinder</a></li>
 	
 	<li><a href="../symbols/kff.FrontController.html">kff.FrontController</a></li>
 	
@@ -254,6 +262,8 @@ ul.inheritsList
 							<li><a href="../symbols/kff.View.html#destroy">destroy</a></li>
 						
 							<li><a href="../symbols/kff.View.html#destroySubviews">destroySubviews</a></li>
+						
+							<li><a href="../symbols/kff.View.html#findViewElements">findViewElements</a></li>
 						
 							<li><a href="../symbols/kff.View.html#getModel">getModel</a></li>
 						
@@ -456,6 +466,18 @@ ul.inheritsList
 								<div class="fixedFont"><b><a href="../symbols/kff.View.html#destroySubviews">destroySubviews</a></b>()
 								</div>
 								<div class="description">Destroys the subviews.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.View.html#findViewElements">findViewElements</a></b>(el, viewNames, filter)
+								</div>
+								<div class="description">Finds possible subview elements inside an element</div>
 							</td>
 						</tr>
 					
@@ -703,17 +725,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Binds DOM events to the view element. Accepts array of arrays in the form:
-
-			[
-				['mousedown, mouseup', '.title', 'edit'],
-				['click',  '.button', 'save' ],
-				['click', function(e) { ... }]
-			]
-
-			The first item is name of DOM event (or comma separated event names).
-			The second item is a CSS experession (jquery expression) relative to the view element for event delegation (optional)
-			The third item is the view method name (string) that acts as an event handler
+						Binds DOM events to the view element. Accepts array of arrays in the form:[    ['mousedown, mouseup', '.title', 'edit'],    ['click',  '.button', 'save' ],    ['click', function(e) { ... }]]The first item is name of DOM event (or comma separated event names).The second item is a CSS experession (jquery expression) relative to the view element for event delegation (optional)The third item is the view method name (string) that acts as an event handler
 						
 						
 					</div>
@@ -755,8 +767,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Destroys the view (destroys all subviews and unbinds previously bound DOM events.
-			It will be called automatically. Should not be called directly.
+						Destroys the view (destroys all subviews and unbinds previously bound DOM events.It will be called automatically. Should not be called directly.
 						
 						
 					</div>
@@ -809,6 +820,54 @@ ul.inheritsList
 
 					<hr />
 				
+					<a name="findViewElements"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>findViewElements</b>(el, viewNames, filter)
+					
+					</div>
+					<div class="description">
+						Finds possible subview elements inside an element
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{DOM Element}</span> <b>el</b>
+									
+								</dt>
+								<dd>Root element from which search starts</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Array}</span> <b>viewNames</b>
+									
+								</dt>
+								<dd>Array that will be filled by found elements                          (items will be objects { objPath: viewName, $element: jQuery wrapper })</dd>
+							
+								<dt>
+									<span class="light fixedFont">{string}</span> <b>filter</b>
+									
+								</dt>
+								<dd>A jQuery selector for filtering elements (optional)</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="getModel"> </a>
 					<div class="fixedFont">
 					
@@ -817,11 +876,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Returns a model object bound to the view or to the parent view.
-
-			Accepts the model name as a string or key path in the form of "modelName.attribute.nextAttribute etc.".
-			Will search for "modelName" in current view, then in parent view etc. When found, returns a value of
-			"attribute.nextAtrribute" using model's	mget method.
+						Returns a model object bound to the view or to the parent view.Accepts the model name as a string or key path in the form of "modelName.attribute.nextAttribute etc.".Will search for "modelName" in current view, then in parent view etc. When found, returns a value of"attribute.nextAtrribute" using model's	mget method.
 						
 						
 					</div>
@@ -950,9 +1005,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Renders subviews. Will find all DOM descendats with kff.View.DATA_KFF_VIEW (or kff.View.DATA_BIND_ATTR) attribute
-			and initializes subviews on them. If an element has the kff.View.DATA_BIND_ATTR but not the kff.View.DATA_KFF_VIEW
-			attribute, adds kff.View.DATA_KFF_VIEW attribute = "kff.BindingView" and inits implicit data-binding.
+						Renders subviews. Will find all DOM descendats with kff.View.DATA_KFF_VIEW (or kff.View.DATA_BIND_ATTR) attributeand initializes subviews on them. If an element has the kff.View.DATA_BIND_ATTR but not the kff.View.DATA_KFF_VIEWattribute, adds kff.View.DATA_KFF_VIEW attribute = "kff.BindingView" and inits implicit data-binding.
 						
 						
 					</div>
@@ -1023,7 +1076,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu Feb 21 2013 22:05:47 GMT+0100 (Střední Evropa (běžný čas))
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu Mar 14 2013 10:18:44 GMT+0100 (Střední Evropa (běžný čas))
 		</div>
 	</body>
 </html>

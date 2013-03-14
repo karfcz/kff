@@ -2145,7 +2145,6 @@ kff.BindingView.registerBinder('event', kff.EventBinder);
 
 
 
-/** @class */
 kff.AttrBinder = kff.createClass(
 {
 	extend: kff.Binder
@@ -2181,7 +2180,6 @@ kff.AttrBinder = kff.createClass(
 kff.BindingView.registerBinder('attr', kff.AttrBinder);
 
 
-/** @class */
 kff.BlurBinder = kff.createClass(
 {
 	extend: kff.EventBinder
@@ -2247,7 +2245,6 @@ kff.CheckBinder = kff.createClass(
 kff.BindingView.registerBinder('check', kff.CheckBinder);
 
 
-/** @class */
 kff.ClassBinder = kff.createClass(
 {
 	extend: kff.Binder
@@ -2338,7 +2335,6 @@ kff.DoubleClickBinder = kff.createClass(
 
 kff.BindingView.registerBinder('dblclick', kff.DoubleClickBinder);
 
-/** @class */
 kff.FocusBinder = kff.createClass(
 {
 	extend: kff.EventBinder
@@ -2362,7 +2358,6 @@ kff.FocusBinder = kff.createClass(
 
 kff.BindingView.registerBinder('focus', kff.FocusBinder);
 
-/** @class */
 kff.HtmlBinder = kff.createClass(
 {
 	extend: kff.Binder
@@ -2435,7 +2430,6 @@ kff.RadioBinder = kff.createClass(
 kff.BindingView.registerBinder('radio', kff.RadioBinder);
 
 
-/** @class */
 kff.TextBinder = kff.createClass(
 {
 	extend: kff.Binder
