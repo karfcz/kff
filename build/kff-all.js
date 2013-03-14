@@ -1254,6 +1254,10 @@ kff.View.helpers =
 		return v;
 	},
 
+	'string': function(v)
+	{
+		return v.toString();
+	},
 
 	'uppercase': function(v)
 	{
@@ -1269,6 +1273,17 @@ kff.View.helpers =
 	{
 		return '<strong>' + v + '</strong>';
 	}
+
+	// 'stringToNull': function(v)
+	// {
+	// 	return v === '' || v === 'null' || v === '0';
+	// },
+
+	// 'nullToString': function(v)
+	// {
+	// 	return v ? 'true' : 'false';
+	// }
+
 };
 
 
@@ -1381,7 +1396,7 @@ kff.BindingView = kff.createClass(
 		this.initBinding();
 		if(this.collectionBinder) this.renderBoundViews();
 		kff.BindingView._super.render.call(this, silent);
-		this.refreshOwnBinders();
+		setTimeout(this.f('refreshOwnBinders'), 0);
 	},
 
 	/**
@@ -2033,6 +2048,7 @@ kff.Binder = kff.createClass(
 	{
 		if((value1 instanceof Array) && (value2 instanceof Array))
 		{
+
 			var l = value1.length;
 			if(l !== value2.length) return false;
 			for(var i = 0; i < l; i++)
@@ -2071,17 +2087,31 @@ kff.Binder = kff.createClass(
 
 	format: function(value)
 	{
-		for(var i = 0, l = this.formatters.length; i < l; i++)
+		var i, l, j, k, value2;
+		for(i = 0, l = this.formatters.length; i < l; i++)
 		{
-			value = this.formatters[i].call(this, value);
+			if(value instanceof Array)
+			{
+				value2 = [];
+				for(j = 0, k = value.length; j < k; j++) value2[j] = this.formatters[i].call(this, value[j]);
+				value = value2;
+			}
+			else value = this.formatters[i].call(this, value);
 		}
 		return value;
 	},
 
 	parse: function(value)
 	{
-		for(var i = 0, l = this.parsers.length; i < l; i++)
+		var i, l, j, k, value2;
+		for(i = 0, l = this.parsers.length; i < l; i++)
 		{
+			if(value instanceof Array)
+			{
+				value2 = [];
+				for(j = 0, k = value.length; j < k; j++) value2[j] = this.parsers[i].call(this, value[j]);
+				value = value2;
+			}
 			value = this.parsers[i].call(this, value);
 		}
 		return value;
@@ -2167,13 +2197,14 @@ kff.AttrBinder = kff.createClass(
 	init: function()
 	{
 		this.attribute = this.params[0] || null;
-		this.prefix = this.params[1] || null;
+		this.prefix = this.params[1] || '';
+		this.suffix = this.params[2] || '';
 		kff.AttrBinder._super.init.call(this);
 	},
 
 	refresh: function()
 	{
-		if(this.attribute) this.$element.attr(this.attribute, this.prefix + this.getFormattedValue());
+		if(this.attribute) this.$element.attr(this.attribute, this.prefix + this.getFormattedValue() + this.suffix);
 	}
 });
 
@@ -2475,7 +2506,6 @@ kff.ValueBinder = kff.createClass(
 	constructor: function(options)
 	{
 		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'keydown drop change';
-		options = options || {};
 		options.events = [
 			[eventNames, 'inputChange']
 		];

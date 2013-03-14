@@ -370,6 +370,10 @@ kff.View.helpers =
 		return v;
 	},
 
+	'string': function(v)
+	{
+		return v.toString();
+	},
 
 	'uppercase': function(v)
 	{
@@ -385,4 +389,15 @@ kff.View.helpers =
 	{
 		return '<strong>' + v + '</strong>';
 	}
+
+	// 'stringToNull': function(v)
+	// {
+	// 	return v === '' || v === 'null' || v === '0';
+	// },
+
+	// 'nullToString': function(v)
+	// {
+	// 	return v ? 'true' : 'false';
+	// }
+
 };

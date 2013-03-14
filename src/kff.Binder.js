@@ -62,6 +62,7 @@ kff.Binder = kff.createClass(
 	{
 		if((value1 instanceof Array) && (value2 instanceof Array))
 		{
+
 			var l = value1.length;
 			if(l !== value2.length) return false;
 			for(var i = 0; i < l; i++)
@@ -100,17 +101,31 @@ kff.Binder = kff.createClass(
 
 	format: function(value)
 	{
-		for(var i = 0, l = this.formatters.length; i < l; i++)
+		var i, l, j, k, value2;
+		for(i = 0, l = this.formatters.length; i < l; i++)
 		{
-			value = this.formatters[i].call(this, value);
+			if(value instanceof Array)
+			{
+				value2 = [];
+				for(j = 0, k = value.length; j < k; j++) value2[j] = this.formatters[i].call(this, value[j]);
+				value = value2;
+			}
+			else value = this.formatters[i].call(this, value);
 		}
 		return value;
 	},
 
 	parse: function(value)
 	{
-		for(var i = 0, l = this.parsers.length; i < l; i++)
+		var i, l, j, k, value2;
+		for(i = 0, l = this.parsers.length; i < l; i++)
 		{
+			if(value instanceof Array)
+			{
+				value2 = [];
+				for(j = 0, k = value.length; j < k; j++) value2[j] = this.parsers[i].call(this, value[j]);
+				value = value2;
+			}
 			value = this.parsers[i].call(this, value);
 		}
 		return value;

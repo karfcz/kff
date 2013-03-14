@@ -16,7 +16,6 @@ kff.ValueBinder = kff.createClass(
 	constructor: function(options)
 	{
 		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'keydown drop change';
-		options = options || {};
 		options.events = [
 			[eventNames, 'inputChange']
 		];

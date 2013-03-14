@@ -21,13 +21,14 @@ kff.AttrBinder = kff.createClass(
 	init: function()
 	{
 		this.attribute = this.params[0] || null;
-		this.prefix = this.params[1] || null;
+		this.prefix = this.params[1] || '';
+		this.suffix = this.params[2] || '';
 		kff.AttrBinder._super.init.call(this);
 	},
 
 	refresh: function()
 	{
-		if(this.attribute) this.$element.attr(this.attribute, this.prefix + this.getFormattedValue());
+		if(this.attribute) this.$element.attr(this.attribute, this.prefix + this.getFormattedValue() + this.suffix);
 	}
 });
 
