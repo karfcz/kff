@@ -7,17 +7,16 @@ kff.TextBinder = kff.createClass(
 /** @lends kff.TextBinder.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * One-way data binder for plain text content of the element.
+	 * Renders text content of the element on change of the bound model attribute.
+	 *
+	 * @constructs
+	 * @augments kff.Binder
+	 * @param {Object} options Options object
+	 */
 	constructor: function(options)
 	{
-		options = options || {};
 		kff.Binder.call(this, options);
-	},
-
-	init: function()
-	{
-		kff.TextBinder._super.init.call(this);
 	},
 
 	refresh: function(value)

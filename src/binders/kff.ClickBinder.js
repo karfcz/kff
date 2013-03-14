@@ -1,54 +1,23 @@
 
 kff.ClickBinder = kff.createClass(
 {
-	extend: kff.Binder
+	extend: kff.EventBinder
 },
 /** @lends kff.ClickBinder.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * One-way data binder (DOM to model) for click event.
+	 * Sets model atrribute to defined value when click event occurs.
+	 *
+	 * @constructs
+	 * @augments kff.Binder
+	 * @param {Object} options Options object
+	 */
 	constructor: function(options)
 	{
-		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'click';
-		options = options || {};
-		options.events = [
-			[eventNames, 'click']
-		];
-		kff.Binder.call(this, options);
-	},
-
-	init: function()
-	{
-		this.value = this.params[0] || null;
-		kff.ClickBinder._super.init.call(this);
-	},
-
-	click: function(event)
-	{
-		setTimeout(this.f(function()
-		{
-			this.updateModel(this.value);
-		}), 0);
-		event.preventDefault();
-	},
-
-	updateModel: function(value)
-	{
-		var i, l;
-		if(value instanceof Array)
-		{
-			for(i = 0, l = value.length; i < l; i++) value[i] = this.parse(value[i]);
-		}
-		else
-		{
-			value = this.parse(value);
-		}
-		this.currentValue = value;
-		if(this.setter && typeof this.model[this.setter] === 'function') this.model[this.setter](this.currentValue);
-		else this.model.set(this.attr, this.currentValue);
+		if(options.eventNames.length === 0)	options.eventNames = ['click'];
+		kff.EventBinder.call(this, options);
 	}
-
 });
 
 kff.BindingView.registerBinder('click', kff.ClickBinder);

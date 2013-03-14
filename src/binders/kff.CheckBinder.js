@@ -6,8 +6,13 @@ kff.CheckBinder = kff.createClass(
 /** @lends kff.CheckBinder.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * Two-way data binder for checkbox.
+	 * Checks input when model atrribute evaluates to true, unchecks otherwise.
+	 *
+	 * @constructs
+	 * @augments kff.Binder
+	 * @param {Object} options Options object
+	 */
 	constructor: function(options)
 	{
 		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'click change';

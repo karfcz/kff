@@ -6,14 +6,19 @@ kff.EventBinder = kff.createClass(
 /** @lends kff.EventBinder.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * One-way data binder (DOM to model) for generic DOM event.
+	 * Sets model atrribute to defined value when event occurs.
+	 * Event defaults to click.
+	 *
+	 * @constructs
+	 * @augments kff.Binder
+	 * @param {Object} options Options object
+	 */
 	constructor: function(options)
 	{
 		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'click';
-		options = options || {};
 		options.events = [
-			[eventNames, 'click']
+			[eventNames, 'triggerEvent']
 		];
 		kff.Binder.call(this, options);
 	},
@@ -24,7 +29,7 @@ kff.EventBinder = kff.createClass(
 		kff.EventBinder._super.init.call(this);
 	},
 
-	click: function(event)
+	triggerEvent: function(event)
 	{
 		setTimeout(this.f(function()
 		{
@@ -33,20 +38,9 @@ kff.EventBinder = kff.createClass(
 		event.preventDefault();
 	},
 
-	updateModel: function(value)
+	compareValues: function(value1, value2)
 	{
-		var i, l;
-		if(value instanceof Array)
-		{
-			for(i = 0, l = value.length; i < l; i++) value[i] = this.parse(value[i]);
-		}
-		else
-		{
-			value = this.parse(value);
-		}
-		this.currentValue = value;
-		if(this.setter && typeof this.model[this.setter] === 'function') this.model[this.setter](this.currentValue);
-		else this.model.set(this.attr, this.currentValue);
+		return false;
 	}
 
 });

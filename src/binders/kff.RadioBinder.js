@@ -6,8 +6,13 @@ kff.RadioBinder = kff.createClass(
 /** @lends kff.RadioBinder.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * Two-way data binder for radio button.
+	 * Checks radio when model atrribute evaluates to true, unchecks otherwise.
+	 *
+	 * @constructs
+	 * @augments kff.Binder
+	 * @param {Object} options Options object
+	 */
 	constructor: function(options)
 	{
 		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'click';

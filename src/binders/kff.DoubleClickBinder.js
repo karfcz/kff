@@ -1,36 +1,24 @@
 
 kff.DoubleClickBinder = kff.createClass(
 {
-	extend: kff.Binder
+	extend: kff.EventBinder
 },
 /** @lends kff.DoubleClickBinder.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * One-way data binder (DOM to model) for double click event.
+	 * Sets model atrribute to defined value when dblclick event occurs.
+	 *
+	 * @constructs
+	 * @augments kff.Binder
+	 * @param {Object} options Options object
+	 */
 	constructor: function(options)
 	{
-		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'dblclick';
-		options = options || {};
-		options.events = [
-			[eventNames, 'dblclick']
-		];
-		kff.Binder.call(this, options);
-	},
-
-	init: function()
-	{
-		this.value = this.params[0] || null;
-		kff.DoubleClickBinder._super.init.call(this);
-	},
-
-	dblclick: function(event)
-	{
-		setTimeout(this.f(function()
-		{
-			this.updateModel(this.value);
-		}), 0);
+		if(options.eventNames.length === 0)	options.eventNames = ['dblclick'];
+		kff.EventBinder.call(this, options);
 	}
+
 });
 
 kff.BindingView.registerBinder('dblclick', kff.DoubleClickBinder);

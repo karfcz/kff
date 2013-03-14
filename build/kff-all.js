@@ -2095,6 +2095,56 @@ kff.Binder = kff.createClass(
 });
 
 
+kff.EventBinder = kff.createClass(
+{
+	extend: kff.Binder
+},
+/** @lends kff.EventBinder.prototype */
+{
+	/**
+	 * One-way data binder (DOM to model) for generic DOM event.
+	 * Sets model atrribute to defined value when event occurs.
+	 * Event defaults to click.
+	 *
+	 * @constructs
+	 * @augments kff.Binder
+	 * @param {Object} options Options object
+	 */
+	constructor: function(options)
+	{
+		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'click';
+		options.events = [
+			[eventNames, 'triggerEvent']
+		];
+		kff.Binder.call(this, options);
+	},
+
+	init: function()
+	{
+		this.value = this.params[0] || null;
+		kff.EventBinder._super.init.call(this);
+	},
+
+	triggerEvent: function(event)
+	{
+		setTimeout(this.f(function()
+		{
+			this.updateModel(this.value);
+		}), 0);
+		event.preventDefault();
+	},
+
+	compareValues: function(value1, value2)
+	{
+		return false;
+	}
+
+});
+
+kff.BindingView.registerBinder('event', kff.EventBinder);
+
+
+
 /** @class */
 kff.AttrBinder = kff.createClass(
 {
@@ -2102,6 +2152,19 @@ kff.AttrBinder = kff.createClass(
 },
 /** @lends kff.AttrBinder.prototype */
 {
+	/**
+	 * One-way data binder (model to DOM) for an element attribute.
+	 * Sets the attribute of the element to defined value when model atrribute changes.
+	 *
+	 * @constructs
+	 * @augments kff.Binder
+	 * @param {Object} options Options objectt
+	 */
+	constructor: function(options)
+	{
+		kff.Binder.call(this, options);
+	},
+
 	init: function()
 	{
 		this.attribute = this.params[0] || null;
@@ -2121,36 +2184,24 @@ kff.BindingView.registerBinder('attr', kff.AttrBinder);
 /** @class */
 kff.BlurBinder = kff.createClass(
 {
-	extend: kff.Binder
+	extend: kff.EventBinder
 },
 /** @lends kff.BlurBinder.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * One-way data binder (DOM to model) for blur event.
+	 * Sets model atrribute to defined value when element looses focus.
+	 *
+	 * @constructs
+	 * @augments kff.EventBinder
+	 * @param {Object} options Options object
+	 */
 	constructor: function(options)
 	{
-		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'blur';
-		options = options || {};
-		options.events = [
-			[eventNames, 'blur']
-		];
-		kff.Binder.call(this, options);
-	},
-
-	init: function()
-	{
-		this.value = this.params[0] || null;
-		kff.BlurBinder._super.init.call(this);
-	},
-
-	blur: function(event)
-	{
-		setTimeout(this.f(function()
-		{
-			this.updateModel(this.value);
-		}), 0);
+		if(options.eventNames.length === 0)	options.eventNames = ['blur'];
+		kff.EventBinder.call(this, options);
 	}
+
 });
 
 kff.BindingView.registerBinder('blur', kff.BlurBinder);
@@ -2162,8 +2213,13 @@ kff.CheckBinder = kff.createClass(
 /** @lends kff.CheckBinder.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * Two-way data binder for checkbox.
+	 * Checks input when model atrribute evaluates to true, unchecks otherwise.
+	 *
+	 * @constructs
+	 * @augments kff.Binder
+	 * @param {Object} options Options object
+	 */
 	constructor: function(options)
 	{
 		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'click change';
@@ -2198,6 +2254,19 @@ kff.ClassBinder = kff.createClass(
 },
 /** @lends kff.ClassBinder.prototype */
 {
+	/**
+	 * One-way data binder (model to DOM) for CSS class.
+	 * Sets the class of the element to defined value when model atrribute changes.
+	 *
+	 * @constructs
+	 * @augments kff.Binder
+	 * @param {Object} options Options objectt
+	 */
+	constructor: function(options)
+	{
+		kff.Binder.call(this, options);
+	},
+
 	init: function()
 	{
 		this.className = this.params[0] || null;
@@ -2222,54 +2291,23 @@ kff.BindingView.registerBinder('class', kff.ClassBinder);
 
 kff.ClickBinder = kff.createClass(
 {
-	extend: kff.Binder
+	extend: kff.EventBinder
 },
 /** @lends kff.ClickBinder.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * One-way data binder (DOM to model) for click event.
+	 * Sets model atrribute to defined value when click event occurs.
+	 *
+	 * @constructs
+	 * @augments kff.Binder
+	 * @param {Object} options Options object
+	 */
 	constructor: function(options)
 	{
-		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'click';
-		options = options || {};
-		options.events = [
-			[eventNames, 'click']
-		];
-		kff.Binder.call(this, options);
-	},
-
-	init: function()
-	{
-		this.value = this.params[0] || null;
-		kff.ClickBinder._super.init.call(this);
-	},
-
-	click: function(event)
-	{
-		setTimeout(this.f(function()
-		{
-			this.updateModel(this.value);
-		}), 0);
-		event.preventDefault();
-	},
-
-	updateModel: function(value)
-	{
-		var i, l;
-		if(value instanceof Array)
-		{
-			for(i = 0, l = value.length; i < l; i++) value[i] = this.parse(value[i]);
-		}
-		else
-		{
-			value = this.parse(value);
-		}
-		this.currentValue = value;
-		if(this.setter && typeof this.model[this.setter] === 'function') this.model[this.setter](this.currentValue);
-		else this.model.set(this.attr, this.currentValue);
+		if(options.eventNames.length === 0)	options.eventNames = ['click'];
+		kff.EventBinder.call(this, options);
 	}
-
 });
 
 kff.BindingView.registerBinder('click', kff.ClickBinder);
@@ -2278,95 +2316,51 @@ kff.BindingView.registerBinder('click', kff.ClickBinder);
 
 kff.DoubleClickBinder = kff.createClass(
 {
-	extend: kff.Binder
+	extend: kff.EventBinder
 },
 /** @lends kff.DoubleClickBinder.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * One-way data binder (DOM to model) for double click event.
+	 * Sets model atrribute to defined value when dblclick event occurs.
+	 *
+	 * @constructs
+	 * @augments kff.Binder
+	 * @param {Object} options Options object
+	 */
 	constructor: function(options)
 	{
-		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'dblclick';
-		options = options || {};
-		options.events = [
-			[eventNames, 'dblclick']
-		];
-		kff.Binder.call(this, options);
-	},
-
-	init: function()
-	{
-		this.value = this.params[0] || null;
-		kff.DoubleClickBinder._super.init.call(this);
-	},
-
-	dblclick: function(event)
-	{
-		setTimeout(this.f(function()
-		{
-			this.updateModel(this.value);
-		}), 0);
+		if(options.eventNames.length === 0)	options.eventNames = ['dblclick'];
+		kff.EventBinder.call(this, options);
 	}
+
 });
 
 kff.BindingView.registerBinder('dblclick', kff.DoubleClickBinder);
 
-kff.EventBinder = kff.createClass(
+/** @class */
+kff.FocusBinder = kff.createClass(
 {
-	extend: kff.Binder
+	extend: kff.EventBinder
 },
-/** @lends kff.EventBinder.prototype */
+/** @lends kff.FocusBinder.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * One-way data binder (DOM to model) for focus event.
+	 * Sets model atrribute to defined value when element gets focus.
+	 *
+	 * @constructs
+	 * @augments kff.Binder
+	 * @param {Object} options Options object
+	 */
 	constructor: function(options)
 	{
-		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'click';
-		options = options || {};
-		options.events = [
-			[eventNames, 'click']
-		];
-		kff.Binder.call(this, options);
-	},
-
-	init: function()
-	{
-		this.value = this.params[0] || null;
-		kff.EventBinder._super.init.call(this);
-	},
-
-	click: function(event)
-	{
-		setTimeout(this.f(function()
-		{
-			this.updateModel(this.value);
-		}), 0);
-		event.preventDefault();
-	},
-
-	updateModel: function(value)
-	{
-		var i, l;
-		if(value instanceof Array)
-		{
-			for(i = 0, l = value.length; i < l; i++) value[i] = this.parse(value[i]);
-		}
-		else
-		{
-			value = this.parse(value);
-		}
-		this.currentValue = value;
-		if(this.setter && typeof this.model[this.setter] === 'function') this.model[this.setter](this.currentValue);
-		else this.model.set(this.attr, this.currentValue);
+		if(options.eventNames.length === 0)	options.eventNames = ['focus'];
+		kff.EventBinder.call(this, options);
 	}
-
 });
 
-kff.BindingView.registerBinder('event', kff.EventBinder);
-
-
+kff.BindingView.registerBinder('focus', kff.FocusBinder);
 
 /** @class */
 kff.HtmlBinder = kff.createClass(
@@ -2375,6 +2369,19 @@ kff.HtmlBinder = kff.createClass(
 },
 /** @lends kff.HtmlBinder.prototype */
 {
+	/**
+	 * One-way data binder for html content of the element.
+	 * Renders html content of the element on change of the bound model attribute.
+	 *
+	 * @constructs
+	 * @augments kff.Binder
+	 * @param {Object} options Options object
+	 */
+	constructor: function(options)
+	{
+		kff.Binder.call(this, options);
+	},
+
 	refresh: function()
 	{
 		this.$element.html(this.values.join(' '));
@@ -2391,8 +2398,13 @@ kff.RadioBinder = kff.createClass(
 /** @lends kff.RadioBinder.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * Two-way data binder for radio button.
+	 * Checks radio when model atrribute evaluates to true, unchecks otherwise.
+	 *
+	 * @constructs
+	 * @augments kff.Binder
+	 * @param {Object} options Options object
+	 */
 	constructor: function(options)
 	{
 		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'click';
@@ -2431,17 +2443,16 @@ kff.TextBinder = kff.createClass(
 /** @lends kff.TextBinder.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * One-way data binder for plain text content of the element.
+	 * Renders text content of the element on change of the bound model attribute.
+	 *
+	 * @constructs
+	 * @augments kff.Binder
+	 * @param {Object} options Options object
+	 */
 	constructor: function(options)
 	{
-		options = options || {};
 		kff.Binder.call(this, options);
-	},
-
-	init: function()
-	{
-		kff.TextBinder._super.init.call(this);
 	},
 
 	refresh: function(value)
@@ -2460,8 +2471,13 @@ kff.ValueBinder = kff.createClass(
 /** @lends kff.ValueBinder.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * Two-way data binder for input, select, textarea elements.
+	 * Triggers model change on keydown, drop and change events on default.
+	 *
+	 * @constructs
+	 * @augments kff.Binder
+	 * @param {Object} options Options object
+	 */
 	constructor: function(options)
 	{
 		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'keydown drop change';
