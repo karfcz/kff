@@ -15,14 +15,17 @@ describe('kff.BindingView', function()
 			}
 		});
 		view.init();
-		$input.val().should.equal('Karel');
-		view.getModel('myModel').set('name', 'Petr');
-		$input.val().should.equal('Petr');
-		$input.val('Honza').trigger('change');
 		setTimeout(function()
 		{
-			view.getModel('myModel').get('name').should.equal('Honza');
-			done();
+			$input.val().should.equal('Karel');
+			view.getModel('myModel').set('name', 'Petr');
+			$input.val().should.equal('Petr');
+			$input.val('Honza').trigger('change');
+			setTimeout(function()
+			{
+				view.getModel('myModel').get('name').should.equal('Honza');
+				done();
+			}, 0);
 		}, 0);
 	});
 

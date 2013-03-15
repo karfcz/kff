@@ -16,9 +16,12 @@ describe('kff.TextBinder', function()
 			}
 		});
 		view.init();
-		$div.text().should.equal('Karel');
-		view.getModel('myModel').set('name', 'Petr');
-		$div.text().should.equal('Petr');
+		setTimeout(function()
+		{
+			$div.text().should.equal('Karel');
+			view.getModel('myModel').set('name', 'Petr');
+			$div.text().should.equal('Petr');
+		}, 0);
 	});
 
 });
