@@ -339,6 +339,12 @@ kff.View.helpers =
 		return v;
 	},
 
+	'indexFromOne': function(v)
+	{
+		if(this.getBindingIndex() !== null) return this.getBindingIndex() + 1;
+		return v;
+	},
+
 	'boolean': function(v)
 	{
 		var parsed = parseInt(v, 10);
