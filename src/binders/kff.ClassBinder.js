@@ -21,7 +21,7 @@ kff.ClassBinder = kff.createClass(
 	init: function()
 	{
 		this.className = this.params[0] || null;
-		this.equalsTo = this.params[1] || null;
+		this.equalsTo = this.params[1] || true;
 		kff.ClassBinder._super.init.call(this);
 	},
 
