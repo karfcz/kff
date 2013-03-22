@@ -39,6 +39,18 @@ kff.Collection = kff.createClass(
 	},
 
 	/**
+		Inserts an item at the end of the collection
+
+		@param {mixed} val Item to be inserted
+		@param {Boolean} silent If true, do not trigger event
+	 */
+	insert: function(val, index, silent)
+	{
+		kff.Collection._super.insert.call(this, val, index);
+		if(!silent) this.trigger('change', { insertedValue: val });
+	},
+
+	/**
 		Removes the item from the collection
 
 		@param {mixed} val Reference to the item to be removed

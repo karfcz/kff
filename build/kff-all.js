@@ -304,6 +304,16 @@ kff.List = kff.createClass(
 	},
 
 	/**
+		Inserts an item at specified index
+		@param {mixed} val Item to be inserted
+	 */
+	insert: function(val, index)
+	{
+		this.array.splice(index, 0, val);
+		this.count++;
+	},
+
+	/**
 		Removes item from the list
 		@param {mixed} val Reference to the item to be removed
 		@returns {Boolean} True if item was removed or false if not found
@@ -426,6 +436,18 @@ kff.Collection = kff.createClass(
 	{
 		kff.Collection._super.append.call(this, val);
 		if(!silent) this.trigger('change', { addedValue: val });
+	},
+
+	/**
+		Inserts an item at the end of the collection
+
+		@param {mixed} val Item to be inserted
+		@param {Boolean} silent If true, do not trigger event
+	 */
+	insert: function(val, index, silent)
+	{
+		kff.Collection._super.insert.call(this, val, index);
+		if(!silent) this.trigger('change', { insertedValue: val });
 	},
 
 	/**

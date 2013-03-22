@@ -41,4 +41,15 @@ describe('kff.List', function()
 		list.count.should.eql(0);
 	});
 
+	it('should insert one value to the list', function()
+	{
+		var list = new kff.List();
+		list.append('A');
+		list.append('C');
+		list.insert('B', 1);
+
+		list.count.should.eql(3);
+		list.findByIndex(1).should.equal('B');
+	});
+
 });

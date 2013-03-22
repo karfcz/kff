@@ -36,6 +36,16 @@ kff.List = kff.createClass(
 	},
 
 	/**
+		Inserts an item at specified index
+		@param {mixed} val Item to be inserted
+	 */
+	insert: function(val, index)
+	{
+		this.array.splice(index, 0, val);
+		this.count++;
+	},
+
+	/**
 		Removes item from the list
 		@param {mixed} val Reference to the item to be removed
 		@returns {Boolean} True if item was removed or false if not found
