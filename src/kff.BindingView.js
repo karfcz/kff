@@ -368,7 +368,17 @@ kff.BindingView = kff.createClass(
 			event.addedValue.on('change', this.f('collectionItemChange'));
 			this.collectionItemChange({ model: event.addedValue });
 		}
-		if(event && 'removedValue' in event)
+		else if(event && 'insertedValue' in event)
+		{
+			this.subViewsMap.splice(event.insertedIndex, 0, {
+				renderIndex: null,
+				rendered: false
+			});
+			event.insertedValue.on('change', this.f('collectionItemChange'));
+			this.collectionItemChange({ model: event.insertedValue });
+			this.refreshBinders();
+		}
+		else if(event && 'removedValue' in event)
 		{
 			event.removedValue.off('change', this.f('collectionItemChange'));
 
@@ -396,7 +406,7 @@ kff.BindingView = kff.createClass(
 				if(this.subViewsMap[i].rendered) this.removeSubViewAt(renderIndex);
 				this.subViewsMap.splice(i, 1);
 			}
-			this.reindexSubviews(renderIndex);
+			this.refreshBinders();
 		}
 		else
 		{

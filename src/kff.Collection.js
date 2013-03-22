@@ -47,7 +47,7 @@ kff.Collection = kff.createClass(
 	insert: function(val, index, silent)
 	{
 		kff.Collection._super.insert.call(this, val, index);
-		if(!silent) this.trigger('change', { insertedValue: val });
+		if(!silent) this.trigger('change', { insertedValue: val, insertedIndex: index });
 	},
 
 	/**
