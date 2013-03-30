@@ -17,10 +17,18 @@ kff.extend = function(child, parent)
  * Mixins (using a shallow copy) properties from one object to another
  * @param {Object} obj Object to be extended
  * @param {Object} properties Object by which to extend
+ * @returns {Object} Extended object (=== obj)
  */
 kff.mixins = function(obj, properties)
 {
-	for(var key in properties) if(properties.hasOwnProperty(key)) obj[key] = properties[key];
+	var i = 1, l = arguments.length, key, props;
+	while(i < l)
+	{
+		props = arguments[i];
+		for(key in props) if(props.hasOwnProperty(key)) obj[key] = props[key];
+		i++;
+	}
+	return obj;
 };
 
 /**

@@ -17,7 +17,7 @@ describe('kff.extends', function()
 
 describe('kff.mixins', function()
 {
-	it('should create an object that mixins properties from another object', function()
+	it('should mixin properties from one object', function()
 	{
 		var a = { prop1: 'prop1' };
 		var b = { prop2: 'prop2' };
@@ -27,6 +27,24 @@ describe('kff.mixins', function()
 		b.should.have.property('prop1');
 		b.should.have.property('prop2');
 		b.prop1.should.equal('prop1');
+	});
+
+	it('should mixin properties from multiple objects', function()
+	{
+		var a = { prop1: 'prop1' };
+		var b = { prop2: 'prop2', prop3: 'prop3' };
+		var c = { prop3: 'prop3c', prop4: 'prop4' };
+		var ret;
+
+		ret = kff.mixins(a, b, c);
+
+		a.should.have.property('prop1');
+		a.should.have.property('prop2');
+		a.should.have.property('prop3');
+		a.should.have.property('prop4');
+		a.prop3.should.equal('prop3c');
+		a.prop4.should.equal('prop4');
+		a.should.equal(ret);
 	});
 });
 
