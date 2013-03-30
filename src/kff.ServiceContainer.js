@@ -24,17 +24,18 @@ kff.ServiceContainer = kff.createClass(
 	/**
 	 * Returns instance of service class.
 	 * @param {string} service Service name (service config to be found in config.services[service])
+	 * @param {Array} argsExtend Array to overload default arguments array (optional)
 	 * @returns {Object} Instance of service
 	 */
-	getService: function(service)
+	getService: function(service, argsExtend)
 	{
 		if(!this.config.services[service]) throw('Service ' + service + ' not defined');
 		if(this.config.services[service].shared)
 		{
-			if(typeof this.services[service] === 'undefined') this.services[service] = this.createService(service);
+			if(typeof this.services[service] === 'undefined') this.services[service] = this.createService(service, argsExtend);
 			return this.services[service];
 		}
-		return this.createService(service);
+		return this.createService(service, argsExtend);
 	},
 
 	/**
@@ -77,7 +78,8 @@ kff.ServiceContainer = kff.createClass(
 			{
 				if(argsExtend[i] !== undefined)
 				{
-					if(args[i] && typeof args[i] === 'object') argsExtended[i] = kff.mixins({}, args[i], argsExtend[i], true);
+					if(args[i] !== null && typeof args[i] === 'object' && args[i].constructor === Object
+						&& argsExtend[i] !== null && typeof argsExtend[i] === 'object' && argsExtend[i].constructor === Object) argsExtended[i] = kff.mixins({}, args[i], argsExtend[i]);
 					else argsExtended[i] = argsExtend[i];
 				}
 				else argsExtended[i] = args[i];
