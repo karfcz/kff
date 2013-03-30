@@ -50,32 +50,14 @@ kff.View = kff.createClass(
 	constructor: function(options)
 	{
 		options = options || {};
-		this.events = new kff.Events();
 		this.options = {
 			element: null,
 			models: null,
 			events: []
 		};
+		this.events = new kff.Events();
 		this.models = {};
-		this.setOptions(options);
-		this.viewFactory = options.viewFactory || new kff.ViewFactory();
-		this.subViews = [];
-		return this;
-	},
 
-	/**
-	 * Sets internal options
-	 *
-	 * @private
-	 * @param {Object} options Options object
-	 * @param {Array} options.events Array of event bindings
-	 * @param {kff.ViewFactory} options.viewFactory An instance of kff.ViewFactory class for creating subviews
-	 * @param {kff.View} options.parentView A parent view (the view bound to some of the ascendant DOM elements)
-	 * @param {Array} options.models Array of model instances to be used by the view
-	 */
-	setOptions: function(options)
-	{
-		options = options || {};
 		if(options.events)
 		{
 			this.options.events = this.options.events.concat(options.events);
@@ -96,7 +78,11 @@ kff.View = kff.createClass(
 		{
 			this.models = options.models;
 		}
-		$.extend(this.options, options);
+		kff.mixins(this.options, options);
+
+		this.viewFactory = options.viewFactory || new kff.ViewFactory();
+		this.subViews = [];
+		return this;
 	},
 
 	/**

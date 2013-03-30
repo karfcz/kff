@@ -786,17 +786,18 @@ kff.ServiceContainer = kff.createClass(
 	/**
 	 * Returns instance of service class.
 	 * @param {string} service Service name (service config to be found in config.services[service])
+	 * @param {Array} argsExtend Array to overload default arguments array (optional)
 	 * @returns {Object} Instance of service
 	 */
-	getService: function(service)
+	getService: function(service, argsExtend)
 	{
 		if(!this.config.services[service]) throw('Service ' + service + ' not defined');
 		if(this.config.services[service].shared)
 		{
-			if(typeof this.services[service] === 'undefined') this.services[service] = this.createService(service);
+			if(typeof this.services[service] === 'undefined') this.services[service] = this.createService(service, argsExtend);
 			return this.services[service];
 		}
-		return this.createService(service);
+		return this.createService(service, argsExtend);
 	},
 
 	/**
@@ -839,7 +840,8 @@ kff.ServiceContainer = kff.createClass(
 			{
 				if(argsExtend[i] !== undefined)
 				{
-					if(args[i] && typeof args[i] === 'object') argsExtended[i] = kff.mixins({}, args[i], argsExtend[i], true);
+					if(args[i] !== null && typeof args[i] === 'object' && args[i].constructor === Object
+						&& argsExtend[i] !== null && typeof argsExtend[i] === 'object' && argsExtend[i].constructor === Object) argsExtended[i] = kff.mixins({}, args[i], argsExtend[i]);
 					else argsExtended[i] = argsExtend[i];
 				}
 				else argsExtended[i] = args[i];
@@ -1008,32 +1010,14 @@ kff.View = kff.createClass(
 	constructor: function(options)
 	{
 		options = options || {};
-		this.events = new kff.Events();
 		this.options = {
 			element: null,
 			models: null,
 			events: []
 		};
+		this.events = new kff.Events();
 		this.models = {};
-		this.setOptions(options);
-		this.viewFactory = options.viewFactory || new kff.ViewFactory();
-		this.subViews = [];
-		return this;
-	},
 
-	/**
-	 * Sets internal options
-	 *
-	 * @private
-	 * @param {Object} options Options object
-	 * @param {Array} options.events Array of event bindings
-	 * @param {kff.ViewFactory} options.viewFactory An instance of kff.ViewFactory class for creating subviews
-	 * @param {kff.View} options.parentView A parent view (the view bound to some of the ascendant DOM elements)
-	 * @param {Array} options.models Array of model instances to be used by the view
-	 */
-	setOptions: function(options)
-	{
-		options = options || {};
 		if(options.events)
 		{
 			this.options.events = this.options.events.concat(options.events);
@@ -1054,7 +1038,11 @@ kff.View = kff.createClass(
 		{
 			this.models = options.models;
 		}
-		$.extend(this.options, options);
+		kff.mixins(this.options, options);
+
+		this.viewFactory = options.viewFactory || new kff.ViewFactory();
+		this.subViews = [];
+		return this;
 	},
 
 	/**
@@ -2724,14 +2712,13 @@ kff.ViewFactory = kff.createClass(
 		var view = null, viewClass;
 		options = options || {};
 
-		if(typeof viewName !== 'function' && this.serviceContainer && this.serviceContainer.hasService(viewName)) view = this.serviceContainer.getService(viewName);
+		if(typeof viewName !== 'function' && this.serviceContainer && this.serviceContainer.hasService(viewName)) view = this.serviceContainer.getService(viewName, [options]);
 		else
 		{
 			if(typeof viewName !== 'function') viewClass = kff.evalObjectPath(viewName);
 			else viewClass = viewName;
-			if(viewClass) view = new viewClass({ viewFactory: this });
+			if(viewClass) view = new viewClass(kff.mixins({}, options, { viewFactory: this }));
 		}
-		if(view instanceof kff.View) view.setOptions(options);
 		return view;
 	},
 
