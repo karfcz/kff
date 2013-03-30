@@ -934,7 +934,13 @@ kff.View = kff.createClass(
 		 * Data-attribute name used for data-binding
 		 * @constant
 		 */
-		DATA_BIND_ATTR: 'data-kff-bind'
+		DATA_BIND_ATTR: 'data-kff-bind',
+
+		/**
+		 * Data-attribute name used for action-binding
+		 * @constant
+		 */
+		DATA_TRIGGER_ATTR: 'data-kff-trigger'
 	}
 },
 /** @lends kff.View.prototype */
@@ -1058,7 +1064,11 @@ kff.View = kff.createClass(
 		for(i = 0, l = events.length; i < l; i++)
 		{
 			event = events[i];
-			if(event.length === 3) $element.on(event[0], event[1], kff.bindFn(this, event[2]));
+			if(event.length === 3)
+			{
+				if(typeof event[1] === 'string') $element.on(event[0], event[1], kff.bindFn(this, event[2]));
+				else event[1].on(event[0], kff.bindFn(this, event[2]));
+			}
 			else if(event.length === 2) $element.on(event[0], kff.bindFn(this, event[1]));
 		}
 	},
@@ -1077,7 +1087,11 @@ kff.View = kff.createClass(
 		for(i = 0, l = events.length; i < l; i++)
 		{
 			event = events[i];
-			if(event.length === 3) $element.off(event[0], event[1], kff.bindFn(this, event[2]));
+			if(event.length === 3)
+			{
+				if(typeof event[1] === 'string') $element.off(event[0], event[1], kff.bindFn(this, event[2]));
+				else event[1].off(event[0], kff.bindFn(this, event[2]));
+			}
 			else if(event.length === 2) $element.off(event[0], kff.bindFn(this, event[1]));
 		}
 	},
@@ -1112,8 +1126,8 @@ kff.View = kff.createClass(
 	render: function(silent)
 	{
 		this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
-		this.delegateEvents();
 		this.renderSubviews();
+		this.delegateEvents();
 		if(!silent) this.trigger('init');
 	},
 
@@ -1126,9 +1140,13 @@ kff.View = kff.createClass(
 	{
 		var viewNames = [],
 			viewName, viewClass, subView, options, opt, i, l, rendered,
-			filter = this.options.filter || undefined;
+			filter = this.options.filter || undefined,
+			element = this.$element.get(0);
 
-		if(this.$element.get(0)) this.findViewElements(this.$element.get(0), viewNames, filter);
+		if(element) this.findViewElements(element, viewNames, filter);
+
+		var onAttr = element.getAttribute(kff.View.DATA_TRIGGER_ATTR);
+		if(onAttr) this.processChildEvents(element, onAttr);
 
 		// Render subviews
 		for(i = 0, l = viewNames.length; i < l; i++)
@@ -1157,7 +1175,7 @@ kff.View = kff.createClass(
 	 */
 	findViewElements: function(el, viewNames, filter)
 	{
-		var i, l, children, child, viewName, rendered;
+		var i, l, children, child, viewName, rendered, onAttr;
 		if(el.hasChildNodes())
 		{
 			children = el.childNodes;
@@ -1184,6 +1202,12 @@ kff.View = kff.createClass(
 						}
 						else
 						{
+							onAttr = child.getAttribute(kff.View.DATA_TRIGGER_ATTR);
+							if(onAttr)
+							{
+								this.processChildEvents(child, onAttr);
+							}
+
 							this.findViewElements(child, viewNames, filter);
 						}
 					}
@@ -1191,6 +1215,23 @@ kff.View = kff.createClass(
 			}
 		}
 	},
+
+	processChildEvents: function(child, onAttr)
+	{
+		var onAttrSplit, onAttrSplit2, events = [], i, l;
+		onAttrSplit = onAttr.split(/\s+/);
+		for(i = 0, l = onAttrSplit.length; i < l; i++)
+		{
+			onAttrSplit2 = onAttrSplit[i].split(':');
+			events.push([
+				onAttrSplit2[0].replace('|', ' '),
+				$(child),
+				onAttrSplit2[1]
+			]);
+		}
+		this.addEvents(events);
+	},
+
 
 	/**
 	 * Destroys the view (destroys all subviews and unbinds previously bound DOM events.
@@ -1201,8 +1242,8 @@ kff.View = kff.createClass(
 	destroy: function(silent)
 	{
 		this.$element.removeAttr(kff.View.DATA_RENDERED_ATTR);
-		this.destroySubviews();
 		this.undelegateEvents();
+		this.destroySubviews();
 		if(!silent) this.trigger('destroy');
 	},
 
@@ -2249,30 +2290,6 @@ kff.AttrBinder = kff.createClass(
 kff.BindingView.registerBinder('attr', kff.AttrBinder);
 
 
-kff.BlurBinder = kff.createClass(
-{
-	extend: kff.EventBinder
-},
-/** @lends kff.BlurBinder.prototype */
-{
-	/**
-	 * One-way data binder (DOM to model) for blur event.
-	 * Sets model atrribute to defined value when element looses focus.
-	 *
-	 * @constructs
-	 * @augments kff.EventBinder
-	 * @param {Object} options Options object
-	 */
-	constructor: function(options)
-	{
-		if(options.eventNames.length === 0)	options.eventNames = ['blur'];
-		kff.EventBinder.call(this, options);
-	}
-
-});
-
-kff.BindingView.registerBinder('blur', kff.BlurBinder);
-
 kff.CheckBinder = kff.createClass(
 {
 	extend: kff.Binder
@@ -2415,7 +2432,7 @@ kff.FocusBinder = kff.createClass(
 	 * Sets model atrribute to defined value when element gets focus.
 	 *
 	 * @constructs
-	 * @augments kff.Binder
+	 * @augments kff.EventBinder
 	 * @param {Object} options Options object
 	 */
 	constructor: function(options)
@@ -2423,9 +2440,79 @@ kff.FocusBinder = kff.createClass(
 		if(options.eventNames.length === 0)	options.eventNames = ['focus'];
 		kff.EventBinder.call(this, options);
 	}
+
 });
 
 kff.BindingView.registerBinder('focus', kff.FocusBinder);
+
+kff.BlurBinder = kff.createClass(
+{
+	extend: kff.EventBinder
+},
+/** @lends kff.BlurBinder.prototype */
+{
+	/**
+	 * One-way data binder (DOM to model) for blur event.
+	 * Sets model atrribute to defined value when element looses focus.
+	 *
+	 * @constructs
+	 * @augments kff.EventBinder
+	 * @param {Object} options Options object
+	 */
+	constructor: function(options)
+	{
+		if(options.eventNames.length === 0)	options.eventNames = ['blur'];
+		kff.EventBinder.call(this, options);
+	}
+
+});
+
+kff.BindingView.registerBinder('blur', kff.BlurBinder);
+
+kff.FocusBlurBinder = kff.createClass(
+{
+	extend: kff.EventBinder
+},
+/** @lends kff.FocusBlurBinder.prototype */
+{
+	/**
+	 * Two-way data binder for focus/blur event.
+	 * Sets model atrribute to true when element gets focus or to false when it looses focus.
+	 * Also triggers focus/blur event on attribute change.
+	 * Values are passed throught eventual parsers/formatters of course.
+	 *
+	 * @constructs
+	 * @augments kff.EventBinder
+	 * @param {Object} options Options object
+	 */
+	constructor: function(options)
+	{
+		if(options.eventNames.length === 0)	options.eventNames = ['focus blur'];
+		kff.EventBinder.call(this, options);
+	},
+
+	triggerEvent: function(event)
+	{
+		setTimeout(this.f(function()
+		{
+			this.updateModel(this.$element.is(':focus'));
+		}), 0);
+	},
+
+	refresh: function()
+	{
+		if(this.values[this.valueIndex])
+		{
+			if(!this.$element.is(':focus')) this.$element.trigger('focus');
+		}
+		else
+		{
+			if(this.$element.is(':focus')) this.$element.trigger('blur');
+		}
+	}
+});
+
+kff.BindingView.registerBinder('focusblur', kff.FocusBlurBinder);
 
 kff.HtmlBinder = kff.createClass(
 {

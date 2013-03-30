@@ -2,17 +2,6 @@ module.exports = function(grunt) {
 
 	// Project configuration.
 	grunt.initConfig({
-		// browserify: {
-		// 	"kff-all-bf.js": {
-		// 		//requires: ['traverse'],
-		// 		entries: ['kff.js', 'kff.*.js']
-		// 		// prepend: ['<banner:meta.banner>'],
-		// 		// append: [],
-		// 		// hook: function (bundle) {
-		// 		//   // Do something with bundle
-		// 		// }
-		// 	}
-		// },
 		concat: {
 			kff: {
 				src: [
@@ -29,12 +18,13 @@ module.exports = function(grunt) {
 					'./src/kff.Binder.js',
 					'./src/binders/kff.EventBinder.js',
 					'./src/binders/kff.AttrBinder.js',
-					'./src/binders/kff.BlurBinder.js',
 					'./src/binders/kff.CheckBinder.js',
 					'./src/binders/kff.ClassBinder.js',
 					'./src/binders/kff.ClickBinder.js',
 					'./src/binders/kff.DoubleClickBinder.js',
 					'./src/binders/kff.FocusBinder.js',
+					'./src/binders/kff.BlurBinder.js',
+					'./src/binders/kff.FocusBlurBinder.js',
 					'./src/binders/kff.HtmlBinder.js',
 					'./src/binders/kff.RadioBinder.js',
 					'./src/binders/kff.TextBinder.js',
@@ -50,6 +40,9 @@ module.exports = function(grunt) {
 			}
 		},
 		uglify: {
+			options: {
+				mangle: true
+			},
 			kff: {
 				src: ['./build/kff-all.js'],
 				dest: './build/kff-all.min.js'
