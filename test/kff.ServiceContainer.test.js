@@ -10,7 +10,8 @@ describe('kff.ServiceContainer', function()
 		{
 			kocka: 'kočka',
 			pes: 'pes',
-			numeric: 42.05
+			numeric: 42.05,
+			obj: { o1: 1, o2: 2 }
 		},
 		services:
 		{
@@ -24,6 +25,11 @@ describe('kff.ServiceContainer', function()
 				'constructor': Service2,
 			    'args': ['@service1', 'Proč %kocka% není %pes%?'],
 			    'shared': true
+			},
+			'service3':
+			{
+				'constructor': Service1,
+			    'args': ['%kocka%', '%obj%']
 			}
 		}
 	};
@@ -109,6 +115,15 @@ describe('kff.ServiceContainer', function()
 		it('should create service of type Service1 that have property a === kočka', function()
 		{
 			container.createService('service1').should.have.property('a', 'kočka');
+		});
+
+		it('should create service with overloaded arguments', function()
+		{
+			var service3 = container.createService('service3', [undefined, { o2: 3 }]);
+			service3.should.have.property('a', 'kočka');
+			service3.should.have.property('b');
+			service3.b.should.have.property('o1', 1);
+			service3.b.should.have.property('o2', 3);
 		});
 
 	});

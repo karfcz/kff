@@ -810,13 +810,19 @@ kff.ServiceContainer = kff.createClass(
 	},
 
 	/**
-	 * Creates instance of service
+	 * Creates instance of service.
+	 *
+	 * If second argument is passed, then it will be used to overload constructor arguments.
+	 * If items at the same index are both objects, then the second one will bee deep-mixed into
+	 * the first one resulting in a new object (i.e. the config args won't be overwritten).
+	 *
 	 * @param {string} serviceName Name of service to be instantiated
+	 * @param {Array} argsExtend Array to overload default arguments array (optional)
 	 * @returns {Object} Instance of service
 	 */
-	createService: function(serviceName)
+	createService: function(serviceName, argsExtend)
 	{
-		var serviceConfig, Ctor, Temp, service, ret, i, l, calls;
+		var serviceConfig, Ctor, Temp, service, ret, i, l, args, argsExtended, calls;
 
 		serviceConfig = this.config.services[serviceName];
 
@@ -824,7 +830,24 @@ kff.ServiceContainer = kff.createClass(
 		Temp = function(){};
 		Temp.prototype = Ctor.prototype;
 		service = new Temp();
-		ret = Ctor.apply(service, this.resolveParameters(serviceConfig.args || []));
+
+		args = this.resolveParameters(serviceConfig.args || []);
+		if(argsExtend && argsExtend instanceof Array)
+		{
+			argsExtended = [];
+			for(i = 0, l = argsExtend.length; i < l; i++)
+			{
+				if(argsExtend[i] !== undefined)
+				{
+					if(args[i] && typeof args[i] === 'object') argsExtended[i] = kff.mixins({}, args[i], argsExtend[i], true);
+					else argsExtended[i] = argsExtend[i];
+				}
+				else argsExtended[i] = args[i];
+			}
+			args = argsExtended;
+		}
+
+		ret = Ctor.apply(service, args);
 		if(Object(ret) === ret) service = ret;
 
 		calls = serviceConfig.calls;
