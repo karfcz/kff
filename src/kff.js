@@ -15,17 +15,38 @@ kff.extend = function(child, parent)
 
 /**
  * Mixins (using a shallow copy) properties from one object to another
+ * Function accepts multiple arguments with multiple extending objects
+ * When passing true as the last argument, deep copy will be used
+ *
  * @param {Object} obj Object to be extended
- * @param {Object} properties Object by which to extend
+ * @param {Object} properties Extending object(s)
  * @returns {Object} Extended object (=== obj)
  */
 kff.mixins = function(obj, properties)
 {
-	var i = 1, l = arguments.length, key, props;
+	var i = 1, l = arguments.length, key, props, prop, objProp, deep = false;
+	if(l > 2 && arguments[l-1] === true)
+	{
+		deep = true;
+		l--;
+	}
 	while(i < l)
 	{
 		props = arguments[i];
-		for(key in props) if(props.hasOwnProperty(key)) obj[key] = props[key];
+		for(key in props)
+		{
+			if(props.hasOwnProperty(key))
+			{
+				prop = props[key];
+				if(deep && typeof prop === 'object' && prop !== null && prop.constructor === Object)
+				{
+					objProp = obj[key];
+					if(typeof objProp !== 'object' || objProp === null) objProp = {};
+					kff.mixins(objProp, prop, deep);
+				}
+				else obj[key] = prop;
+			}
+		}
 		i++;
 	}
 	return obj;

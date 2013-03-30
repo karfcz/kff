@@ -21,12 +21,14 @@ describe('kff.mixins', function()
 	{
 		var a = { prop1: 'prop1' };
 		var b = { prop2: 'prop2' };
+		var ret;
 
-		kff.mixins(b, a);
+		ret = kff.mixins(b, a);
 
 		b.should.have.property('prop1');
 		b.should.have.property('prop2');
 		b.prop1.should.equal('prop1');
+		b.should.equal(ret);
 	});
 
 	it('should mixin properties from multiple objects', function()
@@ -34,9 +36,8 @@ describe('kff.mixins', function()
 		var a = { prop1: 'prop1' };
 		var b = { prop2: 'prop2', prop3: 'prop3' };
 		var c = { prop3: 'prop3c', prop4: 'prop4' };
-		var ret;
 
-		ret = kff.mixins(a, b, c);
+		kff.mixins(a, b, c);
 
 		a.should.have.property('prop1');
 		a.should.have.property('prop2');
@@ -44,7 +45,50 @@ describe('kff.mixins', function()
 		a.should.have.property('prop4');
 		a.prop3.should.equal('prop3c');
 		a.prop4.should.equal('prop4');
-		a.should.equal(ret);
+	});
+
+	it('should mixin properties from one objects using deep flag', function()
+	{
+		var a = { prop1: 'prop1', prop3: { prop4: 'prop4' }};
+		var b = { prop2: 'prop2', prop3: { prop4: 'prop4b', prop5: 'prop5b' } };
+		var ret;
+
+		ret = kff.mixins(a, b, true);
+
+		a.should.have.property('prop1');
+		a.should.have.property('prop2');
+		a.should.have.property('prop3');
+
+		a.prop2.should.equal('prop2');
+		a.prop3.prop4.should.equal('prop4b');
+		a.prop3.prop5.should.equal('prop5b');
+	});
+
+	it('should deep mixin property with null value in extended object', function()
+	{
+		var a = { prop1: { prop2: null }};
+		var b = { prop1: { prop2: 'prop2', prop3: 'prop3' } };
+		var ret;
+
+		ret = kff.mixins(a, b, true);
+
+		a.should.have.property('prop1');
+		a.prop1.prop2.should.equal('prop2');
+		a.prop1.prop3.should.equal('prop3');
+	});
+
+	it('should deep mixin property with null value in extending object', function()
+	{
+		var a = { prop1: { prop2: 'prop2' }};
+		var b = { prop1: { prop2: null, prop3: 'prop3' } };
+		var ret;
+
+		ret = kff.mixins(a, b, true);
+
+		a.should.have.property('prop1');
+
+		should.equal(a.prop1.prop2, null);
+		a.prop1.prop3.should.equal('prop3');
 	});
 });
 
