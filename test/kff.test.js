@@ -149,3 +149,99 @@ describe('kff.createClass', function()
 
 });
 
+
+
+describe('kff.isPlainObject', function()
+{
+	it('should return true for {}', function()
+	{
+		kff.isPlainObject({}).should.be.true;
+	});
+
+	it('should return true for new Object', function()
+	{
+		kff.isPlainObject(new Object()).should.be.true;
+	});
+
+	it('should return false for a string', function()
+	{
+		kff.isPlainObject('test').should.be.false;
+	});
+
+	it('should return false for a String wrapper', function()
+	{
+		kff.isPlainObject(new String('test')).should.be.false;
+	});
+
+	it('should return false for a number', function()
+	{
+		kff.isPlainObject(42).should.be.false;
+	});
+
+	it('should return false for null', function()
+	{
+		kff.isPlainObject(null).should.be.false;
+	});
+
+	it('should return false for undefined', function()
+	{
+		kff.isPlainObject().should.be.false;
+	});
+
+	it('should return false for true', function()
+	{
+		kff.isPlainObject(true).should.be.false;
+	});
+
+	it('should return false for false', function()
+	{
+		kff.isPlainObject(false).should.be.false;
+	});
+
+	it('should return false for a function', function()
+	{
+		kff.isPlainObject(function(){}).should.be.false;
+	});
+
+	it('should return false for a window object', function()
+	{
+		kff.isPlainObject(window).should.be.false;
+	});
+
+	it('should return false for a document object', function()
+	{
+		kff.isPlainObject(document).should.be.false;
+	});
+
+	it('should return false for a DOM node', function()
+	{
+		kff.isPlainObject($('<div/>').get(0)).should.be.false;
+	});
+
+	it('should return false for a jQuery object', function()
+	{
+		kff.isPlainObject($('<div/>')).should.be.false;
+	});
+
+	it('should return false for a Date object', function()
+	{
+		kff.isPlainObject(new Date()).should.be.false;
+	});
+
+	it('should return false for an Array', function()
+	{
+		kff.isPlainObject([1, 2]).should.be.false;
+	});
+
+	it('should return false for an Array constructed via new', function()
+	{
+		kff.isPlainObject(new Array()).should.be.false;
+	});
+
+	it('should return false for a Model object', function()
+	{
+		kff.isPlainObject(new kff.Model()).should.be.false;
+	});
+
+});
+

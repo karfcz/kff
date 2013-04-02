@@ -78,8 +78,7 @@ kff.ServiceContainer = kff.createClass(
 			{
 				if(argsExtend[i] !== undefined)
 				{
-					if(args[i] !== null && typeof args[i] === 'object' && args[i].constructor === Object
-						&& argsExtend[i] !== null && typeof argsExtend[i] === 'object' && argsExtend[i].constructor === Object) argsExtended[i] = kff.mixins({}, args[i], argsExtend[i]);
+					if(kff.isPlainObject(args[i]) && kff.isPlainObject(argsExtend[i])) argsExtended[i] = kff.mixins({}, args[i], argsExtend[i]);
 					else argsExtended[i] = argsExtend[i];
 				}
 				else argsExtended[i] = args[i];
@@ -180,12 +179,12 @@ kff.ServiceContainer = kff.createClass(
 				ret[i] = this.resolveParameters(params[i]);
 			}
 		}
-		else if(typeof params === 'object' && params !== null && params.constructor === Object)
+		else if(kff.isPlainObject(params))
 		{
 			ret = {};
 			for(i in params)
 			{
-				ret[i] = this.resolveParameters(params[i]);
+				if(params.hasOwnProperty(i)) ret[i] = this.resolveParameters(params[i]);
 			}
 		}
 		else

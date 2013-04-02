@@ -57,7 +57,7 @@ kff.mixins = function(obj, properties)
 			if(props.hasOwnProperty(key))
 			{
 				prop = props[key];
-				if(deep && typeof prop === 'object' && prop !== null && prop.constructor === Object)
+				if(deep && kff.isPlainObject(prop))
 				{
 					objProp = obj[key];
 					if(typeof objProp !== 'object' || objProp === null) objProp = {};
@@ -173,6 +173,17 @@ kff.evalObjectPath = function(path, obj)
 	}
 	return obj;
 };
+
+/**
+ * Detects if an object is a POJO (object created as literal or usin new Object)
+ * @param  {mixed}  obj Object to detect
+ * @return {Boolean} True if object is POJO, false otherwise
+ */
+kff.isPlainObject = function(obj)
+{
+	return obj !== null && typeof obj === 'object' && obj.constructor === Object;
+};
+
 
 
 kff.Events = kff.createClass(
@@ -840,8 +851,7 @@ kff.ServiceContainer = kff.createClass(
 			{
 				if(argsExtend[i] !== undefined)
 				{
-					if(args[i] !== null && typeof args[i] === 'object' && args[i].constructor === Object
-						&& argsExtend[i] !== null && typeof argsExtend[i] === 'object' && argsExtend[i].constructor === Object) argsExtended[i] = kff.mixins({}, args[i], argsExtend[i]);
+					if(kff.isPlainObject(args[i]) && kff.isPlainObject(argsExtend[i])) argsExtended[i] = kff.mixins({}, args[i], argsExtend[i]);
 					else argsExtended[i] = argsExtend[i];
 				}
 				else argsExtended[i] = args[i];
@@ -942,12 +952,12 @@ kff.ServiceContainer = kff.createClass(
 				ret[i] = this.resolveParameters(params[i]);
 			}
 		}
-		else if(typeof params === 'object' && params !== null && params.constructor === Object)
+		else if(kff.isPlainObject(params))
 		{
 			ret = {};
 			for(i in params)
 			{
-				ret[i] = this.resolveParameters(params[i]);
+				if(params.hasOwnProperty(i)) ret[i] = this.resolveParameters(params[i]);
 			}
 		}
 		else
