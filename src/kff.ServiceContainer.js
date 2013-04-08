@@ -192,5 +192,24 @@ kff.ServiceContainer = kff.createClass(
 			ret = params;
 		}
 		return ret;
+	},
+
+	/**
+	 * Registers a new service configuration
+	 *
+	 * @param  {Object} services Services configuration object
+	 * @param  {Boolean} overwrite If service already exists, overwrite it with new config
+	 */
+	registerServices: function(services, overwrite)
+	{
+		var service;
+		for(service in services)
+		{
+			if(!this.config.services.hasOwnProperty(service) || overwrite)
+			{
+				this.config.services[service] = services[service];
+				this.services[service] = undefined;
+			}
+		}
 	}
 });

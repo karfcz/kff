@@ -168,4 +168,21 @@ describe('kff.ServiceContainer', function()
 
 	});
 
+	describe('#registerService', function()
+	{
+		it('should properly register a new service', function()
+		{
+			container.registerServices({
+				'service4': {
+					'constructor': function() {
+						this.a = 'service 4';
+					}
+				}
+			});
+
+			var ret = container.getService('service4');
+			ret.should.have.property('a', 'service 4');
+		});
+	});
+
 });
