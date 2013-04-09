@@ -18,6 +18,7 @@ kff.FrontController = kff.createClass(
 	init: function()
 	{
 		if(this.router) $(window).bind('hashchange', this.f('hashChange')).trigger('hashchange');
+		else this.setState(null);
 	},
 
 	createViewFromState: function(state)
@@ -35,9 +36,8 @@ kff.FrontController = kff.createClass(
 				state.params = result.params;
 				return result.target;
 			}
-			return this.options.defaultView;
 		}
-		else return null;
+		return this.options.defaultView;
 	},
 
 	hashChange: function(event)
