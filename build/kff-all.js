@@ -1196,6 +1196,7 @@ kff.View = kff.createClass(
 	{
 		this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 		this.renderSubviews();
+		this.processTriggerEvents();
 		this.delegateEvents();
 		if(!silent) this.trigger('init');
 	},
@@ -1213,9 +1214,6 @@ kff.View = kff.createClass(
 			element = this.$element.get(0);
 
 		if(element) this.findViewElements(element, viewNames, filter);
-
-		var onAttr = element.getAttribute(kff.View.DATA_TRIGGER_ATTR);
-		if(onAttr) this.processChildEvents(element, onAttr);
 
 		// Render subviews
 		for(i = 0, l = viewNames.length; i < l; i++)
@@ -1274,9 +1272,8 @@ kff.View = kff.createClass(
 							onAttr = child.getAttribute(kff.View.DATA_TRIGGER_ATTR);
 							if(onAttr)
 							{
-								this.processChildEvents(child, onAttr);
+								this.processChildTriggerEvents(child, onAttr);
 							}
-
 							this.findViewElements(child, viewNames, filter);
 						}
 					}
@@ -1285,20 +1282,37 @@ kff.View = kff.createClass(
 		}
 	},
 
-	processChildEvents: function(child, onAttr)
+	/**
+	 * Process declarative events bound throught data-kff-trigger attribute on root view element
+	 */
+	processTriggerEvents: function()
+	{
+		this.processChildTriggerEvents(this.$element.get(0));
+	},
+
+	/**
+	 * Process declarative events bound throught data-kff-trigger attribute on child element
+	 * @private
+	 * @param  {DOM Element} child  DOM Element
+	 */
+	processChildTriggerEvents: function(child, onAttr)
 	{
 		var onAttrSplit, onAttrSplit2, events = [], i, l;
-		onAttrSplit = onAttr.split(/\s+/);
-		for(i = 0, l = onAttrSplit.length; i < l; i++)
+		onAttr = onAttr || child.getAttribute(kff.View.DATA_TRIGGER_ATTR);
+		if(onAttr)
 		{
-			onAttrSplit2 = onAttrSplit[i].split(':');
-			events.push([
-				onAttrSplit2[0].replace('|', ' '),
-				$(child),
-				onAttrSplit2[1]
-			]);
+			onAttrSplit = onAttr.split(/\s+/);
+			for(i = 0, l = onAttrSplit.length; i < l; i++)
+			{
+				onAttrSplit2 = onAttrSplit[i].split(':');
+				events.push([
+					onAttrSplit2[0].replace('|', ' '),
+					$(child),
+					onAttrSplit2[1]
+				]);
+			}
+			this.addEvents(events);
 		}
-		this.addEvents(events);
 	},
 
 
