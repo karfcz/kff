@@ -55,7 +55,7 @@ kff.View = kff.createClass(
 			models: null,
 			events: []
 		};
-		this.events = new kff.Events();
+		this.initEvents();
 		this.models = {};
 
 		if(options.events)

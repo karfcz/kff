@@ -112,7 +112,12 @@ kff.Events = kff.createClass(
 	}
 });
 
-kff.EventsMixin = {
+kff.EventsMixin =
+{
+	initEvents: function()
+	{
+		this.events = new kff.Events();
+	},
 	on: function(eventType, fn){ return this.events.on(eventType, fn); },
 	one: function(eventType, fn){ return this.events.one(eventType, fn); },
 	off: function(eventType, fn){ return this.events.off(eventType, fn); },

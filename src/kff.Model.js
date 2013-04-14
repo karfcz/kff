@@ -11,11 +11,7 @@ kff.Model = kff.createClass(
 	 */
 	constructor: function(attrs)
 	{
-		/**
-			Events object (used by mixed-in methods)
-			@private
-		*/
-		this.events = new kff.Events();
+		this.initEvents();
 
 		/**
 			Attributes of model

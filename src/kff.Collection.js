@@ -21,7 +21,7 @@ kff.Collection = kff.createClass(
 		this.valFactory = options.valFactory || null;
 		this.valType = options.valType || kff.Model;
 		this.serializeAttrs = options.serializeAttrs || null;
-		this.events = new kff.Events();
+		this.initEvents();
 		kff.List.call(this);
 		return this;
 	},

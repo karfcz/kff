@@ -299,7 +299,12 @@ kff.Events = kff.createClass(
 	}
 });
 
-kff.EventsMixin = {
+kff.EventsMixin =
+{
+	initEvents: function()
+	{
+		this.events = new kff.Events();
+	},
 	on: function(eventType, fn){ return this.events.on(eventType, fn); },
 	one: function(eventType, fn){ return this.events.one(eventType, fn); },
 	off: function(eventType, fn){ return this.events.off(eventType, fn); },
@@ -461,7 +466,7 @@ kff.Collection = kff.createClass(
 		this.valFactory = options.valFactory || null;
 		this.valType = options.valType || kff.Model;
 		this.serializeAttrs = options.serializeAttrs || null;
-		this.events = new kff.Events();
+		this.initEvents();
 		kff.List.call(this);
 		return this;
 	},
@@ -629,11 +634,7 @@ kff.Model = kff.createClass(
 	 */
 	constructor: function(attrs)
 	{
-		/**
-			Events object (used by mixed-in methods)
-			@private
-		*/
-		this.events = new kff.Events();
+		this.initEvents();
 
 		/**
 			Attributes of model
@@ -1044,7 +1045,7 @@ kff.View = kff.createClass(
 			models: null,
 			events: []
 		};
-		this.events = new kff.Events();
+		this.initEvents();
 		this.models = {};
 
 		if(options.events)
