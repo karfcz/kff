@@ -398,12 +398,23 @@ kff.List = kff.createClass(
 	},
 
 	/**
+		Sets an item at given position
+
+		@param {number} index Index of item
+		@param {mixed} item Item to set
+	 */
+	set: function(index, item)
+	{
+		this.array[index] = item;
+	},
+
+	/**
 		Returns an item at given position
 
 		@param {number} index Index of item
 		@returns {mixed} Item at given position (or undefined if not found)
 	 */
-	findByIndex: function(index)
+	get: function(index)
 	{
 		return this.array[index];
 	},
@@ -442,6 +453,7 @@ kff.List = kff.createClass(
 
 // Backward-compatible alias:
 kff.List.prototype.removeVal = kff.List.prototype.remove;
+kff.List.prototype.findByIndex = kff.List.prototype.get;
 
 
 kff.Collection = kff.createClass(
@@ -484,7 +496,7 @@ kff.Collection = kff.createClass(
 	},
 
 	/**
-		Inserts an item at the end of the collection
+		Inserts an item at specified index
 
 		@param {mixed} val Item to be inserted
 		@param {Boolean} silent If true, do not trigger event
@@ -493,6 +505,18 @@ kff.Collection = kff.createClass(
 	{
 		kff.Collection._super.insert.call(this, val, index);
 		if(!silent) this.trigger('change', { insertedValue: val, insertedIndex: index });
+	},
+
+	/**
+		Sets an item at given position
+
+		@param {number} index Index of item
+		@param {mixed} item Item to set
+	 */
+	set: function(index, val, silent)
+	{
+		kff.Collection._super.set.call(this, val, index);
+		if(!silent) this.trigger('change', { setValue: val, setIndex: index });
 	},
 
 	/**
@@ -507,6 +531,29 @@ kff.Collection = kff.createClass(
 		var ret = kff.Collection._super.remove.call(this, val);
 		if(ret && !silent) this.trigger('change', { removedValue: val });
 		return ret;
+	},
+
+	/**
+		Returns the value of given attribute using deep lookup (object.attribute.some.value)
+
+		@param {string} attrPath Attribute path
+		@returns {mixed} Attribute value
+	 	@example
+	 	obj.mget('one.two.three');
+	 	// equals to:
+	 	obj.get('one').get('two').get('three');
+	 */
+	mget: function(attrPath)
+	{
+		var attr;
+		if(typeof attrPath === 'string') attrPath = attrPath.split('.');
+		attr = this.get(attrPath.shift());
+		if(attrPath.length > 0)
+		{
+			if(attr instanceof kff.Model || attr instanceof kff.Collection) return attr.mget(attrPath);
+			else return kff.evalObjectPath(attrPath, attr);
+		}
+		else return attr;
 	},
 
 	/**
@@ -685,7 +732,7 @@ kff.Model = kff.createClass(
 		attr = this.get(attrPath.shift());
 		if(attrPath.length > 0)
 		{
-			if(attr instanceof kff.Model) return attr.mget(attrPath);
+			if(attr instanceof kff.Model || attr instanceof kff.Collection) return attr.mget(attrPath);
 			else return kff.evalObjectPath(attrPath, attr);
 		}
 		else return attr;
@@ -1643,7 +1690,6 @@ kff.BindingView = kff.createClass(
 					this.collectionBinder = {
 						collection: model
 					};
-					this.renderSubViews = function(){};
 				}
 			}
 			else
@@ -1797,6 +1843,7 @@ kff.BindingView = kff.createClass(
 		this.collectionBinder.collection.on('change', this.f('refreshBoundViews'));
 
 		this.refreshBoundViews();
+
 	},
 
 	/**
@@ -1870,7 +1917,6 @@ kff.BindingView = kff.createClass(
 			});
 			event.insertedValue.on('change', this.f('collectionItemChange'));
 			this.collectionItemChange({ model: event.insertedValue });
-			this.refreshBinders();
 		}
 		else if(event && 'removedValue' in event)
 		{
@@ -1900,7 +1946,8 @@ kff.BindingView = kff.createClass(
 				if(this.subViewsMap[i].rendered) this.removeSubViewAt(renderIndex);
 				this.subViewsMap.splice(i, 1);
 			}
-			this.refreshBinders();
+
+			this.reindexSubviews(i);
 		}
 		else
 		{
@@ -1908,8 +1955,6 @@ kff.BindingView = kff.createClass(
 			if(this.$elements) this.$elements.remove();
 			this.$elements = $([]);
 			this.subViewsMap = [];
-
-			var j = 0;
 
 			this.collectionBinder.collection.each(this.f(function(item, i)
 			{
@@ -2025,6 +2070,7 @@ kff.BindingView = kff.createClass(
 	{
 		if(!from) from = 0;
 		if(!to || to > this.subViews.length) to = this.subViews.length;
+
 		// Reindex subsequent subviews:
 		for(var i = from; i < to; i++)
 		{
@@ -2060,11 +2106,10 @@ kff.BindingView = kff.createClass(
 		if(subView instanceof kff.View)
 		{
 			subView.viewFactory = this.viewFactory;
-			this.subViews.push(subView);
+			this.subViews.splice(i, 0, subView);
 			subView.setBindingIndex(i);
 			subView.init();
 			$element.attr(kff.View.DATA_RENDERED_ATTR, true);
-			subView.refresh();
 		}
 		return $element;
 	},
@@ -2098,7 +2143,6 @@ kff.BindingView = kff.createClass(
 		{
 			for(var i = 0, mb = this.modelBinders[b], l = mb.length; i < l; i++) mb[i].modelChange(true);
 		}
-		if(this.collectionBinder) this.refreshBoundViews();
 	},
 
 	/**
@@ -2110,6 +2154,11 @@ kff.BindingView = kff.createClass(
 	{
 		this.refreshOwnBinders();
 		kff.BindingView._super.refreshBinders.call(this);
+	},
+
+	renderSubviews: function()
+	{
+		if(!this.collectionBinder) kff.BindingView._super.renderSubviews.call(this);
 	},
 
 	/**
