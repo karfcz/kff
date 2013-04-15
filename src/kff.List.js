@@ -85,12 +85,23 @@ kff.List = kff.createClass(
 	},
 
 	/**
+		Sets an item at given position
+
+		@param {number} index Index of item
+		@param {mixed} item Item to set
+	 */
+	set: function(index, item)
+	{
+		this.array[index] = item;
+	},
+
+	/**
 		Returns an item at given position
 
 		@param {number} index Index of item
 		@returns {mixed} Item at given position (or undefined if not found)
 	 */
-	findByIndex: function(index)
+	get: function(index)
 	{
 		return this.array[index];
 	},
@@ -129,3 +140,4 @@ kff.List = kff.createClass(
 
 // Backward-compatible alias:
 kff.List.prototype.removeVal = kff.List.prototype.remove;
+kff.List.prototype.findByIndex = kff.List.prototype.get;

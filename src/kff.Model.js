@@ -62,7 +62,7 @@ kff.Model = kff.createClass(
 		attr = this.get(attrPath.shift());
 		if(attrPath.length > 0)
 		{
-			if(attr instanceof kff.Model) return attr.mget(attrPath);
+			if(attr instanceof kff.Model || attr instanceof kff.Collection) return attr.mget(attrPath);
 			else return kff.evalObjectPath(attrPath, attr);
 		}
 		else return attr;

@@ -39,7 +39,7 @@ kff.Collection = kff.createClass(
 	},
 
 	/**
-		Inserts an item at the end of the collection
+		Inserts an item at specified index
 
 		@param {mixed} val Item to be inserted
 		@param {Boolean} silent If true, do not trigger event
@@ -48,6 +48,18 @@ kff.Collection = kff.createClass(
 	{
 		kff.Collection._super.insert.call(this, val, index);
 		if(!silent) this.trigger('change', { insertedValue: val, insertedIndex: index });
+	},
+
+	/**
+		Sets an item at given position
+
+		@param {number} index Index of item
+		@param {mixed} item Item to set
+	 */
+	set: function(index, val, silent)
+	{
+		kff.Collection._super.set.call(this, val, index);
+		if(!silent) this.trigger('change', { setValue: val, setIndex: index });
 	},
 
 	/**
@@ -62,6 +74,29 @@ kff.Collection = kff.createClass(
 		var ret = kff.Collection._super.remove.call(this, val);
 		if(ret && !silent) this.trigger('change', { removedValue: val });
 		return ret;
+	},
+
+	/**
+		Returns the value of given attribute using deep lookup (object.attribute.some.value)
+
+		@param {string} attrPath Attribute path
+		@returns {mixed} Attribute value
+	 	@example
+	 	obj.mget('one.two.three');
+	 	// equals to:
+	 	obj.get('one').get('two').get('three');
+	 */
+	mget: function(attrPath)
+	{
+		var attr;
+		if(typeof attrPath === 'string') attrPath = attrPath.split('.');
+		attr = this.get(attrPath.shift());
+		if(attrPath.length > 0)
+		{
+			if(attr instanceof kff.Model || attr instanceof kff.Collection) return attr.mget(attrPath);
+			else return kff.evalObjectPath(attrPath, attr);
+		}
+		else return attr;
 	},
 
 	/**
