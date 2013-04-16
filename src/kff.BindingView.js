@@ -5,6 +5,14 @@ kff.BindingView = kff.createClass(
 	staticProperties:
 	/** @lends kff.BindingView */
 	{
+		bindingRegex: /([.a-zA-Z0-9-]+):?([a-zA-Z0-9]+)?(\([^\(\))]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?/g,
+
+		modifierRegex: /([a-zA-Z0-9]+)\(([^\(\)]*)\)/,
+
+		commaSeparateRegex: /\s*,\s*/,
+
+		leadingPeriodRegex: /^\./,
+
 		/**
 		 * Object hash that holds references to binder classes under short key names
 		 * @private
@@ -95,21 +103,26 @@ kff.BindingView = kff.createClass(
 		var modifierName, modifierParams;
 		var dataBind = this.$element.attr(kff.View.DATA_BIND_ATTR);
 
-		var regex = /([.a-zA-Z0-9-]+):?([a-zA-Z0-9]+)?(\([^\(\))]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?/g;
+		var regex = kff.BindingView.bindingRegex;
+		var modifierRegex = kff.BindingView.modifierRegex;
+		var commaSeparateRegex = kff.BindingView.commaSeparateRegex;
+		var leadingPeriodRegex = kff.BindingView.leadingPeriodRegex;
+
+		regex.lastIndex = 0;
 
 		this.modelBinders = {};
 
 		while((result = regex.exec(dataBind)) !== null)
 		{
 			name = result[1];
-			name = name.replace(/^\./, '*.').split('.');
+			name = name.replace(leadingPeriodRegex, '*.').split('.');
 
 			binderName = result[2];
 			binderParams = result[3];
 
 			if(binderParams)
 			{
-				binderParams = binderParams.slice(1,-1).split(/\s*,\s*/);
+				binderParams = binderParams.slice(1,-1).split(commaSeparateRegex);
 			}
 			else binderParams = [];
 
@@ -121,7 +134,7 @@ kff.BindingView = kff.createClass(
 
 			for(var i = 4, l = result.length; i < l && result[i]; i++)
 			{
-				subresults = result[i].match(/([a-zA-Z0-9]+)\(([^\(\)]*)\)/);
+				subresults = result[i].match(modifierRegex);
 
 				if(subresults)
 				{
@@ -130,7 +143,7 @@ kff.BindingView = kff.createClass(
 
 					if(subresults[2])
 					{
-						modifierParams = subresults[2].split(/\s*,\s*/);
+						modifierParams = subresults[2].split(commaSeparateRegex);
 					}
 
 					switch(modifierName){
