@@ -1,8 +1,9 @@
 /**
- *  KFF Javascript microframework
- *  Copyright (c) 2008-2012 Karel Fučík
- *  Released under the MIT license.
- *  http://www.opensource.org/licenses/mit-license.php
+ * KFF Frontend Framework
+ * Copyright (c) 2008-2013 Karel Fučík
+ * https://github.com/karfcz/kff
+ * Released under the MIT license.
+ * https://github.com/karfcz/kff/LICENCE
  */
 
 (function(scope)
