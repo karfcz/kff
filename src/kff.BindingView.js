@@ -11,6 +11,8 @@ kff.BindingView = kff.createClass(
 		*/
 		binders: {},
 
+		helpers: {},
+
 		/**
 		 * Registers binder class
 		 *
@@ -20,6 +22,17 @@ kff.BindingView = kff.createClass(
 		registerBinder: function(alias, binder)
 		{
 			kff.BindingView.binders[alias] = binder;
+		},
+
+		/**
+		 * Registers helper function to be used as parser/formatter
+		 *
+		 * @param {string} alias Name of helper function
+		 * @param {function} helper Helper function
+		 */
+		registerHelper: function(alias, helper)
+		{
+			kff.BindingView.helpers[alias] = helper;
 		}
 	}
 },
@@ -245,7 +258,7 @@ kff.BindingView = kff.createClass(
 	{
 		for(var j = 0; j < modifierParams.length; j++)
 		{
-			if(kff.View.helpers[modifierParams[j]]) modifiers.push(kff.View.helpers[modifierParams[j]]);
+			if(kff.BindingView.helpers[modifierParams[j]]) modifiers.push(kff.BindingView.helpers[modifierParams[j]]);
 		}
 	},
 
@@ -653,4 +666,54 @@ kff.BindingView = kff.createClass(
 		if(values.length === 1) return values[0];
 		else return values.join(' ');
 	}
+});
+
+
+
+kff.BindingView.registerHelper('index', function(v)
+{
+	if(this.getBindingIndex() !== null) return this.getBindingIndex();
+	return v;
+});
+
+kff.BindingView.registerHelper('indexFromOne', function(v)
+{
+	if(this.getBindingIndex() !== null) return this.getBindingIndex() + 1;
+	return v;
+});
+
+kff.BindingView.registerHelper('boolean', function(v)
+{
+	var parsed = parseInt(v, 10);
+	if(!isNaN(parsed)) return !!parsed;
+	return v === 'true';
+});
+
+kff.BindingView.registerHelper('not', function(v)
+{
+	return !v;
+});
+
+kff.BindingView.registerHelper('null', function(v)
+{
+	return v === null || v === 'null' ? null : v;
+});
+
+kff.BindingView.registerHelper('int', function(v)
+{
+	v = parseInt(v, 10);
+	if(isNaN(v)) v = 0;
+	return v;
+});
+
+kff.BindingView.registerHelper('float', function(v)
+{
+	v = parseFloat(v);
+	if(isNaN(v)) v = 0;
+	return v;
+});
+
+kff.BindingView.registerHelper('string', function(v)
+{
+	return v.toString();
 });
