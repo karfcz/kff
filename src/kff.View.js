@@ -363,8 +363,8 @@ kff.View = kff.createClass(
 	 */
 	refresh: function(){},
 
-	refreshBinders: function()
+	refreshBinders: function(event)
 	{
-		for(var i = 0, l = this.subViews.length; i < l; i++) this.subViews[i].refreshBinders();
+		for(var i = 0, l = this.subViews.length; i < l; i++) this.subViews[i].refreshBinders(event);
 	}
 });
