@@ -20,6 +20,7 @@ module.exports = function(grunt) {
 					'./src/binders/kff.AttrBinder.js',
 					'./src/binders/kff.CheckBinder.js',
 					'./src/binders/kff.ClassBinder.js',
+					'./src/binders/kff.StyleBinder.js',
 					'./src/binders/kff.ClickBinder.js',
 					'./src/binders/kff.DoubleClickBinder.js',
 					'./src/binders/kff.FocusBinder.js',
