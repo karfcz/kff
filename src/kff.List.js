@@ -92,7 +92,8 @@ kff.List = kff.createClass(
 	 */
 	set: function(index, item)
 	{
-		this.array[index] = item;
+		if(this.array[index] !== undefined)	this.array[index] = item;
+		else throw new RangeError('Bad index in kff.List.set');
 	},
 
 	/**
