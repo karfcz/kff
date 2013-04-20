@@ -9,7 +9,7 @@ describe('kff.List', function()
 		var list = new kff.List();
 		list.append('A');
 		list.append('B');
-		list.count.should.equal(2);
+		list.count().should.equal(2);
 	});
 
 	it('should append two values then remove last one from the list', function()
@@ -18,7 +18,7 @@ describe('kff.List', function()
 		list.append('A');
 		list.append('B');
 		list.remove('B');
-		list.count.should.eql(1);
+		list.count().should.eql(1);
 	});
 
 	it('should append two values then remove first one from the list', function()
@@ -27,7 +27,7 @@ describe('kff.List', function()
 		list.append('A');
 		list.append('B');
 		list.remove('A');
-		list.count.should.eql(1);
+		list.count().should.eql(1);
 		list.indexOf('B').should.eql(0);
 	});
 
@@ -38,7 +38,7 @@ describe('kff.List', function()
 		list.append('B');
 		list.remove('A');
 		list.remove('B');
-		list.count.should.eql(0);
+		list.count().should.eql(0);
 	});
 
 	it('should insert one value to the list', function()
@@ -48,7 +48,7 @@ describe('kff.List', function()
 		list.append('C');
 		list.insert('B', 1);
 
-		list.count.should.eql(3);
+		list.count().should.eql(3);
 		list.get(1).should.equal('B');
 	});
 
@@ -65,7 +65,7 @@ describe('kff.List', function()
 		list.append('A');
 		list.set(0, 'B');
 		list.get(0).should.equal('B');
-		list.count.should.equal(1);
+		list.count().should.equal(1);
 	});
 
 	it('should not set value on nonexistent index in the list', function(done)
@@ -77,7 +77,7 @@ describe('kff.List', function()
 		}
 		catch (error)
 		{
-			list.count.should.equal(0);
+			list.count().should.equal(0);
 			done();
 		}
 	});
@@ -87,7 +87,7 @@ describe('kff.List', function()
 		var list = new kff.List();
 		list.append('A');
 		list.empty();
-		list.count.should.equal(0);
+		list.count().should.equal(0);
 	});
 
 	it('should iterate for each item in the list', function()

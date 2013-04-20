@@ -10,7 +10,7 @@ describe('kff.Collection', function()
 	it('should contain one item', function()
 	{
 		cls.append(obj1);
-		cls.count.should.equal(1);
+		cls.count().should.equal(1);
 	});
 
 });

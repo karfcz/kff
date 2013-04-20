@@ -323,7 +323,16 @@ kff.List = kff.createClass(
 	constructor: function()
 	{
 		this.array = [];
-		this.count = this.array.length;
+	},
+
+	/**
+	 * Returns number of items in the list
+	 *
+	 * @return {number} Number of items (length of the list)
+	 */
+	count: function()
+	{
+		return this.array.length;
 	},
 
 	/**
@@ -346,7 +355,6 @@ kff.List = kff.createClass(
 	append: function(val)
 	{
 		this.array.push(val);
-		this.count++;
 	},
 
 	/**
@@ -356,7 +364,6 @@ kff.List = kff.createClass(
 	insert: function(val, index)
 	{
 		this.array.splice(index, 0, val);
-		this.count++;
 	},
 
 	/**
@@ -368,10 +375,7 @@ kff.List = kff.createClass(
 	{
 		var i = this.indexOf(val);
 		if(i === -1) return false;
-
 		this.array.splice(i, 1);
-		this.count--;
-
 		return true;
 	},
 
@@ -381,7 +385,6 @@ kff.List = kff.createClass(
 	empty: function()
 	{
 		this.array = [];
-		this.count = 0;
 	},
 
 	/**
@@ -1696,7 +1699,7 @@ kff.BindingView = kff.createClass(
 	{
 		var model = new kff.Model();
 		var handler = function(){
-			model.set('count', collection.count);
+			model.set('count', collection.count());
 		};
 
 		handler();

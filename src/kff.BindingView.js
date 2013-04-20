@@ -233,7 +233,7 @@ kff.BindingView = kff.createClass(
 	{
 		var model = new kff.Model();
 		var handler = function(){
-			model.set('count', collection.count);
+			model.set('count', collection.count());
 		};
 
 		handler();
