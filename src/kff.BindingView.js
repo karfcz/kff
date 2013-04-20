@@ -327,7 +327,7 @@ kff.BindingView = kff.createClass(
 
 		this.collectionBinder.collection.on('change', this.f('refreshBoundViews'));
 
-		this.refreshBoundViews();
+		this.refreshBoundViewsAll();
 
 	},
 
@@ -385,74 +385,112 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshBoundViews: function(event)
 	{
-		if(event && 'addedValue' in event)
+		switch(event ? event.type : null)
+		{
+			case 'append':
+				this.refreshBoundViewsOnAppend(event);
+				break;
+			case 'insert':
+				this.refreshBoundViewsOnInsert(event);
+				break;
+			case 'remove':
+				this.refreshBoundViewsOnRemove(event);
+				break;
+			default:
+				this.refreshBoundViewsAll();
+		}
+	},
+
+	/**
+	 * Updates bound views when collection changes by appending item.
+	 *
+	 * @param {Object} event An event triggered by collection change
+	 */
+	refreshBoundViewsOnAppend: function(event)
+	{
+		this.subViewsMap.push({
+			renderIndex: null,
+			rendered: false
+		});
+		event.item.on('change', this.f('collectionItemChange'));
+		this.collectionItemChange({ model: event.item });
+	},
+	/**
+	 * Updates bound views when collection changes by inserting item.
+	 *
+	 * @param {Object} event An event triggered by collection change
+	 */
+	refreshBoundViewsOnInsert: function(event)
+	{
+		this.subViewsMap.splice(event.index, 0, {
+			renderIndex: null,
+			rendered: false
+		});
+		event.item.on('change', this.f('collectionItemChange'));
+		this.collectionItemChange({ model: event.item });
+	},
+
+	/**
+	 * Updates bound views when collection changes by removing item.
+	 *
+	 * @private
+	 * @param {Object} event An event triggered by collection change
+	 */
+	refreshBoundViewsOnRemove: function(event)
+	{
+		event.item.off('change', this.f('collectionItemChange'));
+
+		// Find render index:
+		for(var i = 0, l = this.subViews.length; i < l; i++)
+		{
+			if(event.item === this.subViews[i].models['*']) break;
+		}
+
+		var renderIndex = i;
+		var realIndex = null;
+
+		// Find real index in collection:
+		for(var i = 0, l = this.subViewsMap.length; i < l; i++)
+		{
+			if(this.subViewsMap[i].renderIndex === renderIndex)
+			{
+				realIndex = i;
+				break;
+			}
+		}
+
+		if(realIndex !== null)
+		{
+			if(this.subViewsMap[i].rendered) this.removeSubViewAt(renderIndex);
+			this.subViewsMap.splice(i, 1);
+		}
+
+		this.reindexSubviews(i);
+	},
+
+	/**
+	 * Updates bound views when collection changes on other events.
+	 *
+	 * @private
+	 */
+	refreshBoundViewsAll: function()
+	{
+		this.destroySubviews();
+		if(this.$elements) this.$elements.remove();
+		this.$elements = $([]);
+		this.subViewsMap = [];
+
+		this.collectionBinder.collection.each(this.f(function(item, i)
 		{
 			this.subViewsMap.push({
 				renderIndex: null,
 				rendered: false
 			});
-			event.addedValue.on('change', this.f('collectionItemChange'));
-			this.collectionItemChange({ model: event.addedValue });
-		}
-		else if(event && 'insertedValue' in event)
-		{
-			this.subViewsMap.splice(event.insertedIndex, 0, {
-				renderIndex: null,
-				rendered: false
-			});
-			event.insertedValue.on('change', this.f('collectionItemChange'));
-			this.collectionItemChange({ model: event.insertedValue });
-		}
-		else if(event && 'removedValue' in event)
-		{
-			event.removedValue.off('change', this.f('collectionItemChange'));
+			item.on('change', this.f('collectionItemChange'));
+			this.collectionItemChange({ model: item });
 
-			// Find render index:
-			for(var i = 0, l = this.subViews.length; i < l; i++)
-			{
-				if(event.removedValue === this.subViews[i].models['*']) break;
-			}
-
-			var renderIndex = i;
-			var realIndex = null;
-
-			// Find real index in collection:
-			for(var i = 0, l = this.subViewsMap.length; i < l; i++)
-			{
-				if(this.subViewsMap[i].renderIndex === renderIndex)
-				{
-					realIndex = i;
-					break;
-				}
-			}
-
-			if(realIndex !== null)
-			{
-				if(this.subViewsMap[i].rendered) this.removeSubViewAt(renderIndex);
-				this.subViewsMap.splice(i, 1);
-			}
-
-			this.reindexSubviews(i);
-		}
-		else
-		{
-			this.destroySubviews();
-			if(this.$elements) this.$elements.remove();
-			this.$elements = $([]);
-			this.subViewsMap = [];
-
-			this.collectionBinder.collection.each(this.f(function(item, i)
-			{
-				this.subViewsMap.push({
-					renderIndex: null,
-					rendered: false
-				});
-				item.on('change', this.f('collectionItemChange'));
-				this.collectionItemChange({ model: item });
-
-			}));
-			this.reindexSubviews();
-		}
+		}));
+		this.reindexSubviews();
 	},
 
 	/**

@@ -257,7 +257,7 @@ kff.Events = kff.createClass(
 		}
 		else
 		{
-			if(this.subscribers[eventType] instanceof kff.List) this.subscribers[eventType].removeVal(fn);
+			if(this.subscribers[eventType] instanceof kff.List) this.subscribers[eventType].remove(fn);
 		}
 	},
 
@@ -350,30 +350,30 @@ kff.List = kff.createClass(
 
 	/**
 		Appends an item at the end of the list
-		@param {mixed} val Item to be appended
+		@param {mixed} item Item to be appended
 	 */
-	append: function(val)
+	append: function(item)
 	{
-		this.array.push(val);
+		this.array.push(item);
 	},
 
 	/**
 		Inserts an item at specified index
-		@param {mixed} val Item to be inserted
+		@param {mixed} item Item to be inserted
 	 */
-	insert: function(val, index)
+	insert: function(item, index)
 	{
-		this.array.splice(index, 0, val);
+		this.array.splice(index, 0, item);
 	},
 
 	/**
 		Removes item from the list
-		@param {mixed} val Reference to the item to be removed
+		@param {mixed} item Reference to the item to be removed
 		@returns {Boolean} True if item was removed or false if not found
 	 */
-	remove: function(val)
+	remove: function(item)
 	{
-		var i = this.indexOf(val);
+		var i = this.indexOf(item);
 		if(i === -1) return false;
 		this.array.splice(i, 1);
 		return true;
@@ -390,14 +390,14 @@ kff.List = kff.createClass(
 	/**
 		Returns an index of given item
 
-		@param {mixed} val Value to be found
+		@param {mixed} item Value to be found
 		@returns {number} index of the item or -1 if not found
 	 */
-	indexOf: function(val)
+	indexOf: function(item)
 	{
 		var i = 0, a = this.array, l = a.length;
-		if(a.indexOf) return a.indexOf(val);
-		for(; i < l; i++) if(a[i] === val) return i;
+		if(a.indexOf) return a.indexOf(item);
+		for(; i < l; i++) if(a[i] === item) return i;
 		return -1;
 	},
 
@@ -457,7 +457,6 @@ kff.List = kff.createClass(
 });
 
 // Backward-compatible alias:
-kff.List.prototype.removeVal = kff.List.prototype.remove;
 kff.List.prototype.findByIndex = kff.List.prototype.get;
 
 
@@ -474,14 +473,14 @@ kff.Collection = kff.createClass(
 		@constructs
 		@augments kff.List
 		@param {Object} options Options object
-		@param {function} options.valFactory Factory function for creating new collection items (optional)
-		@param {function} options.valType Type (class or constructor function) of collection items
+		@param {function} options.itemFactory Factory function for creating new collection items (optional)
+		@param {function} options.itemType Type (class or constructor function) of collection items
 	 */
 	constructor: function(options)
 	{
 		options = options || {};
-		this.valFactory = options.valFactory || null;
-		this.valType = options.valType || kff.Model;
+		this.itemFactory = options.itemFactory || null;
+		this.itemType = options.itemType || kff.Model;
 		this.serializeAttrs = options.serializeAttrs || null;
 		this.initEvents();
 		kff.List.call(this);
@@ -489,64 +488,81 @@ kff.Collection = kff.createClass(
 	},
 
 	/**
-		Appends the item at the end of the collection
-
-		@param {mixed} val Item to be appended
-		@param {Boolean} silent If true, do not trigger event
+	 * Appends the item at the end of the collection
+	 *
+	 * Triggers a change event with folloving event object:
+	 *
+	 *  { type: 'append', item: item }
+	 *
+	 * @param {mixed} item Item to be appended
+	 * @param {Boolean} silent If true, do not trigger event
 	 */
-	append: function(val, silent)
+	append: function(item, silent)
 	{
-		kff.Collection._super.append.call(this, val);
-		if(!silent) this.trigger('change', { addedValue: val });
+		kff.Collection._super.append.call(this, item);
+		if(!silent) this.trigger('change', { type: 'append', item: item });
 	},
 
 	/**
-		Inserts an item at specified index
-
-		@param {mixed} val Item to be inserted
-		@param {Boolean} silent If true, do not trigger event
+	 * Inserts an item at specified index
+	 *
+	 * Triggers a change event with folloving event object:
+	 *
+	 * { type: 'insert', item: item, index: index }
+	 *
+	 * @param {mixed} item Item to be inserted
+	 * @param {Boolean} silent If true, do not trigger event
 	 */
-	insert: function(val, index, silent)
+	insert: function(item, index, silent)
 	{
-		kff.Collection._super.insert.call(this, val, index);
-		if(!silent) this.trigger('change', { insertedValue: val, insertedIndex: index });
+		kff.Collection._super.insert.call(this, item, index);
+		if(!silent) this.trigger('change', { type: 'insert', item: item, index: index });
 	},
 
 	/**
-		Sets an item at given position
-
-		@param {number} index Index of item
-		@param {mixed} item Item to set
+	 * Sets an item at given position
+	 *
+	 * Triggers a change event with folloving event object:
+	 *
+	 * { type: 'set', item: item, index: index }
+	 *
+	 * @param {number} index Index of item
+	 * @param {mixed} item Item to set
 	 */
-	set: function(index, val, silent)
+	set: function(index, item, silent)
 	{
-		kff.Collection._super.set.call(this, val, index);
-		if(!silent) this.trigger('change', { setValue: val, setIndex: index });
+		kff.Collection._super.set.call(this, item, index);
+		if(!silent) this.trigger('change', { type: 'set', item: item, index: index });
 	},
 
 	/**
-		Removes the item from the collection
-
-		@param {mixed} val Reference to the item to be removed
-		@param {Boolean} silent If true, do not trigger event
-		@returns {mixed} Removed item or false if not found
+	 * Removes the item from the collection
+	 *
+	 * Triggers a change event with folloving event object:
+	 *
+	 * { type: 'remove', item: item }
+	 *
+	 * @param {mixed} item Reference to the item to be removed
+	 * @param {Boolean} silent If true, do not trigger event
+	 * @returns {mixed} Removed item or false if not found
+	 *
 	 */
-	remove: function(val, silent)
+	remove: function(item, silent)
 	{
-		var ret = kff.Collection._super.remove.call(this, val);
-		if(ret && !silent) this.trigger('change', { removedValue: val });
+		var ret = kff.Collection._super.remove.call(this, item);
+		if(ret && !silent) this.trigger('change', { type: 'remove', item: item });
 		return ret;
 	},
 
 	/**
-		Returns the value of given attribute using deep lookup (object.attribute.some.value)
-
-		@param {string} attrPath Attribute path
-		@returns {mixed} Attribute value
-	 	@example
-	 	obj.mget('one.two.three');
-	 	// equals to:
-	 	obj.get('one').get('two').get('three');
+	 * Returns the value of given attribute using deep lookup (object.attribute.some.value)
+	 *
+	 * @param {string} attrPath Attribute path
+	 * @returns {mixed} Attribute value
+	 * @example
+	 * obj.mget('one.two.three');
+	 * // equals to:
+	 * obj.get('one').get('two').get('three');
 	 */
 	mget: function(attrPath)
 	{
@@ -562,50 +578,54 @@ kff.Collection = kff.createClass(
 	},
 
 	/**
-		Creates a JSON representation of collection (= array object).
-
-		If item of collection is object, tries to call toJson on it recursively.
-		This function returns a plain object, not a stringified JSON.
-
-		@returns {Array} Array representation of collection
+	 * Creates a JSON representation of collection (= array object).
+	 *
+	 * If item of collection is object, tries to call toJson on it recursively.
+	 * This function returns a plain object, not a stringified JSON.
+	 *
+	 * @returns {Array} Array representation of collection
 	 */
 	toJson: function()
 	{
 		var serializeAttrs = this.serializeAttrs, obj = [];
-		this.each(function(val)
+		this.each(function(item)
 		{
-			if(val && val.toJson) obj.push(val.toJson(serializeAttrs));
-			else obj.push(val);
+			if(item && item.toJson) obj.push(item.toJson(serializeAttrs));
+			else obj.push(item);
 		});
 		return obj;
 	},
 
 	/**
-		Reads collection from JSON representation (= from JavaScript array)
-
-		@param {Array} obj Array to read from
-		@param {Boolean} silent If true, do not trigger event
+	 * Reads collection from JSON representation (= from JavaScript array)
+	 *
+	 * Triggers a change event with folloving event object:
+	 *
+	 * { type: 'fromJson' }
+	 *
+	 * @param {Array} obj Array to read from
+	 * @param {Boolean} silent If true, do not trigger event
 	 */
 	fromJson: function(obj, silent)
 	{
-		var val, valFactory = this.valFactory;
+		var item, itemFactory = this.itemFactory;
 		this.empty();
 		for(var i = 0; i < obj.length; i++)
 		{
-			if(valFactory) val = valFactory(obj[i]);
-			else val = new this.valType();
-			val.fromJson(obj[i], silent);
-			this.append(val, true);
+			if(itemFactory) item = itemFactory(obj[i]);
+			else item = new this.itemType();
+			item.fromJson(obj[i], silent);
+			this.append(item, true);
 		}
-		if(!silent) this.trigger('change', { fromJson: true });
+		if(!silent) this.trigger('change', { type: 'fromJson' });
 	},
 
 	/**
-		Finds an item with given attribute value
-
-		@param {string} attr Attribute name
-		@param {mixed} value Attribute value
-		@returns {mixed} First found item or null
+	 * Finds an item with given attribute value
+	 *
+	 * @param {string} attr Attribute name
+	 * @param {mixed} value Attribute value
+	 * @returns {mixed} First found item or null
 	 */
 	findByAttr: function(attr, value)
 	{
@@ -622,33 +642,41 @@ kff.Collection = kff.createClass(
 	},
 
 	/**
-		Removes all items from collection
-
-		@param {Boolean} silent If true, do not trigger event
+	 * Removes all items from collection
+	 *
+	 * Triggers a change event with folloving event object:
+	 *
+	 * { type: 'empty' }
+	 *
+	 * @param {Boolean} silent If true, do not trigger event
 	 */
 	empty: function(silent)
 	{
 		kff.Collection._super.empty.call(this);
-		if(!silent) this.trigger('change');
+		if(!silent) this.trigger('change', { type: 'empty' });
 	},
 
 	/**
-		Sorts collection using a compare function. The compare function follows the same specification
-		as the standard Array.sort function
-
-		@param {function} compareFunction Compare function
-		@param {Boolean} silent If true, do not trigger event
+	 * Sorts collection using a compare function. The compare function follows the same specification
+	 * as the standard Array.sort function
+	 *
+	 * Triggers a change event with folloving event object:
+	 *
+	 * { type: 'sort' }
+	 *
+	 * @param {function} compareFunction Compare function
+	 * @param {Boolean} silent If true, do not trigger event
 	 */
 	sort: function(compareFunction, silent)
 	{
 		kff.Collection._super.sort.call(this, compareFunction);
-		if(!silent) this.trigger('change');
+		if(!silent) this.trigger('change', { type: 'sort' });
 	},
 
 	/**
-		Creates a clone (shallow copy) of the collection.
-
-		@returns {kff.Collection} Cloned collection
+	 * Creates a clone (shallow copy) of the collection.
+	 *
+	 * @returns {kff.Collection} Cloned collection
 	 */
 	clone: function()
 	{
@@ -660,19 +688,22 @@ kff.Collection = kff.createClass(
 	},
 
 	/**
-		Randomizes items in the collection.
-
-		@param {Boolean} silent If true, do not trigger event
+	 * Randomizes items in the collection.
+	 *
+	 * Triggers a change event with folloving event object:
+	 *
+	 * { type: 'shuffle' }
+	 *
+	 * @param {Boolean} silent If true, do not trigger event
 	 */
 	shuffle: function(silent)
 	{
 		kff.Collection._super.shuffle.call(this);
-		if(!silent) this.trigger('change');
+		if(!silent) this.trigger('change', { type: 'shuffle' });
 	}
 
 });
 
-kff.Collection.prototype.removeVal = kff.Collection.prototype.remove;
 
 kff.Model = kff.createClass(
 {
@@ -1793,7 +1824,7 @@ kff.BindingView = kff.createClass(
 
 		this.collectionBinder.collection.on('change', this.f('refreshBoundViews'));
 
-		this.refreshBoundViews();
+		this.refreshBoundViewsAll();
 
 	},
 
@@ -1851,74 +1882,112 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshBoundViews: function(event)
 	{
-		if(event && 'addedValue' in event)
+		switch(event ? event.type : null)
+		{
+			case 'append':
+				this.refreshBoundViewsOnAppend(event);
+				break;
+			case 'insert':
+				this.refreshBoundViewsOnInsert(event);
+				break;
+			case 'remove':
+				this.refreshBoundViewsOnRemove(event);
+				break;
+			default:
+				this.refreshBoundViewsAll();
+		}
+	},
+
+	/**
+	 * Updates bound views when collection changes by appending item.
+	 *
+	 * @param {Object} event An event triggered by collection change
+	 */
+	refreshBoundViewsOnAppend: function(event)
+	{
+		this.subViewsMap.push({
+			renderIndex: null,
+			rendered: false
+		});
+		event.item.on('change', this.f('collectionItemChange'));
+		this.collectionItemChange({ model: event.item });
+	},
+	/**
+	 * Updates bound views when collection changes by inserting item.
+	 *
+	 * @param {Object} event An event triggered by collection change
+	 */
+	refreshBoundViewsOnInsert: function(event)
+	{
+		this.subViewsMap.splice(event.index, 0, {
+			renderIndex: null,
+			rendered: false
+		});
+		event.item.on('change', this.f('collectionItemChange'));
+		this.collectionItemChange({ model: event.item });
+	},
+
+	/**
+	 * Updates bound views when collection changes by removing item.
+	 *
+	 * @private
+	 * @param {Object} event An event triggered by collection change
+	 */
+	refreshBoundViewsOnRemove: function(event)
+	{
+		event.item.off('change', this.f('collectionItemChange'));
+
+		// Find render index:
+		for(var i = 0, l = this.subViews.length; i < l; i++)
+		{
+			if(event.item === this.subViews[i].models['*']) break;
+		}
+
+		var renderIndex = i;
+		var realIndex = null;
+
+		// Find real index in collection:
+		for(var i = 0, l = this.subViewsMap.length; i < l; i++)
+		{
+			if(this.subViewsMap[i].renderIndex === renderIndex)
+			{
+				realIndex = i;
+				break;
+			}
+		}
+
+		if(realIndex !== null)
+		{
+			if(this.subViewsMap[i].rendered) this.removeSubViewAt(renderIndex);
+			this.subViewsMap.splice(i, 1);
+		}
+
+		this.reindexSubviews(i);
+	},
+
+	/**
+	 * Updates bound views when collection changes on other events.
+	 *
+	 * @private
+	 */
+	refreshBoundViewsAll: function()
+	{
+		this.destroySubviews();
+		if(this.$elements) this.$elements.remove();
+		this.$elements = $([]);
+		this.subViewsMap = [];
+
+		this.collectionBinder.collection.each(this.f(function(item, i)
 		{
 			this.subViewsMap.push({
 				renderIndex: null,
 				rendered: false
 			});
-			event.addedValue.on('change', this.f('collectionItemChange'));
-			this.collectionItemChange({ model: event.addedValue });
-		}
-		else if(event && 'insertedValue' in event)
-		{
-			this.subViewsMap.splice(event.insertedIndex, 0, {
-				renderIndex: null,
-				rendered: false
-			});
-			event.insertedValue.on('change', this.f('collectionItemChange'));
-			this.collectionItemChange({ model: event.insertedValue });
-		}
-		else if(event && 'removedValue' in event)
-		{
-			event.removedValue.off('change', this.f('collectionItemChange'));
+			item.on('change', this.f('collectionItemChange'));
+			this.collectionItemChange({ model: item });
 
-			// Find render index:
-			for(var i = 0, l = this.subViews.length; i < l; i++)
-			{
-				if(event.removedValue === this.subViews[i].models['*']) break;
-			}
-
-			var renderIndex = i;
-			var realIndex = null;
-
-			// Find real index in collection:
-			for(var i = 0, l = this.subViewsMap.length; i < l; i++)
-			{
-				if(this.subViewsMap[i].renderIndex === renderIndex)
-				{
-					realIndex = i;
-					break;
-				}
-			}
-
-			if(realIndex !== null)
-			{
-				if(this.subViewsMap[i].rendered) this.removeSubViewAt(renderIndex);
-				this.subViewsMap.splice(i, 1);
-			}
-
-			this.reindexSubviews(i);
-		}
-		else
-		{
-			this.destroySubviews();
-			if(this.$elements) this.$elements.remove();
-			this.$elements = $([]);
-			this.subViewsMap = [];
-
-			this.collectionBinder.collection.each(this.f(function(item, i)
-			{
-				this.subViewsMap.push({
-					renderIndex: null,
-					rendered: false
-				});
-				item.on('change', this.f('collectionItemChange'));
-				this.collectionItemChange({ model: item });
-
-			}));
-			this.reindexSubviews();
-		}
+		}));
+		this.reindexSubviews();
 	},
 
 	/**

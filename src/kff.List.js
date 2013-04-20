@@ -36,30 +36,30 @@ kff.List = kff.createClass(
 
 	/**
 		Appends an item at the end of the list
-		@param {mixed} val Item to be appended
+		@param {mixed} item Item to be appended
 	 */
-	append: function(val)
+	append: function(item)
 	{
-		this.array.push(val);
+		this.array.push(item);
 	},
 
 	/**
 		Inserts an item at specified index
-		@param {mixed} val Item to be inserted
+		@param {mixed} item Item to be inserted
 	 */
-	insert: function(val, index)
+	insert: function(item, index)
 	{
-		this.array.splice(index, 0, val);
+		this.array.splice(index, 0, item);
 	},
 
 	/**
 		Removes item from the list
-		@param {mixed} val Reference to the item to be removed
+		@param {mixed} item Reference to the item to be removed
 		@returns {Boolean} True if item was removed or false if not found
 	 */
-	remove: function(val)
+	remove: function(item)
 	{
-		var i = this.indexOf(val);
+		var i = this.indexOf(item);
 		if(i === -1) return false;
 		this.array.splice(i, 1);
 		return true;
@@ -76,14 +76,14 @@ kff.List = kff.createClass(
 	/**
 		Returns an index of given item
 
-		@param {mixed} val Value to be found
+		@param {mixed} item Value to be found
 		@returns {number} index of the item or -1 if not found
 	 */
-	indexOf: function(val)
+	indexOf: function(item)
 	{
 		var i = 0, a = this.array, l = a.length;
-		if(a.indexOf) return a.indexOf(val);
-		for(; i < l; i++) if(a[i] === val) return i;
+		if(a.indexOf) return a.indexOf(item);
+		for(; i < l; i++) if(a[i] === item) return i;
 		return -1;
 	},
 
@@ -143,5 +143,4 @@ kff.List = kff.createClass(
 });
 
 // Backward-compatible alias:
-kff.List.prototype.removeVal = kff.List.prototype.remove;
 kff.List.prototype.findByIndex = kff.List.prototype.get;

@@ -69,7 +69,7 @@ kff.Events = kff.createClass(
 		}
 		else
 		{
-			if(this.subscribers[eventType] instanceof kff.List) this.subscribers[eventType].removeVal(fn);
+			if(this.subscribers[eventType] instanceof kff.List) this.subscribers[eventType].remove(fn);
 		}
 	},
 
