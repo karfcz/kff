@@ -3,6 +3,7 @@ kff.ServiceContainer = kff.createClass(
 {
 	staticProperties:
 	{
+		CONFIG_CONSTRUCTOR: 'construct',
 		singleParamRegex: /^%[^%]+%$/g,
 		multipleParamsRegex: /%([^%]+)%/g
 	}
@@ -107,17 +108,17 @@ kff.ServiceContainer = kff.createClass(
 	 */
 	getServiceConstructor: function(serviceName)
 	{
-		var serviceConfig, ctor;
+		var serviceConfig, ctor, construct = kff.ServiceContainer.CONFIG_CONSTRUCTOR;
 		serviceConfig = this.config.services[serviceName];
 		if(!serviceConfig) return null;
-		if(!serviceConfig.hasOwnProperty('constructor'))
+		if(!serviceConfig.hasOwnProperty('construct'))
 		{
 			ctor = kff.evalObjectPath(serviceName);
-			if(typeof ctor === 'function') serviceConfig.constructor = ctor;
+			if(typeof ctor === 'function') serviceConfig[construct] = ctor;
 		}
-		else if(typeof serviceConfig.constructor === 'string') serviceConfig.constructor = kff.evalObjectPath(serviceConfig.constructor);
-		if(typeof serviceConfig.constructor !== 'function') throw new TypeError('expected function in getServiceConstructor: ' + serviceConfig.constructor);
-		return serviceConfig.constructor;
+		else if(typeof serviceConfig[construct] === 'string') serviceConfig[construct] = kff.evalObjectPath(serviceConfig[construct]);
+		if(typeof serviceConfig[construct] !== 'function') throw new TypeError('expected function in getServiceConstructor: ' + serviceConfig[construct]);
+		return serviceConfig[construct];
 	},
 
 	/**

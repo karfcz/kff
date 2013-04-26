@@ -17,18 +17,18 @@ describe('kff.ServiceContainer', function()
 		{
 			'service1':
 			{
-				'constructor': Service1,
+				'construct': Service1,
 			    'args': ['%kocka%', 'haf']
 			},
 			'service2':
 			{
-				'constructor': Service2,
+				'construct': Service2,
 			    'args': ['@service1', 'Proč %kocka% není %pes%?'],
 			    'shared': true
 			},
 			'service3':
 			{
-				'constructor': Service1,
+				'construct': Service1,
 			    'args': ['%kocka%', '%obj%']
 			}
 		}
@@ -174,7 +174,7 @@ describe('kff.ServiceContainer', function()
 		{
 			container.registerServices({
 				'service4': {
-					'constructor': function() {
+					'construct': function() {
 						this.a = 'service 4';
 					}
 				}

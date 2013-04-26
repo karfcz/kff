@@ -213,21 +213,21 @@ describe('kff.View', function()
 			var config = {
 				services: {
 					'viewFactory': {
-						constructor: kff.ViewFactory,
+						construct: kff.ViewFactory,
 						args: [{
 							serviceContainer: '@'
 						}],
 						shared: true
 					},
 					'testViewA': {
-						constructor: TestView2,
+						construct: TestView2,
 						args: [{
 							element: $mainDiv,
 					    	viewFactory: '@viewFactory'
 					    }]
 					},
 					'testViewB': {
-						constructor: TestView2
+						construct: TestView2
 					}
 				}
 			};
@@ -258,21 +258,21 @@ describe('kff.View', function()
 			var config = {
 				services: {
 					'viewFactory': {
-						constructor: kff.ViewFactory,
+						construct: kff.ViewFactory,
 						args: [{
 							serviceContainer: '@'
 						}],
 						shared: true
 					},
 					'testViewA': {
-						constructor: TestView2,
+						construct: TestView2,
 						args: [{
 							element: $mainDiv,
 					    	viewFactory: '@viewFactory'
 					    }]
 					},
 					'testViewB': {
-						constructor: TestView2,
+						construct: TestView2,
 					    args: [{
 					    	done: done
 					    }]
