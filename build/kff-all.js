@@ -1866,8 +1866,11 @@ kff.BindingView = kff.createClass(
 	 */
 	destroyBoundViews: function()
 	{
-		if(this.$elements) this.$elements.remove();
-		this.$elements = null;
+		if(this.elements)
+		{
+			for(var i = 0, l = this.elements.length; i < l; i++) this.elements[i].remove();
+		}
+		this.elements = [];
 		if(this.$anchor)
 		{
 			this.$anchor.after(this.$element);
@@ -1974,8 +1977,11 @@ kff.BindingView = kff.createClass(
 	refreshBoundViewsAll: function()
 	{
 		this.destroySubviews();
-		if(this.$elements) this.$elements.remove();
-		this.$elements = $([]);
+		if(this.elements)
+		{
+			for(var i = 0, l = this.elements.length; i < l; i++) this.elements[i].remove();
+		}
+		this.elements = [];
 		this.subViewsMap = [];
 
 		this.collectionBinder.collection.each(this.f(function(item, i)
@@ -2057,8 +2063,8 @@ kff.BindingView = kff.createClass(
 	{
 		this.subViews[renderIndex].destroy();
 		this.subViews.splice(renderIndex, 1);
-		this.$elements.eq(renderIndex).remove();
-		this.$elements = this.$elements.slice(0, renderIndex).add(this.$elements.slice(renderIndex + 1));
+		this.elements[renderIndex].remove();
+		this.elements.splice(renderIndex, 1);
 
 		// Reindex subsequent subviews:
 		this.reindexSubviews(renderIndex);
@@ -2083,9 +2089,9 @@ kff.BindingView = kff.createClass(
 		}
 		else
 		{
-			this.$elements.eq(renderIndex - 1).after($element);
+			this.elements[renderIndex - 1].after($element);
 		}
-		this.$elements = this.$elements.slice(0, renderIndex).add($element).add(this.$elements.slice(renderIndex));
+		this.elements.splice(renderIndex, 0, $element);
 
 		this.subViewsMap[collectionIndex].renderIndex = renderIndex;
 		this.subViewsMap[collectionIndex].rendered = true;
