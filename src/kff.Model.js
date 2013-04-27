@@ -96,9 +96,9 @@ kff.Model = kff.createClass(
 		{
 			for(var changedAttr in changed)
 			{
-				this.trigger('change:' + changedAttr, { model: this, changedAttributes: changed });
+				this.trigger('change:' + changedAttr, { model: this, changed: changed, changedAttributes: changed });
 			}
-			this.trigger('change', { model: this, changedAttributes: changed });
+			this.trigger('change', { model: this, changed: changed, changedAttributes: changed });
 		}
 	},
 

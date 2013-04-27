@@ -54,10 +54,10 @@ describe('kff.Model', function()
 			var obj = new kff.Model();
 			var count = 0;
 			obj.on('change:a', function(event){
-				if(event.changedAttributes.a === 42) count++;
+				if(event.changed.a === 42) count++;
 			});
 			obj.on('change', function(event){
-				if(event.changedAttributes.a === 42) count++;
+				if(event.changed.a === 42) count++;
 				if(count === 2) done();
 			});
 			obj.set('a', 42);
@@ -67,11 +67,11 @@ describe('kff.Model', function()
 		{
 			var count = 0;
 			obj.on('change:a', function(event){
-				if(event.changedAttributes.a === 42) count++;
-				if(event.changedAttributes.b === 43) count++;
+				if(event.changed.a === 42) count++;
+				if(event.changed.b === 43) count++;
 			});
 			obj.on('change', function(event){
-				if(event.changedAttributes.a === 42 && event.changedAttributes.b === 43) count++;
+				if(event.changed.a === 42 && event.changed.b === 43) count++;
 				if(count === 3) done();
 			});
 			obj.set({

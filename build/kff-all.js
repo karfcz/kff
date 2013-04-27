@@ -802,9 +802,9 @@ kff.Model = kff.createClass(
 		{
 			for(var changedAttr in changed)
 			{
-				this.trigger('change:' + changedAttr, { model: this, changedAttributes: changed });
+				this.trigger('change:' + changedAttr, { model: this, changed: changed, changedAttributes: changed });
 			}
-			this.trigger('change', { model: this, changedAttributes: changed });
+			this.trigger('change', { model: this, changed: changed, changedAttributes: changed });
 		}
 	},
 
@@ -2338,7 +2338,7 @@ kff.Binder = kff.createClass(
 	{
 		var modelValue;
 		if(this.getter && typeof this.model[this.getter] === 'function') modelValue = this.model[this.getter](this.attr);
-		else if(event !== true) modelValue = event.changedAttributes[this.attr];
+		else if(event !== true) modelValue = event.changed[this.attr];
 		else if(typeof this.attr === 'string') modelValue = this.model.get(this.attr);
 		else return;
 
