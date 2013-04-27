@@ -1679,7 +1679,8 @@ kff.BindingView = kff.createClass(
 			{
 				if(!binderName || !(binderName in kff.BindingView.binders)) break;
 
-				attr = name.pop();
+				if(name.length > 1) attr = name.pop();
+				else attr = null;
 				model = this.getModel(name);
 
 				// Special binding for collection count property
@@ -2338,7 +2339,8 @@ kff.Binder = kff.createClass(
 		var modelValue;
 		if(this.getter && typeof this.model[this.getter] === 'function') modelValue = this.model[this.getter](this.attr);
 		else if(event !== true) modelValue = event.changedAttributes[this.attr];
-		else modelValue = this.model.get(this.attr);
+		else if(typeof this.attr === 'string') modelValue = this.model.get(this.attr);
+		else return;
 
 		if(event === true || !this.compareValues(modelValue, this.currentValue))
 		{

@@ -181,7 +181,8 @@ kff.BindingView = kff.createClass(
 			{
 				if(!binderName || !(binderName in kff.BindingView.binders)) break;
 
-				attr = name.pop();
+				if(name.length > 1) attr = name.pop();
+				else attr = null;
 				model = this.getModel(name);
 
 				// Special binding for collection count property
