@@ -13,6 +13,7 @@ kff.Binder = kff.createClass(
 		this.$element = options.$element;
 		this.attr = options.attr;
 		this.model = options.model;
+		this.modelName = options.modelName;
 		this.parsers = options.parsers;
 		this.formatters = options.formatters;
 		this.setter = (options.setters instanceof Array && options.setters.length > 0) ? options.setters[0] : null;
@@ -134,7 +135,7 @@ kff.Binder = kff.createClass(
 
 	getBindingIndex: function()
 	{
-		return this.view.getBindingIndex();
+		return this.view.getBindingIndex(this.modelName);
 	}
 
 });

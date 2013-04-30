@@ -1560,6 +1560,7 @@ kff.BindingView = kff.createClass(
 		this.values = {};
 		this.formatters = [];
 		this.parsers = [];
+		this.itemAlias = null;
 
 		kff.View.call(this, options);
 	},
@@ -1600,6 +1601,7 @@ kff.BindingView = kff.createClass(
 		var model, attr, result, subresults, name, binderName, binderParams, formatters, parsers, getters, setters, eventNames;
 		var modifierName, modifierParams;
 		var dataBind = this.$element.attr(kff.View.DATA_BIND_ATTR);
+		var modelName;
 
 		var regex = kff.BindingView.bindingRegex;
 		var modifierRegex = kff.BindingView.modifierRegex;
@@ -1646,13 +1648,16 @@ kff.BindingView = kff.createClass(
 
 					switch(modifierName){
 						case 'f':
-							this.parseModifiers(modifierParams, formatters);
+							this.parseHelpers(modifierParams, formatters);
 							break;
 						case 'p':
-							this.parseModifiers(modifierParams, parsers);
+							this.parseHelpers(modifierParams, parsers);
 							break;
 						case 'on':
 							this.parseSetters(modifierParams, eventNames);
+							break;
+						case 'as':
+							this.parseSetters(modifierParams, itemAliases);
 							break;
 						case 'set':
 							this.parseSetters(modifierParams, setters);
@@ -1673,6 +1678,10 @@ kff.BindingView = kff.createClass(
 					this.collectionBinder = {
 						collection: model
 					};
+					if(binderName === 'as' && binderParams.length > 0)
+					{
+						this.itemAlias = binderParams[0];
+					}
 				}
 			}
 			else
@@ -1681,6 +1690,8 @@ kff.BindingView = kff.createClass(
 
 				if(name.length > 1) attr = name.pop();
 				else attr = null;
+
+				modelName = name.length > 0 ? name[0] : null;
 				model = this.getModel(name);
 
 				// Special binding for collection count property
@@ -1705,6 +1716,7 @@ kff.BindingView = kff.createClass(
 						params: binderParams,
 						attr: attr,
 						model: model,
+						modelName: modelName,
 						formatters: formatters,
 						parsers: parsers,
 						setters: setters,
@@ -1766,7 +1778,7 @@ kff.BindingView = kff.createClass(
 	 * @param {Array} modifierParams An arrray with modifier names
 	 * @param {Array} modifiers An empty array that will be filled by modifier classes that corresponds to modifier names
 	 */
-	parseModifiers: function(modifierParams, modifiers)
+	parseHelpers: function(modifierParams, modifiers)
 	{
 		for(var j = 0; j < modifierParams.length; j++)
 		{
@@ -2143,6 +2155,7 @@ kff.BindingView = kff.createClass(
 
 		this.subViewOptions.element = $element;
 		this.subViewOptions.models = { '*': item };
+		if(this.itemAlias) this.subViewOptions.models[this.itemAlias] = item;
 		this.subViewOptions.isBoundView = true;
 		var subView = this.viewFactory.createView(this.subViewName, this.subViewOptions);
 		if(subView instanceof kff.View)
@@ -2209,10 +2222,10 @@ kff.BindingView = kff.createClass(
 	 *
 	 * @return {number} Item index
 	 */
-	getBindingIndex: function()
+	getBindingIndex: function(modelName)
 	{
-		if(this.bindingIndex !== null) return this.bindingIndex;
-		if(this.parentView instanceof kff.BindingView) return this.parentView.getBindingIndex();
+		if(this.bindingIndex !== null && modelName in this.models) return this.bindingIndex;
+		if(this.parentView instanceof kff.BindingView) return this.parentView.getBindingIndex(modelName);
 		return null;
 	},
 
@@ -2304,6 +2317,7 @@ kff.Binder = kff.createClass(
 		this.$element = options.$element;
 		this.attr = options.attr;
 		this.model = options.model;
+		this.modelName = options.modelName;
 		this.parsers = options.parsers;
 		this.formatters = options.formatters;
 		this.setter = (options.setters instanceof Array && options.setters.length > 0) ? options.setters[0] : null;
@@ -2425,7 +2439,7 @@ kff.Binder = kff.createClass(
 
 	getBindingIndex: function()
 	{
-		return this.view.getBindingIndex();
+		return this.view.getBindingIndex(this.modelName);
 	}
 
 });
