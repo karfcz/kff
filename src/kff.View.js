@@ -195,7 +195,7 @@ kff.View = kff.createClass(
 	 */
 	init: function()
 	{
-		this.render();
+		this.startRender();
 	},
 
 	/**
@@ -203,13 +203,26 @@ kff.View = kff.createClass(
 	 *
 	 * @param {Boolean} silent If true, the 'render' event won't be called
 	 */
-	render: function(silent)
+	render: function(){},
+
+	/**
+	 * Renders the view. It will be called automatically. Should not be called directly.
+	 *
+	 * @param {Boolean} silent If true, the 'render' event won't be called
+	 */
+	startRender: function(silent)
 	{
+		var ret = this.render();
 		this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 		this.renderSubviews();
 		this.processTriggerEvents();
 		this.delegateEvents();
-		if(!silent) this.trigger('init');
+		if(typeof this.afterRender === 'function') this.afterRender();
+
+		if(!((silent === true) || (ret === false)))
+		{
+			this.trigger('render');
+		}
 	},
 
 	/**
@@ -333,12 +346,29 @@ kff.View = kff.createClass(
 	 *
 	 * @param {Boolean} silent If true, the 'destroy' event won't be called
 	 */
-	destroy: function(silent)
+	destroy: function(){},
+
+	/**
+	 * Destroys the view (destroys all subviews and unbinds previously bound DOM events.
+	 * It will be called automatically. Should not be called directly.
+	 *
+	 * @param {Boolean} silent If true, the 'destroy' event won't be called
+	 */
+	startDestroy: function(silent)
 	{
+		var ret;
 		this.$element.removeAttr(kff.View.DATA_RENDERED_ATTR);
 		this.undelegateEvents();
 		this.destroySubviews();
-		if(!silent) this.trigger('destroy');
+
+		ret = this.destroy();
+		if(typeof this.afterDestroy === 'function') this.afterDestroy();
+
+
+		if(!((silent === true) || (ret === false)))
+		{
+			this.trigger('destroy');
+		}
 	},
 
 	/**
@@ -352,7 +382,7 @@ kff.View = kff.createClass(
 		for(i = 0, l = this.subViews.length; i < l; i++)
 		{
 			subView = this.subViews[i];
-			subView.destroy();
+			subView.startDestroy();
 			delete this.subViews[i];
 		}
 		this.subViews = [];

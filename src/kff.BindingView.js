@@ -72,11 +72,11 @@ kff.BindingView = kff.createClass(
 	 *
 	 * @param {Boolean} silent If true, does not trigger events
 	 */
-	render: function(silent)
+	startRender: function(silent)
 	{
 		this.initBinding();
 		if(this.collectionBinder) this.renderBoundViews();
-		kff.BindingView._super.render.call(this, silent);
+		kff.BindingView._super.startRender.call(this, silent);
 		setTimeout(this.f('refreshOwnBinders'), 0);
 	},
 
@@ -85,10 +85,10 @@ kff.BindingView = kff.createClass(
 	 *
 	 * @param {Boolean} silent If true, does not trigger events
 	 */
-	destroy: function(silent)
+	startDestroy: function(silent)
 	{
 		this.destroyBinding();
-		kff.BindingView._super.destroy.call(this, true);
+		kff.BindingView._super.startDestroy.call(this, true);
 		this.destroyBoundViews();
 		if(!silent) this.trigger('destroy');
 	},
@@ -726,6 +726,7 @@ kff.BindingView = kff.createClass(
 	 */
 	getBindingIndex: function(modelName)
 	{
+		modelName = modelName || '*';
 		if(this.bindingIndex !== null && modelName in this.models) return this.bindingIndex;
 		if(this.parentView instanceof kff.BindingView) return this.parentView.getBindingIndex(modelName);
 		return null;
@@ -767,6 +768,7 @@ kff.BindingView.registerHelper('indexFromOne', function(v)
 	if(this.getBindingIndex() !== null) return this.getBindingIndex() + 1;
 	return v;
 });
+
 
 kff.BindingView.registerHelper('boolean', function(v)
 {

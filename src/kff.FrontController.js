@@ -61,7 +61,7 @@ kff.FrontController = kff.createClass(
 		this.viewsQueue.push(view);
 		if(lastView)
 		{
-			lastView.instance.on('init', kff.bindFn(view.instance, 'init'));
+			lastView.instance.on('render', kff.bindFn(view.instance, 'init'));
 			lastView.instance.on('setState', kff.bindFn(view.instance, 'setState'));
 		}
 	},
@@ -104,11 +104,11 @@ kff.FrontController = kff.createClass(
 
 		for(i = 0; i < destroyQueue.length; i++)
 		{
-			if(destroyQueue[i + 1]) destroyQueue[i].instance.on('destroy', kff.bindFn(destroyQueue[i + 1].instance, 'destroy'));
+			if(destroyQueue[i + 1]) destroyQueue[i].instance.on('destroy', kff.bindFn(destroyQueue[i + 1].instance, 'startDestroy'));
 			else destroyQueue[i].instance.on('destroy', kff.bindFn(this, 'startInit'));
 		}
 
-		if(destroyQueue[0]) destroyQueue[0].instance.destroy();
+		if(destroyQueue[0]) destroyQueue[0].instance.startDestroy();
 		else this.startInit();
 	},
 
@@ -125,7 +125,7 @@ kff.FrontController = kff.createClass(
 		}
 
 		this.newViewName = null;
-		if(this.getLastView()) this.getLastView().instance.on('init', kff.bindFn(this, 'cascadeState'));
+		if(this.getLastView()) this.getLastView().instance.on('render', kff.bindFn(this, 'cascadeState'));
 		if(this.viewsQueue[from]) this.viewsQueue[from].instance.init();
 		else this.cascadeState();
 	},

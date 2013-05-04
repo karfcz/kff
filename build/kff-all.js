@@ -1269,7 +1269,7 @@ kff.View = kff.createClass(
 	 */
 	init: function()
 	{
-		this.render();
+		this.startRender();
 	},
 
 	/**
@@ -1277,13 +1277,26 @@ kff.View = kff.createClass(
 	 *
 	 * @param {Boolean} silent If true, the 'render' event won't be called
 	 */
-	render: function(silent)
+	render: function(){},
+
+	/**
+	 * Renders the view. It will be called automatically. Should not be called directly.
+	 *
+	 * @param {Boolean} silent If true, the 'render' event won't be called
+	 */
+	startRender: function(silent)
 	{
+		var ret = this.render();
 		this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 		this.renderSubviews();
 		this.processTriggerEvents();
 		this.delegateEvents();
-		if(!silent) this.trigger('init');
+		if(typeof this.afterRender === 'function') this.afterRender();
+
+		if(!((silent === true) || (ret === false)))
+		{
+			this.trigger('render');
+		}
 	},
 
 	/**
@@ -1407,12 +1420,29 @@ kff.View = kff.createClass(
 	 *
 	 * @param {Boolean} silent If true, the 'destroy' event won't be called
 	 */
-	destroy: function(silent)
+	destroy: function(){},
+
+	/**
+	 * Destroys the view (destroys all subviews and unbinds previously bound DOM events.
+	 * It will be called automatically. Should not be called directly.
+	 *
+	 * @param {Boolean} silent If true, the 'destroy' event won't be called
+	 */
+	startDestroy: function(silent)
 	{
+		var ret;
 		this.$element.removeAttr(kff.View.DATA_RENDERED_ATTR);
 		this.undelegateEvents();
 		this.destroySubviews();
-		if(!silent) this.trigger('destroy');
+
+		ret = this.destroy();
+		if(typeof this.afterDestroy === 'function') this.afterDestroy();
+
+
+		if(!((silent === true) || (ret === false)))
+		{
+			this.trigger('destroy');
+		}
 	},
 
 	/**
@@ -1426,7 +1456,7 @@ kff.View = kff.createClass(
 		for(i = 0, l = this.subViews.length; i < l; i++)
 		{
 			subView = this.subViews[i];
-			subView.destroy();
+			subView.startDestroy();
 			delete this.subViews[i];
 		}
 		this.subViews = [];
@@ -1570,11 +1600,11 @@ kff.BindingView = kff.createClass(
 	 *
 	 * @param {Boolean} silent If true, does not trigger events
 	 */
-	render: function(silent)
+	startRender: function(silent)
 	{
 		this.initBinding();
 		if(this.collectionBinder) this.renderBoundViews();
-		kff.BindingView._super.render.call(this, silent);
+		kff.BindingView._super.startRender.call(this, silent);
 		setTimeout(this.f('refreshOwnBinders'), 0);
 	},
 
@@ -1583,10 +1613,10 @@ kff.BindingView = kff.createClass(
 	 *
 	 * @param {Boolean} silent If true, does not trigger events
 	 */
-	destroy: function(silent)
+	startDestroy: function(silent)
 	{
 		this.destroyBinding();
-		kff.BindingView._super.destroy.call(this, true);
+		kff.BindingView._super.startDestroy.call(this, true);
 		this.destroyBoundViews();
 		if(!silent) this.trigger('destroy');
 	},
@@ -2224,6 +2254,7 @@ kff.BindingView = kff.createClass(
 	 */
 	getBindingIndex: function(modelName)
 	{
+		modelName = modelName || '*';
 		if(this.bindingIndex !== null && modelName in this.models) return this.bindingIndex;
 		if(this.parentView instanceof kff.BindingView) return this.parentView.getBindingIndex(modelName);
 		return null;
@@ -2265,6 +2296,7 @@ kff.BindingView.registerHelper('indexFromOne', function(v)
 	if(this.getBindingIndex() !== null) return this.getBindingIndex() + 1;
 	return v;
 });
+
 
 kff.BindingView.registerHelper('boolean', function(v)
 {
@@ -3172,7 +3204,7 @@ kff.FrontController = kff.createClass(
 		this.viewsQueue.push(view);
 		if(lastView)
 		{
-			lastView.instance.on('init', kff.bindFn(view.instance, 'init'));
+			lastView.instance.on('render', kff.bindFn(view.instance, 'init'));
 			lastView.instance.on('setState', kff.bindFn(view.instance, 'setState'));
 		}
 	},
@@ -3215,11 +3247,11 @@ kff.FrontController = kff.createClass(
 
 		for(i = 0; i < destroyQueue.length; i++)
 		{
-			if(destroyQueue[i + 1]) destroyQueue[i].instance.on('destroy', kff.bindFn(destroyQueue[i + 1].instance, 'destroy'));
+			if(destroyQueue[i + 1]) destroyQueue[i].instance.on('destroy', kff.bindFn(destroyQueue[i + 1].instance, 'startDestroy'));
 			else destroyQueue[i].instance.on('destroy', kff.bindFn(this, 'startInit'));
 		}
 
-		if(destroyQueue[0]) destroyQueue[0].instance.destroy();
+		if(destroyQueue[0]) destroyQueue[0].instance.startDestroy();
 		else this.startInit();
 	},
 
@@ -3236,7 +3268,7 @@ kff.FrontController = kff.createClass(
 		}
 
 		this.newViewName = null;
-		if(this.getLastView()) this.getLastView().instance.on('init', kff.bindFn(this, 'cascadeState'));
+		if(this.getLastView()) this.getLastView().instance.on('render', kff.bindFn(this, 'cascadeState'));
 		if(this.viewsQueue[from]) this.viewsQueue[from].instance.init();
 		else this.cascadeState();
 	},
