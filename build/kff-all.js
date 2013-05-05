@@ -1533,7 +1533,7 @@ kff.BindingView = kff.createClass(
 	staticProperties:
 	/** @lends kff.BindingView */
 	{
-		bindingRegex: /([.a-zA-Z0-9-]+):?([a-zA-Z0-9]+)?(\([^\(\))]*\))?(:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)*/g,
+		bindingRegex: /([.a-zA-Z0-9-]+):?([a-zA-Z0-9]+)?(\([^\(\))]*\))?(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)*/g,
 
 		modifierRegex: /([a-zA-Z0-9]+)\(([^\(\)]*)\)/,
 
@@ -1741,6 +1741,7 @@ kff.BindingView = kff.createClass(
 						this.modelBinders[binderName] = [];
 						this.values[binderName] = [];
 					}
+
 					var valueIndex = this.modelBinders[binderName].length;
 					var modelBinder = new kff.BindingView.binders[binderName]({
 						view: this,
@@ -1816,20 +1817,19 @@ kff.BindingView = kff.createClass(
 	{
 		var modifierParam, modifierArgs;
 
-		for(var j = 0; j < modifierParams.length; j++)
+		for(var j = 0, l = modifierParams.length; j < l; j++)
 		{
-			if(modifierParams[j + 1] && modifierParams[j + 1].indexOf('{') === 0)
+			modifierParam = modifierParams[j];
+
+			if(j + 1 < l && modifierParams[j + 1].indexOf('{') === 0)
 			{
-				modifierParam = modifierParams[j];
 				modifierArgs = modifierParams[j + 1].match(/([^,\s{}]+)/);
 				j++;
 			}
 			else
 			{
-				modifierParam = modifierParams[j];
 				modifierArgs = [];
 			}
-
 			if(kff.BindingView.helpers[modifierParam]) modifiers.push({ fn: kff.BindingView.helpers[modifierParam], args: modifierArgs });
 		}
 	},
@@ -2482,7 +2482,7 @@ kff.Binder = kff.createClass(
 				for(j = 0, k = value.length; j < k; j++) value2[j] = this.parsers[i].fn.apply(this, [value[j]].concat(this.parsers[i].args));
 				value = value2;
 			}
-			value = this.parsers[i].fn.apply(this, [value].concat(this.parsers[i].args));
+			else value = this.parsers[i].fn.apply(this, [value].concat(this.parsers[i].args));
 		}
 		return value;
 	},

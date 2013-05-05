@@ -128,7 +128,7 @@ kff.Binder = kff.createClass(
 				for(j = 0, k = value.length; j < k; j++) value2[j] = this.parsers[i].fn.apply(this, [value[j]].concat(this.parsers[i].args));
 				value = value2;
 			}
-			value = this.parsers[i].fn.apply(this, [value].concat(this.parsers[i].args));
+			else value = this.parsers[i].fn.apply(this, [value].concat(this.parsers[i].args));
 		}
 		return value;
 	},
