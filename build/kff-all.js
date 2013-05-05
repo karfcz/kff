@@ -1533,7 +1533,7 @@ kff.BindingView = kff.createClass(
 	staticProperties:
 	/** @lends kff.BindingView */
 	{
-		bindingRegex: /([.a-zA-Z0-9-]+):?([a-zA-Z0-9]+)?(\([^\(\))]*\))?(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)*/g,
+		bindingRegex: /([.a-zA-Z0-9-]+):?([a-zA-Z0-9]+)?(\([^\(\))]*\))?(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)/g,
 
 		modifierRegex: /([a-zA-Z0-9]+)\(([^\(\)]*)\)/,
 
