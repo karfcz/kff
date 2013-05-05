@@ -109,10 +109,10 @@ kff.Binder = kff.createClass(
 			if(value instanceof Array)
 			{
 				value2 = [];
-				for(j = 0, k = value.length; j < k; j++) value2[j] = this.formatters[i].call(this, value[j]);
+				for(j = 0, k = value.length; j < k; j++) value2[j] = this.formatters[i].fn.apply(this, [value[j]].concat(this.formatters[i].args));
 				value = value2;
 			}
-			else value = this.formatters[i].call(this, value);
+			else value = this.formatters[i].fn.apply(this, [value].concat(this.formatters[i].args));
 		}
 		return value;
 	},
@@ -125,17 +125,18 @@ kff.Binder = kff.createClass(
 			if(value instanceof Array)
 			{
 				value2 = [];
-				for(j = 0, k = value.length; j < k; j++) value2[j] = this.parsers[i].call(this, value[j]);
+				for(j = 0, k = value.length; j < k; j++) value2[j] = this.parsers[i].fn.apply(this, [value[j]].concat(this.parsers[i].args));
 				value = value2;
 			}
-			value = this.parsers[i].call(this, value);
+			value = this.parsers[i].fn.apply(this, [value].concat(this.parsers[i].args));
 		}
 		return value;
 	},
 
-	getBindingIndex: function()
+	getBindingIndex: function(modelName)
 	{
-		return this.view.getBindingIndex(this.modelName);
+		modelName = modelName || '*';
+		return this.view.getBindingIndex(modelName);
 	}
 
 });

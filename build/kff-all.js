@@ -1533,11 +1533,15 @@ kff.BindingView = kff.createClass(
 	staticProperties:
 	/** @lends kff.BindingView */
 	{
-		bindingRegex: /([.a-zA-Z0-9-]+):?([a-zA-Z0-9]+)?(\([^\(\))]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s]*\))?/g,
+		bindingRegex: /([.a-zA-Z0-9-]+):?([a-zA-Z0-9]+)?(\([^\(\))]*\))?(:?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)*/g,
 
 		modifierRegex: /([a-zA-Z0-9]+)\(([^\(\)]*)\)/,
 
+		modifierArgsRegex: /([^{}]+){([a-zA-Z0-9,\s]+)\}/,
+
 		commaSeparateRegex: /\s*,\s*/,
+
+		modifierSeparateRegex: /([^{},\s]+)|({[a-zA-Z0-9,\s]+})/g,
 
 		leadingPeriodRegex: /^\./,
 
@@ -1673,7 +1677,7 @@ kff.BindingView = kff.createClass(
 
 					if(subresults[2])
 					{
-						modifierParams = subresults[2].split(commaSeparateRegex);
+						modifierParams = subresults[2].match(kff.BindingView.modifierSeparateRegex);
 					}
 
 					switch(modifierName){
@@ -1810,9 +1814,23 @@ kff.BindingView = kff.createClass(
 	 */
 	parseHelpers: function(modifierParams, modifiers)
 	{
+		var modifierParam, modifierArgs;
+
 		for(var j = 0; j < modifierParams.length; j++)
 		{
-			if(kff.BindingView.helpers[modifierParams[j]]) modifiers.push(kff.BindingView.helpers[modifierParams[j]]);
+			if(modifierParams[j + 1] && modifierParams[j + 1].indexOf('{') === 0)
+			{
+				modifierParam = modifierParams[j];
+				modifierArgs = modifierParams[j + 1].match(/([^,\s{}]+)/);
+				j++;
+			}
+			else
+			{
+				modifierParam = modifierParams[j];
+				modifierArgs = [];
+			}
+
+			if(kff.BindingView.helpers[modifierParam]) modifiers.push({ fn: kff.BindingView.helpers[modifierParam], args: modifierArgs });
 		}
 	},
 
@@ -2285,15 +2303,15 @@ kff.BindingView = kff.createClass(
 
 
 
-kff.BindingView.registerHelper('index', function(v)
+kff.BindingView.registerHelper('index', function(v, modelName)
 {
-	if(this.getBindingIndex() !== null) return this.getBindingIndex();
+	if(this.getBindingIndex(modelName) !== null) return this.getBindingIndex(modelName);
 	return v;
 });
 
 kff.BindingView.registerHelper('indexFromOne', function(v)
 {
-	if(this.getBindingIndex() !== null) return this.getBindingIndex() + 1;
+	if(this.getBindingIndex(modelName) !== null) return this.getBindingIndex(modelName) + 1;
 	return v;
 });
 
@@ -2445,10 +2463,10 @@ kff.Binder = kff.createClass(
 			if(value instanceof Array)
 			{
 				value2 = [];
-				for(j = 0, k = value.length; j < k; j++) value2[j] = this.formatters[i].call(this, value[j]);
+				for(j = 0, k = value.length; j < k; j++) value2[j] = this.formatters[i].fn.apply(this, [value[j]].concat(this.formatters[i].args));
 				value = value2;
 			}
-			else value = this.formatters[i].call(this, value);
+			else value = this.formatters[i].fn.apply(this, [value].concat(this.formatters[i].args));
 		}
 		return value;
 	},
@@ -2461,17 +2479,18 @@ kff.Binder = kff.createClass(
 			if(value instanceof Array)
 			{
 				value2 = [];
-				for(j = 0, k = value.length; j < k; j++) value2[j] = this.parsers[i].call(this, value[j]);
+				for(j = 0, k = value.length; j < k; j++) value2[j] = this.parsers[i].fn.apply(this, [value[j]].concat(this.parsers[i].args));
 				value = value2;
 			}
-			value = this.parsers[i].call(this, value);
+			value = this.parsers[i].fn.apply(this, [value].concat(this.parsers[i].args));
 		}
 		return value;
 	},
 
-	getBindingIndex: function()
+	getBindingIndex: function(modelName)
 	{
-		return this.view.getBindingIndex(this.modelName);
+		modelName = modelName || '*';
+		return this.view.getBindingIndex(modelName);
 	}
 
 });
