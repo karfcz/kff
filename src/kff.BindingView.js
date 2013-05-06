@@ -746,7 +746,7 @@ kff.BindingView = kff.createClass(
 	{
 		modelName = modelName || '*';
 		if(this.bindingIndex !== null && modelName in this.models) return this.bindingIndex;
-		if(this.parentView instanceof kff.BindingView) return this.parentView.getBindingIndex(modelName);
+		if(this.parentView instanceof kff.View) return this.parentView.getBindingIndex(modelName);
 		return null;
 	},
 

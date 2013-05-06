@@ -1470,6 +1470,17 @@ kff.View = kff.createClass(
 	refreshBinders: function(event)
 	{
 		for(var i = 0, l = this.subViews.length; i < l; i++) this.subViews[i].refreshBinders(event);
+	},
+
+	/**
+	 * Returns index of item in bound collection (closest collection in the view scope)
+	 *
+	 * @return {number} Item index
+	 */
+	getBindingIndex: function(modelName)
+	{
+		if(this.parentView instanceof kff.View) return this.parentView.getBindingIndex(modelName);
+		return null;
 	}
 });
 
@@ -2274,7 +2285,7 @@ kff.BindingView = kff.createClass(
 	{
 		modelName = modelName || '*';
 		if(this.bindingIndex !== null && modelName in this.models) return this.bindingIndex;
-		if(this.parentView instanceof kff.BindingView) return this.parentView.getBindingIndex(modelName);
+		if(this.parentView instanceof kff.View) return this.parentView.getBindingIndex(modelName);
 		return null;
 	},
 
