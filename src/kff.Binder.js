@@ -95,7 +95,7 @@ kff.Binder = kff.createClass(
 		}
 		if(this.compareValues(value, this.currentValue)) return;
 		this.currentValue = value;
-		if(this.setter && typeof this.model[this.setter] === 'function') this.model[this.setter](this.currentValue);
+		if(this.setter && typeof this.model[this.setter] === 'function') this.model[this.setter](this.attr, this.currentValue);
 		else this.model.set(this.attr, this.currentValue);
 	},
 
