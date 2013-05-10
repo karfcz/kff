@@ -198,20 +198,19 @@ kff.setZeroTimeout = function(fn)
 	{
 		if(event.source === window && event.data === messageName)
 		{
-			if('stopPropagation' in event) event.stopPropagation();
-			if(callbacks.length !== 0) callbacks.shift()();
+			event.stopPropagation();
+			if(callbacks.length > 0) callbacks.shift()();
 		}
 	};
 
-	if('postMessage' in window)
+	if('postMessage' in window && 'addEventListener' in window)
 	{
 		kff.setZeroTimeout = function(fn)
 		{
 			callbacks.push(fn);
 			window.postMessage(messageName, '*');
 		};
-		if('addEventListener' in window) window.addEventListener('message', handleMessage, true);
-		else if ('attachEvent' in window) window.attachEvent('onmessage', handleMessage);
+		window.addEventListener('message', handleMessage, true);
 	}
 	else
 	{
