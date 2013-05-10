@@ -186,6 +186,45 @@ kff.isPlainObject = function(obj)
 };
 
 
+/**
+ * Calls a function in the next process cycle with minimal timeout.
+ * @param  {function}  fn Callback function
+ */
+kff.setZeroTimeout = function(fn)
+{
+	var callbacks = [], messageName = 'kff-zerotimeoutmsg';
+
+	var handleMessage = function(event)
+	{
+		if(event.source === window && event.data === messageName)
+		{
+			if('stopPropagation' in event) event.stopPropagation();
+			if(callbacks.length !== 0) callbacks.shift()();
+		}
+	};
+
+	if('postMessage' in window)
+	{
+		kff.setZeroTimeout = function(fn)
+		{
+			callbacks.push(fn);
+			window.postMessage(messageName, '*');
+		};
+		if('addEventListener' in window) window.addEventListener('message', handleMessage, true);
+		else if ('attachEvent' in window) window.attachEvent('onmessage', handleMessage);
+	}
+	else
+	{
+		kff.setZeroTimeout = function(fn)
+		{
+			setTimeout(fn, 0);
+		};
+	}
+
+	kff.setZeroTimeout(fn);
+};
+
+
 
 kff.Events = kff.createClass(
 /** @lends kff.Events.prototype */
@@ -1639,7 +1678,7 @@ kff.BindingView = kff.createClass(
 		this.initBinding();
 		if(this.collectionBinder) this.renderBoundViews();
 		kff.BindingView._super.startRender.call(this, silent);
-		setTimeout(this.f('refreshOwnBinders'), 0);
+		kff.setZeroTimeout(this.f('refreshOwnBinders'));
 	},
 
 	/**
@@ -2558,10 +2597,10 @@ kff.EventBinder = kff.createClass(
 
 	triggerEvent: function(event)
 	{
-		setTimeout(this.f(function()
+		kff.setZeroTimeout(this.f(function()
 		{
 			this.updateModel(this.value);
-		}), 0);
+		}));
 		event.preventDefault();
 	},
 
@@ -2638,10 +2677,10 @@ kff.CheckBinder = kff.createClass(
 
 	inputChange: function(event)
 	{
-		setTimeout(this.f(function()
+		kff.setZeroTimeout(this.f(function()
 		{
 			this.updateModel(this.$element.is(':checked'));
-		}), 0);
+		}));
 	},
 
 	refresh: function()
@@ -2849,10 +2888,10 @@ kff.FocusBlurBinder = kff.createClass(
 
 	triggerEvent: function(event)
 	{
-		setTimeout(this.f(function()
+		kff.setZeroTimeout(this.f(function()
 		{
 			this.updateModel(this.$element.is(':focus'));
-		}), 0);
+		}));
 	},
 
 	refresh: function()
@@ -2924,13 +2963,13 @@ kff.RadioBinder = kff.createClass(
 
 	inputChange: function(event)
 	{
-		setTimeout(this.f(function()
+		kff.setZeroTimeout(this.f(function()
 		{
 			if(this.$element.is(':checked'))
 			{
 				this.updateModel(this.$element.val());
 			}
-		}), 0);
+		}));
 	},
 
 	refresh: function()
@@ -2995,10 +3034,10 @@ kff.ValueBinder = kff.createClass(
 
 	inputChange: function(event)
 	{
-		setTimeout(this.f(function()
+		kff.setZeroTimeout(this.f(function()
 		{
 			this.updateModel(this.$element.val());
-		}), 0);
+		}));
 	},
 
 	refresh: function()

@@ -25,13 +25,13 @@ kff.RadioBinder = kff.createClass(
 
 	inputChange: function(event)
 	{
-		setTimeout(this.f(function()
+		kff.setZeroTimeout(this.f(function()
 		{
 			if(this.$element.is(':checked'))
 			{
 				this.updateModel(this.$element.val());
 			}
-		}), 0);
+		}));
 	},
 
 	refresh: function()

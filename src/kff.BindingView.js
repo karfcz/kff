@@ -81,7 +81,7 @@ kff.BindingView = kff.createClass(
 		this.initBinding();
 		if(this.collectionBinder) this.renderBoundViews();
 		kff.BindingView._super.startRender.call(this, silent);
-		setTimeout(this.f('refreshOwnBinders'), 0);
+		kff.setZeroTimeout(this.f('refreshOwnBinders'));
 	},
 
 	/**

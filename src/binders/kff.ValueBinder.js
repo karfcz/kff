@@ -24,10 +24,10 @@ kff.ValueBinder = kff.createClass(
 
 	inputChange: function(event)
 	{
-		setTimeout(this.f(function()
+		kff.setZeroTimeout(this.f(function()
 		{
 			this.updateModel(this.$element.val());
-		}), 0);
+		}));
 	},
 
 	refresh: function()

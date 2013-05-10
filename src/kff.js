@@ -165,3 +165,42 @@ kff.isPlainObject = function(obj)
 	return obj !== null && typeof obj === 'object' && obj.constructor === Object;
 };
 
+
+/**
+ * Calls a function in the next process cycle with minimal timeout.
+ * @param  {function}  fn Callback function
+ */
+kff.setZeroTimeout = function(fn)
+{
+	var callbacks = [], messageName = 'kff-zerotimeoutmsg';
+
+	var handleMessage = function(event)
+	{
+		if(event.source === window && event.data === messageName)
+		{
+			if('stopPropagation' in event) event.stopPropagation();
+			if(callbacks.length !== 0) callbacks.shift()();
+		}
+	};
+
+	if('postMessage' in window)
+	{
+		kff.setZeroTimeout = function(fn)
+		{
+			callbacks.push(fn);
+			window.postMessage(messageName, '*');
+		};
+		if('addEventListener' in window) window.addEventListener('message', handleMessage, true);
+		else if ('attachEvent' in window) window.attachEvent('onmessage', handleMessage);
+	}
+	else
+	{
+		kff.setZeroTimeout = function(fn)
+		{
+			setTimeout(fn, 0);
+		};
+	}
+
+	kff.setZeroTimeout(fn);
+};
+

@@ -25,10 +25,10 @@ kff.CheckBinder = kff.createClass(
 
 	inputChange: function(event)
 	{
-		setTimeout(this.f(function()
+		kff.setZeroTimeout(this.f(function()
 		{
 			this.updateModel(this.$element.is(':checked'));
-		}), 0);
+		}));
 	},
 
 	refresh: function()

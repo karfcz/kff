@@ -31,10 +31,10 @@ kff.EventBinder = kff.createClass(
 
 	triggerEvent: function(event)
 	{
-		setTimeout(this.f(function()
+		kff.setZeroTimeout(this.f(function()
 		{
 			this.updateModel(this.value);
-		}), 0);
+		}));
 		event.preventDefault();
 	},
 
