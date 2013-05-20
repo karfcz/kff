@@ -41,7 +41,7 @@ kff.App = kff.createClass(
 		};
 
 		this.serviceContainer = new kff.ServiceContainer(config);
-
+		if('parameters' in options) this.serviceContainer.registerParameters(options.parameters, true);
 		if('services' in options) this.serviceContainer.registerServices(options.services, true);
 
 		return this;
