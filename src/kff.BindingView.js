@@ -59,13 +59,9 @@ kff.BindingView = kff.createClass(
 	constructor: function(options)
 	{
 		options = options || {};
-		this.modelBinders = {};
+		this.modelBindersMap = null;
 		this.collectionBinder = null;
 		this.bindingIndex = null;
-
-		this.values = {};
-		this.formatters = [];
-		this.parsers = [];
 		this.itemAlias = null;
 
 		kff.View.call(this, options);
@@ -104,6 +100,12 @@ kff.BindingView = kff.createClass(
 	 */
 	initBinding: function()
 	{
+		if(this.modelBindersMap !== null)
+		{
+			this.modelBindersMap.initBinders();
+			return;
+		}
+
 		var model, attr, result, subresults, name, binderName, binderParams, formatters, parsers, getters, setters, eventNames;
 		var modifierName, modifierParams;
 		var dataBind = this.$element.attr(kff.View.DATA_BIND_ATTR);
@@ -116,7 +118,7 @@ kff.BindingView = kff.createClass(
 
 		regex.lastIndex = 0;
 
-		this.modelBinders = {};
+		this.modelBindersMap = new kff.BinderMap();
 
 		while((result = regex.exec(dataBind)) !== null)
 		{
@@ -194,10 +196,12 @@ kff.BindingView = kff.createClass(
 			{
 				if(!binderName || !(binderName in kff.BindingView.binders)) break;
 
+
 				if(name.length > 1) attr = name.pop();
 				else attr = null;
 
 				modelName = name.length > 0 ? name[0] : null;
+				var modelPathArray = [].concat(name);
 				model = this.getModel(name);
 
 				// Special binding for collection count property
@@ -208,22 +212,14 @@ kff.BindingView = kff.createClass(
 
 				if(model instanceof kff.Model)
 				{
-					if(!(binderName in this.modelBinders))
-					{
-						this.modelBinders[binderName] = [];
-						this.values[binderName] = [];
-					}
-
-					var valueIndex = this.modelBinders[binderName].length;
 					var modelBinder = new kff.BindingView.binders[binderName]({
 						view: this,
 						$element: this.$element,
-						valueIndex: valueIndex,
-						values: this.values[binderName],
 						params: binderParams,
 						attr: attr,
 						model: model,
 						modelName: modelName,
+						modelPathArray: modelPathArray,
 						formatters: formatters,
 						parsers: parsers,
 						setters: setters,
@@ -231,9 +227,7 @@ kff.BindingView = kff.createClass(
 						eventNames: eventNames
 					});
 
-					this.modelBinders[binderName].push(modelBinder);
-					this.values[binderName].push(null);
-
+					this.modelBindersMap.add(binderName, modelBinder);
 					modelBinder.init();
 				}
 			}
@@ -325,12 +319,8 @@ kff.BindingView = kff.createClass(
 	 */
 	destroyBinding: function()
 	{
-		for(var b in this.modelBinders)
-		{
-			for(var i = 0, mb = this.modelBinders[b], l = mb.length; i < l; i++) mb[i].destroy();
-		}
-		this.modelBinders = {};
-		this.values = {};
+		this.modelBindersMap.destroyBinders();
+		this.modelBindersMap = null;
 		this.destroyCollectionCountBindings();
 	},
 
@@ -671,20 +661,34 @@ kff.BindingView = kff.createClass(
 	 */
 	createSubView: function(item, i)
 	{
-		var $element = this.$element.clone();
+		var subView, $element = this.$element.clone();
 
 		this.subViewOptions.element = $element;
 		this.subViewOptions.models = { '*': item };
 		if(this.itemAlias) this.subViewOptions.models[this.itemAlias] = item;
 		this.subViewOptions.isBoundView = true;
-		var subView = this.viewFactory.createView(this.subViewName, this.subViewOptions);
+		subView = this.viewFactory.createView(this.subViewName, this.subViewOptions);
 		if(subView instanceof kff.View)
 		{
 			subView.viewFactory = this.viewFactory;
 			this.subViews.splice(i, 0, subView);
 			subView.setBindingIndex(i);
+
+			if(this.modelBindersMapTemplate)
+			{
+				subView.modelBindersMap = this.modelBindersMapTemplate.clone();
+				subView.modelBindersMap.setView(subView);
+			}
+
 			subView.init();
+
 			$element.attr(kff.View.DATA_RENDERED_ATTR, true);
+
+			if(!this.modelBindersMapTemplate)
+			{
+				this.modelBindersMapTemplate = subView.modelBindersMap.clone();
+				this.modelBindersMapTemplate.destroyBinders();
+			}
 		}
 		return $element;
 	},
@@ -714,10 +718,7 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshOwnBinders: function(event)
 	{
-		for(var b in this.modelBinders)
-		{
-			for(var i = 0, mb = this.modelBinders[b], l = mb.length; i < l; i++) mb[i].modelChange(true);
-		}
+		this.modelBindersMap.refreshBinders();
 		if(event !== true && this.collectionBinder) this.refilterCollection();
 	},
 

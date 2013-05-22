@@ -14,6 +14,7 @@ module.exports = function(grunt) {
 					'./src/kff.ServiceContainer.js',
 					'./src/kff.View.js',
 					'./src/kff.PageView.js',
+					'./src/kff.BinderMap.js',
 					'./src/kff.BindingView.js',
 					'./src/kff.Binder.js',
 					'./src/binders/kff.EventBinder.js',
