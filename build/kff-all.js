@@ -2455,7 +2455,6 @@ kff.BindingView = kff.createClass(
 });
 
 
-
 kff.BindingView.registerHelper('index', function(v, modelName)
 {
 	if(this.getBindingIndex(modelName) !== null) return this.getBindingIndex(modelName);
