@@ -1754,7 +1754,8 @@ kff.BindingView = kff.createClass(
 	 */
 	startRender: function(silent)
 	{
-		this.initBinding();
+		if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
+		else this.initBinding();
 		if(this.collectionBinder) this.renderBoundViews();
 		kff.BindingView._super.startRender.call(this, silent);
 		kff.setZeroTimeout(this.f('refreshOwnBinders'));
@@ -1780,12 +1781,6 @@ kff.BindingView = kff.createClass(
 	 */
 	initBinding: function()
 	{
-		if(this.modelBindersMap !== null)
-		{
-			this.modelBindersMap.initBinders();
-			return;
-		}
-
 		var model, attr, result, subresults, name, binderName, binderParams, formatters, parsers, getters, setters, eventNames;
 		var modifierName, modifierParams;
 		var dataBind = this.$element.attr(kff.View.DATA_BIND_ATTR);
@@ -2285,7 +2280,6 @@ kff.BindingView = kff.createClass(
 		var item = this.collectionBinder.collection.findByIndex(collectionIndex);
 		var $element = this.createSubView(item, renderIndex);
 
-		// debugger;
 		if(renderIndex === 0)
 		{
 			this.$anchor.after($element);
