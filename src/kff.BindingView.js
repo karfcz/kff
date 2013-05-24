@@ -494,24 +494,45 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshBoundViewsAll: function()
 	{
+		var filter, filterModel, filterFnName, render, renderIndex = 0, collectionItemChange = this.f('collectionItemChange'), that = this;
+
 		this.destroySubviews();
-		if(this.elements)
-		{
-			for(var i = 0, l = this.elements.length; i < l; i++) this.elements[i].remove();
-		}
+		if(this.elements) $(this.elements).remove();
+
 		this.elements = [];
 		this.subViewsMap = [];
 
-		this.collectionBinder.collection.each(this.f(function(item, i)
+		if(this.collectionFilter)
 		{
-			this.subViewsMap.push({
-				renderIndex: null,
-				rendered: false
-			});
-			item.on('change', this.f('collectionItemChange'));
-			this.collectionItemChange({ model: item });
+			filter = true;
+			filterModel = this.collectionFilter.model || null;
+			filterFnName = that.collectionFilter.fn;
+		}
 
-		}));
+		this.collectionBinder.collection.each(function(item, i)
+		{
+			var currentFilterModel;
+
+			render = true;
+			item.on('change', collectionItemChange);
+
+			if(filter)
+			{
+				currentFilterModel = filterModel || item;
+				render = !!currentFilterModel[filterFnName](item);
+			}
+
+			if(render)
+			{
+				that.elements.push(that.createSubView(item, renderIndex));
+				that.subViewsMap.push({
+					renderIndex: renderIndex,
+					rendered: true
+				});
+				renderIndex++;
+			}
+		});
+		this.$anchor.after(this.elements);
 		this.reindexSubviews();
 	},
 
