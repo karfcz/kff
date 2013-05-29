@@ -1685,7 +1685,7 @@ kff.BindingView = kff.createClass(
 	staticProperties:
 	/** @lends kff.BindingView */
 	{
-		bindingRegex: /([.a-zA-Z0-9-]+):?([a-zA-Z0-9]+)?(\([^\(\))]*\))?(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)/g,
+		bindingRegex: /([.a-zA-Z0-9-]+):?([a-zA-Z0-9]+)?(\([^\(\))]*\))?(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)/g,
 
 		modifierRegex: /([a-zA-Z0-9]+)\(([^\(\)]*)\)/,
 
@@ -1781,7 +1781,7 @@ kff.BindingView = kff.createClass(
 	 */
 	initBinding: function()
 	{
-		var model, attr, result, subresults, name, binderName, binderParams, formatters, parsers, getters, setters, eventNames;
+		var model, attr, result, subresults, name, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill;
 		var modifierName, modifierParams;
 		var dataBind = this.$element.attr(kff.View.DATA_BIND_ATTR);
 		var modelName;
@@ -1814,6 +1814,7 @@ kff.BindingView = kff.createClass(
 			setters = [];
 			getters = [];
 			eventNames = [];
+			fill = false;
 
 			for(var i = 4, l = result.length; i < l && result[i]; i++)
 			{
@@ -1847,6 +1848,9 @@ kff.BindingView = kff.createClass(
 							break;
 						case 'get':
 							this.parseSetters(modifierParams, getters);
+							break;
+						case 'fill':
+							fill = true;;
 							break;
 					}
 				}
@@ -1899,7 +1903,8 @@ kff.BindingView = kff.createClass(
 						parsers: parsers,
 						setters: setters,
 						getters: getters,
-						eventNames: eventNames
+						eventNames: eventNames,
+						fill: fill
 					});
 
 					this.modelBindersMap.add(binderName, modelBinder);
@@ -2551,6 +2556,7 @@ kff.Binder = kff.createClass(
 	{
 		this.model.on('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
 		this.delegateEvents.call(this, this.options.events);
+		if(this.options.fill) this.fill();
 	},
 
 	destroy: function()
@@ -2673,7 +2679,9 @@ kff.Binder = kff.createClass(
 
 		var obj = new this.constructor(options);
 		return obj;
-	}
+	},
+
+	fill: function(){}
 
 });
 
@@ -2799,6 +2807,15 @@ kff.CheckBinder = kff.createClass(
 	refresh: function()
 	{
 		this.$element.prop('checked', !!this.values[this.valueIndex]);
+	},
+
+	fill: function()
+	{
+		if(!this.fillVal) this.fillVal = this.$element.is(':checked');
+		kff.setZeroTimeout(this.f(function()
+		{
+			this.updateModel(this.fillVal);
+		}));
 	}
 });
 
@@ -3088,7 +3105,20 @@ kff.RadioBinder = kff.createClass(
 	refresh: function()
 	{
 		this.$element.prop('checked', this.parse(this.$element.val()) === this.currentValue);
+	},
+
+	fill: function()
+	{
+		if(!this.fillVal) this.fillVal = this.$element.is(':checked');
+		kff.setZeroTimeout(this.f(function()
+		{
+			if(this.fillVal)
+			{
+				this.updateModel(this.$element.val());
+			}
+		}));
 	}
+
 });
 
 kff.BindingView.registerBinder('radio', kff.RadioBinder);
@@ -3156,6 +3186,15 @@ kff.ValueBinder = kff.createClass(
 	refresh: function()
 	{
 		this.$element.val(this.getFormattedValue());
+	},
+
+	fill: function()
+	{
+		if(!this.fillVal) this.fillVal = this.$element.val();
+		kff.setZeroTimeout(this.f(function()
+		{
+			this.updateModel(this.fillVal);
+		}));
 	}
 });
 

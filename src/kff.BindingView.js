@@ -5,7 +5,7 @@ kff.BindingView = kff.createClass(
 	staticProperties:
 	/** @lends kff.BindingView */
 	{
-		bindingRegex: /([.a-zA-Z0-9-]+):?([a-zA-Z0-9]+)?(\([^\(\))]*\))?(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)/g,
+		bindingRegex: /([.a-zA-Z0-9-]+):?([a-zA-Z0-9]+)?(\([^\(\))]*\))?(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)/g,
 
 		modifierRegex: /([a-zA-Z0-9]+)\(([^\(\)]*)\)/,
 
@@ -101,7 +101,7 @@ kff.BindingView = kff.createClass(
 	 */
 	initBinding: function()
 	{
-		var model, attr, result, subresults, name, binderName, binderParams, formatters, parsers, getters, setters, eventNames;
+		var model, attr, result, subresults, name, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill;
 		var modifierName, modifierParams;
 		var dataBind = this.$element.attr(kff.View.DATA_BIND_ATTR);
 		var modelName;
@@ -134,6 +134,7 @@ kff.BindingView = kff.createClass(
 			setters = [];
 			getters = [];
 			eventNames = [];
+			fill = false;
 
 			for(var i = 4, l = result.length; i < l && result[i]; i++)
 			{
@@ -167,6 +168,9 @@ kff.BindingView = kff.createClass(
 							break;
 						case 'get':
 							this.parseSetters(modifierParams, getters);
+							break;
+						case 'fill':
+							fill = true;;
 							break;
 					}
 				}
@@ -219,7 +223,8 @@ kff.BindingView = kff.createClass(
 						parsers: parsers,
 						setters: setters,
 						getters: getters,
-						eventNames: eventNames
+						eventNames: eventNames,
+						fill: fill
 					});
 
 					this.modelBindersMap.add(binderName, modelBinder);

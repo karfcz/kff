@@ -37,7 +37,20 @@ kff.RadioBinder = kff.createClass(
 	refresh: function()
 	{
 		this.$element.prop('checked', this.parse(this.$element.val()) === this.currentValue);
+	},
+
+	fill: function()
+	{
+		if(!this.fillVal) this.fillVal = this.$element.is(':checked');
+		kff.setZeroTimeout(this.f(function()
+		{
+			if(this.fillVal)
+			{
+				this.updateModel(this.$element.val());
+			}
+		}));
 	}
+
 });
 
 kff.BindingView.registerBinder('radio', kff.RadioBinder);
