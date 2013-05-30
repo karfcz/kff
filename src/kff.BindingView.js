@@ -539,6 +539,13 @@ kff.BindingView = kff.createClass(
 				});
 				renderIndex++;
 			}
+			else
+			{
+				that.subViewsMap.push({
+					renderIndex: null,
+					rendered: false
+				});
+			}
 		});
 		this.$anchor.after(this.elements);
 		this.reindexSubviews();
@@ -558,6 +565,7 @@ kff.BindingView = kff.createClass(
 			renderIndex,
 			filter,
 			filterModel;
+
 
 		if(this.collectionFilter)
 		{
