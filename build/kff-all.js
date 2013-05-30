@@ -1685,11 +1685,9 @@ kff.BindingView = kff.createClass(
 	staticProperties:
 	/** @lends kff.BindingView */
 	{
-		bindingRegex: /([.a-zA-Z0-9-]+):?([a-zA-Z0-9]+)?(\([^\(\))]*\))?(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)(?::?([a-zA-Z0-9]+\([a-zA-Z0-9,\s{}]*\))?)/g,
+		bindingRegex: /(?:([.a-zA-Z0-9-]+))((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g,
 
-		modifierRegex: /([a-zA-Z0-9]+)\(([^\(\)]*)\)/,
-
-		modifierArgsRegex: /([^{}]+){([a-zA-Z0-9,\s]+)\}/,
+		operatorsRegex: /:([a-zA-Z0-9]+)(?:\(([^()]*)\))?/g,
 
 		commaSeparateRegex: /\s*,\s*/,
 
@@ -1781,33 +1779,26 @@ kff.BindingView = kff.createClass(
 	 */
 	initBinding: function()
 	{
-		var model, attr, result, subresults, name, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill;
+		var model, attr, result, result2, name, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill;
 		var modifierName, modifierParams;
-		var dataBind = this.$element.attr(kff.View.DATA_BIND_ATTR);
+		var dataBindAttr = this.$element.attr(kff.View.DATA_BIND_ATTR);
 		var modelName;
 
-		var regex = kff.BindingView.bindingRegex;
-		var modifierRegex = kff.BindingView.modifierRegex;
+		var bindingRegex = kff.BindingView.bindingRegex;
+		var operatorsRegex = kff.BindingView.operatorsRegex;
+		var modifierSeparateRegex = kff.BindingView.modifierSeparateRegex;
 		var commaSeparateRegex = kff.BindingView.commaSeparateRegex;
 		var leadingPeriodRegex = kff.BindingView.leadingPeriodRegex;
 
-		regex.lastIndex = 0;
+		bindingRegex.lastIndex = 0;
+		operatorsRegex.lastIndex = 0;
 
 		this.modelBindersMap = new kff.BinderMap();
 
-		while((result = regex.exec(dataBind)) !== null)
+		while((result = bindingRegex.exec(dataBindAttr)) !== null)
 		{
 			name = result[1];
 			name = name.replace(leadingPeriodRegex, '*.').split('.');
-
-			binderName = result[2];
-			binderParams = result[3];
-
-			if(binderParams)
-			{
-				binderParams = binderParams.slice(1,-1).split(commaSeparateRegex);
-			}
-			else binderParams = [];
 
 			formatters = [];
 			parsers = [];
@@ -1816,18 +1807,29 @@ kff.BindingView = kff.createClass(
 			eventNames = [];
 			fill = false;
 
-			for(var i = 4, l = result.length; i < l && result[i]; i++)
+			var i = 0;
+			while((result2 = operatorsRegex.exec(result[2])) !== null)
 			{
-				subresults = result[i].match(modifierRegex);
-
-				if(subresults)
+				if(i === 0)
 				{
-					modifierName = subresults[1];
+					// Parse binder name and params
+					binderName = result2[1];
+					binderParams = result2[2];
+
+					if(binderParams)
+					{
+						binderParams = binderParams.split(commaSeparateRegex);
+					}
+					else binderParams = [];
+				}
+				else
+				{
+					modifierName = result2[1];
 					modifierParams = [];
 
-					if(subresults[2])
+					if(result2[2])
 					{
-						modifierParams = subresults[2].match(kff.BindingView.modifierSeparateRegex);
+						modifierParams = result2[2].match(modifierSeparateRegex);
 					}
 
 					switch(modifierName){
@@ -1854,6 +1856,7 @@ kff.BindingView = kff.createClass(
 							break;
 					}
 				}
+				i++;
 			}
 
 			model = this.getModel([].concat(name));
