@@ -117,7 +117,7 @@ kff.ServiceContainer = kff.createClass(
 			if(typeof ctor === 'function') serviceConfig[construct] = ctor;
 		}
 		else if(typeof serviceConfig[construct] === 'string') serviceConfig[construct] = kff.evalObjectPath(serviceConfig[construct]);
-		if(typeof serviceConfig[construct] !== 'function') throw new TypeError('expected function in getServiceConstructor: ' + serviceConfig[construct]);
+		if(typeof serviceConfig[construct] !== 'function') throw new TypeError('Cannot create service "' + serviceName + '" in kff.getServiceConstructor. Expected constructor function, got: ' + serviceConfig[construct]);
 		return serviceConfig[construct];
 	},
 
@@ -228,7 +228,6 @@ kff.ServiceContainer = kff.createClass(
 			if(!this.config.parameters.hasOwnProperty(parameter) || overwrite)
 			{
 				this.config.parameters[parameter] = parameters[parameter];
-				this.parameters[parameter] = undefined;
 			}
 		}
 	}
