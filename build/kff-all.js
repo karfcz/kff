@@ -2428,7 +2428,7 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshOwnBinders: function(event)
 	{
-		this.modelBindersMap.refreshBinders();
+		if(this.modelBindersMap) this.modelBindersMap.refreshBinders();
 		if(event !== true && this.collectionBinder) this.refilterCollection();
 	},
 
