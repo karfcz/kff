@@ -20,7 +20,11 @@ describe('kff.BindingView', function()
 		});
 		view.init();
 
-		$div1.find('div').length.should.equal(2);
+		setTimeout(function(){
+
+			$div1.find('div').length.should.equal(2);
+
+		}, 0);
 
 	});
 
@@ -43,14 +47,18 @@ describe('kff.BindingView', function()
 		});
 		view.init();
 
-		$div1.find('div').length.should.equal(2);
-		$div1.find('div').eq(0).text().should.equal('foo');
-		$div1.find('div').eq(1).text().should.equal('bar');
+		setTimeout(function(){
 
-		collection.remove(model1);
+			$div1.find('div').length.should.equal(2);
+			$div1.find('div').eq(0).text().should.equal('foo');
+			$div1.find('div').eq(1).text().should.equal('bar');
 
-		$div1.find('div').length.should.equal(1);
-		$div1.find('div').eq(0).text().should.equal('bar');
+			collection.remove(model1);
+
+			$div1.find('div').length.should.equal(1);
+			$div1.find('div').eq(0).text().should.equal('bar');
+		}, 0);
+
 	});
 
 });

@@ -2198,36 +2198,42 @@ kff.BindingView = kff.createClass(
 
 		this.collectionBinder.collection.each(function(item, i)
 		{
-			var currentFilterModel;
-
-			render = true;
-			item.on('change', collectionItemChange);
-
-			if(filter)
+			kff.setZeroTimeout(function()
 			{
-				currentFilterModel = filterModel || item;
-				render = !!currentFilterModel[filterFnName](item);
-			}
+				var currentFilterModel;
 
-			if(render)
-			{
-				that.elements.push(that.createSubView(item, renderIndex));
-				that.subViewsMap.push({
-					renderIndex: renderIndex,
-					rendered: true
-				});
-				renderIndex++;
-			}
-			else
-			{
-				that.subViewsMap.push({
-					renderIndex: null,
-					rendered: false
-				});
-			}
+				render = true;
+				item.on('change', collectionItemChange);
+
+				if(filter)
+				{
+					currentFilterModel = filterModel || item;
+					render = !!currentFilterModel[filterFnName](item);
+				}
+
+				if(render)
+				{
+					that.elements.push(that.createSubView(item, renderIndex));
+					that.subViewsMap.push({
+						renderIndex: renderIndex,
+						rendered: true
+					});
+					renderIndex++;
+				}
+				else
+				{
+					that.subViewsMap.push({
+						renderIndex: null,
+						rendered: false
+					});
+				}
+			});
 		});
-		this.$anchor.after(this.elements);
-		this.reindexSubviews();
+		kff.setZeroTimeout(function(){
+			that.$anchor.after(that.elements);
+			that.reindexSubviews();
+
+		});
 	},
 
 	/**
@@ -2565,7 +2571,7 @@ kff.Binder = kff.createClass(
 	init: function()
 	{
 		this.model.on('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
-		this.delegateEvents.call(this, this.options.events);
+		if(this.options.events.length > 0) this.delegateEvents.call(this, this.options.events);
 		if(this.options.fill) this.fill();
 	},
 

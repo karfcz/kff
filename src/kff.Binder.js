@@ -29,7 +29,7 @@ kff.Binder = kff.createClass(
 	init: function()
 	{
 		this.model.on('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
-		this.delegateEvents.call(this, this.options.events);
+		if(this.options.events.length > 0) this.delegateEvents.call(this, this.options.events);
 		if(this.options.fill) this.fill();
 	},
 
