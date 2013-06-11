@@ -99,7 +99,7 @@ kff.BindingView = kff.createClass(
 	 */
 	initBinding: function()
 	{
-		var model, attr, result, result2, name, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill;
+		var model, attr, result, result2, name, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill, i;
 		var modifierName, modifierParams;
 		var dataBindAttr = this.$element.attr(kff.View.DATA_BIND_ATTR);
 		var modelName;
@@ -127,7 +127,7 @@ kff.BindingView = kff.createClass(
 			eventNames = [];
 			fill = false;
 
-			var i = 0;
+			i = 0;
 			while((result2 = operatorsRegex.exec(result[2])) !== null)
 			{
 				if(i === 0)
@@ -348,11 +348,11 @@ kff.BindingView = kff.createClass(
 
 		this.subViewOptions = opt ? JSON.parse(opt) : {};
 		this.subViewOptions.parentView = this;
+		this.subViewOptions.viewFactory = this.viewFactory;
+		this.subViewOptions.isBoundView = true;
 
 		this.collectionBinder.collection.on('change', this.f('refreshBoundViews'));
-
-		this.refreshBoundViewsAll();
-
+;		this.refreshBoundViewsAll();
 	},
 
 	/**
@@ -689,14 +689,11 @@ kff.BindingView = kff.createClass(
 		this.subViewOptions.element = $element;
 		this.subViewOptions.models = { '*': item };
 		if(this.itemAlias) this.subViewOptions.models[this.itemAlias] = item;
-		this.subViewOptions.isBoundView = true;
 
 		subView = new this.constructor(this.subViewOptions);
 
 		if(subView instanceof kff.View)
 		{
-			subView.viewFactory = this.viewFactory;
-
 			if(i === undefined)
 			{
 				this.subViews.push(subView);
