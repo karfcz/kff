@@ -449,6 +449,7 @@ kff.List = kff.createClass(
 				return -1;
 			}
 		}
+		return this.indexOf(item);
 	},
 
 	/**
