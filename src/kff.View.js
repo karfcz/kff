@@ -383,7 +383,6 @@ kff.View = kff.createClass(
 		{
 			subView = this.subViews[i];
 			subView.startDestroy();
-			delete this.subViews[i];
 		}
 		this.subViews = [];
 	},

@@ -435,10 +435,7 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshBoundViewsOnAppend: function(event)
 	{
-		this.subViewsMap.push({
-			renderIndex: null,
-			rendered: false
-		});
+		this.subViewsMap.push(false);
 		event.item.on('change', this.f('collectionItemChange'));
 		this.collectionItemChange({ model: event.item });
 	},
@@ -449,10 +446,7 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshBoundViewsOnInsert: function(event)
 	{
-		this.subViewsMap.splice(event.index, 0, {
-			renderIndex: null,
-			rendered: false
-		});
+		this.subViewsMap.splice(event.index, 0, false);
 		event.item.on('change', this.f('collectionItemChange'));
 		this.collectionItemChange({ model: event.item });
 	},
@@ -479,7 +473,7 @@ kff.BindingView = kff.createClass(
 		// Find real index in collection:
 		for(var i = 0, l = this.subViewsMap.length; i < l; i++)
 		{
-			if(this.subViewsMap[i].renderIndex === renderIndex)
+			if(this.subViewsMap[i] === renderIndex)
 			{
 				realIndex = i;
 				break;
@@ -488,7 +482,7 @@ kff.BindingView = kff.createClass(
 
 		if(realIndex !== null)
 		{
-			if(this.subViewsMap[i].rendered) this.removeSubViewAt(renderIndex);
+			if(this.subViewsMap[i] !== false) this.removeSubViewAt(renderIndex);
 			this.subViewsMap.splice(i, 1);
 		}
 
@@ -517,9 +511,9 @@ kff.BindingView = kff.createClass(
 			filterFnName = that.collectionFilter.fn;
 		}
 
-		this.collectionBinder.collection.each(function(item, i)
+		kff.setZeroTimeout(function()
 		{
-			kff.setZeroTimeout(function()
+			that.collectionBinder.collection.each(function(item, i)
 			{
 				var currentFilterModel;
 
@@ -535,18 +529,12 @@ kff.BindingView = kff.createClass(
 				if(render)
 				{
 					that.elements.push(that.createSubView(item, renderIndex));
-					that.subViewsMap.push({
-						renderIndex: renderIndex,
-						rendered: true
-					});
+					that.subViewsMap.push(renderIndex);
 					renderIndex++;
 				}
 				else
 				{
-					that.subViewsMap.push({
-						renderIndex: null,
-						rendered: false
-					});
+					that.subViewsMap.push(false);
 				}
 			});
 		});
@@ -581,23 +569,23 @@ kff.BindingView = kff.createClass(
 			renderIndex = 0;
 			filter = !!filterModel[this.collectionFilter.fn].call(filterModel, item);
 
-			if(filter && !this.subViewsMap[i].rendered)
+			if(filter && this.subViewsMap[i] === false)
 			{
 				for(j = 0; j < i; j++)
 				{
-					if(this.subViewsMap[j].rendered) renderIndex++;
+					if(this.subViewsMap[j] !== false) renderIndex++;
 				}
 				this.addSubViewAt(i, renderIndex);
 			}
-			else if(!filter && this.subViewsMap[i].rendered)
+			else if(!filter && this.subViewsMap[i] !== false)
 			{
-				this.subViewsMap[i].rendered = false;
-				this.removeSubViewAt(this.subViewsMap[i].renderIndex);
+				this.subViewsMap[i] = false;
+				this.removeSubViewAt(this.subViewsMap[i]);
 			}
 		}
 		else
 		{
-			if(!this.subViewsMap[i].rendered) this.addSubViewAt(i, i);
+			if(this.subViewsMap[i] === false) this.addSubViewAt(i, i);
 		}
 	},
 
@@ -653,8 +641,7 @@ kff.BindingView = kff.createClass(
 		}
 		this.elements.splice(renderIndex, 0, $element);
 
-		this.subViewsMap[collectionIndex].renderIndex = renderIndex;
-		this.subViewsMap[collectionIndex].rendered = true;
+		this.subViewsMap[collectionIndex] = renderIndex;
 
 		// Reindex subsequent subviews:
 		this.reindexSubviews(renderIndex);
@@ -681,12 +668,11 @@ kff.BindingView = kff.createClass(
 		// Reindex subViewsMap
 		for(var i = 0, l = this.subViewsMap.length, j = 0; i < l; i++)
 		{
-			if(this.subViewsMap[i].rendered)
+			if(this.subViewsMap[i] !== false)
 			{
-				this.subViewsMap[i].renderIndex = j;
+				this.subViewsMap[i] = j;
 				j++;
 			}
-			else this.subViewsMap[i].renderIndex = null;
 		}
 	},
 
@@ -756,7 +742,7 @@ kff.BindingView = kff.createClass(
 	refreshOwnBinders: function(event)
 	{
 		if(this.modelBindersMap) this.modelBindersMap.refreshBinders();
-		if(event !== true && this.collectionBinder) this.refilterCollection();
+		if(event !== true && this.collectionBinder && this.collectionFilter) this.refilterCollection();
 	},
 
 	/**

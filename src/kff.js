@@ -183,7 +183,7 @@ kff.setZeroTimeout = function(fn)
 		}
 	};
 
-	if('postMessage' in window && 'addEventListener' in window)
+	if('postMessage' in window && 'addEventListener' in window && !('attachEvent' in window))
 	{
 		kff.setZeroTimeout = function(fn)
 		{
