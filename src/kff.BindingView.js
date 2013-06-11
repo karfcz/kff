@@ -528,7 +528,7 @@ kff.BindingView = kff.createClass(
 
 				if(render)
 				{
-					that.elements.push(that.createSubView(item, renderIndex));
+					that.elements.push(that.createSubView(item));
 					that.subViewsMap.push(renderIndex);
 					renderIndex++;
 				}
@@ -690,11 +690,22 @@ kff.BindingView = kff.createClass(
 		this.subViewOptions.models = { '*': item };
 		if(this.itemAlias) this.subViewOptions.models[this.itemAlias] = item;
 		this.subViewOptions.isBoundView = true;
-		subView = this.viewFactory.createView(this.subViewName, this.subViewOptions);
+
+		subView = new this.constructor(this.subViewOptions);
+
 		if(subView instanceof kff.View)
 		{
 			subView.viewFactory = this.viewFactory;
-			this.subViews.splice(i, 0, subView);
+
+			if(i === undefined)
+			{
+				this.subViews.push(subView);
+				i = this.subViews.length - 1;
+			}
+			else
+			{
+				this.subViews.splice(i, 0, subView);
+			}
 			subView.setBindingIndex(i);
 
 			if(this.modelBindersMapTemplate)

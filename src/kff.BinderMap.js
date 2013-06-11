@@ -29,9 +29,9 @@ kff.BinderMap = kff.createClass(
 
 		for(b in this.binders)
 		{
-			clonedBinders[b] = [].concat(this.binders[b]);
-			clonedValues[b] = [].concat(this.values[b]);
-			for(i = 0, mb = clonedBinders[b], mv = clonedValues[b], l = mb.length; i < l; i++)
+			clonedBinders[b] = mb = [].concat(this.binders[b]);
+			clonedValues[b] = mv = [].concat(this.values[b]);
+			for(i = 0, l = mb.length; i < l; i++)
 			{
 				mb[i] = mb[i].clone();
 				mv[i] = null;
