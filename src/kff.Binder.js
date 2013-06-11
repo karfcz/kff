@@ -8,7 +8,8 @@ kff.Binder = kff.createClass(
 	constructor: function(options)
 	{
 		this.options = options;
-		this.options.events = this.options.events || [];
+		this.eventNames = options.eventNames;
+		this.events = options.events || [];
 		this.view = options.view;
 		this.$element = options.$element;
 		this.attr = options.attr;
@@ -29,14 +30,14 @@ kff.Binder = kff.createClass(
 	init: function()
 	{
 		this.model.on('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
-		if(this.options.events.length > 0) this.delegateEvents.call(this, this.options.events);
+		if(this.events.length > 0) this.delegateEvents.call(this, this.events);
 		if(this.options.fill) this.fill();
 	},
 
 	destroy: function()
 	{
 		if(this.model) this.model.off('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
-		if(this.$element) this.undelegateEvents.call(this, this.options.events);
+		if(this.$element) this.undelegateEvents.call(this, this.events);
 		this.currentValue = null;
 		if(this.values) this.values[this.valueIndex] = null;
 		// this.refresh(); // Vrácení do původního stavu dělá problém s bindingy v kolekcích
@@ -144,14 +145,23 @@ kff.Binder = kff.createClass(
 
 	clone: function()
 	{
-		var options = kff.mixins({}, this.options, {
-			model: null,
+		var obj = new this.constructor({
+			eventNames: this.eventNames,
 			view: null,
+			$element: this.$element,
+			attr: this.attr,
+			model: null,
+			modelName: this.modelName,
+			modelPathArray:  this.modelPathArray,
+			parsers: this.parsers,
+			formatters: this.formatters,
 			values: null,
-			valueIndex: this.valueIndex
+			valueIndex: this.valueIndex,
+			params: this.params,
+			fill: this.options.fill
 		});
-
-		var obj = new this.constructor(options);
+		obj.setter = this.setter;
+		obj.getter = this.getter;
 		return obj;
 	},
 
