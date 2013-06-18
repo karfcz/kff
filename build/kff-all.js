@@ -1703,7 +1703,7 @@ kff.BindingView = kff.createClass(
 
 		commaSeparateRegex: /\s*,\s*/,
 
-		modifierSeparateRegex: /([^{},\s]+)|({[a-zA-Z0-9,\s]+})/g,
+		modifierSeparateRegex: /([^{},\s]+)|({[a-zA-Z0-9,\[\]_\-\s]+})/g,
 
 		leadingPeriodRegex: /^\./,
 
