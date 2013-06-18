@@ -5,7 +5,7 @@ kff.BindingView.registerHelper('index', function(v, modelName)
 	return v;
 });
 
-kff.BindingView.registerHelper('indexFromOne', function(v)
+kff.BindingView.registerHelper('indexFromOne', function(v, modelName)
 {
 	if(this.getBindingIndex(modelName) !== null) return this.getBindingIndex(modelName) + 1;
 	return v;
