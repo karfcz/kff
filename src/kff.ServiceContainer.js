@@ -30,7 +30,13 @@ kff.ServiceContainer = kff.createClass(
 	 */
 	getService: function(service, argsExtend)
 	{
-		if(!this.config.services[service]) throw('Service ' + service + ' not defined');
+		var serviceConfig;
+		if(!this.config.services[service])
+		{
+			serviceConfig = this.getServiceConfigAnnotation(service);
+			if(serviceConfig) this.config.services[service] = serviceConfig;
+			else throw new Error('Service ' + service + ' not defined');
+		}
 		if(this.config.services[service].shared)
 		{
 			if(typeof this.services[service] === 'undefined') this.services[service] = this.createService(service, argsExtend);
@@ -46,7 +52,16 @@ kff.ServiceContainer = kff.createClass(
 	 */
 	hasService: function(serviceName)
 	{
-		return this.config.services.hasOwnProperty(serviceName);
+		if(this.config.services.hasOwnProperty(serviceName)) return true;
+		else {
+			var serviceConfig = this.getServiceConfigAnnotation(serviceName);
+			if(serviceConfig)
+			{
+				this.config.services[serviceName] = serviceConfig;
+				return true;
+			}
+		}
+		return false;
 	},
 
 	/**
@@ -110,15 +125,33 @@ kff.ServiceContainer = kff.createClass(
 	{
 		var serviceConfig, ctor, construct = kff.ServiceContainer.CONFIG_CONSTRUCTOR;
 		serviceConfig = this.config.services[serviceName];
-		if(!serviceConfig) return null;
+		if(!serviceConfig)
+		{
+			serviceConfig = this.getServiceConfigAnnotation(serviceName);
+			if(!serviceConfig) return null;
+			else this.config.services[serviceName] = serviceConfig;
+		}
 		if(!serviceConfig.hasOwnProperty('construct'))
 		{
 			ctor = kff.evalObjectPath(serviceName);
 			if(typeof ctor === 'function') serviceConfig[construct] = ctor;
 		}
 		else if(typeof serviceConfig[construct] === 'string') serviceConfig[construct] = kff.evalObjectPath(serviceConfig[construct]);
-		if(typeof serviceConfig[construct] !== 'function') throw new TypeError('Cannot create service "' + serviceName + '" in kff.getServiceConstructor. Expected constructor function, got: ' + serviceConfig[construct]);
+		if(typeof serviceConfig[construct] !== 'function') throw new Error('Cannot create service "' + serviceName + '" in kff.getServiceConstructor. Expected constructor function, got: ' + serviceConfig[construct]);
 		return serviceConfig[construct];
+	},
+
+	getServiceConfigAnnotation: function(serviceName)
+	{
+		var serviceConfig = {};
+		var ctor = kff.evalObjectPath(serviceName);
+		if(typeof ctor === 'function')
+		{
+			if('service' in ctor && kff.isPlainObject(ctor.service)) serviceConfig = ctor.service;
+			if(!('construct' in serviceConfig))	serviceConfig.construct = ctor;
+			return serviceConfig;
+		}
+		return null;
 	},
 
 	/**
