@@ -89,7 +89,6 @@ kff.BindingView = kff.createClass(
 		this.destroyBinding();
 		kff.BindingView._super.startDestroy.call(this, true);
 		this.destroyBoundViews();
-		if(!silent) this.trigger('destroy');
 	},
 
 	/**
@@ -392,6 +391,7 @@ kff.BindingView = kff.createClass(
 	 */
 	destroyBoundViews: function()
 	{
+		if(this.collectionBinder) this.collectionBinder.collection.off('change', this.f('refreshBoundViews'));
 		if(this.elements)
 		{
 			for(var i = 0, l = this.elements.length; i < l; i++) this.elements[i].remove();
@@ -402,7 +402,6 @@ kff.BindingView = kff.createClass(
 			this.$anchor.after(this.$element);
 			this.$anchor.remove();
 		}
-		this.destroySubviews();
 	},
 
 	/**

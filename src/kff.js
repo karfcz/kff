@@ -146,6 +146,7 @@ kff.classMixin = {
 kff.evalObjectPath = function(path, obj)
 {
 	obj = obj || scope;
+	if(typeof path !== 'string') return null;
 	var parts = path.split('.');
 	while(parts.length)
 	{
