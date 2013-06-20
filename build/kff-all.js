@@ -2956,7 +2956,7 @@ kff.StyleBinder = kff.createClass(
 
 	refresh: function()
 	{
-		if(this.styleProperty) this.$element.css(this.styleProperty, this.getFormattedValue());
+		if(this.styleProperty) this.$element.css(this.styleProperty, this.values[this.valueIndex]);
 	}
 });
 
