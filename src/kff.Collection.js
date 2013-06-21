@@ -239,6 +239,12 @@ kff.Collection = kff.createClass(
 	{
 		kff.Collection._super.shuffle.call(this);
 		if(!silent) this.trigger('change', { type: 'shuffle' });
-	}
+	},
+
+	splice: function()
+	{
+		kff.Collection._super.splice.apply(this, arguments);
+		this.trigger('change', { type: 'splice' });
+	},
 
 });

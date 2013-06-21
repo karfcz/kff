@@ -427,6 +427,14 @@ kff.List = kff.createClass(
 	},
 
 	/**
+		Splice list
+	 */
+	splice: function()
+	{
+		Array.prototype.splice.apply(this.array, arguments);
+	},
+
+	/**
 		Returns an index of given item
 
 		@param {mixed} item Value to be found
@@ -752,7 +760,13 @@ kff.Collection = kff.createClass(
 	{
 		kff.Collection._super.shuffle.call(this);
 		if(!silent) this.trigger('change', { type: 'shuffle' });
-	}
+	},
+
+	splice: function()
+	{
+		kff.Collection._super.splice.apply(this, arguments);
+		this.trigger('change', { type: 'splice' });
+	},
 
 });
 
@@ -2223,21 +2237,30 @@ kff.BindingView = kff.createClass(
 	{
 		var filter, filterModel, filterFnName, render, renderIndex = 0, collectionItemChange = this.f('collectionItemChange'), that = this;
 
-		this.destroySubviews();
-		if(this.elements) $(this.elements).remove();
-
-		this.elements = [];
-		this.subViewsMap = [];
-
-		if(this.collectionFilter)
-		{
-			filter = true;
-			filterModel = this.collectionFilter.model || null;
-			filterFnName = that.collectionFilter.fn;
-		}
-
 		kff.setZeroTimeout(function()
 		{
+			that.collectionBinder.collection.each(function(item, i)
+			{
+				item.off('change', collectionItemChange);
+			});
+
+			that.destroySubviews();
+
+			if(that.elements)
+			{
+				for(var i = 0, l = that.elements.length; i < l; i++) that.elements[i].remove();
+			}
+
+			that.elements = [];
+			that.subViewsMap = [];
+
+			if(that.collectionFilter)
+			{
+				filter = true;
+				filterModel = that.collectionFilter.model || null;
+				filterFnName = that.collectionFilter.fn;
+			}
+
 			that.collectionBinder.collection.each(function(item, i)
 			{
 				var currentFilterModel;
@@ -2335,7 +2358,7 @@ kff.BindingView = kff.createClass(
 	 */
 	removeSubViewAt: function(renderIndex)
 	{
-		this.subViews[renderIndex].destroy();
+		this.subViews[renderIndex].startDestroy();
 		this.subViews.splice(renderIndex, 1);
 		this.elements[renderIndex].remove();
 		this.elements.splice(renderIndex, 1);

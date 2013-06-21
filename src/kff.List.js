@@ -74,6 +74,14 @@ kff.List = kff.createClass(
 	},
 
 	/**
+		Splice list
+	 */
+	splice: function()
+	{
+		Array.prototype.splice.apply(this.array, arguments);
+	},
+
+	/**
 		Returns an index of given item
 
 		@param {mixed} item Value to be found
