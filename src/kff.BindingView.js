@@ -98,7 +98,7 @@ kff.BindingView = kff.createClass(
 	 */
 	initBinding: function()
 	{
-		var model, attr, result, result2, name, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill, i;
+		var model, attr, result, result2, modelPathArray, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill, i;
 		var modifierName, modifierParams;
 		var dataBindAttr = this.$element.attr(kff.View.DATA_BIND_ATTR);
 		var modelName;
@@ -116,8 +116,7 @@ kff.BindingView = kff.createClass(
 
 		while((result = bindingRegex.exec(dataBindAttr)) !== null)
 		{
-			name = result[1];
-			name = name.replace(leadingPeriodRegex, '*.').split('.');
+			modelPathArray = result[1].replace(leadingPeriodRegex, '*.').split('.');
 
 			formatters = [];
 			parsers = [];
@@ -171,14 +170,14 @@ kff.BindingView = kff.createClass(
 							this.parseSetters(modifierParams, getters);
 							break;
 						case 'fill':
-							fill = true;;
+							fill = true;
 							break;
 					}
 				}
 				i++;
 			}
 
-			model = this.getModel([].concat(name));
+			model = this.getModel(modelPathArray);
 
 			if(model instanceof kff.Collection)
 			{
@@ -197,13 +196,11 @@ kff.BindingView = kff.createClass(
 			{
 				if(!binderName || !(binderName in kff.BindingView.binders)) break;
 
-
-				if(name.length > 1) attr = name.pop();
+				if(modelPathArray.length > 1) attr = modelPathArray.pop();
 				else attr = null;
 
-				modelName = name.length > 0 ? name[0] : null;
-				var modelPathArray = [].concat(name);
-				model = this.getModel(name);
+				modelName = modelPathArray.length > 0 ? modelPathArray[0] : null;
+				model = this.getModel(modelPathArray);
 
 				// Special binding for collection count property
 				if(model instanceof kff.Collection && attr === 'count')
@@ -733,24 +730,6 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-	 * Returns model object for given keypath.
-	 *
-	 * @param  {string|Array} modelPath Object keypath
-	 * @return {kff.Model}           	Model found
-	 */
-	getModel: function(modelPath)
-	{
-		var modelIndex;
-		if(typeof modelPath === 'string') modelPath = modelPath.split('.');
-
-		modelIndex = parseInt(modelPath[0], 10);
-
-		if(this.collectionBinder && !isNaN(modelIndex)) return this.collectionBinder.collection.findByIndex(modelIndex);
-
-		return kff.BindingView._super.getModel.call(this, modelPath);
-	},
-
-	/**
 	 * Refreshes own data-binders
 	 *
 	 * @private
@@ -785,7 +764,7 @@ kff.BindingView = kff.createClass(
 	getBindingIndex: function(modelName)
 	{
 		modelName = modelName || '*';
-		if(this.bindingIndex !== null && modelName in this.models) return this.bindingIndex;
+		if(this.bindingIndex !== null && this.models.hasOwnProperty(modelName)) return this.bindingIndex;
 		if(this.parentView instanceof kff.View) return this.parentView.getBindingIndex(modelName);
 		return null;
 	},

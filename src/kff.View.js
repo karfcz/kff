@@ -49,14 +49,24 @@ kff.View = kff.createClass(
 	 */
 	constructor: function(options)
 	{
+		var F;
 		options = options || {};
 		this.options = {
 			element: null,
 			models: null,
 			events: []
 		};
+
 		this.initEvents();
-		this.models = {};
+
+		if(options.parentView)
+		{
+			this.parentView = options.parentView;
+			F = function(){};
+			F.prototype = this.parentView.models;
+			this.models = new F();
+		}
+		else this.models = {};
 
 		if(options.events)
 		{
@@ -70,13 +80,9 @@ kff.View = kff.createClass(
 		{
 			this.viewFactory = options.viewFactory;
 		}
-		if(options.parentView)
-		{
-			this.parentView = options.parentView;
-		}
 		if(options.models)
 		{
-			this.models = options.models;
+			kff.mixins(this.models, options.models);
 		}
 		kff.mixins(this.options, options);
 
@@ -97,24 +103,20 @@ kff.View = kff.createClass(
 	 */
 	getModel: function(modelPath)
 	{
-		var model;
+		var modelName;
 		if(typeof modelPath === 'string') modelPath = modelPath.split('.');
+		else modelPath = [].concat(modelPath);
 
-		model = modelPath.shift();
+		modelName = modelPath.shift();
 
-		if(this.models && model in this.models)
+		if(this.models && modelName in this.models)
 		{
 			if(modelPath.length > 0)
 			{
-				if(this.models[model] instanceof kff.Model) return this.models[model].mget(modelPath);
+				if(this.models[modelName] instanceof kff.Model) return this.models[modelName].mget(modelPath);
 				else return null;
 			}
-			else return this.models[model];
-		}
-		if(this.options.parentView)
-		{
-			modelPath.unshift(model);
-			return this.options.parentView.getModel(modelPath);
+			else return this.models[modelName];
 		}
 		return null;
 	},
