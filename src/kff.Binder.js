@@ -36,12 +36,12 @@ kff.Binder = kff.createClass(
 			if(this.$element && this.events.length > 0) this.delegateEvents.call(this, this.events);
 		}
 		if(this.options.fill && this.model instanceof kff.Model) this.fill();
-		if(this.options.dynamic) this.bindDynamic();
+		if(this.options.watch) this.bindDynamic();
 	},
 
 	destroy: function()
 	{
-		if(this.options.dynamic) this.unbindDynamic();
+		if(this.options.watch) this.unbindDynamic();
 		if(this.model instanceof kff.Model) this.model.off('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
 		if(this.$element && this.events.length > 0) this.undelegateEvents.call(this, this.events);
 		this.currentValue = null;

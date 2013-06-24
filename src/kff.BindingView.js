@@ -98,7 +98,7 @@ kff.BindingView = kff.createClass(
 	 */
 	initBinding: function()
 	{
-		var model, attr, result, result2, modelPathArray, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill, i, dynamic;
+		var model, attr, result, result2, modelPathArray, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill, i, watch;
 		var modifierName, modifierParams;
 		var dataBindAttr = this.$element.attr(kff.View.DATA_BIND_ATTR);
 		var modelName;
@@ -124,7 +124,7 @@ kff.BindingView = kff.createClass(
 			getters = [];
 			eventNames = [];
 			fill = false;
-			dynamic = false;
+			watch = false;
 
 			i = 0;
 			while((result2 = operatorsRegex.exec(result[2])) !== null)
@@ -173,8 +173,8 @@ kff.BindingView = kff.createClass(
 						case 'fill':
 							fill = true;
 							break;
-						case 'dynamic':
-							dynamic = true;
+						case 'watch':
+							watch = true;
 							break;
 					}
 				}
@@ -227,7 +227,7 @@ kff.BindingView = kff.createClass(
 						getters: getters,
 						eventNames: eventNames,
 						fill: fill,
-						dynamic: dynamic
+						watch: watch
 					});
 
 					this.modelBindersMap.add(binderName, modelBinder);

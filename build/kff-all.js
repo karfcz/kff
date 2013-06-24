@@ -1906,7 +1906,7 @@ kff.BindingView = kff.createClass(
 	 */
 	initBinding: function()
 	{
-		var model, attr, result, result2, modelPathArray, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill, i, dynamic;
+		var model, attr, result, result2, modelPathArray, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill, i, watch;
 		var modifierName, modifierParams;
 		var dataBindAttr = this.$element.attr(kff.View.DATA_BIND_ATTR);
 		var modelName;
@@ -1932,7 +1932,7 @@ kff.BindingView = kff.createClass(
 			getters = [];
 			eventNames = [];
 			fill = false;
-			dynamic = false;
+			watch = false;
 
 			i = 0;
 			while((result2 = operatorsRegex.exec(result[2])) !== null)
@@ -1981,8 +1981,8 @@ kff.BindingView = kff.createClass(
 						case 'fill':
 							fill = true;
 							break;
-						case 'dynamic':
-							dynamic = true;
+						case 'watch':
+							watch = true;
 							break;
 					}
 				}
@@ -2035,7 +2035,7 @@ kff.BindingView = kff.createClass(
 						getters: getters,
 						eventNames: eventNames,
 						fill: fill,
-						dynamic: dynamic
+						watch: watch
 					});
 
 					this.modelBindersMap.add(binderName, modelBinder);
@@ -2693,12 +2693,12 @@ kff.Binder = kff.createClass(
 			if(this.$element && this.events.length > 0) this.delegateEvents.call(this, this.events);
 		}
 		if(this.options.fill && this.model instanceof kff.Model) this.fill();
-		if(this.options.dynamic) this.bindDynamic();
+		if(this.options.watch) this.bindDynamic();
 	},
 
 	destroy: function()
 	{
-		if(this.options.dynamic) this.unbindDynamic();
+		if(this.options.watch) this.unbindDynamic();
 		if(this.model instanceof kff.Model) this.model.off('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
 		if(this.$element && this.events.length > 0) this.undelegateEvents.call(this, this.events);
 		this.currentValue = null;
