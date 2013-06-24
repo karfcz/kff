@@ -128,7 +128,6 @@ kff.createClass = function(meta, properties)
 	return constructor;
 };
 
-
 /**
  * Binds function to an object. Adds _boundFns object width references to bound methods for caching purposes.
  * @param {Object} obj Object to which bind a function
@@ -1841,7 +1840,7 @@ kff.BindingView = kff.createClass(
 	 */
 	initBinding: function()
 	{
-		var model, attr, result, result2, modelPathArray, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill, i;
+		var model, attr, result, result2, modelPathArray, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill, i, dynamic;
 		var modifierName, modifierParams;
 		var dataBindAttr = this.$element.attr(kff.View.DATA_BIND_ATTR);
 		var modelName;
@@ -1867,6 +1866,7 @@ kff.BindingView = kff.createClass(
 			getters = [];
 			eventNames = [];
 			fill = false;
+			dynamic = false;
 
 			i = 0;
 			while((result2 = operatorsRegex.exec(result[2])) !== null)
@@ -1915,6 +1915,9 @@ kff.BindingView = kff.createClass(
 						case 'fill':
 							fill = true;
 							break;
+						case 'dynamic':
+							dynamic = true;
+							break;
 					}
 				}
 				i++;
@@ -1946,12 +1949,11 @@ kff.BindingView = kff.createClass(
 				model = this.getModel(modelPathArray);
 
 				// Special binding for collection count property
-				if(model instanceof kff.Collection && attr === 'count')
+				if(model instanceof kff.Collection)
 				{
-					model = this.bindCollectionCount(model);
+					if(attr === 'count') model = this.bindCollectionCount(model);
 				}
-
-				if(model instanceof kff.Model)
+				else
 				{
 					var modelBinder = new kff.BindingView.binders[binderName]({
 						view: this,
@@ -1966,12 +1968,14 @@ kff.BindingView = kff.createClass(
 						setters: setters,
 						getters: getters,
 						eventNames: eventNames,
-						fill: fill
+						fill: fill,
+						dynamic: dynamic
 					});
 
 					this.modelBindersMap.add(binderName, modelBinder);
 					modelBinder.init();
 				}
+
 			}
 		}
 	},
@@ -2091,7 +2095,7 @@ kff.BindingView = kff.createClass(
 		this.subViewOptions.isBoundView = true;
 
 		this.collectionBinder.collection.on('change', this.f('refreshBoundViews'));
-;		this.refreshBoundViewsAll();
+		this.refreshBoundViewsAll();
 	},
 
 	/**
@@ -2612,22 +2616,27 @@ kff.Binder = kff.createClass(
 		this.params = options.params;
 		this.currentValue = null;
 		this.bindingIndex = null;
+		this.dynamicBindings = [];
 	},
 
 	init: function()
 	{
-		this.model.on('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
-		if(this.events.length > 0) this.delegateEvents.call(this, this.events);
-		if(this.options.fill) this.fill();
+		if(this.model instanceof kff.Model)
+		{
+			this.model.on('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
+			if(this.$element && this.events.length > 0) this.delegateEvents.call(this, this.events);
+		}
+		if(this.options.fill && this.model instanceof kff.Model) this.fill();
+		if(this.options.dynamic) this.bindDynamic();
 	},
 
 	destroy: function()
 	{
-		if(this.model) this.model.off('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
-		if(this.$element) this.undelegateEvents.call(this, this.events);
+		if(this.options.dynamic) this.unbindDynamic();
+		if(this.model instanceof kff.Model) this.model.off('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
+		if(this.$element && this.events.length > 0) this.undelegateEvents.call(this, this.events);
 		this.currentValue = null;
 		if(this.values) this.values[this.valueIndex] = null;
-		// this.refresh(); // Vrácení do původního stavu dělá problém s bindingy v kolekcích
 	},
 
 	delegateEvents: kff.View.prototype.delegateEvents,
@@ -2637,17 +2646,19 @@ kff.Binder = kff.createClass(
 	modelChange: function(event)
 	{
 		var modelValue;
-		if(this.getter && typeof this.model[this.getter] === 'function') modelValue = this.model[this.getter](this.attr);
-		else if(event !== true) modelValue = event.changed[this.attr];
-		else if(typeof this.attr === 'string') modelValue = this.model.get(this.attr);
-		else return;
-
-
-		if(event === true || !this.compareValues(modelValue, this.currentValue))
+		if(this.model instanceof kff.Model)
 		{
-			this.values[this.valueIndex] = this.format(modelValue);
-			this.currentValue = modelValue;
-			this.refresh();
+			if(this.getter && typeof this.model[this.getter] === 'function') modelValue = this.model[this.getter](this.attr);
+			else if(event !== true) modelValue = event.changed[this.attr];
+			else if(typeof this.attr === 'string') modelValue = this.model.get(this.attr);
+			else return;
+
+			if(event === true || !this.compareValues(modelValue, this.currentValue))
+			{
+				this.values[this.valueIndex] = this.format(modelValue);
+				this.currentValue = modelValue;
+				this.refresh();
+			}
 		}
 	},
 
@@ -2752,7 +2763,47 @@ kff.Binder = kff.createClass(
 		return obj;
 	},
 
-	fill: function(){}
+	fill: function(){},
+
+	rebind: function(event)
+	{
+		if(this.model instanceof kff.Model)
+		{
+			this.model.off('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
+			if(this.$element && this.events.length > 0) this.undelegateEvents.call(this, this.events);
+		}
+		this.model = this.view.getModel(this.modelPathArray);
+		if(this.model instanceof kff.Model)
+		{
+			this.model.on('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
+			if(this.$element && this.events.length > 0) this.delegateEvents.call(this, this.events);
+			this.modelChange(true);
+		}
+	},
+
+	bindDynamic: function()
+	{
+		var modelPathArray = [].concat(this.modelPathArray);
+		var modelName1 = modelPathArray.shift(), modelName2, model;
+		while(modelName2 = modelPathArray.shift())
+		{
+			model = this.view.getModel(modelName1);
+			if(model instanceof kff.Model)
+			{
+				model.on('change:' + modelName2, this.f('rebind'));
+				this.dynamicBindings.push({ model: model, attr: modelName2 });
+			}
+			modelName1 = modelName2;
+		}
+	},
+
+	unbindDynamic: function()
+	{
+		for(var i = 0, l = this.dynamicBindings.length; i < l; i++)
+		{
+			this.dynamicBindings[i].model.off('change:' + this.dynamicBindings[i].attr, this.f('rebind'));
+		}
+	}
 
 });
 

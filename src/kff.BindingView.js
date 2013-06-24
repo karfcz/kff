@@ -98,7 +98,7 @@ kff.BindingView = kff.createClass(
 	 */
 	initBinding: function()
 	{
-		var model, attr, result, result2, modelPathArray, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill, i;
+		var model, attr, result, result2, modelPathArray, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill, i, dynamic;
 		var modifierName, modifierParams;
 		var dataBindAttr = this.$element.attr(kff.View.DATA_BIND_ATTR);
 		var modelName;
@@ -124,6 +124,7 @@ kff.BindingView = kff.createClass(
 			getters = [];
 			eventNames = [];
 			fill = false;
+			dynamic = false;
 
 			i = 0;
 			while((result2 = operatorsRegex.exec(result[2])) !== null)
@@ -172,6 +173,9 @@ kff.BindingView = kff.createClass(
 						case 'fill':
 							fill = true;
 							break;
+						case 'dynamic':
+							dynamic = true;
+							break;
 					}
 				}
 				i++;
@@ -203,12 +207,11 @@ kff.BindingView = kff.createClass(
 				model = this.getModel(modelPathArray);
 
 				// Special binding for collection count property
-				if(model instanceof kff.Collection && attr === 'count')
+				if(model instanceof kff.Collection)
 				{
-					model = this.bindCollectionCount(model);
+					if(attr === 'count') model = this.bindCollectionCount(model);
 				}
-
-				if(model instanceof kff.Model)
+				else
 				{
 					var modelBinder = new kff.BindingView.binders[binderName]({
 						view: this,
@@ -223,12 +226,14 @@ kff.BindingView = kff.createClass(
 						setters: setters,
 						getters: getters,
 						eventNames: eventNames,
-						fill: fill
+						fill: fill,
+						dynamic: dynamic
 					});
 
 					this.modelBindersMap.add(binderName, modelBinder);
 					modelBinder.init();
 				}
+
 			}
 		}
 	},
@@ -348,7 +353,7 @@ kff.BindingView = kff.createClass(
 		this.subViewOptions.isBoundView = true;
 
 		this.collectionBinder.collection.on('change', this.f('refreshBoundViews'));
-;		this.refreshBoundViewsAll();
+		this.refreshBoundViewsAll();
 	},
 
 	/**
