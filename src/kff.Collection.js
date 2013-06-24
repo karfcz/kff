@@ -21,6 +21,7 @@ kff.Collection = kff.createClass(
 		this.itemFactory = options.itemFactory || null;
 		this.itemType = options.itemType || kff.Model;
 		this.serializeAttrs = options.serializeAttrs || null;
+		this.onEachEvents = [];
 		this.initEvents();
 		kff.List.call(this);
 		return this;
@@ -246,5 +247,70 @@ kff.Collection = kff.createClass(
 		kff.Collection._super.splice.apply(this, arguments);
 		this.trigger('change', { type: 'splice' });
 	},
+
+	onEach: function(eventType, fn)
+	{
+		this.onEachEvents.push({ eventType: eventType, fn: fn });
+		this.each(function(item, i){
+			item.on(eventType, fn);
+		});
+		this.on('change', this.f('refreshOnEach'));
+	},
+
+	offEach: function(eventType, fn)
+	{
+		for(var i = 0, l = this.onEachEvents.length; i < l; i++)
+		{
+			if(this.onEachEvents[i].eventType === eventType && this.onEachEvents[i].fn === fn) this.onEachEvents.splice(i, 1);
+		}
+		this.each(function(item, i){
+			item.off(eventType, fn);
+		});
+		this.off('change', this.f('refreshOnEach'));
+	},
+
+	refreshOnEach: function(event)
+	{
+		switch(event ? event.type : null)
+		{
+			case 'append':
+			case 'insert':
+				this.bindOnOne(event.item);
+				break;
+			case 'remove':
+				this.unbindOnOne(event.item);
+				break;
+			default:
+				this.rebindEach();
+		}
+	},
+
+	bindOnOne: function(item)
+	{
+		for(var i = 0, l = this.onEachEvents.length; i < l; i++)
+		{
+			item.on(this.onEachEvents[i].eventType, this.onEachEvents[i].fn);
+		}
+	},
+
+	unbindOnOne: function(item)
+	{
+		for(var i = 0, l = this.onEachEvents.length; i < l; i++)
+		{
+			item.off(this.onEachEvents[i].eventType, this.onEachEvents[i].fn);
+		}
+	},
+
+	rebindEach: function()
+	{
+		var that = this;
+		this.each(function(item, i)
+		{
+			for(var j = 0, l = that.onEachEvents.length; j < l; j++)
+			{
+				item.on(that.onEachEvents[j].eventType, that.onEachEvents[j].fn);
+			}
+		});
+	}
 
 });
