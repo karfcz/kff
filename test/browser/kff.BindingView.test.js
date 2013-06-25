@@ -61,4 +61,29 @@ describe('kff.BindingView', function()
 
 	});
 
+	it('should bind a collection count pseudoattribute', function()
+	{
+		var collection = new kff.Collection();
+		var model1 = new kff.Model({ name: 'foo' });
+		var model2 = new kff.Model({ name: 'bar' });
+		collection.append(model1);
+		collection.append(model2);
+		var $div = $('<div data-kff-bind="collection.count:text"/>');
+		var view = new kff.BindingView(
+		{
+			element: $div,
+			models: {
+				collection: collection
+			}
+		});
+		view.init();
+
+		setTimeout(function(){
+			$div.text().should.equal('2');
+			collection.remove(model1);
+			$div.text().should.equal('1');
+		}, 0);
+
+	});
+
 });

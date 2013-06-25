@@ -2024,28 +2024,26 @@ kff.BindingView = kff.createClass(
 				{
 					if(attr === 'count') model = this.bindCollectionCount(model);
 				}
-				else
-				{
-					var modelBinder = new kff.BindingView.binders[binderName]({
-						view: this,
-						$element: this.$element,
-						params: binderParams,
-						attr: attr,
-						model: model,
-						modelName: modelName,
-						modelPathArray: modelPathArray,
-						formatters: formatters,
-						parsers: parsers,
-						setters: setters,
-						getters: getters,
-						eventNames: eventNames,
-						fill: fill,
-						watch: watch
-					});
 
-					this.modelBindersMap.add(binderName, modelBinder);
-					modelBinder.init();
-				}
+				var modelBinder = new kff.BindingView.binders[binderName]({
+					view: this,
+					$element: this.$element,
+					params: binderParams,
+					attr: attr,
+					model: model,
+					modelName: modelName,
+					modelPathArray: modelPathArray,
+					formatters: formatters,
+					parsers: parsers,
+					setters: setters,
+					getters: getters,
+					eventNames: eventNames,
+					fill: fill,
+					watch: watch
+				});
+
+				this.modelBindersMap.add(binderName, modelBinder);
+				modelBinder.init();
 
 			}
 		}
