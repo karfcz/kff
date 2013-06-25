@@ -1813,7 +1813,7 @@ kff.BindingView = kff.createClass(
 	staticProperties:
 	/** @lends kff.BindingView */
 	{
-		bindingRegex: /(?:([.a-zA-Z0-9-]+))((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g,
+		bindingRegex: /(?:([.a-zA-Z0-9*-]+))((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g,
 
 		operatorsRegex: /:([a-zA-Z0-9]+)(?:\(([^()]*)\))?/g,
 
@@ -1822,6 +1822,8 @@ kff.BindingView = kff.createClass(
 		modifierSeparateRegex: /([^{},\s]+)|({[a-zA-Z0-9,\[\]_\-\s*]+})/g,
 
 		leadingPeriodRegex: /^\./,
+
+		trailingPeriodRegex: /\.$/,
 
 		/**
 		 * Object hash that holds references to binder classes under short key names
@@ -1916,6 +1918,7 @@ kff.BindingView = kff.createClass(
 		var modifierSeparateRegex = kff.BindingView.modifierSeparateRegex;
 		var commaSeparateRegex = kff.BindingView.commaSeparateRegex;
 		var leadingPeriodRegex = kff.BindingView.leadingPeriodRegex;
+		var trailingPeriodRegex = kff.BindingView.trailingPeriodRegex;
 
 		bindingRegex.lastIndex = 0;
 		operatorsRegex.lastIndex = 0;
@@ -1924,7 +1927,7 @@ kff.BindingView = kff.createClass(
 
 		while((result = bindingRegex.exec(dataBindAttr)) !== null)
 		{
-			modelPathArray = result[1].replace(leadingPeriodRegex, '*.').split('.');
+			modelPathArray = result[1].replace(leadingPeriodRegex, '*.').replace(trailingPeriodRegex, '.*').split('.');
 
 			formatters = [];
 			parsers = [];
@@ -2010,6 +2013,8 @@ kff.BindingView = kff.createClass(
 
 				if(modelPathArray.length > 1) attr = modelPathArray.pop();
 				else attr = null;
+
+				if(attr === '*') attr = null;
 
 				modelName = modelPathArray.length > 0 ? modelPathArray[0] : null;
 				model = this.getModel(modelPathArray);
@@ -2717,7 +2722,7 @@ kff.Binder = kff.createClass(
 			if(this.getter && typeof this.model[this.getter] === 'function') modelValue = this.model[this.getter](this.attr);
 			else if(event !== true) modelValue = event.changed[this.attr];
 			else if(typeof this.attr === 'string') modelValue = this.model.get(this.attr);
-			else return;
+			else modelValue = null;
 
 			if(event === true || !this.compareValues(modelValue, this.currentValue))
 			{
@@ -2763,7 +2768,11 @@ kff.Binder = kff.createClass(
 		}
 		if(this.compareValues(value, this.currentValue)) return;
 		this.currentValue = value;
-		if(this.setter && typeof this.model[this.setter] === 'function') this.model[this.setter](this.attr, this.currentValue);
+		if(this.setter && typeof this.model[this.setter] === 'function')
+		{
+			if(this.attr === null) this.model[this.setter](this.currentValue);
+			else this.model[this.setter](this.attr, this.currentValue);
+		}
 		else this.model.set(this.attr, this.currentValue);
 	},
 

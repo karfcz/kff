@@ -60,7 +60,7 @@ kff.Binder = kff.createClass(
 			if(this.getter && typeof this.model[this.getter] === 'function') modelValue = this.model[this.getter](this.attr);
 			else if(event !== true) modelValue = event.changed[this.attr];
 			else if(typeof this.attr === 'string') modelValue = this.model.get(this.attr);
-			else return;
+			else modelValue = null;
 
 			if(event === true || !this.compareValues(modelValue, this.currentValue))
 			{
@@ -106,7 +106,11 @@ kff.Binder = kff.createClass(
 		}
 		if(this.compareValues(value, this.currentValue)) return;
 		this.currentValue = value;
-		if(this.setter && typeof this.model[this.setter] === 'function') this.model[this.setter](this.attr, this.currentValue);
+		if(this.setter && typeof this.model[this.setter] === 'function')
+		{
+			if(this.attr === null) this.model[this.setter](this.currentValue);
+			else this.model[this.setter](this.attr, this.currentValue);
+		}
 		else this.model.set(this.attr, this.currentValue);
 	},
 
