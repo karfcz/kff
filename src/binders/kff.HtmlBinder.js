@@ -20,7 +20,7 @@ kff.HtmlBinder = kff.createClass(
 
 	refresh: function()
 	{
-		this.$element.html(this.values.join(' '));
+		this.$element.html(this.value);
 	}
 });
 

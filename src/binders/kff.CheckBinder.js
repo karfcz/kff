@@ -33,7 +33,7 @@ kff.CheckBinder = kff.createClass(
 
 	refresh: function()
 	{
-		this.$element.prop('checked', !!this.values[this.valueIndex]);
+		this.$element.prop('checked', !!this.value);
 	},
 
 	fill: function()

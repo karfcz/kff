@@ -234,7 +234,7 @@ kff.BindingView = kff.createClass(
 					watch: watch
 				});
 
-				this.modelBindersMap.add(binderName, modelBinder);
+				this.modelBindersMap.add(modelBinder);
 				modelBinder.init();
 
 			}
@@ -785,17 +785,5 @@ kff.BindingView = kff.createClass(
 	setBindingIndex: function(index)
 	{
 		this.bindingIndex = index;
-	},
-
-	/**
-	 * Concatenates multiple values using single space as separator.
-	 *
-	 * @param  {Array} values Array of values
-	 * @return {string}       Concatenated string
-	 */
-	concat: function(values)
-	{
-		if(values.length === 1) return values[0];
-		else return values.join(' ');
 	}
 });

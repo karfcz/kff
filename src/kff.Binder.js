@@ -20,12 +20,11 @@ kff.Binder = kff.createClass(
 		this.formatters = options.formatters;
 		this.setter = (options.setters instanceof Array && options.setters.length > 0) ? options.setters[0] : null;
 		this.getter = (options.getters instanceof Array && options.getters.length > 0) ? options.getters[0] : null;
-		this.values = options.values;
-		this.valueIndex = options.valueIndex;
 		this.params = options.params;
 		this.currentValue = null;
 		this.bindingIndex = null;
 		this.dynamicBindings = [];
+		this.value = null;
 	},
 
 	init: function()
@@ -45,7 +44,7 @@ kff.Binder = kff.createClass(
 		if(this.model instanceof kff.Model) this.model.off('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
 		if(this.$element && this.events.length > 0) this.undelegateEvents.call(this, this.events);
 		this.currentValue = null;
-		if(this.values) this.values[this.valueIndex] = null;
+		this.value = null;
 	},
 
 	delegateEvents: kff.View.prototype.delegateEvents,
@@ -64,7 +63,7 @@ kff.Binder = kff.createClass(
 
 			if(event === true || !this.compareValues(modelValue, this.currentValue))
 			{
-				this.values[this.valueIndex] = this.format(modelValue);
+				this.value = this.format(modelValue);
 				this.currentValue = modelValue;
 				this.refresh();
 			}
@@ -89,8 +88,7 @@ kff.Binder = kff.createClass(
 
 	getFormattedValue: function()
 	{
-		if(this.values.length > 1) return this.values.join(' ');
-		else return this.values[this.valueIndex];
+		return this.value;
 	},
 
 	updateModel: function(value)
@@ -166,8 +164,6 @@ kff.Binder = kff.createClass(
 			modelPathArray:  this.modelPathArray,
 			parsers: this.parsers,
 			formatters: this.formatters,
-			values: null,
-			valueIndex: this.valueIndex,
 			params: this.params,
 			fill: this.options.fill
 		});

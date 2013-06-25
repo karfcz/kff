@@ -20,7 +20,7 @@ kff.TextBinder = kff.createClass(
 
 	refresh: function(value)
 	{
-		this.$element.text(this.values.join(' '));
+		this.$element.text(this.value);
 	}
 });
 

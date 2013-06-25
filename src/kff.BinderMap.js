@@ -3,82 +3,52 @@ kff.BinderMap = kff.createClass(
 {
 	constructor: function()
 	{
-		this.binders = {};
-		this.values = {};
+		this.binders = [];
 	},
 
-	add: function(binderName, binder)
+	add: function(binder)
 	{
-		if(!(binderName in this.binders))
-		{
-			this.binders[binderName] = [];
-			this.values[binderName] = [];
-		}
-		this.binders[binderName].push(binder);
-		this.values[binderName].push(null);
-		binder.valueIndex = this.binders[binderName].length - 1;
-		binder.values = this.values[binderName];
+		this.binders.push(binder);
 	},
 
 	clone: function(options)
 	{
 		var clonedBinderMap = new kff.BinderMap(),
 			clonedBinders = clonedBinderMap.binders,
-			clonedValues = clonedBinderMap.values,
-			b, i, l, mb, mv;
+			i, l;
 
-		for(b in this.binders)
+		for(i = 0, l = this.binders.length; i < l; i++)
 		{
-			clonedBinders[b] = mb = [].concat(this.binders[b]);
-			clonedValues[b] = mv = [];
-			mv.length = mb.length;
-			for(i = 0, l = mb.length; i < l; i++)
-			{
-				mb[i] = mb[i].clone();
-				mv[i] = null;
-			}
+			clonedBinders[i] = this.binders[i].clone();
 		}
 		return clonedBinderMap;
 	},
 
 	setView: function(view)
 	{
-		var b, i, mb, mv, l;
-		for(b in this.binders)
+		var i, l;
+		for(i = 0, l = this.binders.length; i < l; i++)
 		{
-			for(i = 0, mb = this.binders[b], mv = this.values[b], l = mb.length; i < l; i++)
-			{
-				mv[i] = null;
-				mb[i].view = view;
-				mb[i].$element = view.$element;
-				mb[i].model = view.getModel([].concat(mb[i].modelPathArray));
-				mb[i].values = mv;
-			}
+			this.binders[i].view = view;
+			this.binders[i].$element = view.$element;
+			this.binders[i].model = view.getModel([].concat(this.binders[i].modelPathArray));
+			this.binders[i].value = null;
 		}
 	},
 
 	initBinders: function()
 	{
-		for(var b in this.binders)
-		{
-			for(var i = 0, mb = this.binders[b], l = mb.length; i < l; i++) mb[i].init();
-		}
+		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].init();
 	},
 
 	destroyBinders: function()
 	{
-		for(var b in this.binders)
-		{
-			for(var i = 0, mb = this.binders[b], l = mb.length; i < l; i++) mb[i].destroy();
-		}
+		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].destroy();
 	},
 
 	refreshBinders: function(event)
 	{
-		for(var b in this.binders)
-		{
-			for(var i = 0, mb = this.binders[b], l = mb.length; i < l; i++) mb[i].modelChange(true);
-		}
+		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].modelChange(true);
 	}
 
 });

@@ -20,7 +20,7 @@ kff.DisabledBinder = kff.createClass(
 
 	refresh: function()
 	{
-		this.$element.prop('disabled', !!this.values[this.valueIndex]);
+		this.$element.prop('disabled', !!this.value);
 	},
 
 	fill: function()

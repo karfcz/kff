@@ -1726,82 +1726,52 @@ kff.BinderMap = kff.createClass(
 {
 	constructor: function()
 	{
-		this.binders = {};
-		this.values = {};
+		this.binders = [];
 	},
 
-	add: function(binderName, binder)
+	add: function(binder)
 	{
-		if(!(binderName in this.binders))
-		{
-			this.binders[binderName] = [];
-			this.values[binderName] = [];
-		}
-		this.binders[binderName].push(binder);
-		this.values[binderName].push(null);
-		binder.valueIndex = this.binders[binderName].length - 1;
-		binder.values = this.values[binderName];
+		this.binders.push(binder);
 	},
 
 	clone: function(options)
 	{
 		var clonedBinderMap = new kff.BinderMap(),
 			clonedBinders = clonedBinderMap.binders,
-			clonedValues = clonedBinderMap.values,
-			b, i, l, mb, mv;
+			i, l;
 
-		for(b in this.binders)
+		for(i = 0, l = this.binders.length; i < l; i++)
 		{
-			clonedBinders[b] = mb = [].concat(this.binders[b]);
-			clonedValues[b] = mv = [];
-			mv.length = mb.length;
-			for(i = 0, l = mb.length; i < l; i++)
-			{
-				mb[i] = mb[i].clone();
-				mv[i] = null;
-			}
+			clonedBinders[i] = this.binders[i].clone();
 		}
 		return clonedBinderMap;
 	},
 
 	setView: function(view)
 	{
-		var b, i, mb, mv, l;
-		for(b in this.binders)
+		var i, l;
+		for(i = 0, l = this.binders.length; i < l; i++)
 		{
-			for(i = 0, mb = this.binders[b], mv = this.values[b], l = mb.length; i < l; i++)
-			{
-				mv[i] = null;
-				mb[i].view = view;
-				mb[i].$element = view.$element;
-				mb[i].model = view.getModel([].concat(mb[i].modelPathArray));
-				mb[i].values = mv;
-			}
+			this.binders[i].view = view;
+			this.binders[i].$element = view.$element;
+			this.binders[i].model = view.getModel([].concat(this.binders[i].modelPathArray));
+			this.binders[i].value = null;
 		}
 	},
 
 	initBinders: function()
 	{
-		for(var b in this.binders)
-		{
-			for(var i = 0, mb = this.binders[b], l = mb.length; i < l; i++) mb[i].init();
-		}
+		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].init();
 	},
 
 	destroyBinders: function()
 	{
-		for(var b in this.binders)
-		{
-			for(var i = 0, mb = this.binders[b], l = mb.length; i < l; i++) mb[i].destroy();
-		}
+		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].destroy();
 	},
 
 	refreshBinders: function(event)
 	{
-		for(var b in this.binders)
-		{
-			for(var i = 0, mb = this.binders[b], l = mb.length; i < l; i++) mb[i].modelChange(true);
-		}
+		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].modelChange(true);
 	}
 
 });
@@ -2042,7 +2012,7 @@ kff.BindingView = kff.createClass(
 					watch: watch
 				});
 
-				this.modelBindersMap.add(binderName, modelBinder);
+				this.modelBindersMap.add(modelBinder);
 				modelBinder.init();
 
 			}
@@ -2593,18 +2563,6 @@ kff.BindingView = kff.createClass(
 	setBindingIndex: function(index)
 	{
 		this.bindingIndex = index;
-	},
-
-	/**
-	 * Concatenates multiple values using single space as separator.
-	 *
-	 * @param  {Array} values Array of values
-	 * @return {string}       Concatenated string
-	 */
-	concat: function(values)
-	{
-		if(values.length === 1) return values[0];
-		else return values.join(' ');
 	}
 });
 
@@ -2680,12 +2638,11 @@ kff.Binder = kff.createClass(
 		this.formatters = options.formatters;
 		this.setter = (options.setters instanceof Array && options.setters.length > 0) ? options.setters[0] : null;
 		this.getter = (options.getters instanceof Array && options.getters.length > 0) ? options.getters[0] : null;
-		this.values = options.values;
-		this.valueIndex = options.valueIndex;
 		this.params = options.params;
 		this.currentValue = null;
 		this.bindingIndex = null;
 		this.dynamicBindings = [];
+		this.value = null;
 	},
 
 	init: function()
@@ -2705,7 +2662,7 @@ kff.Binder = kff.createClass(
 		if(this.model instanceof kff.Model) this.model.off('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
 		if(this.$element && this.events.length > 0) this.undelegateEvents.call(this, this.events);
 		this.currentValue = null;
-		if(this.values) this.values[this.valueIndex] = null;
+		this.value = null;
 	},
 
 	delegateEvents: kff.View.prototype.delegateEvents,
@@ -2724,7 +2681,7 @@ kff.Binder = kff.createClass(
 
 			if(event === true || !this.compareValues(modelValue, this.currentValue))
 			{
-				this.values[this.valueIndex] = this.format(modelValue);
+				this.value = this.format(modelValue);
 				this.currentValue = modelValue;
 				this.refresh();
 			}
@@ -2749,8 +2706,7 @@ kff.Binder = kff.createClass(
 
 	getFormattedValue: function()
 	{
-		if(this.values.length > 1) return this.values.join(' ');
-		else return this.values[this.valueIndex];
+		return this.value;
 	},
 
 	updateModel: function(value)
@@ -2826,8 +2782,6 @@ kff.Binder = kff.createClass(
 			modelPathArray:  this.modelPathArray,
 			parsers: this.parsers,
 			formatters: this.formatters,
-			values: null,
-			valueIndex: this.valueIndex,
 			params: this.params,
 			fill: this.options.fill
 		});
@@ -2907,7 +2861,7 @@ kff.EventBinder = kff.createClass(
 
 	init: function()
 	{
-		this.value = this.params[0] || null;
+		this.userValue = this.params[0] || null;
 		kff.EventBinder._super.init.call(this);
 	},
 
@@ -2915,7 +2869,7 @@ kff.EventBinder = kff.createClass(
 	{
 		kff.setZeroTimeout(this.f(function()
 		{
-			this.updateModel(this.value);
+			this.updateModel(this.userValue);
 		}));
 		event.preventDefault();
 	},
@@ -2960,7 +2914,7 @@ kff.AttrBinder = kff.createClass(
 
 	refresh: function()
 	{
-		if(this.attribute) this.$element.attr(this.attribute, this.prefix + this.values[this.valueIndex] + this.suffix);
+		if(this.attribute) this.$element.attr(this.attribute, this.prefix + this.value + this.suffix);
 	}
 });
 
@@ -3001,7 +2955,7 @@ kff.CheckBinder = kff.createClass(
 
 	refresh: function()
 	{
-		this.$element.prop('checked', !!this.values[this.valueIndex]);
+		this.$element.prop('checked', !!this.value);
 	},
 
 	fill: function()
@@ -3038,7 +2992,7 @@ kff.DisabledBinder = kff.createClass(
 
 	refresh: function()
 	{
-		this.$element.prop('disabled', !!this.values[this.valueIndex]);
+		this.$element.prop('disabled', !!this.value);
 	},
 
 	fill: function()
@@ -3087,8 +3041,8 @@ kff.ClassBinder = kff.createClass(
 
 	matchValue: function()
 	{
-		if(this.equalsTo) return this.values[this.valueIndex] === this.parse(this.equalsTo);
-		else return this.values[this.valueIndex];
+		if(this.equalsTo) return this.value === this.parse(this.equalsTo);
+		else return this.value;
 	}
 });
 
@@ -3122,7 +3076,7 @@ kff.StyleBinder = kff.createClass(
 
 	refresh: function()
 	{
-		if(this.styleProperty) this.$element.css(this.styleProperty, this.values[this.valueIndex]);
+		if(this.styleProperty) this.$element.css(this.styleProperty, this.value);
 	}
 });
 
@@ -3258,7 +3212,7 @@ kff.FocusBlurBinder = kff.createClass(
 
 	refresh: function()
 	{
-		if(this.values[this.valueIndex])
+		if(this.value)
 		{
 			if(!this.$element.is(':focus')) this.$element.trigger('focus');
 		}
@@ -3292,7 +3246,7 @@ kff.HtmlBinder = kff.createClass(
 
 	refresh: function()
 	{
-		this.$element.html(this.values.join(' '));
+		this.$element.html(this.value);
 	}
 });
 
@@ -3377,7 +3331,7 @@ kff.TextBinder = kff.createClass(
 
 	refresh: function(value)
 	{
-		this.$element.text(this.values.join(' '));
+		this.$element.text(this.value);
 	}
 });
 

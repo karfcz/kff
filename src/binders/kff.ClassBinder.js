@@ -32,8 +32,8 @@ kff.ClassBinder = kff.createClass(
 
 	matchValue: function()
 	{
-		if(this.equalsTo) return this.values[this.valueIndex] === this.parse(this.equalsTo);
-		else return this.values[this.valueIndex];
+		if(this.equalsTo) return this.value === this.parse(this.equalsTo);
+		else return this.value;
 	}
 });
 

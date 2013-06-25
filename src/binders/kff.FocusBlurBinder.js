@@ -31,7 +31,7 @@ kff.FocusBlurBinder = kff.createClass(
 
 	refresh: function()
 	{
-		if(this.values[this.valueIndex])
+		if(this.value)
 		{
 			if(!this.$element.is(':focus')) this.$element.trigger('focus');
 		}
