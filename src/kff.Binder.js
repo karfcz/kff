@@ -29,19 +29,22 @@ kff.Binder = kff.createClass(
 
 	init: function()
 	{
-		if(this.model instanceof kff.Model)
+		if(this.options.watch)
+		{
+			this.rebind();
+		}
+		else if(this.model instanceof kff.Model)
 		{
 			this.model.on('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
 			if(this.$element && this.events.length > 0) this.delegateEvents.call(this, this.events);
 		}
 		if(this.options.fill && this.model instanceof kff.Model) this.fill();
-		if(this.options.watch) this.bindDynamic();
 	},
 
 	destroy: function()
 	{
-		if(this.options.watch) this.unbindDynamic();
 		if(this.model instanceof kff.Model) this.model.off('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
+		if(this.options.watch) this.unbindDynamic();
 		if(this.$element && this.events.length > 0) this.undelegateEvents.call(this, this.events);
 		this.currentValue = null;
 		this.value = null;
@@ -174,14 +177,20 @@ kff.Binder = kff.createClass(
 
 	fill: function(){},
 
+	rebindTimed: function(event)
+	{
+		kff.setZeroTimeout(this.f('rebind'));
+	},
+
 	rebind: function(event)
 	{
+		this.unbindDynamic();
 		if(this.model instanceof kff.Model)
 		{
 			this.model.off('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
 			if(this.$element && this.events.length > 0) this.undelegateEvents.call(this, this.events);
 		}
-		this.unbindDynamic();
+
 		this.bindDynamic();
 		if(this.model instanceof kff.Model)
 		{
@@ -202,7 +211,7 @@ kff.Binder = kff.createClass(
 			attr = this.modelPathArray[i];
 			if(model instanceof kff.Model)
 			{
-				model.on('change:' + attr, this.f('rebind'));
+				model.on('change:' + attr, this.f('rebindTimed'));
 				this.dynamicBindings.push({ model: model, attr: attr });
 				model = model.get(attr);
 			}
@@ -217,7 +226,7 @@ kff.Binder = kff.createClass(
 	{
 		for(var i = 0, l = this.dynamicBindings.length; i < l; i++)
 		{
-			this.dynamicBindings[i].model.off('change:' + this.dynamicBindings[i].attr, this.f('rebind'));
+			this.dynamicBindings[i].model.off('change:' + this.dynamicBindings[i].attr, this.f('rebindTimed'));
 		}
 		this.dynamicBindings = [];
 	}
