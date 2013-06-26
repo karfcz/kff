@@ -322,7 +322,7 @@ kff.Events = kff.createClass(
 			{
 				this.subscribers[eventType].each(function(val)
 				{
-					val.call(null, eventData);
+					if(typeof val === 'function') val.call(null, eventData);
 				});
 
 				// Remove "one" subscribers:
