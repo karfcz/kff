@@ -161,7 +161,7 @@ kff.Binder = kff.createClass(
 			attr: this.attr,
 			model: null,
 			modelName: this.modelName,
-			modelPathArray:  this.modelPathArray,
+			modelPathArray: this.modelPathArray,
 			parsers: this.parsers,
 			formatters: this.formatters,
 			params: this.params,
@@ -181,7 +181,8 @@ kff.Binder = kff.createClass(
 			this.model.off('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
 			if(this.$element && this.events.length > 0) this.undelegateEvents.call(this, this.events);
 		}
-		this.model = this.view.getModel(this.modelPathArray);
+		this.unbindDynamic();
+		this.bindDynamic();
 		if(this.model instanceof kff.Model)
 		{
 			this.model.on('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
@@ -192,18 +193,24 @@ kff.Binder = kff.createClass(
 
 	bindDynamic: function()
 	{
-		var modelPathArray = [].concat(this.modelPathArray);
-		var modelName1 = modelPathArray.shift(), modelName2, model;
-		while(modelName2 = modelPathArray.shift())
+		var modelName = this.modelPathArray[0],
+			model = this.view.getModel(modelName),
+			attr;
+
+		for(var i = 1, l = this.modelPathArray.length; i < l; i++)
 		{
-			model = this.view.getModel(modelName1);
+			attr = this.modelPathArray[i];
 			if(model instanceof kff.Model)
 			{
-				model.on('change:' + modelName2, this.f('rebind'));
-				this.dynamicBindings.push({ model: model, attr: modelName2 });
+				model.on('change:' + attr, this.f('rebind'));
+				this.dynamicBindings.push({ model: model, attr: attr });
+				model = model.get(attr);
 			}
-			modelName1 = modelName2;
+			else if(model !== null && typeof model === 'object' && (attr in model)) model = model.attr;
+			else model = null;
 		}
+		if(model instanceof kff.Model) this.model = model;
+		else this.model = null;
 	},
 
 	unbindDynamic: function()
@@ -212,6 +219,7 @@ kff.Binder = kff.createClass(
 		{
 			this.dynamicBindings[i].model.off('change:' + this.dynamicBindings[i].attr, this.f('rebind'));
 		}
+		this.dynamicBindings = [];
 	}
 
 });

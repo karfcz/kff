@@ -86,4 +86,43 @@ describe('kff.BindingView', function()
 
 	});
 
+
+	it('should rebind a :watch binding when model path change', function()
+	{
+		var intel = new kff.Model({
+			name: 'intel'
+		});
+		var amd = new kff.Model({
+			name: 'amd'
+		});
+		var motherboard = new kff.Model({
+			processor: intel
+		});
+		var computer = new kff.Model({
+			motherboard: motherboard
+		});
+
+		var $div = $('<div data-kff-bind="computer.motherboard.processor.name:text:watch"/>');
+		var view = new kff.BindingView(
+		{
+			element: $div,
+			models: {
+				computer: computer
+			}
+		});
+		view.init();
+
+		setTimeout(function()
+		{
+			$div.text().should.equal('intel');
+			motherboard.set({ processor: amd });
+			setTimeout(function()
+			{
+				$div.text().should.equal('amd');
+			}, 0);
+
+		}, 0);
+
+	});
+
 });
