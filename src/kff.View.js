@@ -148,10 +148,10 @@ kff.View = kff.createClass(
 			event = events[i];
 			if(event.length === 3)
 			{
-				if(typeof event[1] === 'string') $element.on(event[0], event[1], kff.bindFn(this, event[2]));
-				else event[1].on(event[0], kff.bindFn(this, event[2]));
+				if(typeof event[1] === 'string') $element.on(event[0], event[1], this.f(event[2]));
+				else event[1].on(event[0], this.f(event[2]));
 			}
-			else if(event.length === 2) $element.on(event[0], kff.bindFn(this, event[1]));
+			else if(event.length === 2) $element.on(event[0], this.f(event[1]));
 		}
 	},
 
@@ -171,10 +171,10 @@ kff.View = kff.createClass(
 			event = events[i];
 			if(event.length === 3)
 			{
-				if(typeof event[1] === 'string') $element.off(event[0], event[1], kff.bindFn(this, event[2]));
-				else event[1].off(event[0], kff.bindFn(this, event[2]));
+				if(typeof event[1] === 'string') $element.off(event[0], event[1], this.f(event[2]));
+				else event[1].off(event[0], this.f(event[2]));
 			}
-			else if(event.length === 2) $element.off(event[0], kff.bindFn(this, event[1]));
+			else if(event.length === 2) $element.off(event[0], this.f(event[1]));
 		}
 	},
 
@@ -334,13 +334,18 @@ kff.View = kff.createClass(
 				events.push([
 					onAttrSplit2[0].replace('|', ' '),
 					$(child),
-					onAttrSplit2[1]
+					this.f('callTriggerMethod', [onAttrSplit2[1]])
 				]);
 			}
 			this.addEvents(events);
 		}
 	},
 
+	callTriggerMethod: function(fn)
+	{
+		if(typeof this[fn] === 'function') this[fn].apply(this, Array.prototype.slice.call(arguments, 1));
+		else if(this.parentView) this.parentView.callTriggerMethod.apply(this.parentView, arguments);
+	},
 
 	/**
 	 * Destroys the view (destroys all subviews and unbinds previously bound DOM events.

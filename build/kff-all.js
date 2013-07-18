@@ -133,21 +133,29 @@ kff.createClass = function(meta, properties)
  * @param {Object} obj Object to which bind a function
  * @param {string} fnName Method name to bind
  */
-kff.bindFn = function(obj, fnName)
+kff.bindFn = function(obj, fnName, args)
 {
 	if(typeof obj[fnName] !== 'function') throw new TypeError("Expected function: " + fnName + ' (kff.bindFn)');
 	if(!('_boundFns' in obj)) obj._boundFns = {};
 	if(fnName in obj._boundFns) return obj._boundFns[fnName];
-	else obj._boundFns[fnName] = function(){ return obj[fnName].apply(obj, arguments); };
+	else obj._boundFns[fnName] = function()
+	{
+		if(args) return obj[fnName].apply(obj, args.concat(Array.prototype.slice.call(arguments)));
+		else return obj[fnName].apply(obj, arguments);
+	};
 	return obj._boundFns[fnName];
 };
 
 kff.classMixin = {
-	f: function(fnName)
+	f: function(fnName, args)
 	{
 		var obj = this;
-		if(typeof fnName === 'string') return kff.bindFn(obj, fnName);
-		if(typeof fnName === 'function') return function(){ return fnName.apply(obj, arguments); };
+		if(typeof fnName === 'string') return kff.bindFn(obj, fnName, args);
+		if(typeof fnName === 'function') return function()
+		{
+			if(args) return fnName.apply(obj, args.concat(Array.prototype.slice.call(arguments)));
+			else return fnName.apply(obj, arguments);
+		};
 		throw new TypeError("Expected function: " + fnName + ' (kff.f)');
 	}
 };
@@ -1405,10 +1413,10 @@ kff.View = kff.createClass(
 			event = events[i];
 			if(event.length === 3)
 			{
-				if(typeof event[1] === 'string') $element.on(event[0], event[1], kff.bindFn(this, event[2]));
-				else event[1].on(event[0], kff.bindFn(this, event[2]));
+				if(typeof event[1] === 'string') $element.on(event[0], event[1], this.f(event[2]));
+				else event[1].on(event[0], this.f(event[2]));
 			}
-			else if(event.length === 2) $element.on(event[0], kff.bindFn(this, event[1]));
+			else if(event.length === 2) $element.on(event[0], this.f(event[1]));
 		}
 	},
 
@@ -1428,10 +1436,10 @@ kff.View = kff.createClass(
 			event = events[i];
 			if(event.length === 3)
 			{
-				if(typeof event[1] === 'string') $element.off(event[0], event[1], kff.bindFn(this, event[2]));
-				else event[1].off(event[0], kff.bindFn(this, event[2]));
+				if(typeof event[1] === 'string') $element.off(event[0], event[1], this.f(event[2]));
+				else event[1].off(event[0], this.f(event[2]));
 			}
-			else if(event.length === 2) $element.off(event[0], kff.bindFn(this, event[1]));
+			else if(event.length === 2) $element.off(event[0], this.f(event[1]));
 		}
 	},
 
@@ -1591,13 +1599,18 @@ kff.View = kff.createClass(
 				events.push([
 					onAttrSplit2[0].replace('|', ' '),
 					$(child),
-					onAttrSplit2[1]
+					this.f('callTriggerMethod', [onAttrSplit2[1]])
 				]);
 			}
 			this.addEvents(events);
 		}
 	},
 
+	callTriggerMethod: function(fn)
+	{
+		if(typeof this[fn] === 'function') this[fn].apply(this, Array.prototype.slice.call(arguments, 1));
+		else if(this.parentView) this.parentView.callTriggerMethod.apply(this.parentView, arguments);
+	},
 
 	/**
 	 * Destroys the view (destroys all subviews and unbinds previously bound DOM events.
