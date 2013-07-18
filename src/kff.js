@@ -113,21 +113,29 @@ kff.createClass = function(meta, properties)
  * @param {Object} obj Object to which bind a function
  * @param {string} fnName Method name to bind
  */
-kff.bindFn = function(obj, fnName)
+kff.bindFn = function(obj, fnName, args)
 {
 	if(typeof obj[fnName] !== 'function') throw new TypeError("Expected function: " + fnName + ' (kff.bindFn)');
 	if(!('_boundFns' in obj)) obj._boundFns = {};
 	if(fnName in obj._boundFns) return obj._boundFns[fnName];
-	else obj._boundFns[fnName] = function(){ return obj[fnName].apply(obj, arguments); };
+	else obj._boundFns[fnName] = function()
+	{
+		if(args) return obj[fnName].apply(obj, args.concat(Array.prototype.slice.call(arguments)));
+		else return obj[fnName].apply(obj, arguments);
+	};
 	return obj._boundFns[fnName];
 };
 
 kff.classMixin = {
-	f: function(fnName)
+	f: function(fnName, args)
 	{
 		var obj = this;
-		if(typeof fnName === 'string') return kff.bindFn(obj, fnName);
-		if(typeof fnName === 'function') return function(){ return fnName.apply(obj, arguments); };
+		if(typeof fnName === 'string') return kff.bindFn(obj, fnName, args);
+		if(typeof fnName === 'function') return function()
+		{
+			if(args) return fnName.apply(obj, args.concat(Array.prototype.slice.call(arguments)));
+			else return fnName.apply(obj, arguments);
+		};
 		throw new TypeError("Expected function: " + fnName + ' (kff.f)');
 	}
 };
