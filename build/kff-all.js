@@ -2342,10 +2342,26 @@ kff.BindingView = kff.createClass(
 				}
 			});
 		});
-		kff.setZeroTimeout(function(){
-			that.$anchor.after(that.elements);
-			that.reindexSubviews();
 
+		kff.setZeroTimeout(function()
+		{
+			if('Zepto' in window && $ === window.Zepto)
+			{
+				var elems = [];
+
+				for(var i = 0, l = that.elements.length; i < l; i++)
+				{
+					elems.push(that.elements[i].get(0));
+				}
+
+				that.$anchor.after(elems);
+				that.reindexSubviews();
+			}
+			else
+			{
+				that.$anchor.after(that.elements);
+				that.reindexSubviews();
+			}
 		});
 	},
 
