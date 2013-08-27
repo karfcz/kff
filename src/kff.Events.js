@@ -26,8 +26,8 @@ kff.Events = kff.createClass(
 			{
 				if(eventType[i])
 				{
-					if(!this.subscribers[eventType[i]]) this.subscribers[eventType[i]] = [];
-					this.subscribers[eventType[i]].push(fn);
+					if(!this.subscribers[eventType[i]]) this.subscribers[eventType[i]] = new kff.List();
+					this.subscribers[eventType[i]].append(fn);
 				}
 			}
 		}
