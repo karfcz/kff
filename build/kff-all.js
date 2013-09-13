@@ -1404,7 +1404,7 @@ kff.View = kff.createClass(
 	 */
 	delegateEvents: function(events, $element)
 	{
-		var event, i, l;
+		var event, i, l, fn;
 		this.undelegateEvents();
 		events = events || this.options.events;
 		$element = $element || this.$element;
@@ -1413,10 +1413,19 @@ kff.View = kff.createClass(
 			event = events[i];
 			if(event.length === 3)
 			{
-				if(typeof event[1] === 'string') $element.on(event[0], event[1], this.f(event[2]));
-				else event[1].on(event[0], this.f(event[2]));
+				if(typeof event[2] === 'string') fn = this.f(event[2]);
+				else fn = event[2];
+
+				if(typeof event[1] === 'string') $element.on(event[0], event[1], fn);
+				else event[1].on(event[0], fn);
 			}
-			else if(event.length === 2) $element.on(event[0], this.f(event[1]));
+			else if(event.length === 2)
+			{
+				if(typeof event[1] === 'string') fn = this.f(event[1]);
+				else fn = event[1];
+
+				$element.on(event[0], fn);
+			}
 		}
 	},
 
@@ -1428,7 +1437,7 @@ kff.View = kff.createClass(
 	 */
 	undelegateEvents: function(events, $element)
 	{
-		var event, i, l;
+		var event, i, l, fn;
 		events = events || this.options.events;
 		$element = $element || this.$element;
 		for(i = 0, l = events.length; i < l; i++)
@@ -1436,10 +1445,19 @@ kff.View = kff.createClass(
 			event = events[i];
 			if(event.length === 3)
 			{
-				if(typeof event[1] === 'string') $element.off(event[0], event[1], this.f(event[2]));
-				else event[1].off(event[0], this.f(event[2]));
+				if(typeof event[2] === 'string') fn = this.f(event[2]);
+				else fn = event[2];
+
+				if(typeof event[1] === 'string') $element.off(event[0], event[1], fn);
+				else event[1].off(event[0], fn);
 			}
-			else if(event.length === 2) $element.off(event[0], this.f(event[1]));
+			else if(event.length === 2)
+			{
+				if(typeof event[1] === 'string') fn = this.f(event[1]);
+				else fn = event[1];
+
+				$element.off(event[0], fn);
+			}
 		}
 	},
 
@@ -1452,7 +1470,6 @@ kff.View = kff.createClass(
 	addEvents: function(events)
 	{
 		this.options.events = this.options.events.concat(events);
-		console.log('this.options.events', this.options.events);
 	},
 
 	/**
@@ -1600,7 +1617,9 @@ kff.View = kff.createClass(
 				events.push([
 					onAttrSplit2[0].replace('|', ' '),
 					$(child),
-					this.f('callTriggerMethod', [onAttrSplit2[1]])
+					this.f(function(){
+						this.callTriggerMethod.apply(this, arguments);
+					}, [onAttrSplit2[1]])
 				]);
 			}
 			this.addEvents(events);
