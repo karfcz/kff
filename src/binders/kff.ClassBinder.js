@@ -22,6 +22,7 @@ kff.ClassBinder = kff.createClass(
 	{
 		this.className = this.params[0] || null;
 		this.equalsTo = this.params[1] || true;
+		this.operator = this.params[2] || null;
 		kff.ClassBinder._super.init.call(this);
 	},
 
@@ -32,7 +33,11 @@ kff.ClassBinder = kff.createClass(
 
 	matchValue: function()
 	{
-		if(this.equalsTo) return this.value === this.parse(this.equalsTo);
+		if(this.equalsTo)
+		{
+			if(this.operator === 'ne')	return this.value !== this.parse(this.equalsTo);
+			else return this.value === this.parse(this.equalsTo);
+		}
 		else return this.value;
 	}
 });
