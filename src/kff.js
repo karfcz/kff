@@ -99,6 +99,11 @@ kff.createClass = function(meta, properties)
 		kff.mixins(constructor, meta.staticProperties);
 	}
 
+	if(meta.statics)
+	{
+		kff.mixins(constructor, meta.statics);
+	}
+
 	// Add properties to prototype
 	kff.mixins(constructor.prototype, properties);
 
