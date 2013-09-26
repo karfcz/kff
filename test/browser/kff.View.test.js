@@ -2,42 +2,48 @@ if(typeof require === 'function') var kff = require('../build/kff-all.js');
 
 describe('kff.View', function()
 {
- 	var view,
- 		$div,
- 		testString = 'test';
+	var view,
+		$div,
+		testString = 'test';
 
- 	var TestView = kff.createClass({
- 		extend: kff.View
- 	},
- 	{
- 		constructor: function(options)
- 		{
- 			options = options || {};
- 			options.events = [
- 				['click', 'click']
- 			];
- 			kff.View.apply(this, arguments);
- 		},
+	var TestView = kff.createClass({
+		extend: kff.View
+	},
+	{
+		constructor: function(options)
+		{
+			options = options || {};
+			options.events = [
+				['click', 'click']
+			];
+			options.modelEvents = [
+				['testModel', 'change', 'modelChange']
+			];
+			kff.View.apply(this, arguments);
+		},
 
- 		render: function()
- 		{
- 			this.$element.html(testString);
- 			TestView._super.render.apply(this, arguments);
- 		},
+		render: function()
+		{
+			this.$element.html(testString);
+		},
 
- 		destroy: function()
- 		{
- 			this.$element.html('');
- 			TestView._super.destroy.apply(this, arguments);
- 		},
+		destroy: function()
+		{
+			this.$element.html('');
+		},
 
- 		click: function()
- 		{
- 			this.options.done && this.options.done();
- 		}
- 	});
+		click: function()
+		{
+			if(this.options.done) this.options.done();
+		},
 
- 	beforeEach(function()
+		modelChange: function()
+		{
+			if(this.options.modelChangeDone) this.options.modelChangeDone();
+		}
+	});
+
+	beforeEach(function()
 	{
 		$div = $('<div/>');
 		view = new TestView({
@@ -178,27 +184,66 @@ describe('kff.View', function()
 
 	});
 
+	describe('#delegateModelEvents', function()
+	{
+		it('should bind an model change event to a method', function(done)
+		{
+			var testModel = new kff.Model({ a: null });
+			view = new TestView({
+				element: $div,
+				modelChangeDone: done,
+				models: {
+					testModel: testModel
+				}
+			});
+			view.init();
+			testModel.set('a', 42);
+		});
+
+	});
+
+	describe('#undelegateModelEvents', function()
+	{
+		it('should unbind an model change event to a method', function()
+		{
+			var testModel = new kff.Model({ a: null });
+			view = new TestView({
+				element: $div,
+				modelChangeDone: function(){
+					throw 'Error';
+				},
+				models: {
+					testModel: testModel
+				}
+			});
+			view.init();
+			view.startDestroy();
+			testModel.set('a', 42);
+		});
+
+	});
+
 
 	describe('#renderSubviews', function()
 	{
-	 	var TestView2 = kff.createClass({
-	 		extend: kff.View
-	 	},
-	 	{
-	 		constructor: function(options)
-	 		{
-	 			options = options || {};
-	 			options.events = [
-	 				['click', 'click']
-	 			];
-	 			kff.View.apply(this, arguments);
-	 		},
+		var TestView2 = kff.createClass({
+			extend: kff.View
+		},
+		{
+			constructor: function(options)
+			{
+				options = options || {};
+				options.events = [
+					['click', 'click']
+				];
+				kff.View.apply(this, arguments);
+			},
 
-	 		click: function()
-	 		{
-	 			this.options.done && this.options.done();
-	 		}
-	 	});
+			click: function()
+			{
+				this.options.done && this.options.done();
+			}
+		});
 
 
 		it('should render subView', function()
@@ -223,8 +268,8 @@ describe('kff.View', function()
 						construct: TestView2,
 						args: [{
 							element: $mainDiv,
-					    	viewFactory: '@viewFactory'
-					    }]
+							viewFactory: '@viewFactory'
+						}]
 					},
 					'testViewB': {
 						construct: TestView2
@@ -268,14 +313,14 @@ describe('kff.View', function()
 						construct: TestView2,
 						args: [{
 							element: $mainDiv,
-					    	viewFactory: '@viewFactory'
-					    }]
+							viewFactory: '@viewFactory'
+						}]
 					},
 					'testViewB': {
 						construct: TestView2,
-					    args: [{
-					    	done: done
-					    }]
+						args: [{
+							done: done
+						}]
 					}
 				}
 			};

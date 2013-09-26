@@ -1324,7 +1324,8 @@ kff.View = kff.createClass(
 		this.options = {
 			element: null,
 			models: null,
-			events: []
+			events: [],
+			modelEvents: []
 		};
 
 		this.initEvents();
@@ -1341,6 +1342,10 @@ kff.View = kff.createClass(
 		if(options.events)
 		{
 			this.options.events = this.options.events.concat(options.events);
+		}
+		if(options.modelEvents)
+		{
+			this.options.modelEvents = this.options.modelEvents.concat(options.modelEvents);
 		}
 		if(options.element)
 		{
@@ -1478,6 +1483,69 @@ kff.View = kff.createClass(
 	},
 
 	/**
+	 * Binds model events to the view. Accepts array of arrays in the form:
+	 *
+	 * [
+	 *     ['modelName', 'eventType', 'methodName'],
+	 * ]
+	 *
+	 * The first item is a name of the model.
+	 * The second item is an event name
+	 * The third item is the view method name (string) that acts as an event handler
+	 *
+	 * @param {Array} events Array of arrays of binding config
+	 */
+	delegateModelEvents: function(events)
+	{
+		var event, i, l, fn;
+		this.undelegateModelEvents();
+		events = events || this.options.modelEvents;
+
+		for(i = 0, l = events.length; i < l; i++)
+		{
+			event = events[i];
+
+			if(event.length === 3 && this.models[event[0]])
+			{
+				if(typeof event[2] === 'string') fn = this.f(event[2]);
+				else fn = event[2];
+				this.models[event[0]].on(event[1], fn);
+			}
+		}
+	},
+
+	/**
+	 * Unbinds model events from the view. Accepts array of arrays in the form:
+	 *
+	 * [
+	 *     ['modelName', 'eventType', 'methodName'],
+	 * ]
+	 *
+	 * The first item is a name of the model.
+	 * The second item is an event name
+	 * The third item is the view method name (string) that acts as an event handler
+	 *
+	 * @param {Array} events Array of arrays of binding config
+	 */
+	undelegateModelEvents: function(events)
+	{
+		var event, i, l, fn;
+		events = events || this.options.modelEvents;
+
+		for(i = 0, l = events.length; i < l; i++)
+		{
+			event = events[i];
+
+			if(event.length === 3 && this.models[event[0]])
+			{
+				if(typeof event[2] === 'string') fn = this.f(event[2]);
+				else fn = event[2];
+				this.models[event[0]].off(event[1], fn);
+			}
+		}
+	},
+
+	/**
 	 * Initializes the view. Calls the render method. Should not be overloaded by subclasses.
 	 *
 	 * @private
@@ -1507,6 +1575,7 @@ kff.View = kff.createClass(
 		this.renderSubviews();
 		this.processTriggerEvents();
 		this.delegateEvents();
+		this.delegateModelEvents();
 		if(typeof this.afterRender === 'function') this.afterRender();
 
 		if(!((silent === true) || (ret === false)))
@@ -1656,6 +1725,7 @@ kff.View = kff.createClass(
 		var ret;
 		this.$element.removeAttr(kff.View.DATA_RENDERED_ATTR);
 		this.undelegateEvents();
+		this.undelegateModelEvents();
 		this.destroySubviews();
 
 		ret = this.destroy();
