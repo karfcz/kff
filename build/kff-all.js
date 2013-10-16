@@ -2494,8 +2494,9 @@ kff.BindingView = kff.createClass(
 			}
 			else if(!filter && this.subViewsMap[i] !== false)
 			{
+				renderIndex = this.subViewsMap[i];
 				this.subViewsMap[i] = false;
-				this.removeSubViewAt(this.subViewsMap[i]);
+				this.removeSubViewAt(renderIndex);
 			}
 		}
 		else
@@ -2525,13 +2526,16 @@ kff.BindingView = kff.createClass(
 	 */
 	removeSubViewAt: function(renderIndex)
 	{
-		this.subViews[renderIndex].startDestroy();
-		this.subViews.splice(renderIndex, 1);
-		this.elements[renderIndex].remove();
-		this.elements.splice(renderIndex, 1);
+		if(this.subViews[renderIndex])
+		{
+			this.subViews[renderIndex].startDestroy();
+			this.subViews.splice(renderIndex, 1);
+			this.elements[renderIndex].remove();
+			this.elements.splice(renderIndex, 1);
 
-		// Reindex subsequent subviews:
-		this.reindexSubviews(renderIndex);
+			// Reindex subsequent subviews:
+			this.reindexSubviews(renderIndex);
+		}
 	},
 
 	/**
