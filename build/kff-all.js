@@ -1328,6 +1328,8 @@ kff.View = kff.createClass(
 			modelEvents: []
 		};
 
+		this.externals = [];
+
 		this.initEvents();
 
 		if(options.parentView)
@@ -1598,6 +1600,11 @@ kff.View = kff.createClass(
 
 		if(element) this.findViewElements(element, viewNames, filter);
 
+		for(i = 0, l = this.externals.length; i < l; i++)
+		{
+			this.findViewElements(this.externals[i].get(0), viewNames, filter);
+		}
+
 		// Render subviews
 		for(i = 0, l = viewNames.length; i < l; i++)
 		{
@@ -1773,6 +1780,11 @@ kff.View = kff.createClass(
 	{
 		if(this.parentView instanceof kff.View) return this.parentView.getBindingIndex(modelName);
 		return null;
+	},
+
+	addExternals: function(externals)
+	{
+		this.externals = this.externals.concat(externals);
 	}
 });
 
