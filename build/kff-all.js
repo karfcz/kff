@@ -1623,6 +1623,7 @@ kff.View = kff.createClass(
 		}
 	},
 
+
 	/**
 	 * Finds possible subview elements inside an element
 	 * @param  {DOM Element} el Root element from which search starts
@@ -1909,7 +1910,7 @@ kff.BindingView = kff.createClass(
 
 		commaSeparateRegex: /\s*,\s*/,
 
-		modifierSeparateRegex: /([^{},\s]+)|({[a-zA-Z0-9,\[\]_\-\s*]+})/g,
+		modifierSeparateRegex: /([^{},\s]+)|({[a-zA-Z0-9,\[\]_\-\.\s*]+})/g,
 
 		leadingPeriodRegex: /^\./,
 
@@ -2194,7 +2195,7 @@ kff.BindingView = kff.createClass(
 
 			if(j + 1 < l && modifierParams[j + 1].indexOf('{') === 0)
 			{
-				modifierArgs = modifierParams[j + 1].match(/([^,\s{}]+)/);
+				modifierArgs = modifierParams[j + 1].match(/([^,{}]+)/g);
 				j++;
 			}
 			else
