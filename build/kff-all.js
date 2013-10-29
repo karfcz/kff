@@ -1328,8 +1328,6 @@ kff.View = kff.createClass(
 			modelEvents: []
 		};
 
-		this.externals = [];
-
 		this.initEvents();
 
 		if(options.parentView)
@@ -1364,6 +1362,8 @@ kff.View = kff.createClass(
 		kff.mixins(this.options, options);
 
 		this.viewFactory = options.viewFactory || new kff.ViewFactory();
+		this.subviewsStruct = [];
+		this.explicitSubviewsStruct = null;
 		this.subViews = [];
 		return this;
 	},
@@ -1572,6 +1572,7 @@ kff.View = kff.createClass(
 	 */
 	startRender: function(silent)
 	{
+		this.explicitSubviewsStruct = [];
 		var ret = this.render();
 		this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 		this.renderSubviews();
@@ -1593,36 +1594,47 @@ kff.View = kff.createClass(
 	 */
 	renderSubviews: function()
 	{
-		var viewNames = [],
-			viewName, viewClass, subView, options, opt, i, l, rendered,
-			filter = this.options.filter || undefined,
-			element = this.$element.get(0);
+		var i, l, element = this.$element.get(0),
+			subView, options, opt, rendered, subviewsStruct;
 
-		if(element) this.findViewElements(element, viewNames, filter);
+		if(element) this.findViewElements(element, this.subviewsStruct);
 
-		for(i = 0, l = this.externals.length; i < l; i++)
-		{
-			this.findViewElements(this.externals[i].get(0), viewNames, filter);
-		}
+		subviewsStruct = this.subviewsStruct.concat(this.explicitSubviewsStruct);
 
 		// Render subviews
-		for(i = 0, l = viewNames.length; i < l; i++)
+		for(i = 0, l = subviewsStruct.length; i < l; i++)
 		{
-			viewName = viewNames[i].objPath;
-			opt = viewNames[i].$element.attr(kff.View.DATA_OPTIONS_ATTR);
-			options = opt ? JSON.parse(opt) : {};
-			options.element = viewNames[i].$element;
-			options.parentView = this;
-			subView = this.viewFactory.createView(viewName, options);
+			options = subviewsStruct[i].options;
+			options.element = subviewsStruct[i].$element;
+			subView = this.createView(subviewsStruct[i].viewName, options);
 			if(subView instanceof kff.View)
 			{
-				subView.viewFactory = this.viewFactory;
-				this.subViews.push(subView);
 				subView.init();
 			}
 		}
+
 	},
 
+	createView: function(viewName, options)
+	{
+		options.parentView = this;
+		var subView = this.viewFactory.createView(viewName, options);
+		if(subView instanceof kff.View)
+		{
+			subView.viewFactory = this.viewFactory;
+			this.subViews.push(subView);
+		}
+		return subView;
+	},
+
+	addSubview: function($element, viewName, options)
+	{
+		this.explicitSubviewsStruct.push({
+			viewName: viewName,
+			$element: $element,
+			options: options || {}
+		});
+	},
 
 	/**
 	 * Finds possible subview elements inside an element
@@ -1631,9 +1643,9 @@ kff.View = kff.createClass(
 	 *                           (items will be objects { objPath: viewName, $element: jQuery wrapper })
 	 * @param  {string} filter  A jQuery selector for filtering elements (optional)
 	 */
-	findViewElements: function(el, viewNames, filter)
+	findViewElements: function(el, subviewsStruct, forceRendered)
 	{
-		var i, l, children, child, viewName, rendered, onAttr;
+		var i, l, children, child, viewName, rendered, onAttr, optAttr;
 		if(el.hasChildNodes())
 		{
 			children = el.childNodes;
@@ -1643,7 +1655,7 @@ kff.View = kff.createClass(
 				if(child.nodeType === 1)
 				{
 					rendered = child.getAttribute(kff.View.DATA_RENDERED_ATTR);
-					if(!rendered)
+					if(!rendered || forceRendered)
 					{
 						viewName = child.getAttribute(kff.View.DATA_VIEW_ATTR);
 						if(!viewName && child.getAttribute(kff.View.DATA_BIND_ATTR))
@@ -1653,10 +1665,12 @@ kff.View = kff.createClass(
 						}
 						if(viewName)
 						{
-							if(!filter || (filter && $(child).is(filter)))
-							{
-								viewNames.push({ objPath: viewName, $element: $(child) });
-							}
+							optAttr = child.getAttribute(kff.View.DATA_OPTIONS_ATTR);
+							subviewsStruct.push({
+								viewName: viewName,
+								$element: $(child),
+								options: optAttr ? JSON.parse(optAttr) : {}
+							});
 						}
 						else
 						{
@@ -1665,7 +1679,7 @@ kff.View = kff.createClass(
 							{
 								this.processChildTriggerEvents(child, onAttr);
 							}
-							this.findViewElements(child, viewNames, filter);
+							this.findViewElements(child, subviewsStruct, forceRendered);
 						}
 					}
 				}
@@ -1781,12 +1795,8 @@ kff.View = kff.createClass(
 	{
 		if(this.parentView instanceof kff.View) return this.parentView.getBindingIndex(modelName);
 		return null;
-	},
-
-	addExternals: function(externals)
-	{
-		this.externals = this.externals.concat(externals);
 	}
+
 });
 
 
