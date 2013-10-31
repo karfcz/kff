@@ -29,9 +29,18 @@
  */
 kff.extend = function(child, parent)
 {
-	var F = function(){};
-	child._super = F.prototype = parent.prototype;
-	child.prototype = new F();
+	var F;
+	if(Object.create)
+	{
+		child.prototype = Object.create(parent.prototype);
+	}
+	else
+	{
+		F = function(){};
+		F.prototype = parent.prototype;
+		child.prototype = new F();
+	}
+	child._super = parent.prototype;
 	child.prototype.constructor = child;
 };
 
