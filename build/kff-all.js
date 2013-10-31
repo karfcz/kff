@@ -20,7 +20,9 @@
 
 
 /**
- * Extends constructor function (class) from parent constructor using prototype inherinatce
+ * Extends constructor function (class) from parent constructor using prototype
+ * inherinatce.
+ *
  * @public
  * @param {function} child Child class
  * @param {function} parent Parent class
@@ -34,9 +36,10 @@ kff.extend = function(child, parent)
 };
 
 /**
- * Mixins (using a shallow copy) properties from one object to another
- * Function accepts multiple arguments with multiple extending objects
- * When passing true as the last argument, deep copy will be used
+ * Mixins (using a shallow copy) properties from one object to another.
+ * Function accepts multiple arguments with multiple extending objects.
+ * The first object will be extended (modified) by the following object(s).
+ * When passing true as the last argument, deep copy will be executed (any object ).
  *
  * @param {Object} obj Object to be extended
  * @param {Object} properties Extending object(s)
@@ -73,7 +76,7 @@ kff.mixins = function(obj, properties)
 };
 
 /**
- * Factory for creating a class
+ * Factory function for creating a class
  * @param {Object} meta Object with metadata describing inheritance and static properties of the class
  * @param {Object} properties Properties of a class prototype (or class members)
  * @returns {function} A constructor function (class)
@@ -134,7 +137,10 @@ kff.createClass = function(meta, properties)
 };
 
 /**
- * Binds function to an object. Adds _boundFns object width references to bound methods for caching purposes.
+ * Binds function to an object.
+ * Note that it adds a _boundFns property to the object which is an object
+ * containing references to the bound methods for caching purposes.
+ *
  * @param {Object} obj Object to which bind a function
  * @param {string} fnName Method name to bind
  */
@@ -190,9 +196,12 @@ kff.evalObjectPath = function(path, obj)
 };
 
 /**
- * Detects if an object is a POJO (object created as literal or usin new Object)
+ * Detects if an object is a plain javascript object (object created as literal
+ * or by new Object). Very simple implementation not as robust as the jQuery one
+ * but better performing.
+ *
  * @param  {mixed}  obj Object to detect
- * @return {Boolean} True if object is POJO, false otherwise
+ * @return {Boolean} True if object is a plain object, false otherwise
  */
 kff.isPlainObject = function(obj)
 {
@@ -201,7 +210,12 @@ kff.isPlainObject = function(obj)
 
 
 /**
- * Calls a function in the next process cycle with minimal timeout.
+ * Calls a function in the next process cycle with minimal timeout. It is like
+ * setTimeout(fn, 0) but with better performance (does not obey the internal
+ * browser limits for timeout that exist due to backward compatibility).
+ *
+ * Fallbacks to setTimeout on older MSIE.
+ *
  * @param  {function}  fn Callback function
  */
 kff.setZeroTimeout = function(fn)
@@ -369,8 +383,8 @@ kff.List = kff.createClass(
 /** @lends kff.List.prototype */
 {
 	/**
-		Class representing a list data structure
-		@constructs
+	 * Class representing a list data structure.
+	 * @constructs
 	 */
 	constructor: function()
 	{
@@ -378,7 +392,7 @@ kff.List = kff.createClass(
 	},
 
 	/**
-	 * Returns number of items in the list
+	 * Returns number of items in the list.
 	 *
 	 * @return {number} Number of items (length of the list)
 	 */
@@ -388,8 +402,8 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Iterates over each item in the list
-		@param {function} fn A callback function to be called on each item. Takes two arguments - the iterated item and its index
+	 * Iterates over each item in the list
+	 * @param {function} fn A callback function to be called on each item. Takes two arguments - the iterated item and its index
 	 */
 	each: function(fn)
 	{
@@ -401,8 +415,8 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Appends an item at the end of the list
-		@param {mixed} item Item to be appended
+	 * Appends an item at the end of the list
+	 * @param {mixed} item Item to be appended
 	 */
 	append: function(item)
 	{
@@ -410,8 +424,8 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Inserts an item at specified index
-		@param {mixed} item Item to be inserted
+	 * Inserts an item at specified index
+	 * @param {mixed} item Item to be inserted
 	 */
 	insert: function(item, index)
 	{
@@ -419,9 +433,9 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Removes item from the list
-		@param {mixed} item Reference to the item to be removed
-		@returns {Boolean} True if item was removed or false if not found
+	 * Removes item from the list
+	 * @param {mixed} item Reference to the item to be removed
+	 * @returns {Boolean} True if item was removed or false if not found
 	 */
 	remove: function(item)
 	{
@@ -432,7 +446,7 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Removes all items from the list
+	 * Removes all items from the list.
 	 */
 	empty: function()
 	{
@@ -440,7 +454,7 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Splice list
+	 * Splice list. Behavior is the same as of Array.splice.
 	 */
 	splice: function()
 	{
@@ -448,10 +462,10 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Returns an index of given item
-
-		@param {mixed} item Value to be found
-		@returns {number} index of the item or -1 if not found
+	 * Returns an index of given item
+	 *
+	 * @param {mixed} item Value to be found
+	 * @returns {number} index of the item or -1 if not found
 	 */
 	indexOf: function(item)
 	{
@@ -460,7 +474,7 @@ kff.List = kff.createClass(
 			kff.List.prototype.indexOf = function(item)
 			{
 				return this.array.indexOf(item);
-			}
+			};
 		}
 		else
 		{
@@ -469,16 +483,16 @@ kff.List = kff.createClass(
 				var i = 0, a = this.array, l = a.length;
 				for(; i < l; i++) if(a[i] === item) return i;
 				return -1;
-			}
+			};
 		}
 		return this.indexOf(item);
 	},
 
 	/**
-		Sets an item at given position
-
-		@param {number} index Index of item
-		@param {mixed} item Item to set
+	 * Sets an item at given position
+	 *
+	 * @param {number} index Index of item
+	 * @param {mixed} item Item to set
 	 */
 	set: function(index, item)
 	{
@@ -487,10 +501,10 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Returns an item at given position
-
-		@param {number} index Index of item
-		@returns {mixed} Item at given position (or undefined if not found)
+	 * Returns an item at given position
+	 *
+	 * @param {number} index Index of item
+	 * @returns {mixed} Item at given position (or undefined if not found)
 	 */
 	get: function(index)
 	{
@@ -498,10 +512,10 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Sorts list using a compare function. The compare function follows the same specification
-		as the standard Array.sort function
-
-		@param {function} compareFunction Compare function
+	 * Sorts list using a compare function. The compare function follows the same specification
+	 * as the standard Array.sort function
+	 *
+	 * @param {function} compareFunction Compare function
 	 */
 	sort: function(compareFunction)
 	{
@@ -509,7 +523,7 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Randomizes items in the list.
+	 * Randomizes items in the list.
 	 */
 	shuffle: function()
 	{
@@ -541,13 +555,13 @@ kff.Collection = kff.createClass(
 /** @lends kff.Collection.prototype	*/
 {
 	/**
-		Class representing a collection of models.
+	 * Class representing a collection of models.
 
-		@constructs
-		@augments kff.List
-		@param {Object} options Options object
-		@param {function} options.itemFactory Factory function for creating new collection items (optional)
-		@param {function} options.itemType Type (class or constructor function) of collection items
+	 * @constructs
+	 * @augments kff.List
+	 * @param {Object} options Options object
+	 * @param {function} options.itemFactory Factory function for creating new collection items (optional)
+	 * @param {function} options.itemType Type (class or constructor function) of collection items
 	 */
 	constructor: function(options)
 	{
@@ -776,12 +790,24 @@ kff.Collection = kff.createClass(
 		if(!silent) this.trigger('change', { type: 'shuffle' });
 	},
 
+	/**
+	 * Splices the collection. Works exactly like the Array.splice method.
+	 */
 	splice: function()
 	{
 		kff.Collection._super.splice.apply(this, arguments);
 		this.trigger('change', { type: 'splice' });
 	},
 
+	/**
+	 * Binds an event handler to each item in the collection.
+	 * This bindings are persistent - when new items are added to the
+	 * collection, event handlers are automatically bound to them. Handlers for
+	 * removed items are automatically removed as well.
+	 *
+	 * @param  {String}   eventType Event type
+	 * @param  {Function} fn        Event handler
+	 */
 	onEach: function(eventType, fn)
 	{
 		this.onEachEvents.push({ eventType: eventType, fn: fn });
@@ -791,6 +817,12 @@ kff.Collection = kff.createClass(
 		this.on('change', this.f('refreshOnEach'));
 	},
 
+	/**
+	 * Unbinds event handler previously bound by onEach method.
+	 *
+	 * @param  {String}   eventType Event type
+	 * @param  {Function} fn        Event handler
+	 */
 	offEach: function(eventType, fn)
 	{
 		for(var i = 0, l = this.onEachEvents.length; i < l; i++)
@@ -803,6 +835,12 @@ kff.Collection = kff.createClass(
 		this.off('change', this.f('refreshOnEach'));
 	},
 
+	/**
+	 * Refreshes event handlers boud by onEach method.
+	 *
+	 * @private
+	 * @param  {Object} event Collection change event
+	 */
 	refreshOnEach: function(event)
 	{
 		switch(event ? event.type : null)
@@ -819,6 +857,12 @@ kff.Collection = kff.createClass(
 		}
 	},
 
+	/**
+	 * Binds 'onEach' event handlers to a newly added collection item.
+	 *
+	 * @private
+	 * @param  {kff.Model} item A new collection item (model)
+	 */
 	bindOnOne: function(item)
 	{
 		for(var i = 0, l = this.onEachEvents.length; i < l; i++)
@@ -827,6 +871,12 @@ kff.Collection = kff.createClass(
 		}
 	},
 
+	/**
+	 * Unbinds 'onEach' event handlers from removed collection item.
+	 *
+	 * @private
+	 * @param  {kff.Model} item Removed collection item (model)
+	 */
 	unbindOnOne: function(item)
 	{
 		for(var i = 0, l = this.onEachEvents.length; i < l; i++)
@@ -835,6 +885,11 @@ kff.Collection = kff.createClass(
 		}
 	},
 
+	/**
+	 * Rebinds all 'onEach' event handlers for each collection item.
+	 *
+	 * @private
+	 */
 	rebindEach: function()
 	{
 		var that = this;
@@ -857,28 +912,28 @@ kff.Model = kff.createClass(
 /** @lends kff.Model.prototype */
 {
 	/**
-		Base class for models
-		@constructs
+	 * Base class for models
+	 * @constructs
 	 */
 	constructor: function(attrs)
 	{
 		this.initEvents();
 
 		/**
-			Attributes of model
-			@private
-		*/
+		 * Attributes of model
+		 * @private
+		 */
 		this.attrs = this.attrs || {};
 
 		if(attrs) this.set(attrs);
 	},
 
 	/**
-		Checks if the model has given attribute
-
-		@public
-		@param {string} attr Attribute name
-		@returns {boolean} True if found, false otherwise
+	 * Checks if the model has given attribute
+	 *
+	 * @public
+	 * @param {string} attr Attribute name
+	 * @returns {boolean} True if found, false otherwise
 	 */
 	has: function(attr)
 	{
@@ -886,10 +941,10 @@ kff.Model = kff.createClass(
 	},
 
 	/**
-		Returns the value of given attribute
-
-		@param {string} attr Attribute name
-		@returns {mixed} Attribute value
+	 * Returns the value of given attribute
+	 *
+	 * @param {string} attr Attribute name
+	 * @returns {mixed} Attribute value
 	 */
 	get: function(attr)
 	{
@@ -897,14 +952,14 @@ kff.Model = kff.createClass(
 	},
 
 	/**
-		Returns the value of given attribute using deep lookup (object.attribute.some.value)
+	 * Returns the value of given attribute using deep lookup (object.attribute.some.value)
 
-		@param {string} attrPath Attribute path
-		@returns {mixed} Attribute value
-	 	@example
-	 	obj.mget('one.two.three');
-	 	// equals to:
-	 	obj.get('one').get('two').get('three');
+	 * @param {string} attrPath Attribute path
+	 * @returns {mixed} Attribute value
+	 * @example
+	 *     obj.mget('one.two.three');
+	 *     // equals to:
+	 *     obj.get('one').get('two').get('three');
 	 */
 	mget: function(attrPath)
 	{
@@ -920,11 +975,11 @@ kff.Model = kff.createClass(
 	},
 
 	/**
-		Sets the value(s) of given attribute(s). Triggers change event.
-
-		@param {string} attr Attribute name
-		@param {mixed} value Attribute value
-		@param {Boolean} silent If true, do not trigger event
+	 * Sets the value(s) of given attribute(s). Triggers a change event.
+	 *
+	 * @param {string} attr Attribute name
+	 * @param {mixed} value Attribute value
+	 * @param {Boolean} silent If true, do not trigger event
 	 */
 	set: function(attr, value, silent)
 	{
@@ -954,11 +1009,11 @@ kff.Model = kff.createClass(
 	},
 
 	/**
-		Exports a JSON representation of model attributes. If an attribute is type of Object, tries to call a toJson
-		method recursively.	This function returns a plain javascript object, not the stringified JSON.
-
-		@param {Array.<string>} serializeAttrs Array of attribute names to be exported or all if omitted.
-		@returns {Object} Plain JavaScript object representation of object's attributes
+	 * Exports a JSON representation of model attributes. If an attribute is type of Object, tries to call a toJson
+	 * method recursively.	This function returns a plain javascript object, not the stringified JSON.
+	 *
+	 * @param {Array.<string>} serializeAttrs Array of attribute names to be exported or all if omitted.
+	 * @returns {Object} Plain JavaScript object representation of object's attributes
 	 */
 	toJson: function(serializeAttrs)
 	{
@@ -975,13 +1030,13 @@ kff.Model = kff.createClass(
 	},
 
 	/**
-		Imports model's attributes from JSON (plain JavaScript object).
-
-		If an attribute is type of Object, tries to read appropriate property using its fromJson method.
-		This function returns plain object, not stringified JSON.
-
-		@param {Object} obj Plain JS object to read attributes from
-		@param {Boolean} silent If true, do not trigger event
+	 * Imports model's attributes from JSON (plain JavaScript object).
+	 *
+	 * If the attribute is type of Object, tries to read appropriate property using its fromJson method.
+	 * This function returns plain object, not stringified JSON.
+	 *
+	 * @param {Object} obj Plain JS object to read attributes from
+	 * @param {Boolean} silent If true, do not trigger event
 	 */
 	fromJson: function(obj, silent)
 	{
@@ -1003,7 +1058,7 @@ kff.Model = kff.createClass(
 
 kff.ServiceContainer = kff.createClass(
 {
-	staticProperties:
+	statics:
 	{
 		CONFIG_CONSTRUCTOR: 'construct',
 		singleParamRegex: /^%[^%]+%$/g,
@@ -1631,6 +1686,7 @@ kff.View = kff.createClass(
 	 *
 	 * Do not use this method directly, use addSubview method instead.
 	 *
+	 * @private
 	 * @param  {String} viewName Name of the view
 	 * @param  {Object} options  Options object for the subview constructor
 	 * @return {kff.View}        Created view
@@ -1671,6 +1727,8 @@ kff.View = kff.createClass(
 
 	/**
 	 * Finds possible subview elements inside an element
+	 *
+	 * @private
 	 * @param  {DOM Element} el Root element from which search starts
 	 * @param  {Array} viewNames Array that will be filled by found elements
 	 *                           (items will be objects { objPath: viewName, $element: jQuery wrapper })
@@ -1757,6 +1815,12 @@ kff.View = kff.createClass(
 		}
 	},
 
+	/**
+	 * Finds and calls a method registered as trigger handler.
+	 *
+	 * @private
+	 * @param  {Function} fn Function to be called
+	 */
 	callTriggerMethod: function(fn)
 	{
 		if(typeof this[fn] === 'function') this[fn].apply(this, Array.prototype.slice.call(arguments, 1));
@@ -1851,13 +1915,13 @@ kff.PageView = kff.createClass(
 /** @lends kff.PageView.prototype */
 {
 	/**
-		Class for the full page view. PageViews behave as normal views but can be used by FrontController as
-		targets for routing.
-
-		@constructs
-		@augments kff.View
-		@param {Object} options Options object (see kff.View for details)
-	*/
+	 * Class for the full page view. PageViews behave as normal views but can be used by FrontController as
+	 * targets for routing.
+	 *
+	 * @constructs
+	 * @augments kff.View
+	 * @param {Object} options Options object (see kff.View for details)
+	 */
 	constructor: function(options)
 	{
 		options = options || {};
@@ -1866,26 +1930,26 @@ kff.PageView = kff.createClass(
 	},
 
 	/**
-		@see kff.View#delegateEvents
-	*/
+	 * @see kff.View#delegateEvents
+	 */
 	delegateEvents: function(events, $element)
 	{
 		kff.PageView._super.delegateEvents.call(this, events, $element || $(document));
 	},
 
 	/**
-		@see kff.View#undelegateEvents
-	*/
+	 * @see kff.View#undelegateEvents
+	 */
 	undelegateEvents: function(events, $element)
 	{
 		kff.PageView._super.undelegateEvents.call(this, events, $element || $(document));
 	},
 
 	/**
-		Sets a new state of the view. Called by the front controller.
-
-		@param {Object} state The state object (POJO)
-	*/
+	 * Sets a new state of the view. Called by the front controller.
+	 *
+	 * @param {Object} state The state object (POJO)
+	 */
 	setState: function(state, silent)
 	{
 		if(!silent) this.trigger('setState', state);
@@ -3224,7 +3288,7 @@ kff.ClassBinder = kff.createClass(
 {
 	/**
 	 * One-way data binder (model to DOM) for CSS class.
-	 * Sets the class of the element to defined value when model atrribute changes.
+	 * Sets/Unsets the class of the element to some predefined value when model atrribute changes.
 	 *
 	 * @constructs
 	 * @augments kff.Binder
@@ -3269,8 +3333,8 @@ kff.StyleBinder = kff.createClass(
 /** @lends kff.StyleBinder.prototype */
 {
 	/**
-	 * One-way data binder (model to DOM) for CSS class.
-	 * Sets the class of the element to defined value when model atrribute changes.
+	 * One-way data binder (model to DOM) for any CSS style property.
+	 * Sets the CSS property of the element to defined value when model atrribute changes.
 	 *
 	 * @constructs
 	 * @augments kff.Binder
@@ -3604,8 +3668,15 @@ kff.ViewFactory = kff.createClass(
 /** @lends kff.ViewFactory.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * Factory class for creating views.
+	 * This class uses dependency injection container (kff.ServiceContainer)
+	 * to lookup and instantiation of views.
+	 *
+	 * @param  {Object} options Configuration object
+	 * @param  {kff.ServiceContainer} options.serviceContainer DI container for instantiation of views
+	 * @param  {Object} options.precedingViews Object containing key-value pairs of preceding page views
+	 * @constructs
+	 */
 	constructor: function(options)
 	{
 		options = options || {};
@@ -3613,6 +3684,15 @@ kff.ViewFactory = kff.createClass(
 		this.precedingViews = options.precedingViews || {};
 	},
 
+	/**
+	 * Creates a new view instance. Uses the service container when provided.
+	 * If not, tries to lookup for a view name in global namespace (treating
+	 * viewName as object keypath)
+	 *
+	 * @param  {String} viewName Name of the view
+	 * @param  {Object} options  Options object passed to the view constuctor
+	 * @return {kff.View}        Created view
+	 */
 	createView: function(viewName, options)
 	{
 		var view = null, viewClass;
@@ -3628,6 +3708,14 @@ kff.ViewFactory = kff.createClass(
 		return view;
 	},
 
+	/**
+	 * Returns constructor function of the view. Used only as fallback in the
+	 * getPrecedingView method.
+	 *
+	 * @private
+	 * @param  {[type]} viewName [description]
+	 * @return {[type]}          [description]
+	 */
 	getServiceConstructor: function(viewName)
 	{
 		if(typeof viewName === 'function') return viewName;
@@ -3635,6 +3723,12 @@ kff.ViewFactory = kff.createClass(
 		else return kff.evalObjectPath(viewName);
 	},
 
+	/**
+	 * Returns a name of the preceding page view.
+	 *
+	 * @param  {String} viewName Name of the view
+	 * @return {String}          Name of the preceding view
+	 */
 	getPrecedingView: function(viewName)
 	{
 		var viewCtor;
@@ -3658,8 +3752,8 @@ kff.Route = kff.createClass(
 /** @lends kff.Route.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * @constructs
+	 */
 	constructor: function(pattern, target)
 	{
 		this.pattern = pattern;
@@ -3739,8 +3833,6 @@ kff.Route = kff.createClass(
 			.replace(/\*/g, '(.*)');
 		return new RegExp('^' + path + '$', sensitive ? '' : 'i');
 	}
-
-
 });
 
 
@@ -3748,8 +3840,8 @@ kff.Router = kff.createClass(
 /** @lends kff.Router.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * @constructs
+	 */
 	constructor: function(options)
 	{
 		this.options = options || {};
@@ -3945,8 +4037,15 @@ kff.App = kff.createClass(
 /** @lends kff.App.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * Convenient class for basic application structure. Contains service
+	 * container with preddefined services:
+	 *
+	 * - viewFactory
+	 * - frontController
+	 * - pageView
+	 *
+	 * @constructs
+	 */
 	constructor: function(options)
 	{
 		var models;
@@ -3989,11 +4088,22 @@ kff.App = kff.createClass(
 		return this;
 	},
 
+	/**
+	 * Initiates application. Gets a 'frontController' service from container
+	 * and calls its init method.
+	 *
+	 * @return {[type]} [description]
+	 */
 	init: function()
 	{
 		this.serviceContainer.getService('frontController').init();
 	},
 
+	/**
+	 * Returns internal service container instance.
+	 *
+	 * @return {kff.ServiceContainer} service container instance
+	 */
 	getServiceContainer: function()
 	{
 		return this.serviceContainer;

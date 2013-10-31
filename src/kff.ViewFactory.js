@@ -3,8 +3,15 @@ kff.ViewFactory = kff.createClass(
 /** @lends kff.ViewFactory.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * Factory class for creating views.
+	 * This class uses dependency injection container (kff.ServiceContainer)
+	 * to lookup and instantiation of views.
+	 *
+	 * @param  {Object} options Configuration object
+	 * @param  {kff.ServiceContainer} options.serviceContainer DI container for instantiation of views
+	 * @param  {Object} options.precedingViews Object containing key-value pairs of preceding page views
+	 * @constructs
+	 */
 	constructor: function(options)
 	{
 		options = options || {};
@@ -12,6 +19,15 @@ kff.ViewFactory = kff.createClass(
 		this.precedingViews = options.precedingViews || {};
 	},
 
+	/**
+	 * Creates a new view instance. Uses the service container when provided.
+	 * If not, tries to lookup for a view name in global namespace (treating
+	 * viewName as object keypath)
+	 *
+	 * @param  {String} viewName Name of the view
+	 * @param  {Object} options  Options object passed to the view constuctor
+	 * @return {kff.View}        Created view
+	 */
 	createView: function(viewName, options)
 	{
 		var view = null, viewClass;
@@ -27,6 +43,14 @@ kff.ViewFactory = kff.createClass(
 		return view;
 	},
 
+	/**
+	 * Returns constructor function of the view. Used only as fallback in the
+	 * getPrecedingView method.
+	 *
+	 * @private
+	 * @param  {[type]} viewName [description]
+	 * @return {[type]}          [description]
+	 */
 	getServiceConstructor: function(viewName)
 	{
 		if(typeof viewName === 'function') return viewName;
@@ -34,6 +58,12 @@ kff.ViewFactory = kff.createClass(
 		else return kff.evalObjectPath(viewName);
 	},
 
+	/**
+	 * Returns a name of the preceding page view.
+	 *
+	 * @param  {String} viewName Name of the view
+	 * @return {String}          Name of the preceding view
+	 */
 	getPrecedingView: function(viewName)
 	{
 		var viewCtor;

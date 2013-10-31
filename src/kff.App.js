@@ -3,8 +3,15 @@ kff.App = kff.createClass(
 /** @lends kff.App.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * Convenient class for basic application structure. Contains service
+	 * container with preddefined services:
+	 *
+	 * - viewFactory
+	 * - frontController
+	 * - pageView
+	 *
+	 * @constructs
+	 */
 	constructor: function(options)
 	{
 		var models;
@@ -47,11 +54,22 @@ kff.App = kff.createClass(
 		return this;
 	},
 
+	/**
+	 * Initiates application. Gets a 'frontController' service from container
+	 * and calls its init method.
+	 *
+	 * @return {[type]} [description]
+	 */
 	init: function()
 	{
 		this.serviceContainer.getService('frontController').init();
 	},
 
+	/**
+	 * Returns internal service container instance.
+	 *
+	 * @return {kff.ServiceContainer} service container instance
+	 */
 	getServiceContainer: function()
 	{
 		return this.serviceContainer;

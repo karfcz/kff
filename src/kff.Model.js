@@ -6,28 +6,28 @@ kff.Model = kff.createClass(
 /** @lends kff.Model.prototype */
 {
 	/**
-		Base class for models
-		@constructs
+	 * Base class for models
+	 * @constructs
 	 */
 	constructor: function(attrs)
 	{
 		this.initEvents();
 
 		/**
-			Attributes of model
-			@private
-		*/
+		 * Attributes of model
+		 * @private
+		 */
 		this.attrs = this.attrs || {};
 
 		if(attrs) this.set(attrs);
 	},
 
 	/**
-		Checks if the model has given attribute
-
-		@public
-		@param {string} attr Attribute name
-		@returns {boolean} True if found, false otherwise
+	 * Checks if the model has given attribute
+	 *
+	 * @public
+	 * @param {string} attr Attribute name
+	 * @returns {boolean} True if found, false otherwise
 	 */
 	has: function(attr)
 	{
@@ -35,10 +35,10 @@ kff.Model = kff.createClass(
 	},
 
 	/**
-		Returns the value of given attribute
-
-		@param {string} attr Attribute name
-		@returns {mixed} Attribute value
+	 * Returns the value of given attribute
+	 *
+	 * @param {string} attr Attribute name
+	 * @returns {mixed} Attribute value
 	 */
 	get: function(attr)
 	{
@@ -46,14 +46,14 @@ kff.Model = kff.createClass(
 	},
 
 	/**
-		Returns the value of given attribute using deep lookup (object.attribute.some.value)
+	 * Returns the value of given attribute using deep lookup (object.attribute.some.value)
 
-		@param {string} attrPath Attribute path
-		@returns {mixed} Attribute value
-	 	@example
-	 	obj.mget('one.two.three');
-	 	// equals to:
-	 	obj.get('one').get('two').get('three');
+	 * @param {string} attrPath Attribute path
+	 * @returns {mixed} Attribute value
+	 * @example
+	 *     obj.mget('one.two.three');
+	 *     // equals to:
+	 *     obj.get('one').get('two').get('three');
 	 */
 	mget: function(attrPath)
 	{
@@ -69,11 +69,11 @@ kff.Model = kff.createClass(
 	},
 
 	/**
-		Sets the value(s) of given attribute(s). Triggers change event.
-
-		@param {string} attr Attribute name
-		@param {mixed} value Attribute value
-		@param {Boolean} silent If true, do not trigger event
+	 * Sets the value(s) of given attribute(s). Triggers a change event.
+	 *
+	 * @param {string} attr Attribute name
+	 * @param {mixed} value Attribute value
+	 * @param {Boolean} silent If true, do not trigger event
 	 */
 	set: function(attr, value, silent)
 	{
@@ -103,11 +103,11 @@ kff.Model = kff.createClass(
 	},
 
 	/**
-		Exports a JSON representation of model attributes. If an attribute is type of Object, tries to call a toJson
-		method recursively.	This function returns a plain javascript object, not the stringified JSON.
-
-		@param {Array.<string>} serializeAttrs Array of attribute names to be exported or all if omitted.
-		@returns {Object} Plain JavaScript object representation of object's attributes
+	 * Exports a JSON representation of model attributes. If an attribute is type of Object, tries to call a toJson
+	 * method recursively.	This function returns a plain javascript object, not the stringified JSON.
+	 *
+	 * @param {Array.<string>} serializeAttrs Array of attribute names to be exported or all if omitted.
+	 * @returns {Object} Plain JavaScript object representation of object's attributes
 	 */
 	toJson: function(serializeAttrs)
 	{
@@ -124,13 +124,13 @@ kff.Model = kff.createClass(
 	},
 
 	/**
-		Imports model's attributes from JSON (plain JavaScript object).
-
-		If an attribute is type of Object, tries to read appropriate property using its fromJson method.
-		This function returns plain object, not stringified JSON.
-
-		@param {Object} obj Plain JS object to read attributes from
-		@param {Boolean} silent If true, do not trigger event
+	 * Imports model's attributes from JSON (plain JavaScript object).
+	 *
+	 * If the attribute is type of Object, tries to read appropriate property using its fromJson method.
+	 * This function returns plain object, not stringified JSON.
+	 *
+	 * @param {Object} obj Plain JS object to read attributes from
+	 * @param {Boolean} silent If true, do not trigger event
 	 */
 	fromJson: function(obj, silent)
 	{

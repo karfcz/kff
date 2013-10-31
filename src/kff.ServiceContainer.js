@@ -1,7 +1,7 @@
 
 kff.ServiceContainer = kff.createClass(
 {
-	staticProperties:
+	statics:
 	{
 		CONFIG_CONSTRUCTOR: 'construct',
 		singleParamRegex: /^%[^%]+%$/g,

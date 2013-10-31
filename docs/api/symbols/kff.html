@@ -198,6 +198,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/kff.html">kff</a></li>
 	
+	<li><a href="../symbols/kff.App.html">kff.App</a></li>
+	
 	<li><a href="../symbols/kff.AttrBinder.html">kff.AttrBinder</a></li>
 	
 	<li><a href="../symbols/kff.Binder.html">kff.Binder</a></li>
@@ -213,6 +215,8 @@ ul.inheritsList
 	<li><a href="../symbols/kff.ClickBinder.html">kff.ClickBinder</a></li>
 	
 	<li><a href="../symbols/kff.Collection.html">kff.Collection</a></li>
+	
+	<li><a href="../symbols/kff.DisabledBinder.html">kff.DisabledBinder</a></li>
 	
 	<li><a href="../symbols/kff.DoubleClickBinder.html">kff.DoubleClickBinder</a></li>
 	
@@ -277,6 +281,8 @@ ul.inheritsList
 							<li>kff.<a href="../symbols/kff.html#.isPlainObject">isPlainObject</a></li>
 						
 							<li>kff.<a href="../symbols/kff.html#.mixins">mixins</a></li>
+						
+							<li>kff.<a href="../symbols/kff.html#.setZeroTimeout">setZeroTimeout</a></li>
 						
 					</ul>
 				
@@ -354,7 +360,7 @@ ul.inheritsList
 								&lt;static&gt; 
 							</td>
 							<td class="nameDescription">
-								<div class="fixedFont">kff.<b><a href="../symbols/kff.html#.bindFn">bindFn</a></b>(obj, fnName)
+								<div class="fixedFont">kff.<b><a href="../symbols/kff.html#.bindFn">bindFn</a></b>(obj, fnName, args)
 								</div>
 								<div class="description">Binds function to an object.</div>
 							</td>
@@ -368,7 +374,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont">kff.<b><a href="../symbols/kff.html#.createClass">createClass</a></b>(meta, properties)
 								</div>
-								<div class="description">Factory for creating a class</div>
+								<div class="description">Factory function for creating a class</div>
 							</td>
 						</tr>
 					
@@ -392,7 +398,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont">kff.<b><a href="../symbols/kff.html#.extend">extend</a></b>(child, parent)
 								</div>
-								<div class="description">Extends constructor function (class) from parent constructor using prototype inherinatce</div>
+								<div class="description">Extends constructor function (class) from parent constructor using prototypeinherinatce.</div>
 							</td>
 						</tr>
 					
@@ -404,7 +410,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont">kff.<b><a href="../symbols/kff.html#.isPlainObject">isPlainObject</a></b>(obj)
 								</div>
-								<div class="description">Detects if an object is a POJO (object created as literal or usin new Object)</div>
+								<div class="description">Detects if an object is a plain javascript object (object created as literalor by new Object).</div>
 							</td>
 						</tr>
 					
@@ -416,7 +422,19 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont">kff.<b><a href="../symbols/kff.html#.mixins">mixins</a></b>(obj, properties)
 								</div>
-								<div class="description">Mixins (using a shallow copy) properties from one object to anotherFunction accepts multiple arguments with multiple extending objectsWhen passing true as the last argument, deep copy will be used</div>
+								<div class="description">Mixins (using a shallow copy) properties from one object to another.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								&lt;static&gt; 
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont">kff.<b><a href="../symbols/kff.html#.setZeroTimeout">setZeroTimeout</a></b>(fn)
+								</div>
+								<div class="description">Calls a function in the next process cycle with minimal timeout.</div>
 							</td>
 						</tr>
 					
@@ -472,11 +490,11 @@ ul.inheritsList
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">kff.</span><b>bindFn</b>(obj, fnName)
+					<span class="light">kff.</span><b>bindFn</b>(obj, fnName, args)
 					
 					</div>
 					<div class="description">
-						Binds function to an object. Adds _boundFns object width references to bound methods for caching purposes.
+						Binds function to an object.Note that it adds a _boundFns property to the object which is an objectcontaining references to the bound methods for caching purposes.
 						
 						
 					</div>
@@ -499,6 +517,12 @@ ul.inheritsList
 								</dt>
 								<dd>Method name to bind</dd>
 							
+								<dt>
+									<b>args</b>
+									
+								</dt>
+								<dd></dd>
+							
 							</dl>
 						
 						
@@ -518,7 +542,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Factory for creating a class
+						Factory function for creating a class
 						
 						
 					</div>
@@ -616,7 +640,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Extends constructor function (class) from parent constructor using prototype inherinatce
+						Extends constructor function (class) from parent constructor using prototypeinherinatce.
 						
 						
 					</div>
@@ -658,7 +682,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Detects if an object is a POJO (object created as literal or usin new Object)
+						Detects if an object is a plain javascript object (object created as literalor by new Object). Very simple implementation not as robust as the jQuery onebut better performing.
 						
 						
 					</div>
@@ -684,7 +708,7 @@ ul.inheritsList
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{Boolean}</span> True if object is POJO, false otherwise</dd>
+								<dd><span class="light fixedFont">{Boolean}</span> True if object is a plain object, false otherwise</dd>
 							
 							</dl>
 						
@@ -701,7 +725,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Mixins (using a shallow copy) properties from one object to anotherFunction accepts multiple arguments with multiple extending objectsWhen passing true as the last argument, deep copy will be used
+						Mixins (using a shallow copy) properties from one object to another.Function accepts multiple arguments with multiple extending objects.The first object will be extended (modified) by the following object(s).When passing true as the last argument, deep copy will be executed (any object ).
 						
 						
 					</div>
@@ -740,6 +764,42 @@ ul.inheritsList
 						
 						
 
+					<hr />
+				
+					<a name=".setZeroTimeout"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">kff.</span><b>setZeroTimeout</b>(fn)
+					
+					</div>
+					<div class="description">
+						Calls a function in the next process cycle with minimal timeout. It is likesetTimeout(fn, 0) but with better performance (does not obey the internalbrowser limits for timeout that exist due to backward compatibility).Fallbacks to setTimeout on older MSIE.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{function}</span> <b>fn</b>
+									
+								</dt>
+								<dd>Callback function</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
 					
 				
 			
@@ -754,7 +814,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Apr 20 2013 10:02:11 GMT+0200 (Střední Evropa (letní čas))
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu Oct 31 2013 12:02:53 GMT+0100 (Střední Evropa (běžný čas))
 		</div>
 	</body>
 </html>

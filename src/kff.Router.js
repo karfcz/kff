@@ -3,8 +3,8 @@ kff.Router = kff.createClass(
 /** @lends kff.Router.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * @constructs
+	 */
 	constructor: function(options)
 	{
 		this.options = options || {};

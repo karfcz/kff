@@ -198,6 +198,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/kff.html">kff</a></li>
 	
+	<li><a href="../symbols/kff.App.html">kff.App</a></li>
+	
 	<li><a href="../symbols/kff.AttrBinder.html">kff.AttrBinder</a></li>
 	
 	<li><a href="../symbols/kff.Binder.html">kff.Binder</a></li>
@@ -213,6 +215,8 @@ ul.inheritsList
 	<li><a href="../symbols/kff.ClickBinder.html">kff.ClickBinder</a></li>
 	
 	<li><a href="../symbols/kff.Collection.html">kff.Collection</a></li>
+	
+	<li><a href="../symbols/kff.DisabledBinder.html">kff.DisabledBinder</a></li>
 	
 	<li><a href="../symbols/kff.DoubleClickBinder.html">kff.DoubleClickBinder</a></li>
 	
@@ -266,17 +270,19 @@ ul.inheritsList
 					<h2>Methods</h2>
 					<ul class="methodList">
 						
+							<li><a href="../symbols/kff.View.html#addSubview">addSubview</a></li>
+						
 							<li><a href="../symbols/kff.View.html#delegateEvents">delegateEvents</a></li>
+						
+							<li><a href="../symbols/kff.View.html#delegateModelEvents">delegateModelEvents</a></li>
 						
 							<li><a href="../symbols/kff.View.html#destroy">destroy</a></li>
 						
 							<li><a href="../symbols/kff.View.html#destroySubviews">destroySubviews</a></li>
 						
-							<li><a href="../symbols/kff.View.html#findViewElements">findViewElements</a></li>
+							<li><a href="../symbols/kff.View.html#getBindingIndex">getBindingIndex</a></li>
 						
 							<li><a href="../symbols/kff.View.html#getModel">getModel</a></li>
-						
-							<li><a href="../symbols/kff.View.html#processTriggerEvents">processTriggerEvents</a></li>
 						
 							<li><a href="../symbols/kff.View.html#refresh">refresh</a></li>
 						
@@ -286,7 +292,13 @@ ul.inheritsList
 						
 							<li><a href="../symbols/kff.View.html#renderSubviews">renderSubviews</a></li>
 						
+							<li><a href="../symbols/kff.View.html#startDestroy">startDestroy</a></li>
+						
+							<li><a href="../symbols/kff.View.html#startRender">startRender</a></li>
+						
 							<li><a href="../symbols/kff.View.html#undelegateEvents">undelegateEvents</a></li>
+						
+							<li><a href="../symbols/kff.View.html#undelegateModelEvents">undelegateModelEvents</a></li>
 						
 					</ul>
 				
@@ -465,9 +477,33 @@ ul.inheritsList
 								
 							</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.View.html#addSubview">addSubview</a></b>($element, viewName, options)
+								</div>
+								<div class="description">Adds subview metadata to the internal list.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.View.html#delegateEvents">delegateEvents</a></b>(events, $element)
 								</div>
 								<div class="description">Binds DOM events to the view element.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.View.html#delegateModelEvents">delegateModelEvents</a></b>(events)
+								</div>
+								<div class="description">Binds model events to the view.</div>
 							</td>
 						</tr>
 					
@@ -497,13 +533,13 @@ ul.inheritsList
 					
 						<tr>
 							<td class="attributes">
-								
+								<div class="light">{number}</div>
 								
 							</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.View.html#findViewElements">findViewElements</a></b>(el, viewNames, filter)
+								<div class="fixedFont"><b><a href="../symbols/kff.View.html#getBindingIndex">getBindingIndex</a></b>(modelName)
 								</div>
-								<div class="description">Finds possible subview elements inside an element</div>
+								<div class="description">Returns index of item in bound collection (closest collection in the view scope)</div>
 							</td>
 						</tr>
 					
@@ -516,18 +552,6 @@ ul.inheritsList
 								<div class="fixedFont"><b><a href="../symbols/kff.View.html#getModel">getModel</a></b>(modelPath)
 								</div>
 								<div class="description">Returns a model object bound to the view or to the parent view.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">
-								
-								
-							</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.View.html#processTriggerEvents">processTriggerEvents</a></b>()
-								</div>
-								<div class="description">Process declarative events bound throught data-kff-trigger attribute on root view element</div>
 							</td>
 						</tr>
 					
@@ -551,7 +575,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.View.html#refreshBinders">refreshBinders</a></b>(event)
 								</div>
-								<div class="description"></div>
+								<div class="description">Refreshes data-binders in all subviews.</div>
 							</td>
 						</tr>
 					
@@ -585,9 +609,45 @@ ul.inheritsList
 								
 							</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.View.html#startDestroy">startDestroy</a></b>(silent)
+								</div>
+								<div class="description">Destroys the view (destroys all subviews and unbinds previously bound DOM events.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.View.html#startRender">startRender</a></b>(silent)
+								</div>
+								<div class="description">Renders the view.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.View.html#undelegateEvents">undelegateEvents</a></b>(events, $element)
 								</div>
 								<div class="description">Unbinds DOM events from the view element.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.View.html#undelegateModelEvents">undelegateModelEvents</a></b>(events)
+								</div>
+								<div class="description">Unbinds model events from the view.</div>
 							</td>
 						</tr>
 					
@@ -777,6 +837,54 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
+					<a name="addSubview"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>addSubview</b>($element, viewName, options)
+					
+					</div>
+					<div class="description">
+						Adds subview metadata to the internal list. The subviews from this listare then rendered in renderSubviews method which is automatically calledwhen the view is rendered.This method can be used is in the render method to manually create a viewthat is not parsed from html/template (for example for an element thatsits at the end od the body element).
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{jQuery}</span> <b>$element</b>
+									
+								</dt>
+								<dd>Element of the subview</dd>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>viewName</b>
+									
+								</dt>
+								<dd>Name of the view</dd>
+							
+								<dt>
+									<span class="light fixedFont">{[type]}</span> <b>options</b>
+									
+								</dt>
+								<dd>Options object for the subview constructor</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="delegateEvents"> </a>
 					<div class="fixedFont">
 					
@@ -807,6 +915,42 @@ ul.inheritsList
 									
 								</dt>
 								<dd>A jQuery object that holds the DOM element to bind. If not provided, the view element will be used.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="delegateModelEvents"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>delegateModelEvents</b>(events)
+					
+					</div>
+					<div class="description">
+						Binds model events to the view. Accepts array of arrays in the form:[    ['modelName', 'eventType', 'methodName'],]The first item is a name of the model.The second item is an event nameThe third item is the view method name (string) that acts as an eventhandler
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Array}</span> <b>events</b>
+									
+								</dt>
+								<dd>Array of arrays of binding config</dd>
 							
 							</dl>
 						
@@ -880,15 +1024,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="findViewElements"> </a>
+					<a name="getBindingIndex"> </a>
 					<div class="fixedFont">
 					
-					
-					<b>findViewElements</b>(el, viewNames, filter)
+					<span class="light">{number}</span>
+					<b>getBindingIndex</b>(modelName)
 					
 					</div>
 					<div class="description">
-						Finds possible subview elements inside an element
+						Returns index of item in bound collection (closest collection in the view scope)
 						
 						
 					</div>
@@ -900,28 +1044,23 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{DOM Element}</span> <b>el</b>
+									<b>modelName</b>
 									
 								</dt>
-								<dd>Root element from which search starts</dd>
-							
-								<dt>
-									<span class="light fixedFont">{Array}</span> <b>viewNames</b>
-									
-								</dt>
-								<dd>Array that will be filled by found elements                          (items will be objects { objPath: viewName, $element: jQuery wrapper })</dd>
-							
-								<dt>
-									<span class="light fixedFont">{string}</span> <b>filter</b>
-									
-								</dt>
-								<dd>A jQuery selector for filtering elements (optional)</dd>
+								<dd></dd>
 							
 							</dl>
 						
 						
 						
 						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{number}</span> Item index</dd>
+							
+							</dl>
 						
 						
 						
@@ -971,31 +1110,6 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="processTriggerEvents"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>processTriggerEvents</b>()
-					
-					</div>
-					<div class="description">
-						Process declarative events bound throught data-kff-trigger attribute on root view element
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name="refresh"> </a>
 					<div class="fixedFont">
 					
@@ -1029,7 +1143,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						
+						Refreshes data-binders in all subviews.
 						
 						
 					</div>
@@ -1041,10 +1155,10 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>event</b>
+									<span class="light fixedFont">{Object}</span> <b>event</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>Any event object that caused refreshing</dd>
 							
 							</dl>
 						
@@ -1065,7 +1179,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Renders the view. It will be called automatically. Should not be called directly.
+						Renders the view. It will be called automatically. Should not be calleddirectly.
 						
 						
 					</div>
@@ -1101,13 +1215,85 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Renders subviews. Will find all DOM descendats with kff.View.DATA_KFF_VIEW (or kff.View.DATA_BIND_ATTR) attributeand initializes subviews on them. If an element has the kff.View.DATA_BIND_ATTR but not the kff.View.DATA_KFF_VIEWattribute, adds kff.View.DATA_KFF_VIEW attribute = "kff.BindingView" and inits implicit data-binding.
+						Renders subviews. Will find all DOM descendats withkff.View.DATA_KFF_VIEW (or kff.View.DATA_BIND_ATTR) attribute andinitializes subviews on them. If an element has thekff.View.DATA_BIND_ATTR but not the kff.View.DATA_KFF_VIEW attribute,adds kff.View.DATA_KFF_VIEW attribute = "kff.BindingView" and initsimplicit data-binding.
 						
 						
 					</div>
 					
 					
 					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="startDestroy"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>startDestroy</b>(silent)
+					
+					</div>
+					<div class="description">
+						Destroys the view (destroys all subviews and unbinds previously bound DOM events.It will be called automatically. Should not be called directly.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Boolean}</span> <b>silent</b>
+									
+								</dt>
+								<dd>If true, the 'destroy' event won't be called</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="startRender"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>startRender</b>(silent)
+					
+					</div>
+					<div class="description">
+						Renders the view. It will be called automatically. Should not be calleddirectly.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Boolean}</span> <b>silent</b>
+									
+								</dt>
+								<dd>If true, the 'render' event won't be called</dd>
+							
+							</dl>
 						
 						
 						
@@ -1126,7 +1312,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Unbinds DOM events from the view element. Accepts array of arrays as in the delegateEvents method.
+						Unbinds DOM events from the view element. Accepts array of arrays as inthe delegateEvents method.
 						
 						
 					</div>
@@ -1147,7 +1333,43 @@ ul.inheritsList
 									<span class="light fixedFont">{jQuery}</span> <b>$element</b>
 									
 								</dt>
-								<dd>A jQuery object that holds the DOM element to unbind. If not provided, the view element will be used.</dd>
+								<dd>A jQuery object that holds the DOM element tounbind. If not provided, the view element will be used.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="undelegateModelEvents"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>undelegateModelEvents</b>(events)
+					
+					</div>
+					<div class="description">
+						Unbinds model events from the view. Accepts array of arrays in the form:[    ['modelName', 'eventType', 'methodName']]The first item is a name of the model. The second item is an event nameThe third item is the view method name (string) that acts as an eventhandler
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Array}</span> <b>events</b>
+									
+								</dt>
+								<dd>Array of arrays of binding config</dd>
 							
 							</dl>
 						
@@ -1172,7 +1394,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Apr 20 2013 10:02:11 GMT+0200 (Střední Evropa (letní čas))
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu Oct 31 2013 12:02:53 GMT+0100 (Střední Evropa (běžný čas))
 		</div>
 	</body>
 </html>

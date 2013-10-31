@@ -7,8 +7,8 @@ kff.Route = kff.createClass(
 /** @lends kff.Route.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * @constructs
+	 */
 	constructor: function(pattern, target)
 	{
 		this.pattern = pattern;
@@ -88,6 +88,4 @@ kff.Route = kff.createClass(
 			.replace(/\*/g, '(.*)');
 		return new RegExp('^' + path + '$', sensitive ? '' : 'i');
 	}
-
-
 });

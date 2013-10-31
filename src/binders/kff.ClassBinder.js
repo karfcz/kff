@@ -7,7 +7,7 @@ kff.ClassBinder = kff.createClass(
 {
 	/**
 	 * One-way data binder (model to DOM) for CSS class.
-	 * Sets the class of the element to defined value when model atrribute changes.
+	 * Sets/Unsets the class of the element to some predefined value when model atrribute changes.
 	 *
 	 * @constructs
 	 * @augments kff.Binder

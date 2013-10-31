@@ -198,6 +198,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/kff.html">kff</a></li>
 	
+	<li><a href="../symbols/kff.App.html">kff.App</a></li>
+	
 	<li><a href="../symbols/kff.AttrBinder.html">kff.AttrBinder</a></li>
 	
 	<li><a href="../symbols/kff.Binder.html">kff.Binder</a></li>
@@ -213,6 +215,8 @@ ul.inheritsList
 	<li><a href="../symbols/kff.ClickBinder.html">kff.ClickBinder</a></li>
 	
 	<li><a href="../symbols/kff.Collection.html">kff.Collection</a></li>
+	
+	<li><a href="../symbols/kff.DisabledBinder.html">kff.DisabledBinder</a></li>
 	
 	<li><a href="../symbols/kff.DoubleClickBinder.html">kff.DoubleClickBinder</a></li>
 	
@@ -268,6 +272,8 @@ ul.inheritsList
 						
 							<li><a href="../symbols/kff.List.html#append">append</a></li>
 						
+							<li><a href="../symbols/kff.List.html#count">count</a></li>
+						
 							<li><a href="../symbols/kff.List.html#each">each</a></li>
 						
 							<li><a href="../symbols/kff.List.html#empty">empty</a></li>
@@ -285,6 +291,8 @@ ul.inheritsList
 							<li><a href="../symbols/kff.List.html#shuffle">shuffle</a></li>
 						
 							<li><a href="../symbols/kff.List.html#sort">sort</a></li>
+						
+							<li><a href="../symbols/kff.List.html#splice">splice</a></li>
 						
 					</ul>
 				
@@ -332,7 +340,7 @@ ul.inheritsList
 							<div class="fixedFont">
 								<b><a href="../symbols/kff.List.html#constructor">kff.List</a></b>()
 							</div>
-							<div class="description">Class representing a list data structure</div>
+							<div class="description">Class representing a list data structure.</div>
 						</td>
 					</tr>
 				</tbody>
@@ -362,9 +370,21 @@ ul.inheritsList
 								
 							</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.List.html#append">append</a></b>(val)
+								<div class="fixedFont"><b><a href="../symbols/kff.List.html#append">append</a></b>(item)
 								</div>
 								<div class="description">Appends an item at the end of the list</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								<div class="light">{number}</div>
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.List.html#count">count</a></b>()
+								</div>
+								<div class="description">Returns number of items in the list.</div>
 							</td>
 						</tr>
 					
@@ -388,7 +408,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.List.html#empty">empty</a></b>()
 								</div>
-								<div class="description">Removes all items from the list</div>
+								<div class="description">Removes all items from the list.</div>
 							</td>
 						</tr>
 					
@@ -410,7 +430,7 @@ ul.inheritsList
 								
 							</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.List.html#indexOf">indexOf</a></b>(val)
+								<div class="fixedFont"><b><a href="../symbols/kff.List.html#indexOf">indexOf</a></b>(item)
 								</div>
 								<div class="description">Returns an index of given item</div>
 							</td>
@@ -422,7 +442,7 @@ ul.inheritsList
 								
 							</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.List.html#insert">insert</a></b>(val, index)
+								<div class="fixedFont"><b><a href="../symbols/kff.List.html#insert">insert</a></b>(item, index)
 								</div>
 								<div class="description">Inserts an item at specified index</div>
 							</td>
@@ -434,7 +454,7 @@ ul.inheritsList
 								
 							</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.List.html#remove">remove</a></b>(val)
+								<div class="fixedFont"><b><a href="../symbols/kff.List.html#remove">remove</a></b>(item)
 								</div>
 								<div class="description">Removes item from the list</div>
 							</td>
@@ -476,6 +496,18 @@ ul.inheritsList
 							</td>
 						</tr>
 					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.List.html#splice">splice</a></b>()
+								</div>
+								<div class="description">Splice list.</div>
+							</td>
+						</tr>
+					
 					</tbody>
 				</table>
 				
@@ -497,7 +529,7 @@ ul.inheritsList
 				</div>
 				
 				<div class="description">
-					Class representing a list data structure
+					Class representing a list data structure.
 					
 				</div>
 				
@@ -528,7 +560,7 @@ ul.inheritsList
 					<div class="fixedFont">
 					
 					
-					<b>append</b>(val)
+					<b>append</b>(item)
 					
 					</div>
 					<div class="description">
@@ -544,7 +576,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{mixed}</span> <b>val</b>
+									<span class="light fixedFont">{mixed}</span> <b>item</b>
 									
 								</dt>
 								<dd>Item to be appended</dd>
@@ -554,6 +586,38 @@ ul.inheritsList
 						
 						
 						
+						
+						
+						
+
+					<hr />
+				
+					<a name="count"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{number}</span>
+					<b>count</b>()
+					
+					</div>
+					<div class="description">
+						Returns number of items in the list.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{number}</span> Number of items (length of the list)</dd>
+							
+							</dl>
 						
 						
 						
@@ -604,7 +668,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Removes all items from the list
+						Removes all items from the list.
 						
 						
 					</div>
@@ -668,7 +732,7 @@ ul.inheritsList
 					<div class="fixedFont">
 					
 					<span class="light">{number}</span>
-					<b>indexOf</b>(val)
+					<b>indexOf</b>(item)
 					
 					</div>
 					<div class="description">
@@ -684,7 +748,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{mixed}</span> <b>val</b>
+									<span class="light fixedFont">{mixed}</span> <b>item</b>
 									
 								</dt>
 								<dd>Value to be found</dd>
@@ -711,7 +775,7 @@ ul.inheritsList
 					<div class="fixedFont">
 					
 					
-					<b>insert</b>(val, index)
+					<b>insert</b>(item, index)
 					
 					</div>
 					<div class="description">
@@ -727,7 +791,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{mixed}</span> <b>val</b>
+									<span class="light fixedFont">{mixed}</span> <b>item</b>
 									
 								</dt>
 								<dd>Item to be inserted</dd>
@@ -753,7 +817,7 @@ ul.inheritsList
 					<div class="fixedFont">
 					
 					<span class="light">{Boolean}</span>
-					<b>remove</b>(val)
+					<b>remove</b>(item)
 					
 					</div>
 					<div class="description">
@@ -769,7 +833,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{mixed}</span> <b>val</b>
+									<span class="light fixedFont">{mixed}</span> <b>item</b>
 									
 								</dt>
 								<dd>Reference to the item to be removed</dd>
@@ -867,8 +931,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Sorts list using a compare function. The compare function follows the same specification
-		as the standard Array.sort function
+						Sorts list using a compare function. The compare function follows the same specificationas the standard Array.sort function
 						
 						
 					</div>
@@ -894,6 +957,31 @@ ul.inheritsList
 						
 						
 
+					<hr />
+				
+					<a name="splice"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>splice</b>()
+					
+					</div>
+					<div class="description">
+						Splice list. Behavior is the same as of Array.splice.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
 					
 				
 			
@@ -908,7 +996,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Apr 20 2013 10:02:11 GMT+0200 (Střední Evropa (letní čas))
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu Oct 31 2013 12:02:53 GMT+0100 (Střední Evropa (běžný čas))
 		</div>
 	</body>
 </html>

@@ -1,6 +1,8 @@
 
 /**
- * Extends constructor function (class) from parent constructor using prototype inherinatce
+ * Extends constructor function (class) from parent constructor using prototype
+ * inherinatce.
+ *
  * @public
  * @param {function} child Child class
  * @param {function} parent Parent class
@@ -14,9 +16,10 @@ kff.extend = function(child, parent)
 };
 
 /**
- * Mixins (using a shallow copy) properties from one object to another
- * Function accepts multiple arguments with multiple extending objects
- * When passing true as the last argument, deep copy will be used
+ * Mixins (using a shallow copy) properties from one object to another.
+ * Function accepts multiple arguments with multiple extending objects.
+ * The first object will be extended (modified) by the following object(s).
+ * When passing true as the last argument, deep copy will be executed (any object ).
  *
  * @param {Object} obj Object to be extended
  * @param {Object} properties Extending object(s)
@@ -53,7 +56,7 @@ kff.mixins = function(obj, properties)
 };
 
 /**
- * Factory for creating a class
+ * Factory function for creating a class
  * @param {Object} meta Object with metadata describing inheritance and static properties of the class
  * @param {Object} properties Properties of a class prototype (or class members)
  * @returns {function} A constructor function (class)
@@ -114,7 +117,10 @@ kff.createClass = function(meta, properties)
 };
 
 /**
- * Binds function to an object. Adds _boundFns object width references to bound methods for caching purposes.
+ * Binds function to an object.
+ * Note that it adds a _boundFns property to the object which is an object
+ * containing references to the bound methods for caching purposes.
+ *
  * @param {Object} obj Object to which bind a function
  * @param {string} fnName Method name to bind
  */
@@ -170,9 +176,12 @@ kff.evalObjectPath = function(path, obj)
 };
 
 /**
- * Detects if an object is a POJO (object created as literal or usin new Object)
+ * Detects if an object is a plain javascript object (object created as literal
+ * or by new Object). Very simple implementation not as robust as the jQuery one
+ * but better performing.
+ *
  * @param  {mixed}  obj Object to detect
- * @return {Boolean} True if object is POJO, false otherwise
+ * @return {Boolean} True if object is a plain object, false otherwise
  */
 kff.isPlainObject = function(obj)
 {
@@ -181,7 +190,12 @@ kff.isPlainObject = function(obj)
 
 
 /**
- * Calls a function in the next process cycle with minimal timeout.
+ * Calls a function in the next process cycle with minimal timeout. It is like
+ * setTimeout(fn, 0) but with better performance (does not obey the internal
+ * browser limits for timeout that exist due to backward compatibility).
+ *
+ * Fallbacks to setTimeout on older MSIE.
+ *
  * @param  {function}  fn Callback function
  */
 kff.setZeroTimeout = function(fn)

@@ -3,8 +3,8 @@ kff.List = kff.createClass(
 /** @lends kff.List.prototype */
 {
 	/**
-		Class representing a list data structure
-		@constructs
+	 * Class representing a list data structure.
+	 * @constructs
 	 */
 	constructor: function()
 	{
@@ -12,7 +12,7 @@ kff.List = kff.createClass(
 	},
 
 	/**
-	 * Returns number of items in the list
+	 * Returns number of items in the list.
 	 *
 	 * @return {number} Number of items (length of the list)
 	 */
@@ -22,8 +22,8 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Iterates over each item in the list
-		@param {function} fn A callback function to be called on each item. Takes two arguments - the iterated item and its index
+	 * Iterates over each item in the list
+	 * @param {function} fn A callback function to be called on each item. Takes two arguments - the iterated item and its index
 	 */
 	each: function(fn)
 	{
@@ -35,8 +35,8 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Appends an item at the end of the list
-		@param {mixed} item Item to be appended
+	 * Appends an item at the end of the list
+	 * @param {mixed} item Item to be appended
 	 */
 	append: function(item)
 	{
@@ -44,8 +44,8 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Inserts an item at specified index
-		@param {mixed} item Item to be inserted
+	 * Inserts an item at specified index
+	 * @param {mixed} item Item to be inserted
 	 */
 	insert: function(item, index)
 	{
@@ -53,9 +53,9 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Removes item from the list
-		@param {mixed} item Reference to the item to be removed
-		@returns {Boolean} True if item was removed or false if not found
+	 * Removes item from the list
+	 * @param {mixed} item Reference to the item to be removed
+	 * @returns {Boolean} True if item was removed or false if not found
 	 */
 	remove: function(item)
 	{
@@ -66,7 +66,7 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Removes all items from the list
+	 * Removes all items from the list.
 	 */
 	empty: function()
 	{
@@ -74,7 +74,7 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Splice list
+	 * Splice list. Behavior is the same as of Array.splice.
 	 */
 	splice: function()
 	{
@@ -82,10 +82,10 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Returns an index of given item
-
-		@param {mixed} item Value to be found
-		@returns {number} index of the item or -1 if not found
+	 * Returns an index of given item
+	 *
+	 * @param {mixed} item Value to be found
+	 * @returns {number} index of the item or -1 if not found
 	 */
 	indexOf: function(item)
 	{
@@ -94,7 +94,7 @@ kff.List = kff.createClass(
 			kff.List.prototype.indexOf = function(item)
 			{
 				return this.array.indexOf(item);
-			}
+			};
 		}
 		else
 		{
@@ -103,16 +103,16 @@ kff.List = kff.createClass(
 				var i = 0, a = this.array, l = a.length;
 				for(; i < l; i++) if(a[i] === item) return i;
 				return -1;
-			}
+			};
 		}
 		return this.indexOf(item);
 	},
 
 	/**
-		Sets an item at given position
-
-		@param {number} index Index of item
-		@param {mixed} item Item to set
+	 * Sets an item at given position
+	 *
+	 * @param {number} index Index of item
+	 * @param {mixed} item Item to set
 	 */
 	set: function(index, item)
 	{
@@ -121,10 +121,10 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Returns an item at given position
-
-		@param {number} index Index of item
-		@returns {mixed} Item at given position (or undefined if not found)
+	 * Returns an item at given position
+	 *
+	 * @param {number} index Index of item
+	 * @returns {mixed} Item at given position (or undefined if not found)
 	 */
 	get: function(index)
 	{
@@ -132,10 +132,10 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Sorts list using a compare function. The compare function follows the same specification
-		as the standard Array.sort function
-
-		@param {function} compareFunction Compare function
+	 * Sorts list using a compare function. The compare function follows the same specification
+	 * as the standard Array.sort function
+	 *
+	 * @param {function} compareFunction Compare function
 	 */
 	sort: function(compareFunction)
 	{
@@ -143,7 +143,7 @@ kff.List = kff.createClass(
 	},
 
 	/**
-		Randomizes items in the list.
+	 * Randomizes items in the list.
 	 */
 	shuffle: function()
 	{

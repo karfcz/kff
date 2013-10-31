@@ -7,13 +7,13 @@ kff.Collection = kff.createClass(
 /** @lends kff.Collection.prototype	*/
 {
 	/**
-		Class representing a collection of models.
+	 * Class representing a collection of models.
 
-		@constructs
-		@augments kff.List
-		@param {Object} options Options object
-		@param {function} options.itemFactory Factory function for creating new collection items (optional)
-		@param {function} options.itemType Type (class or constructor function) of collection items
+	 * @constructs
+	 * @augments kff.List
+	 * @param {Object} options Options object
+	 * @param {function} options.itemFactory Factory function for creating new collection items (optional)
+	 * @param {function} options.itemType Type (class or constructor function) of collection items
 	 */
 	constructor: function(options)
 	{
@@ -242,12 +242,24 @@ kff.Collection = kff.createClass(
 		if(!silent) this.trigger('change', { type: 'shuffle' });
 	},
 
+	/**
+	 * Splices the collection. Works exactly like the Array.splice method.
+	 */
 	splice: function()
 	{
 		kff.Collection._super.splice.apply(this, arguments);
 		this.trigger('change', { type: 'splice' });
 	},
 
+	/**
+	 * Binds an event handler to each item in the collection.
+	 * This bindings are persistent - when new items are added to the
+	 * collection, event handlers are automatically bound to them. Handlers for
+	 * removed items are automatically removed as well.
+	 *
+	 * @param  {String}   eventType Event type
+	 * @param  {Function} fn        Event handler
+	 */
 	onEach: function(eventType, fn)
 	{
 		this.onEachEvents.push({ eventType: eventType, fn: fn });
@@ -257,6 +269,12 @@ kff.Collection = kff.createClass(
 		this.on('change', this.f('refreshOnEach'));
 	},
 
+	/**
+	 * Unbinds event handler previously bound by onEach method.
+	 *
+	 * @param  {String}   eventType Event type
+	 * @param  {Function} fn        Event handler
+	 */
 	offEach: function(eventType, fn)
 	{
 		for(var i = 0, l = this.onEachEvents.length; i < l; i++)
@@ -269,6 +287,12 @@ kff.Collection = kff.createClass(
 		this.off('change', this.f('refreshOnEach'));
 	},
 
+	/**
+	 * Refreshes event handlers boud by onEach method.
+	 *
+	 * @private
+	 * @param  {Object} event Collection change event
+	 */
 	refreshOnEach: function(event)
 	{
 		switch(event ? event.type : null)
@@ -285,6 +309,12 @@ kff.Collection = kff.createClass(
 		}
 	},
 
+	/**
+	 * Binds 'onEach' event handlers to a newly added collection item.
+	 *
+	 * @private
+	 * @param  {kff.Model} item A new collection item (model)
+	 */
 	bindOnOne: function(item)
 	{
 		for(var i = 0, l = this.onEachEvents.length; i < l; i++)
@@ -293,6 +323,12 @@ kff.Collection = kff.createClass(
 		}
 	},
 
+	/**
+	 * Unbinds 'onEach' event handlers from removed collection item.
+	 *
+	 * @private
+	 * @param  {kff.Model} item Removed collection item (model)
+	 */
 	unbindOnOne: function(item)
 	{
 		for(var i = 0, l = this.onEachEvents.length; i < l; i++)
@@ -301,6 +337,11 @@ kff.Collection = kff.createClass(
 		}
 	},
 
+	/**
+	 * Rebinds all 'onEach' event handlers for each collection item.
+	 *
+	 * @private
+	 */
 	rebindEach: function()
 	{
 		var that = this;

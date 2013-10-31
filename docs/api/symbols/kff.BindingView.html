@@ -198,6 +198,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/kff.html">kff</a></li>
 	
+	<li><a href="../symbols/kff.App.html">kff.App</a></li>
+	
 	<li><a href="../symbols/kff.AttrBinder.html">kff.AttrBinder</a></li>
 	
 	<li><a href="../symbols/kff.Binder.html">kff.Binder</a></li>
@@ -213,6 +215,8 @@ ul.inheritsList
 	<li><a href="../symbols/kff.ClickBinder.html">kff.ClickBinder</a></li>
 	
 	<li><a href="../symbols/kff.Collection.html">kff.Collection</a></li>
+	
+	<li><a href="../symbols/kff.DisabledBinder.html">kff.DisabledBinder</a></li>
 	
 	<li><a href="../symbols/kff.DoubleClickBinder.html">kff.DoubleClickBinder</a></li>
 	
@@ -268,11 +272,7 @@ ul.inheritsList
 						
 							<li><a href="../symbols/kff.BindingView.html#bindCollectionCount">bindCollectionCount</a></li>
 						
-							<li><a href="../symbols/kff.BindingView.html#concat">concat</a></li>
-						
 							<li><a href="../symbols/kff.BindingView.html#createSubView">createSubView</a></li>
-						
-							<li><a href="../symbols/kff.BindingView.html#destroy">destroy</a></li>
 						
 							<li><a href="../symbols/kff.BindingView.html#destroyBinding">destroyBinding</a></li>
 						
@@ -280,25 +280,29 @@ ul.inheritsList
 						
 							<li><a href="../symbols/kff.BindingView.html#getBindingIndex">getBindingIndex</a></li>
 						
-							<li><a href="../symbols/kff.BindingView.html#getModel">getModel</a></li>
-						
 							<li><a href="../symbols/kff.BindingView.html#initBinding">initBinding</a></li>
 						
-							<li><a href="../symbols/kff.BindingView.html#parseModifiers">parseModifiers</a></li>
+							<li><a href="../symbols/kff.BindingView.html#parseHelpers">parseHelpers</a></li>
 						
 							<li><a href="../symbols/kff.BindingView.html#parseSetters">parseSetters</a></li>
 						
 							<li><a href="../symbols/kff.BindingView.html#refreshBoundViews">refreshBoundViews</a></li>
 						
+							<li><a href="../symbols/kff.BindingView.html#refreshBoundViewsOnAppend">refreshBoundViewsOnAppend</a></li>
+						
+							<li><a href="../symbols/kff.BindingView.html#refreshBoundViewsOnInsert">refreshBoundViewsOnInsert</a></li>
+						
 							<li>kff.BindingView.<a href="../symbols/kff.BindingView.html#.registerBinder">registerBinder</a></li>
 						
 							<li>kff.BindingView.<a href="../symbols/kff.BindingView.html#.registerHelper">registerHelper</a></li>
 						
-							<li><a href="../symbols/kff.BindingView.html#render">render</a></li>
-						
 							<li><a href="../symbols/kff.BindingView.html#renderBoundViews">renderBoundViews</a></li>
 						
 							<li><a href="../symbols/kff.BindingView.html#renderSubviews">renderSubviews</a></li>
+						
+							<li><a href="../symbols/kff.BindingView.html#startDestroy">startDestroy</a></li>
+						
+							<li><a href="../symbols/kff.BindingView.html#startRender">startRender</a></li>
 						
 					</ul>
 				
@@ -386,18 +390,6 @@ ul.inheritsList
 					
 						<tr>
 							<td class="attributes">
-								<div class="light">{string}</div>
-								
-							</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#concat">concat</a></b>(values)
-								</div>
-								<div class="description">Concatenates multiple values using single space as separator.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">
 								<div class="light">{jQuery}</div>
 								
 							</td>
@@ -405,18 +397,6 @@ ul.inheritsList
 								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#createSubView">createSubView</a></b>(item, i)
 								</div>
 								<div class="description">Creates a new subview for item in collection</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">
-								
-								
-							</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#destroy">destroy</a></b>(silent)
-								</div>
-								<div class="description">Destroys the view including bindings.</div>
 							</td>
 						</tr>
 					
@@ -450,21 +430,9 @@ ul.inheritsList
 								
 							</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#getBindingIndex">getBindingIndex</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#getBindingIndex">getBindingIndex</a></b>(modelName)
 								</div>
 								<div class="description">Returns index of item in bound collection (closest collection in the view scope)</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">
-								<div class="light">{<a href="../symbols/kff.Model.html">kff.Model</a>}</div>
-								
-							</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#getModel">getModel</a></b>(modelPath)
-								</div>
-								<div class="description">Returns model object for given keypath.</div>
 							</td>
 						</tr>
 					
@@ -486,7 +454,7 @@ ul.inheritsList
 								
 							</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#parseModifiers">parseModifiers</a></b>(modifierParams, modifiers)
+								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#parseHelpers">parseHelpers</a></b>(modifierParams, modifiers)
 								</div>
 								<div class="description">Parses modifier parameters of binding.</div>
 							</td>
@@ -513,6 +481,30 @@ ul.inheritsList
 								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#refreshBoundViews">refreshBoundViews</a></b>(event)
 								</div>
 								<div class="description">Updates bound views when collection changes.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#refreshBoundViewsOnAppend">refreshBoundViewsOnAppend</a></b>(event)
+								</div>
+								<div class="description">Updates bound views when collection changes by appending item.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#refreshBoundViewsOnInsert">refreshBoundViewsOnInsert</a></b>(event)
+								</div>
+								<div class="description">Updates bound views when collection changes by inserting item.</div>
 							</td>
 						</tr>
 					
@@ -546,18 +538,6 @@ ul.inheritsList
 								
 							</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#render">render</a></b>(silent)
-								</div>
-								<div class="description">Renders the view and inits bindings.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">
-								
-								
-							</td>
-							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#renderBoundViews">renderBoundViews</a></b>()
 								</div>
 								<div class="description">Renders "bound" views.</div>
@@ -576,13 +556,37 @@ ul.inheritsList
 							</td>
 						</tr>
 					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#startDestroy">startDestroy</a></b>(silent)
+								</div>
+								<div class="description">Destroys the view including bindings.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.BindingView.html#startRender">startRender</a></b>(silent)
+								</div>
+								<div class="description">Renders the view and inits bindings.</div>
+							</td>
+						</tr>
+					
 					</tbody>
 				</table>
 				
 				
 				
 				<dl class="inheritsList">
-				<dt>Methods borrowed from class <a href="../symbols/kff.View.html">kff.View</a>: </dt><dd><a href="../symbols/kff.View.html#delegateEvents">delegateEvents</a>, <a href="../symbols/kff.View.html#destroySubviews">destroySubviews</a>, <a href="../symbols/kff.View.html#findViewElements">findViewElements</a>, <a href="../symbols/kff.View.html#processTriggerEvents">processTriggerEvents</a>, <a href="../symbols/kff.View.html#refresh">refresh</a>, <a href="../symbols/kff.View.html#refreshBinders">refreshBinders</a>, <a href="../symbols/kff.View.html#undelegateEvents">undelegateEvents</a></dd>
+				<dt>Methods borrowed from class <a href="../symbols/kff.View.html">kff.View</a>: </dt><dd><a href="../symbols/kff.View.html#addSubview">addSubview</a>, <a href="../symbols/kff.View.html#delegateEvents">delegateEvents</a>, <a href="../symbols/kff.View.html#delegateModelEvents">delegateModelEvents</a>, <a href="../symbols/kff.View.html#destroy">destroy</a>, <a href="../symbols/kff.View.html#destroySubviews">destroySubviews</a>, <a href="../symbols/kff.View.html#getModel">getModel</a>, <a href="../symbols/kff.View.html#refresh">refresh</a>, <a href="../symbols/kff.View.html#refreshBinders">refreshBinders</a>, <a href="../symbols/kff.View.html#render">render</a>, <a href="../symbols/kff.View.html#undelegateEvents">undelegateEvents</a>, <a href="../symbols/kff.View.html#undelegateModelEvents">undelegateModelEvents</a></dd>
 				</dl>
 				
 			
@@ -675,49 +679,6 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="concat"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{string}</span>
-					<b>concat</b>(values)
-					
-					</div>
-					<div class="description">
-						Concatenates multiple values using single space as separator.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{Array}</span> <b>values</b>
-									
-								</dt>
-								<dd>Array of values</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{string}</span> Concatenated string</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
 					<a name="createSubView"> </a>
 					<div class="fixedFont">
 					
@@ -761,42 +722,6 @@ ul.inheritsList
 								<dd><span class="light fixedFont">{jQuery}</span> JQuery-wrapped DOM element of the view</dd>
 							
 							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name="destroy"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>destroy</b>(silent)
-					
-					</div>
-					<div class="description">
-						Destroys the view including bindings.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{Boolean}</span> <b>silent</b>
-									
-								</dt>
-								<dd>If true, does not trigger events</dd>
-							
-							</dl>
-						
-						
-						
-						
 						
 						
 						
@@ -857,7 +782,7 @@ ul.inheritsList
 					<div class="fixedFont">
 					
 					<span class="light">{number}</span>
-					<b>getBindingIndex</b>()
+					<b>getBindingIndex</b>(modelName)
 					
 					</div>
 					<div class="description">
@@ -869,6 +794,17 @@ ul.inheritsList
 					
 					
 						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>modelName</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
 						
 						
 						
@@ -877,49 +813,6 @@ ul.inheritsList
 							<dt class="heading">Returns:</dt>
 							
 								<dd><span class="light fixedFont">{number}</span> Item index</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name="getModel"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{<a href="../symbols/kff.Model.html">kff.Model</a>}</span>
-					<b>getModel</b>(modelPath)
-					
-					</div>
-					<div class="description">
-						Returns model object for given keypath.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{string|Array}</span> <b>modelPath</b>
-									
-								</dt>
-								<dd>Object keypath</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{<a href="../symbols/kff.Model.html">kff.Model</a>}</span> Model found</dd>
 							
 							</dl>
 						
@@ -953,11 +846,11 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="parseModifiers"> </a>
+					<a name="parseHelpers"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>parseModifiers</b>(modifierParams, modifiers)
+					<b>parseHelpers</b>(modifierParams, modifiers)
 					
 					</div>
 					<div class="description">
@@ -1073,6 +966,78 @@ ul.inheritsList
 
 					<hr />
 				
+					<a name="refreshBoundViewsOnAppend"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>refreshBoundViewsOnAppend</b>(event)
+					
+					</div>
+					<div class="description">
+						Updates bound views when collection changes by appending item.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>event</b>
+									
+								</dt>
+								<dd>An event triggered by collection change</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="refreshBoundViewsOnInsert"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>refreshBoundViewsOnInsert</b>(event)
+					
+					</div>
+					<div class="description">
+						Updates bound views when collection changes by inserting item.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Object}</span> <b>event</b>
+									
+								</dt>
+								<dd>An event triggered by collection change</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name=".registerBinder"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -1157,42 +1122,6 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="render"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>render</b>(silent)
-					
-					</div>
-					<div class="description">
-						Renders the view and inits bindings.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<span class="light fixedFont">{Boolean}</span> <b>silent</b>
-									
-								</dt>
-								<dd>If true, does not trigger events</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name="renderBoundViews"> </a>
 					<div class="fixedFont">
 					
@@ -1241,6 +1170,78 @@ ul.inheritsList
 						
 						
 
+					<hr />
+				
+					<a name="startDestroy"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>startDestroy</b>(silent)
+					
+					</div>
+					<div class="description">
+						Destroys the view including bindings.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Boolean}</span> <b>silent</b>
+									
+								</dt>
+								<dd>If true, does not trigger events</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="startRender"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>startRender</b>(silent)
+					
+					</div>
+					<div class="description">
+						Renders the view and inits bindings.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{Boolean}</span> <b>silent</b>
+									
+								</dt>
+								<dd>If true, does not trigger events</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
 					
 				
 			
@@ -1255,7 +1256,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Apr 20 2013 10:02:11 GMT+0200 (Střední Evropa (letní čas))
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu Oct 31 2013 12:02:53 GMT+0100 (Střední Evropa (běžný čas))
 		</div>
 	</body>
 </html>

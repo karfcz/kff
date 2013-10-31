@@ -198,6 +198,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/kff.html">kff</a></li>
 	
+	<li><a href="../symbols/kff.App.html">kff.App</a></li>
+	
 	<li><a href="../symbols/kff.AttrBinder.html">kff.AttrBinder</a></li>
 	
 	<li><a href="../symbols/kff.Binder.html">kff.Binder</a></li>
@@ -213,6 +215,8 @@ ul.inheritsList
 	<li><a href="../symbols/kff.ClickBinder.html">kff.ClickBinder</a></li>
 	
 	<li><a href="../symbols/kff.Collection.html">kff.Collection</a></li>
+	
+	<li><a href="../symbols/kff.DisabledBinder.html">kff.DisabledBinder</a></li>
 	
 	<li><a href="../symbols/kff.DoubleClickBinder.html">kff.DoubleClickBinder</a></li>
 	
@@ -270,8 +274,6 @@ ul.inheritsList
 						
 							<li><a href="../symbols/kff.ViewFactory.html#getPrecedingView">getPrecedingView</a></li>
 						
-							<li><a href="../symbols/kff.ViewFactory.html#getServiceConstructor">getServiceConstructor</a></li>
-						
 					</ul>
 				
 			
@@ -318,7 +320,7 @@ ul.inheritsList
 							<div class="fixedFont">
 								<b><a href="../symbols/kff.ViewFactory.html#constructor">kff.ViewFactory</a></b>(options)
 							</div>
-							<div class="description"></div>
+							<div class="description">Factory class for creating views.</div>
 						</td>
 					</tr>
 				</tbody>
@@ -344,37 +346,25 @@ ul.inheritsList
 					
 						<tr>
 							<td class="attributes">
-								
+								<div class="light">{<a href="../symbols/kff.View.html">kff.View</a>}</div>
 								
 							</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.ViewFactory.html#createView">createView</a></b>(viewName, options)
 								</div>
-								<div class="description"></div>
+								<div class="description">Creates a new view instance.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">
-								
+								<div class="light">{String}</div>
 								
 							</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.ViewFactory.html#getPrecedingView">getPrecedingView</a></b>(viewName)
 								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">
-								
-								
-							</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.ViewFactory.html#getServiceConstructor">getServiceConstructor</a></b>(viewName)
-								</div>
-								<div class="description"></div>
+								<div class="description">Returns a name of the preceding page view.</div>
 							</td>
 						</tr>
 					
@@ -399,7 +389,7 @@ ul.inheritsList
 				</div>
 				
 				<div class="description">
-					
+					Factory class for creating views.This class uses dependency injection container (kff.ServiceContainer)to lookup and instantiation of views.
 					
 				</div>
 				
@@ -411,10 +401,22 @@ ul.inheritsList
 						<dt class="heading">Parameters:</dt>
 						
 							<dt>
-								 <b>options</b>
+								<span class="light fixedFont">{Object}</span>  <b>options</b>
 								
 							</dt>
-								<dd></dd>
+								<dd>Configuration object</dd>
+						
+							<dt>
+								<span class="light fixedFont">{<a href="../symbols/kff.ServiceContainer.html">kff.ServiceContainer</a>}</span>  <b>options.serviceContainer</b>
+								
+							</dt>
+								<dd>DI container for instantiation of views</dd>
+						
+							<dt>
+								<span class="light fixedFont">{Object}</span>  <b>options.precedingViews</b>
+								
+							</dt>
+								<dd>Object containing key-value pairs of preceding page views</dd>
 						
 						</dl>
 					
@@ -440,12 +442,12 @@ ul.inheritsList
 					<a name="createView"> </a>
 					<div class="fixedFont">
 					
-					
+					<span class="light">{<a href="../symbols/kff.View.html">kff.View</a>}</span>
 					<b>createView</b>(viewName, options)
 					
 					</div>
 					<div class="description">
-						
+						Creates a new view instance. Uses the service container when provided.If not, tries to lookup for a view name in global namespace (treatingviewName as object keypath)
 						
 						
 					</div>
@@ -457,22 +459,29 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>viewName</b>
+									<span class="light fixedFont">{String}</span> <b>viewName</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>Name of the view</dd>
 							
 								<dt>
-									<b>options</b>
+									<span class="light fixedFont">{Object}</span> <b>options</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>Options object passed to the view constuctor</dd>
 							
 							</dl>
 						
 						
 						
 						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/kff.View.html">kff.View</a>}</span> Created view</dd>
+							
+							</dl>
 						
 						
 						
@@ -482,48 +491,12 @@ ul.inheritsList
 					<a name="getPrecedingView"> </a>
 					<div class="fixedFont">
 					
-					
+					<span class="light">{String}</span>
 					<b>getPrecedingView</b>(viewName)
 					
 					</div>
 					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>viewName</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="getServiceConstructor"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>getServiceConstructor</b>(viewName)
-					
-					</div>
-					<div class="description">
-						
+						Returns a name of the preceding page view.
 						
 						
 					</div>
@@ -535,16 +508,23 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>viewName</b>
+									<span class="light fixedFont">{String}</span> <b>viewName</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>Name of the view</dd>
 							
 							</dl>
 						
 						
 						
 						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{String}</span> Name of the preceding view</dd>
+							
+							</dl>
 						
 						
 						
@@ -563,7 +543,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Apr 20 2013 10:02:11 GMT+0200 (Střední Evropa (letní čas))
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu Oct 31 2013 12:02:53 GMT+0100 (Střední Evropa (běžný čas))
 		</div>
 	</body>
 </html>

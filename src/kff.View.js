@@ -361,6 +361,7 @@ kff.View = kff.createClass(
 	 *
 	 * Do not use this method directly, use addSubview method instead.
 	 *
+	 * @private
 	 * @param  {String} viewName Name of the view
 	 * @param  {Object} options  Options object for the subview constructor
 	 * @return {kff.View}        Created view
@@ -401,6 +402,8 @@ kff.View = kff.createClass(
 
 	/**
 	 * Finds possible subview elements inside an element
+	 *
+	 * @private
 	 * @param  {DOM Element} el Root element from which search starts
 	 * @param  {Array} viewNames Array that will be filled by found elements
 	 *                           (items will be objects { objPath: viewName, $element: jQuery wrapper })
@@ -487,6 +490,12 @@ kff.View = kff.createClass(
 		}
 	},
 
+	/**
+	 * Finds and calls a method registered as trigger handler.
+	 *
+	 * @private
+	 * @param  {Function} fn Function to be called
+	 */
 	callTriggerMethod: function(fn)
 	{
 		if(typeof this[fn] === 'function') this[fn].apply(this, Array.prototype.slice.call(arguments, 1));

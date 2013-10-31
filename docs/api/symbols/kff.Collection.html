@@ -198,6 +198,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/kff.html">kff</a></li>
 	
+	<li><a href="../symbols/kff.App.html">kff.App</a></li>
+	
 	<li><a href="../symbols/kff.AttrBinder.html">kff.AttrBinder</a></li>
 	
 	<li><a href="../symbols/kff.Binder.html">kff.Binder</a></li>
@@ -213,6 +215,8 @@ ul.inheritsList
 	<li><a href="../symbols/kff.ClickBinder.html">kff.ClickBinder</a></li>
 	
 	<li><a href="../symbols/kff.Collection.html">kff.Collection</a></li>
+	
+	<li><a href="../symbols/kff.DisabledBinder.html">kff.DisabledBinder</a></li>
 	
 	<li><a href="../symbols/kff.DoubleClickBinder.html">kff.DoubleClickBinder</a></li>
 	
@@ -280,6 +284,10 @@ ul.inheritsList
 						
 							<li><a href="../symbols/kff.Collection.html#mget">mget</a></li>
 						
+							<li><a href="../symbols/kff.Collection.html#offEach">offEach</a></li>
+						
+							<li><a href="../symbols/kff.Collection.html#onEach">onEach</a></li>
+						
 							<li><a href="../symbols/kff.Collection.html#remove">remove</a></li>
 						
 							<li><a href="../symbols/kff.Collection.html#set">set</a></li>
@@ -287,6 +295,8 @@ ul.inheritsList
 							<li><a href="../symbols/kff.Collection.html#shuffle">shuffle</a></li>
 						
 							<li><a href="../symbols/kff.Collection.html#sort">sort</a></li>
+						
+							<li><a href="../symbols/kff.Collection.html#splice">splice</a></li>
 						
 							<li><a href="../symbols/kff.Collection.html#toJson">toJson</a></li>
 						
@@ -368,9 +378,9 @@ ul.inheritsList
 								
 							</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.Collection.html#append">append</a></b>(val, silent)
+								<div class="fixedFont"><b><a href="../symbols/kff.Collection.html#append">append</a></b>(item, silent)
 								</div>
-								<div class="description">Appends the item at the end of the collection</div>
+								<div class="description">Appends the item at the end of the collectionTriggers a change event with folloving event object: { type: 'append', item: item }</div>
 							</td>
 						</tr>
 					
@@ -394,7 +404,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.Collection.html#empty">empty</a></b>(silent)
 								</div>
-								<div class="description">Removes all items from collection</div>
+								<div class="description">Removes all items from collectionTriggers a change event with folloving event object:{ type: 'empty' }</div>
 							</td>
 						</tr>
 					
@@ -418,7 +428,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.Collection.html#fromJson">fromJson</a></b>(obj, silent)
 								</div>
-								<div class="description">Reads collection from JSON representation (= from JavaScript array)</div>
+								<div class="description">Reads collection from JSON representation (= from JavaScript array)Triggers a change event with folloving event object:{ type: 'fromJson' }</div>
 							</td>
 						</tr>
 					
@@ -428,9 +438,9 @@ ul.inheritsList
 								
 							</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.Collection.html#insert">insert</a></b>(val, silent, silent)
+								<div class="fixedFont"><b><a href="../symbols/kff.Collection.html#insert">insert</a></b>(item, silent, silent)
 								</div>
-								<div class="description">Inserts an item at specified index</div>
+								<div class="description">Inserts an item at specified indexTriggers a change event with folloving event object:{ type: 'insert', item: item, index: index }</div>
 							</td>
 						</tr>
 					
@@ -448,13 +458,37 @@ ul.inheritsList
 					
 						<tr>
 							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.Collection.html#offEach">offEach</a></b>(eventType, fn)
+								</div>
+								<div class="description">Unbinds event handler previously bound by onEach method.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.Collection.html#onEach">onEach</a></b>(eventType, fn)
+								</div>
+								<div class="description">Binds an event handler to each item in the collection.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
 								<div class="light">{mixed}</div>
 								
 							</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/kff.Collection.html#remove">remove</a></b>(val, silent)
+								<div class="fixedFont"><b><a href="../symbols/kff.Collection.html#remove">remove</a></b>(item, silent)
 								</div>
-								<div class="description">Removes the item from the collection</div>
+								<div class="description">Removes the item from the collectionTriggers a change event with folloving event object:{ type: 'remove', item: item }</div>
 							</td>
 						</tr>
 					
@@ -466,7 +500,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/kff.Collection.html#set">set</a></b>(index, item, silent)
 								</div>
-								<div class="description">Sets an item at given position</div>
+								<div class="description">Sets an item at given positionTriggers a change event with folloving event object:{ type: 'set', item: item, index: index }</div>
 							</td>
 						</tr>
 					
@@ -496,6 +530,18 @@ ul.inheritsList
 					
 						<tr>
 							<td class="attributes">
+								
+								
+							</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/kff.Collection.html#splice">splice</a></b>()
+								</div>
+								<div class="description">Splices the collection.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">
 								<div class="light">{Array}</div>
 								
 							</td>
@@ -512,7 +558,7 @@ ul.inheritsList
 				
 				
 				<dl class="inheritsList">
-				<dt>Methods borrowed from class <a href="../symbols/kff.List.html">kff.List</a>: </dt><dd><a href="../symbols/kff.List.html#each">each</a>, <a href="../symbols/kff.List.html#get">get</a>, <a href="../symbols/kff.List.html#indexOf">indexOf</a></dd>
+				<dt>Methods borrowed from class <a href="../symbols/kff.List.html">kff.List</a>: </dt><dd><a href="../symbols/kff.List.html#count">count</a>, <a href="../symbols/kff.List.html#each">each</a>, <a href="../symbols/kff.List.html#get">get</a>, <a href="../symbols/kff.List.html#indexOf">indexOf</a></dd>
 				</dl>
 				
 			
@@ -549,13 +595,13 @@ ul.inheritsList
 								<dd>Options object</dd>
 						
 							<dt>
-								<span class="light fixedFont">{function}</span>  <b>options.valFactory</b>
+								<span class="light fixedFont">{function}</span>  <b>options.itemFactory</b>
 								
 							</dt>
 								<dd>Factory function for creating new collection items (optional)</dd>
 						
 							<dt>
-								<span class="light fixedFont">{function}</span>  <b>options.valType</b>
+								<span class="light fixedFont">{function}</span>  <b>options.itemType</b>
 								
 							</dt>
 								<dd>Type (class or constructor function) of collection items</dd>
@@ -585,11 +631,11 @@ ul.inheritsList
 					<div class="fixedFont">
 					
 					
-					<b>append</b>(val, silent)
+					<b>append</b>(item, silent)
 					
 					</div>
 					<div class="description">
-						Appends the item at the end of the collection
+						Appends the item at the end of the collectionTriggers a change event with folloving event object: { type: 'append', item: item }
 						
 						
 					</div>
@@ -601,7 +647,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{mixed}</span> <b>val</b>
+									<span class="light fixedFont">{mixed}</span> <b>item</b>
 									
 								</dt>
 								<dd>Item to be appended</dd>
@@ -663,7 +709,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Removes all items from collection
+						Removes all items from collectionTriggers a change event with folloving event object:{ type: 'empty' }
 						
 						
 					</div>
@@ -748,7 +794,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Reads collection from JSON representation (= from JavaScript array)
+						Reads collection from JSON representation (= from JavaScript array)Triggers a change event with folloving event object:{ type: 'fromJson' }
 						
 						
 					</div>
@@ -786,11 +832,11 @@ ul.inheritsList
 					<div class="fixedFont">
 					
 					
-					<b>insert</b>(val, silent, silent)
+					<b>insert</b>(item, silent, silent)
 					
 					</div>
 					<div class="description">
-						Inserts an item at specified index
+						Inserts an item at specified indexTriggers a change event with folloving event object:{ type: 'insert', item: item, index: index }
 						
 						
 					</div>
@@ -802,7 +848,7 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{mixed}</span> <b>val</b>
+									<span class="light fixedFont">{mixed}</span> <b>item</b>
 									
 								</dt>
 								<dd>Item to be inserted</dd>
@@ -845,10 +891,7 @@ ul.inheritsList
 					
 					
 					
-					<pre class="code"><code>
-	 	obj.mget('one.two.three');
-	 	// equals to:
-	 	obj.get('one').get('two').get('three');</code></pre>
+					<pre class="code"><code>obj.mget('one.two.three');// equals to:obj.get('one').get('two').get('three');</code></pre>
 					
 					
 					
@@ -880,15 +923,15 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="remove"> </a>
+					<a name="offEach"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{mixed}</span>
-					<b>remove</b>(val, silent)
+					
+					<b>offEach</b>(eventType, fn)
 					
 					</div>
 					<div class="description">
-						Removes the item from the collection
+						Unbinds event handler previously bound by onEach method.
 						
 						
 					</div>
@@ -900,7 +943,91 @@ ul.inheritsList
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<span class="light fixedFont">{mixed}</span> <b>val</b>
+									<span class="light fixedFont">{String}</span> <b>eventType</b>
+									
+								</dt>
+								<dd>Event type</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>fn</b>
+									
+								</dt>
+								<dd>Event handler</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="onEach"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>onEach</b>(eventType, fn)
+					
+					</div>
+					<div class="description">
+						Binds an event handler to each item in the collection.This bindings are persistent - when new items are added to thecollection, event handlers are automatically bound to them. Handlers forremoved items are automatically removed as well.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{String}</span> <b>eventType</b>
+									
+								</dt>
+								<dd>Event type</dd>
+							
+								<dt>
+									<span class="light fixedFont">{Function}</span> <b>fn</b>
+									
+								</dt>
+								<dd>Event handler</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="remove"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{mixed}</span>
+					<b>remove</b>(item, silent)
+					
+					</div>
+					<div class="description">
+						Removes the item from the collectionTriggers a change event with folloving event object:{ type: 'remove', item: item }
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<span class="light fixedFont">{mixed}</span> <b>item</b>
 									
 								</dt>
 								<dd>Reference to the item to be removed</dd>
@@ -937,7 +1064,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Sets an item at given position
+						Sets an item at given positionTriggers a change event with folloving event object:{ type: 'set', item: item, index: index }
 						
 						
 					</div>
@@ -985,7 +1112,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Randomizes items in the collection.
+						Randomizes items in the collection.Triggers a change event with folloving event object:{ type: 'shuffle' }
 						
 						
 					</div>
@@ -1021,8 +1148,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Sorts collection using a compare function. The compare function follows the same specification
-		as the standard Array.sort function
+						Sorts collection using a compare function. The compare function follows the same specificationas the standard Array.sort functionTriggers a change event with folloving event object:{ type: 'sort' }
 						
 						
 					</div>
@@ -1056,6 +1182,31 @@ ul.inheritsList
 
 					<hr />
 				
+					<a name="splice"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>splice</b>()
+					
+					</div>
+					<div class="description">
+						Splices the collection. Works exactly like the Array.splice method.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="toJson"> </a>
 					<div class="fixedFont">
 					
@@ -1064,10 +1215,7 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						Creates a JSON representation of collection (= array object).
-
-		If item of collection is object, tries to call toJson on it recursively.
-		This function returns a plain object, not a stringified JSON.
+						Creates a JSON representation of collection (= array object).If item of collection is object, tries to call toJson on it recursively.This function returns a plain object, not a stringified JSON.
 						
 						
 					</div>
@@ -1103,7 +1251,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Apr 20 2013 10:02:11 GMT+0200 (Střední Evropa (letní čas))
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu Oct 31 2013 12:02:53 GMT+0100 (Střední Evropa (běžný čas))
 		</div>
 	</body>
 </html>
