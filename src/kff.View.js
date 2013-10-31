@@ -172,10 +172,12 @@ kff.View = kff.createClass(
 	},
 
 	/**
-	 * Unbinds DOM events from the view element. Accepts array of arrays as in the delegateEvents method.
+	 * Unbinds DOM events from the view element. Accepts array of arrays as in
+	 * the delegateEvents method.
 	 *
 	 * @param {Array} events Array of arrays of binding config
-	 * @param {jQuery} $element A jQuery object that holds the DOM element to unbind. If not provided, the view element will be used.
+	 * @param {jQuery} $element A jQuery object that holds the DOM element to
+	 * unbind. If not provided, the view element will be used.
 	 */
 	undelegateEvents: function(events, $element)
 	{
@@ -223,7 +225,8 @@ kff.View = kff.createClass(
 	 *
 	 * The first item is a name of the model.
 	 * The second item is an event name
-	 * The third item is the view method name (string) that acts as an event handler
+	 * The third item is the view method name (string) that acts as an event
+	 * handler
 	 *
 	 * @param {Array} events Array of arrays of binding config
 	 */
@@ -250,12 +253,12 @@ kff.View = kff.createClass(
 	 * Unbinds model events from the view. Accepts array of arrays in the form:
 	 *
 	 * [
-	 *     ['modelName', 'eventType', 'methodName'],
+	 *     ['modelName', 'eventType', 'methodName']
 	 * ]
 	 *
-	 * The first item is a name of the model.
-	 * The second item is an event name
-	 * The third item is the view method name (string) that acts as an event handler
+	 * The first item is a name of the model. The second item is an event name
+	 * The third item is the view method name (string) that acts as an event
+	 * handler
 	 *
 	 * @param {Array} events Array of arrays of binding config
 	 */
@@ -278,7 +281,8 @@ kff.View = kff.createClass(
 	},
 
 	/**
-	 * Initializes the view. Calls the render method. Should not be overloaded by subclasses.
+	 * Initializes the view. Calls the render method. Should not be overloaded
+	 * by subclasses.
 	 *
 	 * @private
 	 * @param
@@ -289,14 +293,16 @@ kff.View = kff.createClass(
 	},
 
 	/**
-	 * Renders the view. It will be called automatically. Should not be called directly.
+	 * Renders the view. It will be called automatically. Should not be called
+	 * directly.
 	 *
 	 * @param {Boolean} silent If true, the 'render' event won't be called
 	 */
 	render: function(){},
 
 	/**
-	 * Renders the view. It will be called automatically. Should not be called directly.
+	 * Renders the view. It will be called automatically. Should not be called
+	 * directly.
 	 *
 	 * @param {Boolean} silent If true, the 'render' event won't be called
 	 */
@@ -318,9 +324,12 @@ kff.View = kff.createClass(
 	},
 
 	/**
-	 * Renders subviews. Will find all DOM descendats with kff.View.DATA_KFF_VIEW (or kff.View.DATA_BIND_ATTR) attribute
-	 * and initializes subviews on them. If an element has the kff.View.DATA_BIND_ATTR but not the kff.View.DATA_KFF_VIEW
-	 * attribute, adds kff.View.DATA_KFF_VIEW attribute = "kff.BindingView" and inits implicit data-binding.
+	 * Renders subviews. Will find all DOM descendats with
+	 * kff.View.DATA_KFF_VIEW (or kff.View.DATA_BIND_ATTR) attribute and
+	 * initializes subviews on them. If an element has the
+	 * kff.View.DATA_BIND_ATTR but not the kff.View.DATA_KFF_VIEW attribute,
+	 * adds kff.View.DATA_KFF_VIEW attribute = "kff.BindingView" and inits
+	 * implicit data-binding.
 	 */
 	renderSubviews: function()
 	{
@@ -345,6 +354,17 @@ kff.View = kff.createClass(
 
 	},
 
+	/**
+	 * Creates a new subview and adds it to the internal subviews list.
+	 * The new subview is created using the viewFactory and gets properly set
+	 * parentView.
+	 *
+	 * Do not use this method directly, use addSubview method instead.
+	 *
+	 * @param  {String} viewName Name of the view
+	 * @param  {Object} options  Options object for the subview constructor
+	 * @return {kff.View}        Created view
+	 */
 	createView: function(viewName, options)
 	{
 		options.parentView = this;
@@ -357,6 +377,19 @@ kff.View = kff.createClass(
 		return subView;
 	},
 
+	/**
+	 * Adds subview metadata to the internal list. The subviews from this list
+	 * are then rendered in renderSubviews method which is automatically called
+	 * when the view is rendered.
+	 *
+	 * This method can be used is in the render method to manually create a view
+	 * that is not parsed from html/template (for example for an element that
+	 * sits at the end od the body element).
+	 *
+	 * @param {jQuery} $element Element of the subview
+	 * @param {String} viewName Name of the view
+	 * @param {[type]} options  Options object for the subview constructor
+	 */
 	addSubview: function($element, viewName, options)
 	{
 		this.explicitSubviewsStruct.push({
@@ -419,6 +452,8 @@ kff.View = kff.createClass(
 
 	/**
 	 * Process declarative events bound throught data-kff-trigger attribute on root view element
+	 *
+	 * @private
 	 */
 	processTriggerEvents: function()
 	{
@@ -511,6 +546,11 @@ kff.View = kff.createClass(
 	 */
 	refresh: function(){},
 
+	/**
+	 * Refreshes data-binders in all subviews.
+	 *
+	 * @param  {Object} event Any event object that caused refreshing
+	 */
 	refreshBinders: function(event)
 	{
 		for(var i = 0, l = this.subViews.length; i < l; i++) this.subViews[i].refreshBinders(event);

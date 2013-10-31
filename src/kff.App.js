@@ -24,18 +24,18 @@ kff.App = kff.createClass(
 				},
 				frontController: {
 					construct: 'kff.FrontController',
-				    args: [{
-				    	viewFactory: '@viewFactory',
-				    	defaultView: 'pageView'
-				    }],
-				    shared: true
+					args: [{
+						viewFactory: '@viewFactory',
+						defaultView: 'pageView'
+					}],
+					shared: true
 				},
 				pageView: {
 					construct: 'kff.PageView',
 					args: [{
-				    	viewFactory: '@viewFactory',
-				    	models: models
-				    }]
+						viewFactory: '@viewFactory',
+						models: models
+					}]
 				}
 			}
 		};
