@@ -83,4 +83,44 @@ describe('kff.Model', function()
 	});
 
 
+	describe('#createComputed', function()
+	{
+		it('should create computed property', function(done)
+		{
+			var ComputedModel = kff.createClass({
+				extend: kff.Model
+			},
+			{
+				constructor: function()
+				{
+					kff.Model.call(this, {
+						a: 1,
+						b: 2
+					});
+					this.createComputed('c', ['a', 'b'], 'computeC');
+				},
+
+				computeC: function(a, b)
+				{
+					return a + b;
+				}
+			});
+			var obj = new ComputedModel();
+
+			obj.get('c').should.equal(3);
+
+			obj.on('change:c', function(event){
+				obj.get('c').should.equal(7);
+				done();
+			});
+
+			obj.set({
+				a: 3,
+				b: 4
+			});
+		});
+
+	});
+
+
 });

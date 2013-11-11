@@ -145,6 +145,34 @@ kff.Model = kff.createClass(
 			}
 		}
 		this.set(this.attrs, silent);
+	},
+
+	createComputed: function(attr, attrs, fn)
+	{
+		var computed, i, l;
+		if(!this._computed) this._computed = [];
+
+		computed = {
+			args: [attr, attrs, fn],
+			boundFn: this.f(function()
+			{
+				var vals = [];
+				for(i = 0, l = attrs.length; i < l; i++)
+				{
+					vals[i] = this.get(attrs[i]);
+				}
+				this.set(attr, this.f(fn).apply(this, vals));
+			})
+		};
+
+		this._computed.push(computed);
+
+		for(i = 0, l = attrs.length; i < l; i++)
+		{
+			this.on('change:' + attrs[i], computed.boundFn);
+		}
+
+		computed.boundFn();
 	}
 
 });
