@@ -3,7 +3,7 @@ kff.Binder = kff.createClass(
 /** @lends kff.Binder.prototype */
 {
 	/**
-		@constructs
+	 * @constructs
 	*/
 	constructor: function(options)
 	{

@@ -147,6 +147,16 @@ kff.Model = kff.createClass(
 		this.set(this.attrs, silent);
 	},
 
+	/**
+	 * Creates a new computed attribute.
+	 *
+	 * Computed attribute is like a normal attribute except its value is automatically recomputed each time the
+	 * depending attributes change.
+	 *
+	 * @param  {String}   attr  A name of computed property
+	 * @param  {Array}   attrs Array of attributes the computed attribute is depending on
+	 * @param  {Function|String} fn    Function to be called when any of depending attributes changes. Arguments of this functin are depending attributes, returns a computed value.
+	 */
 	createComputed: function(attr, attrs, fn)
 	{
 		var computed, i, l;
