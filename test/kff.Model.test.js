@@ -123,4 +123,25 @@ describe('kff.Model', function()
 	});
 
 
+	describe('#each', function()
+	{
+		it('should iterate over each model attribute', function()
+		{
+			var result = 0;
+			var obj = new kff.Model({
+				a: 1,
+				b: 2,
+				c: 3
+			});
+
+			obj.each(function(key, val)
+			{
+				result += val;
+			});
+
+			result.should.equal(6);
+		});
+	});
+
+
 });

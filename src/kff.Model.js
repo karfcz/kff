@@ -183,6 +183,19 @@ kff.Model = kff.createClass(
 		}
 
 		computed.boundFn();
+	},
+
+	/**
+	 * Iterates over model's attributes
+	 * @param  {Function} fn Function to be called for each attribute. Arguments are (key, value).
+	 */
+	each: function(fn)
+	{
+		var key, attrs = this.attrs;
+		for(key in attrs)
+		{
+			fn(key, attrs[key]);
+		}
 	}
 
 });
