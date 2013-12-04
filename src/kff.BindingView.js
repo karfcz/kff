@@ -746,8 +746,6 @@ kff.BindingView = kff.createClass(
 
 			subView.init();
 
-			$element.attr(kff.View.DATA_RENDERED_ATTR, true);
-
 			if(!this.modelBindersMapTemplate)
 			{
 				this.modelBindersMapTemplate = subView.modelBindersMap.clone();
