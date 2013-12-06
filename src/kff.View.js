@@ -306,21 +306,39 @@ kff.View = kff.createClass(
 	 *
 	 * @param {Boolean} silent If true, the 'render' event won't be called
 	 */
+	run: function(){},
+
+	/**
+	 * Renders the view. It will be called automatically. Should not be called
+	 * directly.
+	 *
+	 * @param {Boolean} silent If true, the 'render' event won't be called
+	 */
 	startRender: function(silent)
 	{
+		this.renderId = Math.floor(Math.random() * 100000000);
 		this.explicitSubviewsStruct = [];
 		var ret = this.render();
 		this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 		this.renderSubviews();
 		this.processTriggerEvents();
+		this.trigger('render');
+	},
+
+	startRun: function(silent)
+	{
+		this.run();
+		this.runSubviews();
+
 		this.delegateEvents();
 		this.delegateModelEvents();
+
 		if(typeof this.afterRender === 'function') this.afterRender();
 
-		if(!((silent === true) || (ret === false)))
-		{
-			this.trigger('render');
-		}
+		// if(!((silent === true) || (ret === false)))
+		// {
+		// 	this.trigger('render');
+		// }
 	},
 
 	/**
@@ -352,6 +370,14 @@ kff.View = kff.createClass(
 			}
 		}
 
+	},
+
+	runSubviews: function()
+	{
+		for(var i = 0, l = this.subViews.length; i < l; i++)
+		{
+			this.subViews[i].startRun();
+		}
 	},
 
 	/**
@@ -432,8 +458,10 @@ kff.View = kff.createClass(
 						if(viewName)
 						{
 							optAttr = child.getAttribute(kff.View.DATA_OPTIONS_ATTR);
+							child.setAttribute('data-kff-renderid', this.renderId);
 							subviewsStruct.push({
 								viewName: viewName,
+								renderId: this.renderId,
 								$element: $(child),
 								options: optAttr ? JSON.parse(optAttr) : {}
 							});

@@ -1696,21 +1696,39 @@ kff.View = kff.createClass(
 	 *
 	 * @param {Boolean} silent If true, the 'render' event won't be called
 	 */
+	run: function(){},
+
+	/**
+	 * Renders the view. It will be called automatically. Should not be called
+	 * directly.
+	 *
+	 * @param {Boolean} silent If true, the 'render' event won't be called
+	 */
 	startRender: function(silent)
 	{
+		this.renderId = Math.floor(Math.random() * 100000000);
 		this.explicitSubviewsStruct = [];
 		var ret = this.render();
 		this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 		this.renderSubviews();
 		this.processTriggerEvents();
+		this.trigger('render');
+	},
+
+	startRun: function(silent)
+	{
+		this.run();
+		this.runSubviews();
+
 		this.delegateEvents();
 		this.delegateModelEvents();
+
 		if(typeof this.afterRender === 'function') this.afterRender();
 
-		if(!((silent === true) || (ret === false)))
-		{
-			this.trigger('render');
-		}
+		// if(!((silent === true) || (ret === false)))
+		// {
+		// 	this.trigger('render');
+		// }
 	},
 
 	/**
@@ -1742,6 +1760,14 @@ kff.View = kff.createClass(
 			}
 		}
 
+	},
+
+	runSubviews: function()
+	{
+		for(var i = 0, l = this.subViews.length; i < l; i++)
+		{
+			this.subViews[i].startRun();
+		}
 	},
 
 	/**
@@ -1822,8 +1848,10 @@ kff.View = kff.createClass(
 						if(viewName)
 						{
 							optAttr = child.getAttribute(kff.View.DATA_OPTIONS_ATTR);
+							child.setAttribute('data-kff-renderid', this.renderId);
 							subviewsStruct.push({
 								viewName: viewName,
+								renderId: this.renderId,
 								$element: $(child),
 								options: optAttr ? JSON.parse(optAttr) : {}
 							});
@@ -2018,7 +2046,21 @@ kff.PageView = kff.createClass(
 	setState: function(state, silent)
 	{
 		if(!silent) this.trigger('setState', state);
+	},
+
+	/**
+	 * Initializes the view. Calls the render method. Should not be overloaded
+	 * by subclasses.
+	 *
+	 * @private
+	 * @param
+	 */
+	init: function()
+	{
+		this.startRender();
+		this.startRun();
 	}
+
 });
 
 
@@ -2152,10 +2194,18 @@ kff.BindingView = kff.createClass(
 	 */
 	startRender: function(silent)
 	{
+		// if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
+		// else this.initBinding();
+		// if(this.collectionBinder) this.renderBoundViews();
+		kff.BindingView._super.startRender.call(this, silent);
+	},
+
+	startRun: function()
+	{
 		if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
 		else this.initBinding();
 		if(this.collectionBinder) this.renderBoundViews();
-		kff.BindingView._super.startRender.call(this, silent);
+		kff.BindingView._super.startRun.call(this);
 		kff.setZeroTimeout(this.f('refreshOwnBinders'));
 	},
 
@@ -2435,6 +2485,11 @@ kff.BindingView = kff.createClass(
 
 		this.collectionBinder.collection.on('change', this.f('refreshBoundViews'));
 		this.refreshBoundViewsAll();
+	},
+
+	prepareCollectionTemplate: function()
+	{
+
 	},
 
 	/**
@@ -2823,6 +2878,7 @@ kff.BindingView = kff.createClass(
 			}
 
 			subView.init();
+			subView.startRun();
 
 			if(!this.modelBindersMapTemplate)
 			{
@@ -3093,32 +3149,21 @@ kff.Binder = kff.createClass(
 
 	clone: function()
 	{
-		var obj;
-		var F = function(){};
-		F.prototype = this;
-
-		obj = new F();
-
-		obj.view = null;
-		obj.model = null;
-		obj.$element = null;
-		obj.value = null;
-
-		// var obj = new this.constructor({
-		// 	eventNames: this.eventNames,
-		// 	view: null,
-		// 	$element: this.$element,
-		// 	attr: this.attr,
-		// 	model: null,
-		// 	modelName: this.modelName,
-		// 	modelPathArray: this.modelPathArray,
-		// 	parsers: this.parsers,
-		// 	formatters: this.formatters,
-		// 	params: this.params,
-		// 	fill: this.options.fill
-		// });
-		// obj.setter = this.setter;
-		// obj.getter = this.getter;
+		var obj = new this.constructor({
+			eventNames: this.eventNames,
+			view: null,
+			$element: this.$element,
+			attr: this.attr,
+			model: null,
+			modelName: this.modelName,
+			modelPathArray: this.modelPathArray,
+			parsers: this.parsers,
+			formatters: this.formatters,
+			params: this.params,
+			fill: this.options.fill
+		});
+		obj.setter = this.setter;
+		obj.getter = this.getter;
 		return obj;
 	},
 

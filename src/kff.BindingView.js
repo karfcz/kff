@@ -74,10 +74,18 @@ kff.BindingView = kff.createClass(
 	 */
 	startRender: function(silent)
 	{
+		// if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
+		// else this.initBinding();
+		// if(this.collectionBinder) this.renderBoundViews();
+		kff.BindingView._super.startRender.call(this, silent);
+	},
+
+	startRun: function()
+	{
 		if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
 		else this.initBinding();
 		if(this.collectionBinder) this.renderBoundViews();
-		kff.BindingView._super.startRender.call(this, silent);
+		kff.BindingView._super.startRun.call(this);
 		kff.setZeroTimeout(this.f('refreshOwnBinders'));
 	},
 
@@ -357,6 +365,11 @@ kff.BindingView = kff.createClass(
 
 		this.collectionBinder.collection.on('change', this.f('refreshBoundViews'));
 		this.refreshBoundViewsAll();
+	},
+
+	prepareCollectionTemplate: function()
+	{
+
 	},
 
 	/**
@@ -745,6 +758,7 @@ kff.BindingView = kff.createClass(
 			}
 
 			subView.init();
+			subView.startRun();
 
 			if(!this.modelBindersMapTemplate)
 			{

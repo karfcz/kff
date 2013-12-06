@@ -48,5 +48,19 @@ kff.PageView = kff.createClass(
 	setState: function(state, silent)
 	{
 		if(!silent) this.trigger('setState', state);
+	},
+
+	/**
+	 * Initializes the view. Calls the render method. Should not be overloaded
+	 * by subclasses.
+	 *
+	 * @private
+	 * @param
+	 */
+	init: function()
+	{
+		this.startRender();
+		this.startRun();
 	}
+
 });
