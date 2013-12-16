@@ -29,6 +29,8 @@ kff.Binder = kff.createClass(
 
 	init: function()
 	{
+
+		console.log('kff.Binder.init', this.attr);
 		if(this.options.watch)
 		{
 			this.rebind();

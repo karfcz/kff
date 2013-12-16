@@ -38,6 +38,7 @@ kff.BinderMap = kff.createClass(
 
 	initBinders: function()
 	{
+		console.log('kff.BinderMap.initBinders', this.binders.length);
 		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].init();
 	},
 

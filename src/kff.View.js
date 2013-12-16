@@ -94,7 +94,7 @@ kff.View = kff.createClass(
 		this.viewFactory = options.viewFactory || new kff.ViewFactory();
 		this.subviewsStruct = [];
 		this.explicitSubviewsStruct = null;
-		this.subViews = [];
+		this.subviews = [];
 		return this;
 	},
 
@@ -319,7 +319,6 @@ kff.View = kff.createClass(
 		this.renderId = Math.floor(Math.random() * 100000000);
 		this.explicitSubviewsStruct = [];
 		var ret = this.render();
-		this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 		this.renderSubviews();
 		this.processTriggerEvents();
 		this.trigger('render');
@@ -334,6 +333,7 @@ kff.View = kff.createClass(
 		this.delegateModelEvents();
 
 		if(typeof this.afterRender === 'function') this.afterRender();
+		this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 
 		// if(!((silent === true) || (ret === false)))
 		// {
@@ -374,9 +374,9 @@ kff.View = kff.createClass(
 
 	runSubviews: function()
 	{
-		for(var i = 0, l = this.subViews.length; i < l; i++)
+		for(var i = 0, l = this.subviews.length; i < l; i++)
 		{
-			this.subViews[i].startRun();
+			this.subviews[i].startRun();
 		}
 	},
 
@@ -399,7 +399,7 @@ kff.View = kff.createClass(
 		if(subView instanceof kff.View)
 		{
 			subView.viewFactory = this.viewFactory;
-			this.subViews.push(subView);
+			this.subviews.push(subView);
 		}
 		return subView;
 	},
@@ -570,12 +570,12 @@ kff.View = kff.createClass(
 		var subView, i, l;
 
 		// Destroy subviews
-		for(i = 0, l = this.subViews.length; i < l; i++)
+		for(i = 0, l = this.subviews.length; i < l; i++)
 		{
-			subView = this.subViews[i];
+			subView = this.subviews[i];
 			subView.startDestroy();
 		}
-		this.subViews = [];
+		this.subviews = [];
 	},
 
 	/**
@@ -590,7 +590,7 @@ kff.View = kff.createClass(
 	 */
 	refreshBinders: function(event)
 	{
-		for(var i = 0, l = this.subViews.length; i < l; i++) this.subViews[i].refreshBinders(event);
+		for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].refreshBinders(event);
 	},
 
 	/**
@@ -602,6 +602,94 @@ kff.View = kff.createClass(
 	{
 		if(this.parentView instanceof kff.View) return this.parentView.getBindingIndex(modelName);
 		return null;
-	}
+	},
 
+	clone: function()
+	{
+		var options = {
+			parentView: this.parentView,
+			viewFactory: this.viewFactory
+		};
+		var clonedView = new this.constructor(options);
+
+		clonedView.options.events = this.options.events;
+
+		for(var modelName in this.models)
+		{
+			if(this.models.hasOwnProperty(modelName)) clonedView.models[modelName] = this.models[modelName];
+		}
+
+		for(var i = 0; i < this.subviews.length; i++)
+		{
+			clonedView.subviews.push(this.subviews[i].clone());
+		}
+		clonedView.subviewsStruct = this.subviewsStruct;
+		clonedView.renderId = this.renderId;
+
+		return clonedView;
+	},
+
+	setParentView: function(parentView)
+	{
+		var oldModels = this.models || {};
+		this.parentView = parentView;
+		F = function(){};
+		F.prototype = this.parentView.models;
+		this.models = new F();
+		kff.mixins(this.models, oldModels);
+	},
+
+	rebindElement: function(element)
+	{
+		var i, l;
+
+
+		// if(this.$element) this.startDestroy();
+
+		this.$element = $(element);
+
+		// this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
+
+
+		var $subviewsElements = this.$element.find('[data-kff-renderid]');
+
+
+
+		console.log('*[data-kff-renderid="' + this.renderId + '"]', $subviewsElements.attr('data-kff-renderid'));
+
+		// var $subviewsElements = this.$element.find('*');
+
+
+		// this.subviewsStruct = [];
+		// this.findViewElements(element, this.subviewsStruct, true);
+
+		// if(this.subviews.length !== this.subviewsStruct.length)
+		// {
+		// 	// console.log('no match', this.subviews.length, this.subviewsStruct.length, this.subviewsStruct)
+		// }
+
+		console.log('this.renderId', this.renderId);
+		console.log('rebindElement', this.subviewsStruct);
+		console.log('this.subviewsStruct.length', this.subviewsStruct.length);
+		console.log('this.subviewsElements.length', $subviewsElements.length);
+
+		// for(i = 0, l = this.subviewsStruct.length; i < l; i++)
+		// {
+		// 	if(this.subviews[i])
+		// 	{
+		// 		this.subviews[i].setParentView(this);
+		// 		this.subviews[i].rebindElement($subviewsElements.eq(i).get(0));
+		// 	}
+		// }
+
+		// this.processTriggerEvents();
+		// this.delegateEvents();
+		// if(typeof this.afterRender === 'function') this.afterRender();
+
+		// if(!(ret === false))
+		// {
+		// 	this.trigger('render');
+		// }
+
+	}
 });
