@@ -75,19 +75,19 @@ kff.BindingView = kff.createClass(
 	 */
 	startRender: function(silent)
 	{
-		// if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
-		// else this.initBinding();
-		// if(this.collectionBinder) this.renderBoundViews();
-		kff.BindingView._super.startRender.call(this, silent);
+		if(this.modelBindersMap === null) this.initBinding();
+		if(!this.collectionBinder) kff.BindingView._super.startRender.call(this, silent);
 	},
 
 	startRun: function()
 	{
-
-		if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
-		else this.initBinding();
+		// else this.initBinding();
 		if(this.collectionBinder) this.renderBoundViews();
-		else kff.BindingView._super.startRun.call(this);
+		else
+		{
+			if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
+			kff.BindingView._super.startRun.call(this);
+		}
 		kff.setZeroTimeout(this.f('refreshOwnBinders'));
 	},
 
@@ -131,7 +131,6 @@ kff.BindingView = kff.createClass(
 		var leadingPeriodRegex = kff.BindingView.leadingPeriodRegex;
 		var trailingPeriodRegex = kff.BindingView.trailingPeriodRegex;
 
-		console.log('initBinding', dataBindAttr);
 		bindingRegex.lastIndex = 0;
 		operatorsRegex.lastIndex = 0;
 
@@ -210,9 +209,9 @@ kff.BindingView = kff.createClass(
 			{
 				if(!this.options.isBoundView)
 				{
-					console.log('is collection binder')
 					this.collectionBinder = {
-						collection: model
+						collection: model,
+						collectionPathArray: modelPathArray
 					};
 					if(binderName === 'as' && binderParams.length > 0)
 					{
@@ -222,7 +221,6 @@ kff.BindingView = kff.createClass(
 			}
 			else
 			{
-				console.log('is normal binder')
 				if(!binderName || !(binderName in kff.BindingView.binders)) break;
 
 				if(modelPathArray.length > 1) attr = modelPathArray.pop();
@@ -257,7 +255,7 @@ kff.BindingView = kff.createClass(
 				});
 
 				this.modelBindersMap.add(modelBinder);
-				modelBinder.init();
+				// modelBinder.init();
 
 			}
 		}
@@ -361,7 +359,6 @@ kff.BindingView = kff.createClass(
 	 */
 	renderBoundViews: function()
 	{
-		console.log('renderBoundViews');
 		this.$anchor = $(document.createTextNode(''));
 		this.$element.before(this.$anchor);
 		this.$element.remove();
@@ -542,10 +539,9 @@ kff.BindingView = kff.createClass(
 	{
 		var filter, filterModel, filterFnName, render, renderIndex = 0, collectionItemChange = this.f('collectionItemChange'), that = this;
 
-		console.log('refreshBoundViewsAll');
 
-		kff.setZeroTimeout(function()
-		{
+		// kff.setZeroTimeout(function()
+		// {
 			that.collectionBinder.collection.each(function(item, i)
 			{
 				item.off('change', collectionItemChange);
@@ -592,10 +588,10 @@ kff.BindingView = kff.createClass(
 					that.boundViewsMap.push(false);
 				}
 			});
-		});
+		// });
 
-		kff.setZeroTimeout(function()
-		{
+		// kff.setZeroTimeout(function()
+		// {
 			if('Zepto' in window && $ === window.Zepto)
 			{
 				var elems = [];
@@ -613,7 +609,7 @@ kff.BindingView = kff.createClass(
 				that.$anchor.after(that.elements);
 				that.reindexBoundviews();
 			}
-		});
+		// });
 	},
 
 	/**
@@ -809,13 +805,13 @@ kff.BindingView = kff.createClass(
 	 */
 	createBoundView: function(item, i)
 	{
-		var boundView, $element = this.$element.clone();
+		var boundView, $element;
 
 
 
 		if(!this.viewTemplate)
 		{
-		console.log('createBoundView');
+			$element = this.$element.clone();
 			this.boundViewOptions.element = $element;
 			this.boundViewOptions.models = { '*': item };
 			if(this.itemAlias) this.boundViewOptions.models[this.itemAlias] = item;
@@ -833,21 +829,28 @@ kff.BindingView = kff.createClass(
 			}
 			boundView.setBindingIndex(i);
 
-			boundView.init();
+			boundView.startRender();
 			// $element.attr(kff.View.DATA_RENDERED_ATTR, true);
 
-			// this.viewTemplate = boundView.clone();
+
+
+			this.viewTemplate = boundView.clone();
+
+			$element.attr('clone', 'n')
+
+			this.$elementTemplate = $element.clone();
 
 			// this.viewTemplate.startDestroy();
 
 		}
 		else
 		{
+			$element = this.$elementTemplate.clone();
 
-			console.log('createBoundView clone');
+			$element.attr('clone', 'y')
+
 			boundView = this.viewTemplate.clone();
 			// boundView.startDestroy();
-
 
 			if(i === undefined)
 			{
@@ -863,6 +866,8 @@ kff.BindingView = kff.createClass(
 			if(this.itemAlias) boundView.models[this.itemAlias] = item;
 
 			boundView.setBindingIndex(i);
+
+
 			boundView.rebindElement($element.get(0));
 		}
 
@@ -927,15 +932,17 @@ kff.BindingView = kff.createClass(
 	clone: function()
 	{
 		var clonedView = kff.View.prototype.clone.call(this);
+
 		if(this.collectionBinder)
 		{
 			clonedView.collectionBinder =
 			{
-				collection: this.collectionBinder.collection,
+				collection: null,
 				collectionPathArray: this.collectionBinder.collectionPathArray
 			};
 			// clonedView.destroyBoundViews();
 		}
+
 		if(this.modelBindersMap)
 		{
 			clonedView.modelBindersMap = this.modelBindersMap.clone();
@@ -950,7 +957,7 @@ kff.BindingView = kff.createClass(
 	{
 		kff.BindingView._super.rebindElement.call(this, element);
 
-		this.modelBindersMap = null;
+		// this.modelBindersMap = null;
 
 		if(this.modelBindersMap !== null)
 		{
@@ -960,11 +967,11 @@ kff.BindingView = kff.createClass(
 		// else this.initBinding();
 
 
-		// if(this.collectionBinder)
-		// {
-		// 	this.collectionBinder.collection = this.getModel(this.collectionBinder.collectionPathArray);
-		// 	this.renderBoundViews();
-		// }
+		if(this.collectionBinder)
+		{
+			this.collectionBinder.collection = this.getModel(this.collectionBinder.collectionPathArray);
+			// this.renderBoundViews();
+		}
 
 		// kff.setZeroTimeout(this.f('refreshOwnBinders'));
 	}

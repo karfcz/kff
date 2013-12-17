@@ -95,6 +95,7 @@ kff.View = kff.createClass(
 		this.subviewsStruct = [];
 		this.explicitSubviewsStruct = null;
 		this.subviews = [];
+		this.renderId = null;
 		return this;
 	},
 
@@ -317,6 +318,7 @@ kff.View = kff.createClass(
 	startRender: function(silent)
 	{
 		this.renderId = Math.floor(Math.random() * 100000000);
+		this.$element.attr('myrenderid', this.renderId)
 		this.explicitSubviewsStruct = [];
 		var ret = this.render();
 		this.renderSubviews();
@@ -611,6 +613,7 @@ kff.View = kff.createClass(
 			viewFactory: this.viewFactory
 		};
 		var clonedView = new this.constructor(options);
+		var clonedSubview;
 
 		clonedView.options.events = this.options.events;
 
@@ -621,9 +624,11 @@ kff.View = kff.createClass(
 
 		for(var i = 0; i < this.subviews.length; i++)
 		{
-			clonedView.subviews.push(this.subviews[i].clone());
+			clonedSubview = this.subviews[i].clone();
+			clonedSubview.setParentView(clonedView);
+			clonedView.subviews.push(clonedSubview);
 		}
-		clonedView.subviewsStruct = this.subviewsStruct;
+		clonedView.subviewsStruct = kff.mixins({}, this.subviewsStruct);
 		clonedView.renderId = this.renderId;
 
 		return clonedView;
@@ -648,17 +653,23 @@ kff.View = kff.createClass(
 
 		this.$element = $(element);
 
+		var $subviewsElements = this.$element.find('*[data-kff-renderid="' + this.renderId + '"]');
+
+		if($subviewsElements.length > 0)
+		{
+			for(i = 0, l = this.subviews.length; i < l; i++)
+			{
+				if(this.subviews[i])
+				{
+					this.subviews[i].rebindElement($subviewsElements.eq(i).get(0));
+				}
+			}
+
+		}
+
 		// this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 
-
-		var $subviewsElements = this.$element.find('[data-kff-renderid]');
-
-
-
-		console.log('*[data-kff-renderid="' + this.renderId + '"]', $subviewsElements.attr('data-kff-renderid'));
-
 		// var $subviewsElements = this.$element.find('*');
-
 
 		// this.subviewsStruct = [];
 		// this.findViewElements(element, this.subviewsStruct, true);
@@ -668,19 +679,11 @@ kff.View = kff.createClass(
 		// 	// console.log('no match', this.subviews.length, this.subviewsStruct.length, this.subviewsStruct)
 		// }
 
-		console.log('this.renderId', this.renderId);
-		console.log('rebindElement', this.subviewsStruct);
-		console.log('this.subviewsStruct.length', this.subviewsStruct.length);
-		console.log('this.subviewsElements.length', $subviewsElements.length);
+		// console.log('this.renderId', this.renderId);
+		// console.log('rebindElement', this.subviewsStruct);
+		// console.log('this.subviewsStruct.length', this.subviewsStruct.length);
+		// console.log('this.subviewsElements.length', $subviewsElements.length);
 
-		// for(i = 0, l = this.subviewsStruct.length; i < l; i++)
-		// {
-		// 	if(this.subviews[i])
-		// 	{
-		// 		this.subviews[i].setParentView(this);
-		// 		this.subviews[i].rebindElement($subviewsElements.eq(i).get(0));
-		// 	}
-		// }
 
 		// this.processTriggerEvents();
 		// this.delegateEvents();

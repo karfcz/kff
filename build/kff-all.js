@@ -1485,6 +1485,7 @@ kff.View = kff.createClass(
 		this.subviewsStruct = [];
 		this.explicitSubviewsStruct = null;
 		this.subviews = [];
+		this.renderId = null;
 		return this;
 	},
 
@@ -1707,6 +1708,7 @@ kff.View = kff.createClass(
 	startRender: function(silent)
 	{
 		this.renderId = Math.floor(Math.random() * 100000000);
+		this.$element.attr('myrenderid', this.renderId)
 		this.explicitSubviewsStruct = [];
 		var ret = this.render();
 		this.renderSubviews();
@@ -2001,6 +2003,7 @@ kff.View = kff.createClass(
 			viewFactory: this.viewFactory
 		};
 		var clonedView = new this.constructor(options);
+		var clonedSubview;
 
 		clonedView.options.events = this.options.events;
 
@@ -2011,9 +2014,11 @@ kff.View = kff.createClass(
 
 		for(var i = 0; i < this.subviews.length; i++)
 		{
-			clonedView.subviews.push(this.subviews[i].clone());
+			clonedSubview = this.subviews[i].clone();
+			clonedSubview.setParentView(clonedView);
+			clonedView.subviews.push(clonedSubview);
 		}
-		clonedView.subviewsStruct = this.subviewsStruct;
+		clonedView.subviewsStruct = kff.mixins({}, this.subviewsStruct);
 		clonedView.renderId = this.renderId;
 
 		return clonedView;
@@ -2038,17 +2043,23 @@ kff.View = kff.createClass(
 
 		this.$element = $(element);
 
+		var $subviewsElements = this.$element.find('*[data-kff-renderid="' + this.renderId + '"]');
+
+		if($subviewsElements.length > 0)
+		{
+			for(i = 0, l = this.subviews.length; i < l; i++)
+			{
+				if(this.subviews[i])
+				{
+					this.subviews[i].rebindElement($subviewsElements.eq(i).get(0));
+				}
+			}
+
+		}
+
 		// this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 
-
-		var $subviewsElements = this.$element.find('[data-kff-renderid]');
-
-
-
-		console.log('*[data-kff-renderid="' + this.renderId + '"]', $subviewsElements.attr('data-kff-renderid'));
-
 		// var $subviewsElements = this.$element.find('*');
-
 
 		// this.subviewsStruct = [];
 		// this.findViewElements(element, this.subviewsStruct, true);
@@ -2058,19 +2069,11 @@ kff.View = kff.createClass(
 		// 	// console.log('no match', this.subviews.length, this.subviewsStruct.length, this.subviewsStruct)
 		// }
 
-		console.log('this.renderId', this.renderId);
-		console.log('rebindElement', this.subviewsStruct);
-		console.log('this.subviewsStruct.length', this.subviewsStruct.length);
-		console.log('this.subviewsElements.length', $subviewsElements.length);
+		// console.log('this.renderId', this.renderId);
+		// console.log('rebindElement', this.subviewsStruct);
+		// console.log('this.subviewsStruct.length', this.subviewsStruct.length);
+		// console.log('this.subviewsElements.length', $subviewsElements.length);
 
-		// for(i = 0, l = this.subviewsStruct.length; i < l; i++)
-		// {
-		// 	if(this.subviews[i])
-		// 	{
-		// 		this.subviews[i].setParentView(this);
-		// 		this.subviews[i].rebindElement($subviewsElements.eq(i).get(0));
-		// 	}
-		// }
 
 		// this.processTriggerEvents();
 		// this.delegateEvents();
@@ -2191,7 +2194,6 @@ kff.BinderMap = kff.createClass(
 
 	initBinders: function()
 	{
-		console.log('kff.BinderMap.initBinders', this.binders.length);
 		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].init();
 	},
 
@@ -2284,19 +2286,19 @@ kff.BindingView = kff.createClass(
 	 */
 	startRender: function(silent)
 	{
-		// if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
-		// else this.initBinding();
-		// if(this.collectionBinder) this.renderBoundViews();
-		kff.BindingView._super.startRender.call(this, silent);
+		if(this.modelBindersMap === null) this.initBinding();
+		if(!this.collectionBinder) kff.BindingView._super.startRender.call(this, silent);
 	},
 
 	startRun: function()
 	{
-
-		if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
-		else this.initBinding();
+		// else this.initBinding();
 		if(this.collectionBinder) this.renderBoundViews();
-		else kff.BindingView._super.startRun.call(this);
+		else
+		{
+			if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
+			kff.BindingView._super.startRun.call(this);
+		}
 		kff.setZeroTimeout(this.f('refreshOwnBinders'));
 	},
 
@@ -2340,7 +2342,6 @@ kff.BindingView = kff.createClass(
 		var leadingPeriodRegex = kff.BindingView.leadingPeriodRegex;
 		var trailingPeriodRegex = kff.BindingView.trailingPeriodRegex;
 
-		console.log('initBinding', dataBindAttr);
 		bindingRegex.lastIndex = 0;
 		operatorsRegex.lastIndex = 0;
 
@@ -2419,9 +2420,9 @@ kff.BindingView = kff.createClass(
 			{
 				if(!this.options.isBoundView)
 				{
-					console.log('is collection binder')
 					this.collectionBinder = {
-						collection: model
+						collection: model,
+						collectionPathArray: modelPathArray
 					};
 					if(binderName === 'as' && binderParams.length > 0)
 					{
@@ -2431,7 +2432,6 @@ kff.BindingView = kff.createClass(
 			}
 			else
 			{
-				console.log('is normal binder')
 				if(!binderName || !(binderName in kff.BindingView.binders)) break;
 
 				if(modelPathArray.length > 1) attr = modelPathArray.pop();
@@ -2466,7 +2466,7 @@ kff.BindingView = kff.createClass(
 				});
 
 				this.modelBindersMap.add(modelBinder);
-				modelBinder.init();
+				// modelBinder.init();
 
 			}
 		}
@@ -2570,7 +2570,6 @@ kff.BindingView = kff.createClass(
 	 */
 	renderBoundViews: function()
 	{
-		console.log('renderBoundViews');
 		this.$anchor = $(document.createTextNode(''));
 		this.$element.before(this.$anchor);
 		this.$element.remove();
@@ -2751,10 +2750,9 @@ kff.BindingView = kff.createClass(
 	{
 		var filter, filterModel, filterFnName, render, renderIndex = 0, collectionItemChange = this.f('collectionItemChange'), that = this;
 
-		console.log('refreshBoundViewsAll');
 
-		kff.setZeroTimeout(function()
-		{
+		// kff.setZeroTimeout(function()
+		// {
 			that.collectionBinder.collection.each(function(item, i)
 			{
 				item.off('change', collectionItemChange);
@@ -2801,10 +2799,10 @@ kff.BindingView = kff.createClass(
 					that.boundViewsMap.push(false);
 				}
 			});
-		});
+		// });
 
-		kff.setZeroTimeout(function()
-		{
+		// kff.setZeroTimeout(function()
+		// {
 			if('Zepto' in window && $ === window.Zepto)
 			{
 				var elems = [];
@@ -2822,7 +2820,7 @@ kff.BindingView = kff.createClass(
 				that.$anchor.after(that.elements);
 				that.reindexBoundviews();
 			}
-		});
+		// });
 	},
 
 	/**
@@ -3018,13 +3016,13 @@ kff.BindingView = kff.createClass(
 	 */
 	createBoundView: function(item, i)
 	{
-		var boundView, $element = this.$element.clone();
+		var boundView, $element;
 
 
 
 		if(!this.viewTemplate)
 		{
-		console.log('createBoundView');
+			$element = this.$element.clone();
 			this.boundViewOptions.element = $element;
 			this.boundViewOptions.models = { '*': item };
 			if(this.itemAlias) this.boundViewOptions.models[this.itemAlias] = item;
@@ -3042,21 +3040,28 @@ kff.BindingView = kff.createClass(
 			}
 			boundView.setBindingIndex(i);
 
-			boundView.init();
+			boundView.startRender();
 			// $element.attr(kff.View.DATA_RENDERED_ATTR, true);
 
-			// this.viewTemplate = boundView.clone();
+
+
+			this.viewTemplate = boundView.clone();
+
+			$element.attr('clone', 'n')
+
+			this.$elementTemplate = $element.clone();
 
 			// this.viewTemplate.startDestroy();
 
 		}
 		else
 		{
+			$element = this.$elementTemplate.clone();
 
-			console.log('createBoundView clone');
+			$element.attr('clone', 'y')
+
 			boundView = this.viewTemplate.clone();
 			// boundView.startDestroy();
-
 
 			if(i === undefined)
 			{
@@ -3072,6 +3077,8 @@ kff.BindingView = kff.createClass(
 			if(this.itemAlias) boundView.models[this.itemAlias] = item;
 
 			boundView.setBindingIndex(i);
+
+
 			boundView.rebindElement($element.get(0));
 		}
 
@@ -3136,15 +3143,17 @@ kff.BindingView = kff.createClass(
 	clone: function()
 	{
 		var clonedView = kff.View.prototype.clone.call(this);
+
 		if(this.collectionBinder)
 		{
 			clonedView.collectionBinder =
 			{
-				collection: this.collectionBinder.collection,
+				collection: null,
 				collectionPathArray: this.collectionBinder.collectionPathArray
 			};
 			// clonedView.destroyBoundViews();
 		}
+
 		if(this.modelBindersMap)
 		{
 			clonedView.modelBindersMap = this.modelBindersMap.clone();
@@ -3159,7 +3168,7 @@ kff.BindingView = kff.createClass(
 	{
 		kff.BindingView._super.rebindElement.call(this, element);
 
-		this.modelBindersMap = null;
+		// this.modelBindersMap = null;
 
 		if(this.modelBindersMap !== null)
 		{
@@ -3169,11 +3178,11 @@ kff.BindingView = kff.createClass(
 		// else this.initBinding();
 
 
-		// if(this.collectionBinder)
-		// {
-		// 	this.collectionBinder.collection = this.getModel(this.collectionBinder.collectionPathArray);
-		// 	this.renderBoundViews();
-		// }
+		if(this.collectionBinder)
+		{
+			this.collectionBinder.collection = this.getModel(this.collectionBinder.collectionPathArray);
+			// this.renderBoundViews();
+		}
 
 		// kff.setZeroTimeout(this.f('refreshOwnBinders'));
 	}
@@ -3260,8 +3269,6 @@ kff.Binder = kff.createClass(
 
 	init: function()
 	{
-
-		console.log('kff.Binder.init', this.attr);
 		if(this.options.watch)
 		{
 			this.rebind();
