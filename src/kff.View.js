@@ -291,6 +291,7 @@ kff.View = kff.createClass(
 	init: function()
 	{
 		this.startRender();
+		this.startRun();
 	},
 
 	/**
@@ -318,17 +319,15 @@ kff.View = kff.createClass(
 	startRender: function(silent)
 	{
 		this.renderId = Math.floor(Math.random() * 100000000);
-		this.$element.attr('myrenderid', this.renderId)
 		this.explicitSubviewsStruct = [];
-		var ret = this.render();
+		this.render();
 		this.renderSubviews();
 		this.processTriggerEvents();
-		this.trigger('render');
 	},
 
 	startRun: function(silent)
 	{
-		this.run();
+		var ret = this.run();
 		this.runSubviews();
 
 		this.delegateEvents();
@@ -337,10 +336,10 @@ kff.View = kff.createClass(
 		if(typeof this.afterRender === 'function') this.afterRender();
 		this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 
-		// if(!((silent === true) || (ret === false)))
-		// {
-		// 	this.trigger('render');
-		// }
+		if(!((silent === true) || (ret === false)))
+		{
+			this.trigger('render');
+		}
 	},
 
 	/**
@@ -368,7 +367,7 @@ kff.View = kff.createClass(
 			subView = this.createView(subviewsStruct[i].viewName, options);
 			if(subView instanceof kff.View)
 			{
-				subView.init();
+				subView.startRender();
 			}
 		}
 
@@ -648,12 +647,9 @@ kff.View = kff.createClass(
 	{
 		var i, l;
 
-
-		// if(this.$element) this.startDestroy();
-
 		this.$element = $(element);
 
-		var $subviewsElements = this.$element.find('*[data-kff-renderid="' + this.renderId + '"]');
+		var $subviewsElements = this.$element.find('[data-kff-renderid="' + this.renderId + '"]');
 
 		if($subviewsElements.length > 0)
 		{
@@ -666,33 +662,5 @@ kff.View = kff.createClass(
 			}
 
 		}
-
-		// this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
-
-		// var $subviewsElements = this.$element.find('*');
-
-		// this.subviewsStruct = [];
-		// this.findViewElements(element, this.subviewsStruct, true);
-
-		// if(this.subviews.length !== this.subviewsStruct.length)
-		// {
-		// 	// console.log('no match', this.subviews.length, this.subviewsStruct.length, this.subviewsStruct)
-		// }
-
-		// console.log('this.renderId', this.renderId);
-		// console.log('rebindElement', this.subviewsStruct);
-		// console.log('this.subviewsStruct.length', this.subviewsStruct.length);
-		// console.log('this.subviewsElements.length', $subviewsElements.length);
-
-
-		// this.processTriggerEvents();
-		// this.delegateEvents();
-		// if(typeof this.afterRender === 'function') this.afterRender();
-
-		// if(!(ret === false))
-		// {
-		// 	this.trigger('render');
-		// }
-
 	}
 });

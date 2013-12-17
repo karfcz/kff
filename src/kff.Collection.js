@@ -279,12 +279,20 @@ kff.Collection = kff.createClass(
 	{
 		for(var i = 0, l = this.onEachEvents.length; i < l; i++)
 		{
-			if(this.onEachEvents[i].eventType === eventType && this.onEachEvents[i].fn === fn) this.onEachEvents.splice(i, 1);
+			if(this.onEachEvents[i].eventType === eventType && this.onEachEvents[i].fn === fn)
+			{
+				this.onEachEvents.splice(i, 1);
+				l--;
+			}
 		}
 		this.each(function(item, i){
 			item.off(eventType, fn);
 		});
-		this.off('change', this.f('refreshOnEach'));
+
+		if(this.onEachEvents.length === 0)
+		{
+			this.off('change', this.f('refreshOnEach'));
+		}
 	},
 
 	/**
