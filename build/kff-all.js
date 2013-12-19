@@ -288,21 +288,21 @@ kff.Events = kff.createClass(
 	on: function(eventType, fn)
 	{
 		this.off(eventType, fn);
-		if(eventType instanceof Array)
+		if(typeof eventType === 'string')
+		{
+			if(!this.subscribers[eventType]) this.subscribers[eventType] = [];
+			this.subscribers[eventType].push(fn);
+		}
+		else if(eventType instanceof Array)
 		{
 			for(var i = 0, l = eventType.length; i < l; i++)
 			{
 				if(eventType[i])
 				{
-					if(!this.subscribers[eventType[i]]) this.subscribers[eventType[i]] = new kff.List();
-					this.subscribers[eventType[i]].append(fn);
+					if(!this.subscribers[eventType[i]]) this.subscribers[eventType[i]] = [];
+					this.subscribers[eventType[i]].push(fn);
 				}
 			}
-		}
-		else
-		{
-			if(!this.subscribers[eventType]) this.subscribers[eventType] = new kff.List();
-			this.subscribers[eventType].append(fn);
 		}
 	},
 
@@ -337,7 +337,25 @@ kff.Events = kff.createClass(
 		}
 		else
 		{
-			if(this.subscribers[eventType] instanceof kff.List) this.subscribers[eventType].remove(fn);
+			if(this.subscribers[eventType] instanceof Array)
+			{
+				if('indexOf' in Array.prototype)
+				{
+					i = this.subscribers[eventType].indexOf(fn);
+					if(i !== -1) this.subscribers[eventType].splice(i, 1);
+				}
+				else
+				{
+					for(i = 0, l = this.subscribers[eventType].length; i < l; i++)
+					{
+						if(this.subscribers[eventType][i] === fn)
+						{
+							this.subscribers[eventType].splice(i, 1);
+							break;
+						}
+					}
+				}
+			}
 		}
 	},
 
@@ -359,12 +377,12 @@ kff.Events = kff.createClass(
 		}
 		else
 		{
-			if(this.subscribers[eventType] instanceof kff.List)
+			if(this.subscribers[eventType] instanceof Array)
 			{
-				this.subscribers[eventType].each(function(val)
+				for(i = 0, l = this.subscribers[eventType].length; i < l; i++)
 				{
-					if(typeof val === 'function') val.call(null, eventData);
-				});
+					if(typeof this.subscribers[eventType][i] === 'function') this.subscribers[eventType][i].call(null, eventData);
+				}
 
 				// Remove "one" subscribers:
 				if(eventType in this.oneSubscribers)
@@ -602,6 +620,7 @@ kff.Collection = kff.createClass(
 	append: function(item, silent)
 	{
 		kff.Collection._super.append.call(this, item);
+		this.bindOnOne(item);
 		if(!silent) this.trigger('change', { type: 'append', item: item });
 	},
 
@@ -618,6 +637,7 @@ kff.Collection = kff.createClass(
 	insert: function(item, index, silent)
 	{
 		kff.Collection._super.insert.call(this, item, index);
+		this.bindOnOne(item);
 		if(!silent) this.trigger('change', { type: 'insert', item: item, index: index });
 	},
 
@@ -633,7 +653,10 @@ kff.Collection = kff.createClass(
 	 */
 	set: function(index, item, silent)
 	{
+		var replacedItem = this.get(index);
+		if(replacedItem) this.unbindOnOne(replacedItem);
 		kff.Collection._super.set.call(this, item, index);
+		this.bindOnOne(item);
 		if(!silent) this.trigger('change', { type: 'set', item: item, index: index });
 	},
 
@@ -651,6 +674,7 @@ kff.Collection = kff.createClass(
 	 */
 	remove: function(item, silent)
 	{
+		this.unbindOnOne(item);
 		var ret = kff.Collection._super.remove.call(this, item);
 		if(ret && !silent) this.trigger('change', { type: 'remove', item: item });
 		return ret;
@@ -754,6 +778,7 @@ kff.Collection = kff.createClass(
 	 */
 	empty: function(silent)
 	{
+		this.unbindEach();
 		kff.Collection._super.empty.call(this);
 		if(!silent) this.trigger('change', { type: 'empty' });
 	},
@@ -786,6 +811,8 @@ kff.Collection = kff.createClass(
 		this.each(function(item){
 			clon.append(item);
 		});
+		clon.onEachEvents = [].concat(this.onEachEvents);
+		clon.rebindEach();
 		return clon;
 	},
 
@@ -809,7 +836,9 @@ kff.Collection = kff.createClass(
 	 */
 	splice: function()
 	{
+		this.unbindEach();
 		kff.Collection._super.splice.apply(this, arguments);
+		this.rebindEach();
 		this.trigger('change', { type: 'splice' });
 	},
 
@@ -824,11 +853,19 @@ kff.Collection = kff.createClass(
 	 */
 	onEach: function(eventType, fn)
 	{
+		for(var i = 0, l = this.onEachEvents.length; i < l; i++)
+		{
+			if(this.onEachEvents[i].eventType === eventType && this.onEachEvents[i].fn === fn)
+			{
+				return;
+			}
+		}
+
 		this.onEachEvents.push({ eventType: eventType, fn: fn });
 		this.each(function(item, i){
 			item.on(eventType, fn);
 		});
-		this.on('change', this.f('refreshOnEach'));
+		// this.on('change', this.f('refreshOnEach'));
 	},
 
 	/**
@@ -850,33 +887,6 @@ kff.Collection = kff.createClass(
 		this.each(function(item, i){
 			item.off(eventType, fn);
 		});
-
-		if(this.onEachEvents.length === 0)
-		{
-			this.off('change', this.f('refreshOnEach'));
-		}
-	},
-
-	/**
-	 * Refreshes event handlers boud by onEach method.
-	 *
-	 * @private
-	 * @param  {Object} event Collection change event
-	 */
-	refreshOnEach: function(event)
-	{
-		switch(event ? event.type : null)
-		{
-			case 'append':
-			case 'insert':
-				this.bindOnOne(event.item);
-				break;
-			case 'remove':
-				this.unbindOnOne(event.item);
-				break;
-			default:
-				this.rebindEach();
-		}
 	},
 
 	/**
@@ -920,6 +930,23 @@ kff.Collection = kff.createClass(
 			for(var j = 0, l = that.onEachEvents.length; j < l; j++)
 			{
 				item.on(that.onEachEvents[j].eventType, that.onEachEvents[j].fn);
+			}
+		});
+	},
+
+	/**
+	 * Unbinds all 'onEach' event handlers for each collection item.
+	 *
+	 * @private
+	 */
+	unbindEach: function()
+	{
+		var that = this;
+		this.each(function(item, i)
+		{
+			for(var j = 0, l = that.onEachEvents.length; j < l; j++)
+			{
+				item.off(that.onEachEvents[j].eventType, that.onEachEvents[j].fn);
 			}
 		});
 	}
@@ -2296,7 +2323,7 @@ kff.BindingView = kff.createClass(
 	 */
 	initBinding: function()
 	{
-		var model, attr, result, result2, modelPathArray, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill, i, watch;
+		var model, attr, result, result2, modelPathArray, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill, i, watchModelPath;
 		var modifierName, modifierParams;
 		var dataBindAttr = this.$element.attr(kff.View.DATA_BIND_ATTR);
 		var modelName;
@@ -2323,7 +2350,7 @@ kff.BindingView = kff.createClass(
 			getters = [];
 			eventNames = [];
 			fill = false;
-			watch = false;
+			watchModelPath = false;
 
 			i = 0;
 			while((result2 = operatorsRegex.exec(result[2])) !== null)
@@ -2373,7 +2400,7 @@ kff.BindingView = kff.createClass(
 							fill = true;
 							break;
 						case 'watch':
-							watch = true;
+							watchModelPath = true;
 							break;
 					}
 				}
@@ -2428,7 +2455,7 @@ kff.BindingView = kff.createClass(
 					getters: getters,
 					eventNames: eventNames,
 					fill: fill,
-					watch: watch
+					watchModelPath: watchModelPath
 				});
 
 				this.modelBindersMap.add(modelBinder);
@@ -3183,7 +3210,7 @@ kff.Binder = kff.createClass(
 
 	init: function()
 	{
-		if(this.options.watch)
+		if(this.options.watchModelPath)
 		{
 			this.rebind();
 		}
@@ -3198,7 +3225,7 @@ kff.Binder = kff.createClass(
 	destroy: function()
 	{
 		if(this.model instanceof kff.Model) this.model.off('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
-		if(this.options.watch) this.unbindDynamic();
+		if(this.options.watchModelPath) this.unbindDynamic();
 		if(this.$element && this.events.length > 0) this.undelegateEvents.call(this, this.events);
 		this.currentValue = null;
 		this.value = null;
