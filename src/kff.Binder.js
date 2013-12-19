@@ -29,7 +29,7 @@ kff.Binder = kff.createClass(
 
 	init: function()
 	{
-		if(this.options.watch)
+		if(this.options.watchModelPath)
 		{
 			this.rebind();
 		}
@@ -44,7 +44,7 @@ kff.Binder = kff.createClass(
 	destroy: function()
 	{
 		if(this.model instanceof kff.Model) this.model.off('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
-		if(this.options.watch) this.unbindDynamic();
+		if(this.options.watchModelPath) this.unbindDynamic();
 		if(this.$element && this.events.length > 0) this.undelegateEvents.call(this, this.events);
 		this.currentValue = null;
 		this.value = null;

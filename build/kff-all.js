@@ -2178,7 +2178,7 @@ kff.BindingView = kff.createClass(
 	 */
 	initBinding: function()
 	{
-		var model, attr, result, result2, modelPathArray, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill, i, watch;
+		var model, attr, result, result2, modelPathArray, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill, i, watchModelPath;
 		var modifierName, modifierParams;
 		var dataBindAttr = this.$element.attr(kff.View.DATA_BIND_ATTR);
 		var modelName;
@@ -2205,7 +2205,7 @@ kff.BindingView = kff.createClass(
 			getters = [];
 			eventNames = [];
 			fill = false;
-			watch = false;
+			watchModelPath = false;
 
 			i = 0;
 			while((result2 = operatorsRegex.exec(result[2])) !== null)
@@ -2255,7 +2255,7 @@ kff.BindingView = kff.createClass(
 							fill = true;
 							break;
 						case 'watch':
-							watch = true;
+							watchModelPath = true;
 							break;
 					}
 				}
@@ -2309,7 +2309,7 @@ kff.BindingView = kff.createClass(
 					getters: getters,
 					eventNames: eventNames,
 					fill: fill,
-					watch: watch
+					watchModelPath: watchModelPath
 				});
 
 				this.modelBindersMap.add(modelBinder);
@@ -2965,7 +2965,7 @@ kff.Binder = kff.createClass(
 
 	init: function()
 	{
-		if(this.options.watch)
+		if(this.options.watchModelPath)
 		{
 			this.rebind();
 		}
@@ -2980,7 +2980,7 @@ kff.Binder = kff.createClass(
 	destroy: function()
 	{
 		if(this.model instanceof kff.Model) this.model.off('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
-		if(this.options.watch) this.unbindDynamic();
+		if(this.options.watchModelPath) this.unbindDynamic();
 		if(this.$element && this.events.length > 0) this.undelegateEvents.call(this, this.events);
 		this.currentValue = null;
 		this.value = null;
@@ -3093,32 +3093,21 @@ kff.Binder = kff.createClass(
 
 	clone: function()
 	{
-		var obj;
-		var F = function(){};
-		F.prototype = this;
-
-		obj = new F();
-
-		obj.view = null;
-		obj.model = null;
-		obj.$element = null;
-		obj.value = null;
-
-		// var obj = new this.constructor({
-		// 	eventNames: this.eventNames,
-		// 	view: null,
-		// 	$element: this.$element,
-		// 	attr: this.attr,
-		// 	model: null,
-		// 	modelName: this.modelName,
-		// 	modelPathArray: this.modelPathArray,
-		// 	parsers: this.parsers,
-		// 	formatters: this.formatters,
-		// 	params: this.params,
-		// 	fill: this.options.fill
-		// });
-		// obj.setter = this.setter;
-		// obj.getter = this.getter;
+		var obj = new this.constructor({
+			eventNames: this.eventNames,
+			view: null,
+			$element: this.$element,
+			attr: this.attr,
+			model: null,
+			modelName: this.modelName,
+			modelPathArray: this.modelPathArray,
+			parsers: this.parsers,
+			formatters: this.formatters,
+			params: this.params,
+			fill: this.options.fill
+		});
+		obj.setter = this.setter;
+		obj.getter = this.getter;
 		return obj;
 	},
 
