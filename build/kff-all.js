@@ -602,6 +602,7 @@ kff.Collection = kff.createClass(
 	append: function(item, silent)
 	{
 		kff.Collection._super.append.call(this, item);
+		this.bindOnOne(item);
 		if(!silent) this.trigger('change', { type: 'append', item: item });
 	},
 
@@ -618,6 +619,7 @@ kff.Collection = kff.createClass(
 	insert: function(item, index, silent)
 	{
 		kff.Collection._super.insert.call(this, item, index);
+		this.bindOnOne(item);
 		if(!silent) this.trigger('change', { type: 'insert', item: item, index: index });
 	},
 
@@ -633,7 +635,10 @@ kff.Collection = kff.createClass(
 	 */
 	set: function(index, item, silent)
 	{
+		var replacedItem = this.get(index);
+		if(replacedItem) this.unbindOnOne(replacedItem);
 		kff.Collection._super.set.call(this, item, index);
+		this.bindOnOne(item);
 		if(!silent) this.trigger('change', { type: 'set', item: item, index: index });
 	},
 
@@ -651,6 +656,7 @@ kff.Collection = kff.createClass(
 	 */
 	remove: function(item, silent)
 	{
+		this.unbindOnOne(item);
 		var ret = kff.Collection._super.remove.call(this, item);
 		if(ret && !silent) this.trigger('change', { type: 'remove', item: item });
 		return ret;
@@ -754,6 +760,7 @@ kff.Collection = kff.createClass(
 	 */
 	empty: function(silent)
 	{
+		this.unbindEach();
 		kff.Collection._super.empty.call(this);
 		if(!silent) this.trigger('change', { type: 'empty' });
 	},
@@ -786,6 +793,8 @@ kff.Collection = kff.createClass(
 		this.each(function(item){
 			clon.append(item);
 		});
+		clon.onEachEvents = [].concat(this.onEachEvents);
+		clon.rebindEach();
 		return clon;
 	},
 
@@ -809,7 +818,9 @@ kff.Collection = kff.createClass(
 	 */
 	splice: function()
 	{
+		this.unbindEach();
 		kff.Collection._super.splice.apply(this, arguments);
+		this.rebindEach();
 		this.trigger('change', { type: 'splice' });
 	},
 
@@ -824,11 +835,19 @@ kff.Collection = kff.createClass(
 	 */
 	onEach: function(eventType, fn)
 	{
+		for(var i = 0, l = this.onEachEvents.length; i < l; i++)
+		{
+			if(this.onEachEvents[i].eventType === eventType && this.onEachEvents[i].fn === fn)
+			{
+				return;
+			}
+		}
+
 		this.onEachEvents.push({ eventType: eventType, fn: fn });
 		this.each(function(item, i){
 			item.on(eventType, fn);
 		});
-		this.on('change', this.f('refreshOnEach'));
+		// this.on('change', this.f('refreshOnEach'));
 	},
 
 	/**
@@ -841,34 +860,15 @@ kff.Collection = kff.createClass(
 	{
 		for(var i = 0, l = this.onEachEvents.length; i < l; i++)
 		{
-			if(this.onEachEvents[i].eventType === eventType && this.onEachEvents[i].fn === fn) this.onEachEvents.splice(i, 1);
+			if(this.onEachEvents[i].eventType === eventType && this.onEachEvents[i].fn === fn)
+			{
+				this.onEachEvents.splice(i, 1);
+				l--;
+			}
 		}
 		this.each(function(item, i){
 			item.off(eventType, fn);
 		});
-		this.off('change', this.f('refreshOnEach'));
-	},
-
-	/**
-	 * Refreshes event handlers boud by onEach method.
-	 *
-	 * @private
-	 * @param  {Object} event Collection change event
-	 */
-	refreshOnEach: function(event)
-	{
-		switch(event ? event.type : null)
-		{
-			case 'append':
-			case 'insert':
-				this.bindOnOne(event.item);
-				break;
-			case 'remove':
-				this.unbindOnOne(event.item);
-				break;
-			default:
-				this.rebindEach();
-		}
 	},
 
 	/**
@@ -912,6 +912,23 @@ kff.Collection = kff.createClass(
 			for(var j = 0, l = that.onEachEvents.length; j < l; j++)
 			{
 				item.on(that.onEachEvents[j].eventType, that.onEachEvents[j].fn);
+			}
+		});
+	},
+
+	/**
+	 * Unbinds all 'onEach' event handlers for each collection item.
+	 *
+	 * @private
+	 */
+	unbindEach: function()
+	{
+		var that = this;
+		this.each(function(item, i)
+		{
+			for(var j = 0, l = that.onEachEvents.length; j < l; j++)
+			{
+				item.off(that.onEachEvents[j].eventType, that.onEachEvents[j].fn);
 			}
 		});
 	}
