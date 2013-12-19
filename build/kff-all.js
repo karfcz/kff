@@ -2268,7 +2268,7 @@ kff.BindingView = kff.createClass(
 
 	startRun: function()
 	{
-		if(this.collectionBinder) this.renderBoundViews();
+		if(this.collectionBinder) this.runSubviews();
 		else
 		{
 			if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
@@ -2285,8 +2285,8 @@ kff.BindingView = kff.createClass(
 	startDestroy: function(silent)
 	{
 		this.destroyBinding();
-		kff.BindingView._super.startDestroy.call(this, true);
 		this.destroyBoundViews();
+		kff.BindingView._super.startDestroy.call(this, true);
 	},
 
 	/**
@@ -2555,40 +2555,6 @@ kff.BindingView = kff.createClass(
 		this.refreshBoundViewsAll();
 	},
 
-	prepareCollectionTemplate: function()
-	{
-
-	},
-
-	/**
-	 * Inits filtering of colelction items
-	 *
-	 * @private
-	 */
-	initCollectionFilter: function()
-	{
-		var filterName = this.$element.attr('data-kff-filter');
-
-		if(filterName)
-		{
-			this.collectionFilter =
-			{
-				model: null,
-				fn: null
-			};
-			filterName = filterName.replace(/^\./, '').split('.');
-			if(filterName.length === 1)
-			{
-				this.collectionFilter.fn = filterName[0];
-			}
-			else
-			{
-				this.collectionFilter.fn =  filterName.pop();
-				this.collectionFilter.model =  this.getModel([].concat(filterName));
-			}
-		}
-	},
-
 	/**
 	 * Destroys previously bound views.
 	 *
@@ -2598,6 +2564,12 @@ kff.BindingView = kff.createClass(
 	{
 		var boundView, i, l;
 
+		if(this.collectionBinder)
+		{
+			this.collectionBinder.collection.off('change', this.f('refreshBoundViews'));
+			this.collectionBinder.collection.offEach('change', this.f('collectionItemChange'));
+		}
+
 		// Destroy boundviews
 		for(i = 0, l = this.boundViews.length; i < l; i++)
 		{
@@ -2606,12 +2578,6 @@ kff.BindingView = kff.createClass(
 		}
 		this.boundViews = [];
 
-
-		if(this.collectionBinder)
-		{
-			this.collectionBinder.collection.off('change', this.f('refreshBoundViews'));
-			this.collectionBinder.collection.offEach('change', this.f('collectionItemChange'));
-		}
 		if(this.elements)
 		{
 			for(var i = 0, l = this.elements.length; i < l; i++) this.elements[i].remove();
@@ -2784,6 +2750,35 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
+	 * Inits filtering of colelction items
+	 *
+	 * @private
+	 */
+	initCollectionFilter: function()
+	{
+		var filterName = this.$element.attr('data-kff-filter');
+
+		if(filterName)
+		{
+			this.collectionFilter =
+			{
+				model: null,
+				fn: null
+			};
+			filterName = filterName.replace(/^\./, '').split('.');
+			if(filterName.length === 1)
+			{
+				this.collectionFilter.fn = filterName[0];
+			}
+			else
+			{
+				this.collectionFilter.fn =  filterName.pop();
+				this.collectionFilter.model =  this.getModel([].concat(filterName));
+			}
+		}
+	},
+
+	/**
 	 * Event handler for collection item change
 	 *
 	 * @private
@@ -2929,16 +2924,24 @@ kff.BindingView = kff.createClass(
 	 */
 	createBoundView: function(item, i)
 	{
-		var boundView, $element;
+		var boundView, $element, boundViewOptions;
 
 		if(!this.viewTemplate)
 		{
 			$element = this.$element.clone();
-			this.boundViewOptions.element = $element;
-			this.boundViewOptions.models = { '*': item };
-			if(this.itemAlias) this.boundViewOptions.models[this.itemAlias] = item;
 
-			boundView = new this.constructor(this.boundViewOptions);
+			boundViewOptions = kff.mixins({}, this.boundViewOptions, {
+				element: $element,
+				models: { '*': item }
+			});
+			// this.boundViewOptions.element = $element;
+			// this.boundViewOptions.models = { '*': item };
+			//
+			if(this.itemAlias) boundViewOptions.models[this.itemAlias] = item;
+
+			boundView = new this.constructor(boundViewOptions);
+
+			boundView.collectionBinder = null;
 
 			if(i === undefined)
 			{
@@ -2979,6 +2982,8 @@ kff.BindingView = kff.createClass(
 			boundView.rebindElement($element.get(0));
 		}
 
+		$element.attr(kff.View.DATA_RENDERED_ATTR, true);
+
 		return boundView;
 	},
 
@@ -3007,8 +3012,31 @@ kff.BindingView = kff.createClass(
 
 	renderSubviews: function()
 	{
-		if(this.collectionBinder) this.renderBoundViews();
+		if(this.collectionBinder)
+		{
+		}
 		else kff.BindingView._super.renderSubviews.call(this);
+	},
+
+	runSubviews: function()
+	{
+		if(this.collectionBinder)
+		{
+			this.renderBoundViews();
+		}
+		else kff.BindingView._super.runSubviews.call(this);
+	},
+
+	/**
+	 * Destroys the subviews. It will be called automatically. Should not be called directly.
+	 */
+	destroySubviews: function()
+	{
+		if(this.collectionBinder)
+		{
+			this.destroyBoundViews();
+		}
+		else kff.BindingView._super.destroySubviews.call(this);
 	},
 
 	/**
@@ -3053,6 +3081,7 @@ kff.BindingView = kff.createClass(
 			clonedView.modelBindersMap.setView(clonedView);
 			clonedView.boundViews = [];
 		}
+		clonedView.options.isBoundView = this.options.isBoundView;
 
 		return clonedView;
 	},
