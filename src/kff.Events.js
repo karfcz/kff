@@ -20,21 +20,21 @@ kff.Events = kff.createClass(
 	on: function(eventType, fn)
 	{
 		this.off(eventType, fn);
-		if(eventType instanceof Array)
+		if(typeof eventType === 'string')
+		{
+			if(!this.subscribers[eventType]) this.subscribers[eventType] = [];
+			this.subscribers[eventType].push(fn);
+		}
+		else if(eventType instanceof Array)
 		{
 			for(var i = 0, l = eventType.length; i < l; i++)
 			{
 				if(eventType[i])
 				{
-					if(!this.subscribers[eventType[i]]) this.subscribers[eventType[i]] = new kff.List();
-					this.subscribers[eventType[i]].append(fn);
+					if(!this.subscribers[eventType[i]]) this.subscribers[eventType[i]] = [];
+					this.subscribers[eventType[i]].push(fn);
 				}
 			}
-		}
-		else
-		{
-			if(!this.subscribers[eventType]) this.subscribers[eventType] = new kff.List();
-			this.subscribers[eventType].append(fn);
 		}
 	},
 
@@ -69,7 +69,25 @@ kff.Events = kff.createClass(
 		}
 		else
 		{
-			if(this.subscribers[eventType] instanceof kff.List) this.subscribers[eventType].remove(fn);
+			if(this.subscribers[eventType] instanceof Array)
+			{
+				if('indexOf' in Array.prototype)
+				{
+					i = this.subscribers[eventType].indexOf(fn);
+					if(i !== -1) this.subscribers[eventType].splice(i, 1);
+				}
+				else
+				{
+					for(i = 0, l = this.subscribers[eventType].length; i < l; i++)
+					{
+						if(this.subscribers[eventType][i] === fn)
+						{
+							this.subscribers[eventType].splice(i, 1);
+							break;
+						}
+					}
+				}
+			}
 		}
 	},
 
@@ -91,12 +109,12 @@ kff.Events = kff.createClass(
 		}
 		else
 		{
-			if(this.subscribers[eventType] instanceof kff.List)
+			if(this.subscribers[eventType] instanceof Array)
 			{
-				this.subscribers[eventType].each(function(val)
+				for(i = 0, l = this.subscribers[eventType].length; i < l; i++)
 				{
-					if(typeof val === 'function') val.call(null, eventData);
-				});
+					if(typeof this.subscribers[eventType][i] === 'function') this.subscribers[eventType][i].call(null, eventData);
+				}
 
 				// Remove "one" subscribers:
 				if(eventType in this.oneSubscribers)
