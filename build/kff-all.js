@@ -265,7 +265,14 @@ kff.setZeroTimeout = function(fn)
 	kff.setZeroTimeout(fn);
 };
 
-
+kff.arrayIndexOf = function(array, item)
+{
+	for(var i = 0, l = array.length; i < l; i++)
+	{
+		if(array[i] === item) return i;
+	}
+	return -1;
+};
 
 kff.Events = kff.createClass(
 /** @lends kff.Events.prototype */
@@ -287,11 +294,10 @@ kff.Events = kff.createClass(
 	*/
 	on: function(eventType, fn)
 	{
-		this.off(eventType, fn);
 		if(typeof eventType === 'string')
 		{
 			if(!this.subscribers[eventType]) this.subscribers[eventType] = [];
-			this.subscribers[eventType].push(fn);
+			if(kff.arrayIndexOf(this.subscribers[eventType], fn) === -1)	this.subscribers[eventType].push(fn);
 		}
 		else if(eventType instanceof Array)
 		{
@@ -300,7 +306,7 @@ kff.Events = kff.createClass(
 				if(eventType[i])
 				{
 					if(!this.subscribers[eventType[i]]) this.subscribers[eventType[i]] = [];
-					this.subscribers[eventType[i]].push(fn);
+					if(kff.arrayIndexOf(this.subscribers[eventType[i]], fn) === -1) this.subscribers[eventType[i]].push(fn);
 				}
 			}
 		}
@@ -328,33 +334,19 @@ kff.Events = kff.createClass(
 	off: function(eventType, fn)
 	{
 		var i, l;
-		if(eventType instanceof Array)
+		if(typeof eventType === 'string')
+		{
+			if(this.subscribers[eventType] instanceof Array)
+			{
+				i = kff.arrayIndexOf(this.subscribers[eventType], fn);
+				if(i !== -1) this.subscribers[eventType].splice(i, 1);
+			}
+		}
+		else if(eventType instanceof Array)
 		{
 			for(i = 0, l = eventType.length; i < l; i++)
 			{
 				if(eventType[i]) this.off(eventType[i], fn);
-			}
-		}
-		else
-		{
-			if(this.subscribers[eventType] instanceof Array)
-			{
-				if('indexOf' in Array.prototype)
-				{
-					i = this.subscribers[eventType].indexOf(fn);
-					if(i !== -1) this.subscribers[eventType].splice(i, 1);
-				}
-				else
-				{
-					for(i = 0, l = this.subscribers[eventType].length; i < l; i++)
-					{
-						if(this.subscribers[eventType][i] === fn)
-						{
-							this.subscribers[eventType].splice(i, 1);
-							break;
-						}
-					}
-				}
 			}
 		}
 	},
@@ -368,14 +360,7 @@ kff.Events = kff.createClass(
 	trigger: function(eventType, eventData)
 	{
 		var i, l;
-		if(eventType instanceof Array)
-		{
-			for(i = 0, l = eventType.length; i < l; i++)
-			{
-				if(eventType[i]) this.trigger(eventType[i], eventData);
-			}
-		}
-		else
+		if(typeof eventType === 'string')
 		{
 			if(this.subscribers[eventType] instanceof Array)
 			{
@@ -393,6 +378,13 @@ kff.Events = kff.createClass(
 					}
 					this.oneSubscribers[eventType] = [];
 				}
+			}
+		}
+		else if(eventType instanceof Array)
+		{
+			for(i = 0, l = eventType.length; i < l; i++)
+			{
+				if(eventType[i]) this.trigger(eventType[i], eventData);
 			}
 		}
 	}
@@ -501,23 +493,7 @@ kff.List = kff.createClass(
 	 */
 	indexOf: function(item)
 	{
-		if(Array.prototype.indexOf)
-		{
-			kff.List.prototype.indexOf = function(item)
-			{
-				return this.array.indexOf(item);
-			};
-		}
-		else
-		{
-			kff.List.prototype.indexOf = function(item)
-			{
-				var i = 0, a = this.array, l = a.length;
-				for(; i < l; i++) if(a[i] === item) return i;
-				return -1;
-			};
-		}
-		return this.indexOf(item);
+		return kff.arrayIndexOf(this.array, item);
 	},
 
 	/**
@@ -2295,13 +2271,17 @@ kff.BindingView = kff.createClass(
 
 	startRun: function()
 	{
-		if(this.collectionBinder) this.runSubviews();
+		if(this.collectionBinder)
+		{
+			this.runSubviews();
+			kff.setZeroTimeout(this.f('refreshOwnBinders'));
+		}
 		else
 		{
 			if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
 			kff.BindingView._super.startRun.call(this);
+			this.refreshOwnBinders();
 		}
-		kff.setZeroTimeout(this.f('refreshOwnBinders'));
 	},
 
 	/**

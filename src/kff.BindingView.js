@@ -81,13 +81,17 @@ kff.BindingView = kff.createClass(
 
 	startRun: function()
 	{
-		if(this.collectionBinder) this.runSubviews();
+		if(this.collectionBinder)
+		{
+			this.runSubviews();
+			kff.setZeroTimeout(this.f('refreshOwnBinders'));
+		}
 		else
 		{
 			if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
 			kff.BindingView._super.startRun.call(this);
+			this.refreshOwnBinders();
 		}
-		kff.setZeroTimeout(this.f('refreshOwnBinders'));
 	},
 
 	/**
