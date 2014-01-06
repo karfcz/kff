@@ -1148,11 +1148,12 @@ kff.ServiceContainer = kff.createClass(
 	 * @constructs
 	 * @param {Object} config Configuration object
 	 */
-	constructor: function(config)
+	constructor: function(config, loader)
 	{
 		this.config = config || { parameters: {}, services: {} };
 		this.services = {};
 		this.cachedParams = {};
+		if(loader) this.loadService = loader;
 	},
 
 	/**
