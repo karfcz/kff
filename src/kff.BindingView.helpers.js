@@ -1,13 +1,15 @@
 
 kff.BindingView.registerHelper('index', function(v, modelName)
 {
-	if(this.getBindingIndex(modelName) !== null) return this.getBindingIndex(modelName);
+	var bindingIndex = this.getBindingIndex(modelName);
+	if(bindingIndex !== null) return bindingIndex;
 	return v;
 });
 
 kff.BindingView.registerHelper('indexFromOne', function(v, modelName)
 {
-	if(this.getBindingIndex(modelName) !== null) return this.getBindingIndex(modelName) + 1;
+	var bindingIndex = this.getBindingIndex(modelName);
+	if(bindingIndex !== null) return bindingIndex + 1;
 	return v;
 });
 
