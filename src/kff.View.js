@@ -351,10 +351,7 @@ kff.View = kff.createClass(
 
 		this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 
-		if(!((silent === true) || (ret === false)))
-		{
-			this.trigger('render');
-		}
+		return ret;
 	},
 
 	/**
@@ -572,11 +569,7 @@ kff.View = kff.createClass(
 		ret = this.destroy();
 		if(typeof this.afterDestroy === 'function') this.afterDestroy();
 
-
-		if(!((silent === true) || (ret === false)))
-		{
-			this.trigger('destroy');
-		}
+		return ret;
 	},
 
 	/**

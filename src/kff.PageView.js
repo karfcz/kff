@@ -61,6 +61,36 @@ kff.PageView = kff.createClass(
 	{
 		this.startRender();
 		this.startRun();
+	},
+
+	/**
+	 * Runs the view (i.e. binds events and models). It will be called automatically. Should not be called
+	 * directly.
+	 */
+	startRun: function(silent)
+	{
+		var ret = kff.View.prototype.startRun.call(this, silent);
+
+		if(!((silent === true) || (ret === false)))
+		{
+			this.trigger('render');
+		}
+	},
+
+	/**
+	 * Destroys the view (destroys all subviews and unbinds previously bound DOM events.
+	 * It will be called automatically. Should not be called directly.
+	 *
+	 * @param {Boolean} silent If true, the 'destroy' event won't be called
+	 */
+	startDestroy: function(silent)
+	{
+		var ret = kff.View.prototype.startDestroy.call(this, silent);
+
+		if(!((silent === true) || (ret === false)))
+		{
+			this.trigger('destroy');
+		}
 	}
 
 });
