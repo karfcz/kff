@@ -96,6 +96,7 @@ kff.View = kff.createClass(
 		this.explicitSubviewsStruct = null;
 		this.subviews = [];
 		this.renderId = null;
+		this.eventTriggers = [];
 		return this;
 	},
 
@@ -148,7 +149,7 @@ kff.View = kff.createClass(
 	delegateEvents: function(events, $element)
 	{
 		var event, i, l, fn;
-		this.undelegateEvents();
+		this.undelegateEvents(events, $element);
 		events = events || this.options.events;
 		$element = $element || this.$element;
 		for(i = 0, l = events.length; i < l; i++)
@@ -215,6 +216,17 @@ kff.View = kff.createClass(
 	addEvents: function(events)
 	{
 		this.options.events = this.options.events.concat(events);
+	},
+
+	/**
+	 * Adds events config to the internal eventTriggers array.
+	 *
+	 * @private
+	 * @param {Array} events Array of arrays of binding config
+	 */
+	addEventTriggers: function(events)
+	{
+		this.eventTriggers = this.eventTriggers.concat(events);
 	},
 
 	/**
@@ -313,18 +325,20 @@ kff.View = kff.createClass(
 	/**
 	 * Renders the view. It will be called automatically. Should not be called
 	 * directly.
-	 *
-	 * @param {Boolean} silent If true, the 'render' event won't be called
 	 */
-	startRender: function(silent)
+	startRender: function()
 	{
 		this.renderId = Math.floor(Math.random() * 100000000);
 		this.explicitSubviewsStruct = [];
 		this.render();
 		this.renderSubviews();
-		this.processTriggerEvents();
+		this.processEventTriggers();
 	},
 
+	/**
+	 * Runs the view (i.e. binds events and models). It will be called automatically. Should not be called
+	 * directly.
+	 */
 	startRun: function(silent)
 	{
 		var ret = this.run();
@@ -334,6 +348,7 @@ kff.View = kff.createClass(
 		this.delegateModelEvents();
 
 		if(typeof this.afterRender === 'function') this.afterRender();
+
 		this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
 
 		if(!((silent === true) || (ret === false)))
@@ -375,6 +390,7 @@ kff.View = kff.createClass(
 
 	runSubviews: function()
 	{
+		this.delegateEvents(this.eventTriggers);
 		for(var i = 0, l = this.subviews.length; i < l; i++)
 		{
 			this.subviews[i].startRun();
@@ -472,7 +488,7 @@ kff.View = kff.createClass(
 							onAttr = child.getAttribute(kff.View.DATA_TRIGGER_ATTR);
 							if(onAttr)
 							{
-								this.processChildTriggerEvents(child, onAttr);
+								this.processChildEventTriggers(child, onAttr);
 							}
 							this.findViewElements(child, subviewsStruct, forceRendered);
 						}
@@ -487,9 +503,9 @@ kff.View = kff.createClass(
 	 *
 	 * @private
 	 */
-	processTriggerEvents: function()
+	processEventTriggers: function()
 	{
-		this.processChildTriggerEvents(this.$element.get(0));
+		this.processChildEventTriggers(this.$element.get(0));
 	},
 
 	/**
@@ -497,7 +513,7 @@ kff.View = kff.createClass(
 	 * @private
 	 * @param  {DOM Element} child  DOM Element
 	 */
-	processChildTriggerEvents: function(child, onAttr)
+	processChildEventTriggers: function(child, onAttr)
 	{
 		var onAttrSplit, onAttrSplit2, events = [], i, l;
 		onAttr = onAttr || child.getAttribute(kff.View.DATA_TRIGGER_ATTR);
@@ -515,7 +531,7 @@ kff.View = kff.createClass(
 					}, [onAttrSplit2[1]])
 				]);
 			}
-			this.addEvents(events);
+			this.addEventTriggers(events);
 		}
 	},
 
@@ -570,6 +586,8 @@ kff.View = kff.createClass(
 	{
 		var subView, i, l;
 
+		this.undelegateEvents(this.eventTriggers);
+
 		// Destroy subviews
 		for(i = 0, l = this.subviews.length; i < l; i++)
 		{
@@ -615,6 +633,7 @@ kff.View = kff.createClass(
 		var clonedSubview;
 
 		clonedView.options.events = this.options.events;
+		clonedView.eventTriggers = this.eventTriggers;
 
 		for(var modelName in this.models)
 		{

@@ -71,7 +71,6 @@ kff.Binder = kff.createClass(
 				this.refresh();
 			}
 		}
-		else console.log('model not found ', this.view.models)
 	},
 
 	compareValues: function(value1, value2)
