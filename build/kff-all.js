@@ -2011,6 +2011,12 @@ kff.View = kff.createClass(
 		ret = this.destroy();
 		if(typeof this.afterDestroy === 'function') this.afterDestroy();
 
+		this.subviewsStruct = [];
+		this.explicitSubviewsStruct = null;
+		this.subviews = [];
+		this.renderId = null;
+		this.eventTriggers = [];
+
 		return ret;
 	},
 
