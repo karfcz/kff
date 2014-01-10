@@ -2709,7 +2709,6 @@ kff.BindingView = kff.createClass(
 			this.$anchor.remove();
 			this.$anchor = null;
 		}
-		this.boundViews = [];
 	},
 
 	/**
@@ -2799,15 +2798,21 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshBoundViewsAll: function()
 	{
-		var filter, filterModel, filterFnName, render, renderIndex = 0, that = this, boundView;
+		var filter, filterModel, filterFnName, render, renderIndex = 0, that = this, boundView, i, l;
+
+		for(i = 0, l = this.boundViews.length; i < l; i++)
+		{
+			this.boundViews[i].startDestroy();
+		}
 
 		if(that.elements)
 		{
-			for(var i = 0, l = that.elements.length; i < l; i++) that.elements[i].remove();
+			for(i = 0, l = that.elements.length; i < l; i++) that.elements[i].remove();
 		}
 
-		that.elements = [];
+		this.boundViews = [];
 		that.boundViewsMap = [];
+		that.elements = [];
 
 		if(that.collectionFilter)
 		{
