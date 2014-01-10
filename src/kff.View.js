@@ -647,23 +647,34 @@ kff.View = kff.createClass(
 
 	setParentView: function(parentView)
 	{
-		var oldModels = this.models || {};
+		var oldModels, F;
+
 		this.parentView = parentView;
-		F = function(){};
-		F.prototype = this.parentView.models;
-		this.models = new F();
 
-		for(var key in oldModels)
+		if(this.models.__proto__)
 		{
-			if(oldModels.hasOwnProperty(key))
-			{
-				this.models[key] = oldModels[key];
-			}
+			this.models.__proto__ = parentView.models;
 		}
-
-		for(var i = 0; i < this.subviews.length; i++)
+		else
 		{
-			this.subviews[i].setParentView(this);
+			oldModels = this.models || {};
+
+			F = function(){};
+			F.prototype = this.parentView.models;
+			this.models = new F();
+
+			for(var key in oldModels)
+			{
+				if(oldModels.hasOwnProperty(key))
+				{
+					this.models[key] = oldModels[key];
+				}
+			}
+
+			for(var i = 0; i < this.subviews.length; i++)
+			{
+				this.subviews[i].setParentView(this);
+			}
 		}
 	},
 
