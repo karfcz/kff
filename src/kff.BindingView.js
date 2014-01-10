@@ -103,6 +103,13 @@ kff.BindingView = kff.createClass(
 	{
 		this.destroyBinding();
 		this.destroyBoundViews();
+
+		this.modelBindersMap = null;
+		this.collectionBinder = null;
+		this.bindingIndex = null;
+		this.itemAlias = null;
+		this.boundViews = [];
+
 		kff.BindingView._super.startDestroy.call(this, true);
 	},
 
@@ -404,6 +411,7 @@ kff.BindingView = kff.createClass(
 		{
 			this.$anchor.after(this.$element);
 			this.$anchor.remove();
+			this.$anchor = null;
 		}
 		this.boundViews = [];
 	},
@@ -736,7 +744,6 @@ kff.BindingView = kff.createClass(
 	createBoundView: function(item, i)
 	{
 		var boundView, $element, boundViewOptions;
-
 
 		if(!this.viewTemplate)
 		{

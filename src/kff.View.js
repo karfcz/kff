@@ -652,7 +652,19 @@ kff.View = kff.createClass(
 		F = function(){};
 		F.prototype = this.parentView.models;
 		this.models = new F();
-		kff.mixins(this.models, oldModels);
+
+		for(var key in oldModels)
+		{
+			if(oldModels.hasOwnProperty(key))
+			{
+				this.models[key] = oldModels[key];
+			}
+		}
+
+		for(var i = 0; i < this.subviews.length; i++)
+		{
+			this.subviews[i].setParentView(this);
+		}
 	},
 
 	rebindElement: function(element)
