@@ -24,6 +24,9 @@ describe('kff.ServiceContainer', function()
 				'construct': Service1,
 			    'args': ['%kocka%', 'haf']
 			},
+			'Service7 #1':
+			{
+			},
 			'service2':
 			{
 				'construct': Service2,
@@ -161,6 +164,11 @@ describe('kff.ServiceContainer', function()
 		it('should create object service Service7', function()
 		{
 			container.createService('Service7').should.equal(Service7);
+		});
+
+		it('should create object service with space', function()
+		{
+			container.createService('Service7 #1').should.equal(Service7);
 		});
 
 	});

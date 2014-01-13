@@ -303,6 +303,14 @@ kff.ServiceContainer = kff.createClass(
 	 */
 	loadService: function(serviceName)
 	{
+		if(typeof serviceName === 'string')
+		{
+			var match = serviceName.match(/^[^\s#]*/);
+			if(match)
+			{
+				serviceName = match[0];
+			}
+		}
 		return kff.evalObjectPath(serviceName);
 	}
 });
