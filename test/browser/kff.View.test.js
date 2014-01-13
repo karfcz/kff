@@ -71,16 +71,6 @@ describe('kff.View', function()
 			$div.attr(kff.View.DATA_RENDERED_ATTR).should.equal('true');
 		});
 
-		it('should render the view async', function(done)
-		{
-			view = new TestView({element: $div});
-			view.on('render',function(){
-				$div.html().should.equal(testString);
-				$div.attr(kff.View.DATA_RENDERED_ATTR).should.equal('true');
-				done();
-			});
-			view.init();
-		});
 	});
 
 	describe('#destroy', function()
@@ -96,23 +86,7 @@ describe('kff.View', function()
 			should.not.exist($div.attr(kff.View.DATA_RENDERED_ATTR));
 		});
 
-		it('should destroy the view async', function(done)
-		{
-			view = new TestView({element: $div});
-			view.on('render', function()
-			{
-				$div.html().should.equal(testString);
-				$div.attr(kff.View.DATA_RENDERED_ATTR).should.equal('true');
-				view.on('destroy', function()
-				{
-					$div.html().should.equal('');
-					should.not.exist($div.attr(kff.View.DATA_RENDERED_ATTR));
-					done();
-				});
-				view.startDestroy();
-			});
-			view.init();
-		});
+
 	});
 
 	describe('#delegateEvents', function()
