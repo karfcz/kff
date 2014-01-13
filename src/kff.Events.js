@@ -19,11 +19,10 @@ kff.Events = kff.createClass(
 	*/
 	on: function(eventType, fn)
 	{
-		this.off(eventType, fn);
 		if(typeof eventType === 'string')
 		{
 			if(!this.subscribers[eventType]) this.subscribers[eventType] = [];
-			this.subscribers[eventType].push(fn);
+			if(kff.arrayIndexOf(this.subscribers[eventType], fn) === -1)	this.subscribers[eventType].push(fn);
 		}
 		else if(eventType instanceof Array)
 		{
@@ -32,7 +31,7 @@ kff.Events = kff.createClass(
 				if(eventType[i])
 				{
 					if(!this.subscribers[eventType[i]]) this.subscribers[eventType[i]] = [];
-					this.subscribers[eventType[i]].push(fn);
+					if(kff.arrayIndexOf(this.subscribers[eventType[i]], fn) === -1) this.subscribers[eventType[i]].push(fn);
 				}
 			}
 		}
@@ -60,33 +59,19 @@ kff.Events = kff.createClass(
 	off: function(eventType, fn)
 	{
 		var i, l;
-		if(eventType instanceof Array)
+		if(typeof eventType === 'string')
+		{
+			if(this.subscribers[eventType] instanceof Array)
+			{
+				i = kff.arrayIndexOf(this.subscribers[eventType], fn);
+				if(i !== -1) this.subscribers[eventType].splice(i, 1);
+			}
+		}
+		else if(eventType instanceof Array)
 		{
 			for(i = 0, l = eventType.length; i < l; i++)
 			{
 				if(eventType[i]) this.off(eventType[i], fn);
-			}
-		}
-		else
-		{
-			if(this.subscribers[eventType] instanceof Array)
-			{
-				if('indexOf' in Array.prototype)
-				{
-					i = this.subscribers[eventType].indexOf(fn);
-					if(i !== -1) this.subscribers[eventType].splice(i, 1);
-				}
-				else
-				{
-					for(i = 0, l = this.subscribers[eventType].length; i < l; i++)
-					{
-						if(this.subscribers[eventType][i] === fn)
-						{
-							this.subscribers[eventType].splice(i, 1);
-							break;
-						}
-					}
-				}
 			}
 		}
 	},
@@ -100,14 +85,7 @@ kff.Events = kff.createClass(
 	trigger: function(eventType, eventData)
 	{
 		var i, l;
-		if(eventType instanceof Array)
-		{
-			for(i = 0, l = eventType.length; i < l; i++)
-			{
-				if(eventType[i]) this.trigger(eventType[i], eventData);
-			}
-		}
-		else
+		if(typeof eventType === 'string')
 		{
 			if(this.subscribers[eventType] instanceof Array)
 			{
@@ -125,6 +103,13 @@ kff.Events = kff.createClass(
 					}
 					this.oneSubscribers[eventType] = [];
 				}
+			}
+		}
+		else if(eventType instanceof Array)
+		{
+			for(i = 0, l = eventType.length; i < l; i++)
+			{
+				if(eventType[i]) this.trigger(eventType[i], eventData);
 			}
 		}
 	}

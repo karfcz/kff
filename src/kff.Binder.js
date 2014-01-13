@@ -151,7 +151,7 @@ kff.Binder = kff.createClass(
 
 	getBindingIndex: function(modelName)
 	{
-		modelName = modelName || '*';
+		modelName = modelName || this.modelName;
 		return this.view.getBindingIndex(modelName);
 	},
 

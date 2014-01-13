@@ -15,11 +15,12 @@ kff.ServiceContainer = kff.createClass(
 	 * @constructs
 	 * @param {Object} config Configuration object
 	 */
-	constructor: function(config)
+	constructor: function(config, loader)
 	{
 		this.config = config || { parameters: {}, services: {} };
 		this.services = {};
 		this.cachedParams = {};
+		if(loader) this.loadService = loader;
 	},
 
 	/**
@@ -28,21 +29,21 @@ kff.ServiceContainer = kff.createClass(
 	 * @param {Array} argsExtend Array to overload default arguments array (optional)
 	 * @returns {Object} Instance of service
 	 */
-	getService: function(service, argsExtend)
+	getService: function(serviceName, argsExtend)
 	{
 		var serviceConfig;
-		if(!this.config.services[service])
+		if(!this.config.services[serviceName])
 		{
-			serviceConfig = this.getServiceConfigAnnotation(service);
-			if(serviceConfig) this.config.services[service] = serviceConfig;
-			else throw new Error('Service ' + service + ' not defined');
+			serviceConfig = this.getServiceConfigAnnotation(serviceName);
+			if(serviceConfig) this.config.services[serviceName] = serviceConfig;
+			else throw new Error('Service ' + serviceName + ' not defined');
 		}
-		if(this.config.services[service].shared)
+		if(this.config.services[serviceName].shared)
 		{
-			if(typeof this.services[service] === 'undefined') this.services[service] = this.createService(service, argsExtend);
-			return this.services[service];
+			if(typeof this.services[serviceName] === 'undefined') this.services[serviceName] = this.createService(serviceName, argsExtend);
+			return this.services[serviceName];
 		}
-		return this.createService(service, argsExtend);
+		return this.createService(serviceName, argsExtend);
 	},
 
 	/**
@@ -82,9 +83,15 @@ kff.ServiceContainer = kff.createClass(
 		serviceConfig = this.config.services[serviceName];
 
 		Ctor = this.getServiceConstructor(serviceName);
-		Temp = function(){};
-		Temp.prototype = Ctor.prototype;
-		service = new Temp();
+
+		if(typeof Ctor !== 'function' || serviceConfig.type === 'function') return Ctor;
+
+		if(serviceConfig.type !== 'factory')
+		{
+			Temp = function(){};
+			Temp.prototype = Ctor.prototype;
+			service = new Temp();
+		}
 
 		args = this.resolveParameters(serviceConfig.args || []);
 		if(argsExtend && argsExtend instanceof Array)
@@ -102,8 +109,15 @@ kff.ServiceContainer = kff.createClass(
 			args = argsExtended;
 		}
 
-		ret = Ctor.apply(service, args);
-		if(Object(ret) === ret) service = ret;
+		if(serviceConfig.type === 'factory')
+		{
+			service = Ctor.apply(null, args);
+		}
+		else
+		{
+			ret = Ctor.apply(service, args);
+			if(Object(ret) === ret) service = ret;
+		}
 
 		calls = serviceConfig.calls;
 		if(calls instanceof Array)
@@ -123,7 +137,7 @@ kff.ServiceContainer = kff.createClass(
 	 */
 	getServiceConstructor: function(serviceName)
 	{
-		var serviceConfig, ctor, construct = kff.ServiceContainer.CONFIG_CONSTRUCTOR;
+		var serviceConfig, ctor, construct = kff.ServiceContainer.CONFIG_CONSTRUCTOR, type, name, serviceObject, construct;
 		serviceConfig = this.config.services[serviceName];
 		if(!serviceConfig)
 		{
@@ -131,24 +145,41 @@ kff.ServiceContainer = kff.createClass(
 			if(!serviceConfig) return null;
 			else this.config.services[serviceName] = serviceConfig;
 		}
-		if(!serviceConfig.hasOwnProperty('construct'))
+
+		if(serviceConfig.construct) construct = serviceConfig.construct;
+		else construct = serviceName;
+
+		if(!serviceConfig.hasOwnProperty('serviceObject'))
 		{
-			ctor = kff.evalObjectPath(serviceName);
-			if(typeof ctor === 'function') serviceConfig[construct] = ctor;
+			if(typeof construct === 'string')
+			{
+				serviceConfig['serviceObject'] = this.loadService(construct);
+			}
+			else serviceConfig['serviceObject'] = construct;
+			if(!serviceConfig['serviceObject']) return null;
 		}
-		else if(typeof serviceConfig[construct] === 'string') serviceConfig[construct] = kff.evalObjectPath(serviceConfig[construct]);
-		if(typeof serviceConfig[construct] !== 'function') throw new Error('Cannot create service "' + serviceName + '" in kff.getServiceConstructor. Expected constructor function, got: ' + serviceConfig[construct]);
-		return serviceConfig[construct];
+
+		return serviceConfig['serviceObject'];
 	},
 
+	/**
+	 * Returns configuration object of a service from its constructor (function).
+	 * @param  {string} serviceName Name of service
+	 * @return {object}             Service configuration object
+	 */
 	getServiceConfigAnnotation: function(serviceName)
 	{
 		var serviceConfig = {};
-		var ctor = kff.evalObjectPath(serviceName);
+		var ctor = this.loadService(serviceName);
 		if(typeof ctor === 'function')
 		{
 			if('service' in ctor && kff.isPlainObject(ctor.service)) serviceConfig = ctor.service;
-			if(!('construct' in serviceConfig))	serviceConfig.construct = ctor;
+			serviceConfig.serviceObject = ctor;
+			return serviceConfig;
+		}
+		else if(ctor)
+		{
+			serviceConfig.serviceObject = ctor;
 			return serviceConfig;
 		}
 		return null;
@@ -263,5 +294,15 @@ kff.ServiceContainer = kff.createClass(
 				this.config.parameters[parameter] = parameters[parameter];
 			}
 		}
+	},
+
+	/**
+	 * Returns a service (constructor, function or another type of service)
+	 * @param  {string}   serviceName Name of service
+	 * @return {mixed}                Service constructor or factory or any other type of service
+	 */
+	loadService: function(serviceName)
+	{
+		return kff.evalObjectPath(serviceName);
 	}
 });

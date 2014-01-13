@@ -73,10 +73,10 @@ kff.FrontController = kff.createClass(
 		var removedView = this.viewsQueue.pop(),
 			lastView = this.getLastView();
 
-		removedView.instance.off('init', kff.bindFn(this, 'cascadeState'));
+		removedView.instance.off('render', kff.bindFn(this, 'cascadeState'));
 		if(lastView)
 		{
-			lastView.instance.off('init', kff.bindFn(removedView.instance, 'init'));
+			lastView.instance.off('render', kff.bindFn(removedView.instance, 'init'));
 			lastView.instance.off('setState', kff.bindFn(removedView.instance, 'setState'));
 		}
 		return removedView;

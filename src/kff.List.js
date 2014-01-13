@@ -89,23 +89,7 @@ kff.List = kff.createClass(
 	 */
 	indexOf: function(item)
 	{
-		if(Array.prototype.indexOf)
-		{
-			kff.List.prototype.indexOf = function(item)
-			{
-				return this.array.indexOf(item);
-			};
-		}
-		else
-		{
-			kff.List.prototype.indexOf = function(item)
-			{
-				var i = 0, a = this.array, l = a.length;
-				for(; i < l; i++) if(a[i] === item) return i;
-				return -1;
-			};
-		}
-		return this.indexOf(item);
+		return kff.arrayIndexOf(this.array, item);
 	},
 
 	/**

@@ -1,9 +1,13 @@
 if(typeof require === 'function') var kff = require('../build/kff-all.js');
 
+var Service7 = {};
+
 describe('kff.ServiceContainer', function()
 {
 	var Service1 = function(a, b){ this.a = a; this.b = b; };
 	var Service2 = function(a, b){ this.a = a; this.b = b; };
+	var Service4 = function(){ return 's4'; };
+	var Service6 = {};
 
 	var config = {
 		parameters:
@@ -30,6 +34,19 @@ describe('kff.ServiceContainer', function()
 			{
 				'construct': Service1,
 			    'args': ['%kocka%', '%obj%']
+			},
+			'service4':
+			{
+				'construct': Service4,
+			    'type': 'function'
+			},
+			'service4b':
+			{
+				'construct': Service4,
+			    'type': 'factory'
+			},
+			'Service6': {
+				'construct': Service6,
 			}
 		}
 	};
@@ -126,6 +143,26 @@ describe('kff.ServiceContainer', function()
 			service3.b.should.have.property('o2', 3);
 		});
 
+		it('should create function service of type Service4', function()
+		{
+			container.createService('service4').should.equal(Service4);
+		});
+
+		it('should create factory service of type Service4', function()
+		{
+			container.createService('service4b').should.equal('s4');
+		});
+
+		it('should create object service Service6', function()
+		{
+			container.createService('Service6').should.equal(Service6);
+		});
+
+		it('should create object service Service7', function()
+		{
+			container.createService('Service7').should.equal(Service7);
+		});
+
 	});
 
 	describe('#getService', function()
@@ -173,15 +210,15 @@ describe('kff.ServiceContainer', function()
 		it('should properly register a new service', function()
 		{
 			container.registerServices({
-				'service4': {
+				'service5': {
 					'construct': function() {
-						this.a = 'service 4';
+						this.a = 'service 5';
 					}
 				}
 			});
 
-			var ret = container.getService('service4');
-			ret.should.have.property('a', 'service 4');
+			var ret = container.getService('service5');
+			ret.should.have.property('a', 'service 5');
 		});
 	});
 

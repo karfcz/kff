@@ -48,5 +48,49 @@ kff.PageView = kff.createClass(
 	setState: function(state, silent)
 	{
 		if(!silent) this.trigger('setState', state);
+	},
+
+	/**
+	 * Initializes the view. Calls the render method. Should not be overloaded
+	 * by subclasses.
+	 *
+	 * @private
+	 * @param
+	 */
+	init: function()
+	{
+		this.startRender();
+		this.startRun();
+	},
+
+	/**
+	 * Runs the view (i.e. binds events and models). It will be called automatically. Should not be called
+	 * directly.
+	 */
+	startRun: function(silent)
+	{
+		var ret = kff.View.prototype.startRun.call(this, silent);
+
+		if(!((silent === true) || (ret === false)))
+		{
+			this.trigger('render');
+		}
+	},
+
+	/**
+	 * Destroys the view (destroys all subviews and unbinds previously bound DOM events.
+	 * It will be called automatically. Should not be called directly.
+	 *
+	 * @param {Boolean} silent If true, the 'destroy' event won't be called
+	 */
+	startDestroy: function(silent)
+	{
+		var ret = kff.View.prototype.startDestroy.call(this, silent);
+
+		if(!((silent === true) || (ret === false)))
+		{
+			this.trigger('destroy');
+		}
 	}
+
 });

@@ -32,7 +32,17 @@ kff.ValueBinder = kff.createClass(
 
 	refresh: function()
 	{
-		this.$element.val(this.getFormattedValue());
+		if(this.$element.get(0).nodeName === 'SELECT')
+		{
+			kff.setZeroTimeout(this.f(function()
+			{
+				this.$element.val(this.getFormattedValue());
+			}));
+		}
+		else
+		{
+			this.$element.val(this.getFormattedValue());
+		}
 	},
 
 	fill: function()

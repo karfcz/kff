@@ -63,6 +63,7 @@ kff.BindingView = kff.createClass(
 		this.collectionBinder = null;
 		this.bindingIndex = null;
 		this.itemAlias = null;
+		this.boundViews = [];
 
 		kff.View.call(this, options);
 	},
@@ -74,11 +75,23 @@ kff.BindingView = kff.createClass(
 	 */
 	startRender: function(silent)
 	{
-		if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
-		else this.initBinding();
-		if(this.collectionBinder) this.renderBoundViews();
-		kff.BindingView._super.startRender.call(this, silent);
-		kff.setZeroTimeout(this.f('refreshOwnBinders'));
+		if(this.modelBindersMap === null) this.initBinding();
+		if(!this.collectionBinder) kff.BindingView._super.startRender.call(this, silent);
+	},
+
+	startRun: function()
+	{
+		if(this.collectionBinder)
+		{
+			this.runSubviews();
+			this.refreshOwnBinders();
+		}
+		else
+		{
+			if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
+			kff.BindingView._super.startRun.call(this);
+			this.refreshOwnBinders();
+		}
 	},
 
 	/**
@@ -89,8 +102,15 @@ kff.BindingView = kff.createClass(
 	startDestroy: function(silent)
 	{
 		this.destroyBinding();
-		kff.BindingView._super.startDestroy.call(this, true);
 		this.destroyBoundViews();
+
+		this.modelBindersMap = null;
+		this.collectionBinder = null;
+		this.bindingIndex = null;
+		this.itemAlias = null;
+		this.boundViews = [];
+
+		kff.BindingView._super.startDestroy.call(this, true);
 	},
 
 	/**
@@ -191,7 +211,8 @@ kff.BindingView = kff.createClass(
 				if(!this.options.isBoundView)
 				{
 					this.collectionBinder = {
-						collection: model
+						collection: model,
+						collectionPathArray: modelPathArray
 					};
 					if(binderName === 'as' && binderParams.length > 0)
 					{
@@ -235,8 +256,6 @@ kff.BindingView = kff.createClass(
 				});
 
 				this.modelBindersMap.add(modelBinder);
-				modelBinder.init();
-
 			}
 		}
 	},
@@ -342,51 +361,22 @@ kff.BindingView = kff.createClass(
 		this.$anchor = $(document.createTextNode(''));
 		this.$element.before(this.$anchor);
 		this.$element.remove();
-		this.subViewsMap = [];
+		this.boundViewsMap = [];
 
-		// Subview options:
-		this.subViewName = this.$element.attr(kff.View.DATA_VIEW_ATTR);
+		// Boundview options:
+		this.boundViewName = this.$element.attr(kff.View.DATA_VIEW_ATTR);
 		var opt = this.$element.attr(kff.View.DATA_OPTIONS_ATTR);
 
 		this.initCollectionFilter();
 
-		this.subViewOptions = opt ? JSON.parse(opt) : {};
-		this.subViewOptions.parentView = this;
-		this.subViewOptions.viewFactory = this.viewFactory;
-		this.subViewOptions.isBoundView = true;
+		this.boundViewOptions = opt ? JSON.parse(opt) : {};
+		this.boundViewOptions.parentView = this;
+		this.boundViewOptions.viewFactory = this.viewFactory;
+		this.boundViewOptions.isBoundView = true;
 
 		this.collectionBinder.collection.on('change', this.f('refreshBoundViews'));
+		this.collectionBinder.collection.onEach('change', this.f('collectionItemChange'));
 		this.refreshBoundViewsAll();
-	},
-
-	/**
-	 * Inits filtering of colelction items
-	 *
-	 * @private
-	 */
-	initCollectionFilter: function()
-	{
-		var filterName = this.$element.attr('data-kff-filter');
-
-
-		if(filterName)
-		{
-			this.collectionFilter =
-			{
-				model: null,
-				fn: null
-			};
-			filterName = filterName.replace(/^\./, '').split('.');
-			if(filterName.length === 1)
-			{
-				this.collectionFilter.fn = filterName[0];
-			}
-			else
-			{
-				this.collectionFilter.fn =  filterName.pop();
-				this.collectionFilter.model =  this.getModel([].concat(filterName));
-			}
-		}
 	},
 
 	/**
@@ -396,7 +386,22 @@ kff.BindingView = kff.createClass(
 	 */
 	destroyBoundViews: function()
 	{
-		if(this.collectionBinder) this.collectionBinder.collection.off('change', this.f('refreshBoundViews'));
+		var boundView, i, l;
+
+		if(this.collectionBinder)
+		{
+			this.collectionBinder.collection.off('change', this.f('refreshBoundViews'));
+			this.collectionBinder.collection.offEach('change', this.f('collectionItemChange'));
+		}
+
+		// Destroy boundviews
+		for(i = 0, l = this.boundViews.length; i < l; i++)
+		{
+			boundView = this.boundViews[i];
+			boundView.startDestroy();
+		}
+		this.boundViews = [];
+
 		if(this.elements)
 		{
 			for(var i = 0, l = this.elements.length; i < l; i++) this.elements[i].remove();
@@ -406,6 +411,7 @@ kff.BindingView = kff.createClass(
 		{
 			this.$anchor.after(this.$element);
 			this.$anchor.remove();
+			this.$anchor = null;
 		}
 	},
 
@@ -439,8 +445,7 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshBoundViewsOnAppend: function(event)
 	{
-		this.subViewsMap.push(false);
-		event.item.on('change', this.f('collectionItemChange'));
+		this.boundViewsMap.push(false);
 		this.collectionItemChange({ model: event.item });
 	},
 	/**
@@ -450,8 +455,7 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshBoundViewsOnInsert: function(event)
 	{
-		this.subViewsMap.splice(event.index, 0, false);
-		event.item.on('change', this.f('collectionItemChange'));
+		this.boundViewsMap.splice(event.index, 0, false);
 		this.collectionItemChange({ model: event.item });
 	},
 
@@ -463,21 +467,19 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshBoundViewsOnRemove: function(event)
 	{
-		event.item.off('change', this.f('collectionItemChange'));
-
 		// Find render index:
-		for(var i = 0, l = this.subViews.length; i < l; i++)
+		for(var i = 0, l = this.boundViews.length; i < l; i++)
 		{
-			if(event.item === this.subViews[i].models['*']) break;
+			if(event.item === this.boundViews[i].models['*']) break;
 		}
 
 		var renderIndex = i;
 		var realIndex = null;
 
 		// Find real index in collection:
-		for(var i = 0, l = this.subViewsMap.length; i < l; i++)
+		for(var i = 0, l = this.boundViewsMap.length; i < l; i++)
 		{
-			if(this.subViewsMap[i] === renderIndex)
+			if(this.boundViewsMap[i] === renderIndex)
 			{
 				realIndex = i;
 				break;
@@ -486,11 +488,11 @@ kff.BindingView = kff.createClass(
 
 		if(realIndex !== null)
 		{
-			if(this.subViewsMap[i] !== false) this.removeSubViewAt(renderIndex);
-			this.subViewsMap.splice(i, 1);
+			if(this.boundViewsMap[i] !== false) this.removeBoundViewAt(renderIndex);
+			this.boundViewsMap.splice(i, 1);
 		}
 
-		this.reindexSubviews(i);
+		this.reindexBoundviews(i);
 	},
 
 	/**
@@ -500,78 +502,104 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshBoundViewsAll: function()
 	{
-		var filter, filterModel, filterFnName, render, renderIndex = 0, collectionItemChange = this.f('collectionItemChange'), that = this;
+		var filter, filterModel, filterFnName, render, renderIndex = 0, that = this, boundView, i, l;
 
-		kff.setZeroTimeout(function()
+		for(i = 0, l = this.boundViews.length; i < l; i++)
 		{
-			that.collectionBinder.collection.each(function(item, i)
-			{
-				item.off('change', collectionItemChange);
-			});
+			this.boundViews[i].startDestroy();
+		}
 
-			that.destroySubviews();
+		if(that.elements)
+		{
+			for(i = 0, l = that.elements.length; i < l; i++) that.elements[i].remove();
+		}
 
-			if(that.elements)
+		this.boundViews = [];
+		that.boundViewsMap = [];
+		that.elements = [];
+
+		if(that.collectionFilter)
+		{
+			filter = true;
+			filterModel = that.collectionFilter.model || null;
+			filterFnName = that.collectionFilter.fn;
+		}
+
+		that.collectionBinder.collection.each(function(item, i)
+		{
+			var currentFilterModel;
+			render = true;
+
+			if(filter)
 			{
-				for(var i = 0, l = that.elements.length; i < l; i++) that.elements[i].remove();
+				currentFilterModel = filterModel || item;
+				render = !!currentFilterModel[filterFnName](item);
 			}
 
-			that.elements = [];
-			that.subViewsMap = [];
-
-			if(that.collectionFilter)
+			if(render)
 			{
-				filter = true;
-				filterModel = that.collectionFilter.model || null;
-				filterFnName = that.collectionFilter.fn;
-			}
-
-			that.collectionBinder.collection.each(function(item, i)
-			{
-				var currentFilterModel;
-
-				render = true;
-				item.on('change', collectionItemChange);
-
-				if(filter)
-				{
-					currentFilterModel = filterModel || item;
-					render = !!currentFilterModel[filterFnName](item);
-				}
-
-				if(render)
-				{
-					that.elements.push(that.createSubView(item));
-					that.subViewsMap.push(renderIndex);
-					renderIndex++;
-				}
-				else
-				{
-					that.subViewsMap.push(false);
-				}
-			});
-		});
-
-		kff.setZeroTimeout(function()
-		{
-			if('Zepto' in window && $ === window.Zepto)
-			{
-				var elems = [];
-
-				for(var i = 0, l = that.elements.length; i < l; i++)
-				{
-					elems.push(that.elements[i].get(0));
-				}
-
-				that.$anchor.after(elems);
-				that.reindexSubviews();
+				boundView = that.createBoundView(item);
+				that.elements.push(boundView.$element);
+				that.boundViewsMap.push(renderIndex);
+				renderIndex++;
 			}
 			else
 			{
-				that.$anchor.after(that.elements);
-				that.reindexSubviews();
+				that.boundViewsMap.push(false);
 			}
 		});
+
+		if('Zepto' in window && $ === window.Zepto)
+		{
+			var elems = [];
+
+			for(var i = 0, l = that.elements.length; i < l; i++)
+			{
+				elems.push(that.elements[i].get(0));
+			}
+
+			that.$anchor.after(elems);
+		}
+		else
+		{
+			that.$anchor.after(that.elements);
+		}
+
+		that.reindexBoundviews();
+
+		for(var i = 0, l = that.boundViews.length; i < l; i++)
+		{
+			that.boundViews[i].startRun();
+		}
+	},
+
+	/**
+	 * Inits filtering of colelction items
+	 *
+	 * @private
+	 */
+	initCollectionFilter: function()
+	{
+		var filterName = this.$element.attr('data-kff-filter');
+
+		if(filterName)
+		{
+			this.collectionFilter =
+			{
+				model: null,
+				fn: null
+			};
+			filterName = filterName.replace(/^\./, '').split('.');
+			if(filterName.length === 1)
+			{
+				this.collectionFilter.fn = filterName[0];
+			}
+			else
+			{
+				this.collectionFilter.fn =  filterName.pop();
+				this.collectionFilter.model =  this.getModel([].concat(filterName));
+			}
+		}
 	},
 
 	/**
@@ -598,24 +626,24 @@ kff.BindingView = kff.createClass(
 			renderIndex = 0;
 			filter = !!filterModel[this.collectionFilter.fn].call(filterModel, item);
 
-			if(filter && this.subViewsMap[i] === false)
+			if(filter && this.boundViewsMap[i] === false)
 			{
 				for(j = 0; j < i; j++)
 				{
-					if(this.subViewsMap[j] !== false) renderIndex++;
+					if(this.boundViewsMap[j] !== false) renderIndex++;
 				}
-				this.addSubViewAt(i, renderIndex);
+				this.addBoundViewAt(i, renderIndex);
 			}
-			else if(!filter && this.subViewsMap[i] !== false)
+			else if(!filter && this.boundViewsMap[i] !== false)
 			{
-				renderIndex = this.subViewsMap[i];
-				this.subViewsMap[i] = false;
-				this.removeSubViewAt(renderIndex);
+				renderIndex = this.boundViewsMap[i];
+				this.boundViewsMap[i] = false;
+				this.removeBoundViewAt(renderIndex);
 			}
 		}
 		else
 		{
-			if(this.subViewsMap[i] === false) this.addSubViewAt(i, i);
+			if(this.boundViewsMap[i] === false) this.addBoundViewAt(i, i);
 		}
 	},
 
@@ -638,17 +666,17 @@ kff.BindingView = kff.createClass(
 	 * @private
 	 * @param  {number} renderIndex Rendered index of item
 	 */
-	removeSubViewAt: function(renderIndex)
+	removeBoundViewAt: function(renderIndex)
 	{
-		if(this.subViews[renderIndex])
+		if(this.boundViews[renderIndex])
 		{
-			this.subViews[renderIndex].startDestroy();
-			this.subViews.splice(renderIndex, 1);
+			this.boundViews[renderIndex].startDestroy();
+			this.boundViews.splice(renderIndex, 1);
 			this.elements[renderIndex].remove();
 			this.elements.splice(renderIndex, 1);
 
-			// Reindex subsequent subviews:
-			this.reindexSubviews(renderIndex);
+			// Reindex subsequent boundviews:
+			this.reindexBoundviews(renderIndex);
 		}
 	},
 
@@ -659,10 +687,11 @@ kff.BindingView = kff.createClass(
 	 * @param {number} collectionIndex Index of item in the collection
 	 * @param {number} renderIndex     Index of item in the view (view can be filtered)
 	 */
-	addSubViewAt: function(collectionIndex, renderIndex)
+	addBoundViewAt: function(collectionIndex, renderIndex)
 	{
 		var item = this.collectionBinder.collection.findByIndex(collectionIndex);
-		var $element = this.createSubView(item, renderIndex);
+		var boundView = this.createBoundView(item, renderIndex);
+		var $element = boundView.$element;
 
 		if(renderIndex === 0)
 		{
@@ -674,10 +703,11 @@ kff.BindingView = kff.createClass(
 		}
 		this.elements.splice(renderIndex, 0, $element);
 
-		this.subViewsMap[collectionIndex] = renderIndex;
+		this.boundViewsMap[collectionIndex] = renderIndex;
 
-		// Reindex subsequent subviews:
-		this.reindexSubviews(renderIndex);
+		// Reindex subsequent boundviews:
+		this.reindexBoundviews(renderIndex);
+		boundView.startRun();
 	},
 
 	/**
@@ -687,73 +717,98 @@ kff.BindingView = kff.createClass(
 	 * @param  {nubmer} from Render index at which reindexing starts
 	 * @param  {number} to   Render index at which reindexing ends
 	 */
-	reindexSubviews: function(from, to)
+	reindexBoundviews: function(from, to)
 	{
 		if(!from) from = 0;
-		if(!to || to > this.subViews.length) to = this.subViews.length;
+		if(!to || to > this.boundViews.length) to = this.boundViews.length;
 
-		// Reindex subsequent subviews:
+		// Reindex subsequent boundviews:
 		for(var i = from; i < to; i++)
 		{
-			this.subViews[i].setBindingIndex(i);
-			this.subViews[i].refreshBinders(true);
+			this.boundViews[i].setBindingIndex(i);
+			this.boundViews[i].refreshBinders(true);
 		}
-		// Reindex subViewsMap
-		for(var i = 0, l = this.subViewsMap.length, j = 0; i < l; i++)
+		// Reindex boundViewsMap
+		for(var i = 0, l = this.boundViewsMap.length, j = 0; i < l; i++)
 		{
-			if(this.subViewsMap[i] !== false)
+			if(this.boundViewsMap[i] !== false)
 			{
-				this.subViewsMap[i] = j;
+				this.boundViewsMap[i] = j;
 				j++;
 			}
 		}
 	},
 
+
 	/**
-	 * Creates a new subview for item in collection
+	 * Creates a new bound view for item in collection
 	 * @param  {kff.Model} item Item for data-binding
 	 * @param  {number} i 		Binding index
-	 * @return {jQuery} 		JQuery-wrapped DOM element of the view
+	 * @return {kff.View} 		created view
 	 */
-	createSubView: function(item, i)
+	createBoundView: function(item, i)
 	{
-		var subView, $element = this.$element.clone();
+		var boundView, $element, boundViewOptions;
 
-		this.subViewOptions.element = $element;
-		this.subViewOptions.models = { '*': item };
-		if(this.itemAlias) this.subViewOptions.models[this.itemAlias] = item;
-
-		subView = new this.constructor(this.subViewOptions);
-
-		if(subView instanceof kff.View)
+		if(!this.viewTemplate)
 		{
+			$element = this.$element.clone();
+
+			boundViewOptions = kff.mixins({}, this.boundViewOptions, {
+				element: $element,
+				models: { '*': item }
+			});
+
+			if(this.itemAlias) boundViewOptions.models[this.itemAlias] = item;
+
+			boundView = new this.constructor(boundViewOptions);
+
+			boundView.collectionBinder = null;
+
 			if(i === undefined)
 			{
-				this.subViews.push(subView);
-				i = this.subViews.length - 1;
+				this.boundViews.push(boundView);
+				i = this.boundViews.length - 1;
 			}
 			else
 			{
-				this.subViews.splice(i, 0, subView);
+				this.boundViews.splice(i, 0, boundView);
 			}
-			subView.setBindingIndex(i);
+			boundView.setBindingIndex(i);
 
-			if(this.modelBindersMapTemplate)
-			{
-				subView.modelBindersMap = this.modelBindersMapTemplate.clone();
-				subView.modelBindersMap.setView(subView);
-			}
+			boundView.startRender();
 
-			subView.init();
-
-			if(!this.modelBindersMapTemplate)
-			{
-				this.modelBindersMapTemplate = subView.modelBindersMap.clone();
-				this.modelBindersMapTemplate.destroyBinders();
-			}
+			this.viewTemplate = boundView.clone();
+			this.$elementTemplate = $element.clone();
 		}
-		return $element;
+		else
+		{
+			$element = this.$elementTemplate.clone();
+
+			boundView = this.viewTemplate.clone();
+
+			if(i === undefined)
+			{
+				this.boundViews.push(boundView);
+				i = this.boundViews.length - 1;
+			}
+			else
+			{
+				this.boundViews.splice(i, 0, boundView);
+			}
+
+			boundView.models['*'] = item;
+			if(this.itemAlias) boundView.models[this.itemAlias] = item;
+
+			boundView.setBindingIndex(i);
+			boundView.rebindElement($element.get(0));
+		}
+
+		$element.attr(kff.View.DATA_RENDERED_ATTR, true);
+
+		return boundView;
 	},
+
 
 	/**
 	 * Refreshes own data-binders
@@ -775,11 +830,36 @@ kff.BindingView = kff.createClass(
 	{
 		this.refreshOwnBinders(event);
 		kff.BindingView._super.refreshBinders.call(this, event);
+		if(this.collectionBinder)
+		{
+			for(var i = 0, l = this.boundViews.length; i < l; i++) this.boundViews[i].refreshBinders(event);
+		}
 	},
 
 	renderSubviews: function()
 	{
 		if(!this.collectionBinder) kff.BindingView._super.renderSubviews.call(this);
+	},
+
+	runSubviews: function()
+	{
+		if(this.collectionBinder)
+		{
+			this.renderBoundViews();
+		}
+		else kff.BindingView._super.runSubviews.call(this);
+	},
+
+	/**
+	 * Destroys the subviews. It will be called automatically. Should not be called directly.
+	 */
+	destroySubviews: function()
+	{
+		if(this.collectionBinder)
+		{
+			this.destroyBoundViews();
+		}
+		else kff.BindingView._super.destroySubviews.call(this);
 	},
 
 	/**
@@ -803,5 +883,45 @@ kff.BindingView = kff.createClass(
 	setBindingIndex: function(index)
 	{
 		this.bindingIndex = index;
+	},
+
+	clone: function()
+	{
+		var clonedView = kff.View.prototype.clone.call(this);
+
+		if(this.collectionBinder)
+		{
+			clonedView.collectionBinder =
+			{
+				collection: null,
+				collectionPathArray: this.collectionBinder.collectionPathArray
+			};
+		}
+
+		if(this.modelBindersMap)
+		{
+			clonedView.modelBindersMap = this.modelBindersMap.clone();
+			clonedView.modelBindersMap.setView(clonedView);
+			clonedView.boundViews = [];
+		}
+		clonedView.options.isBoundView = this.options.isBoundView;
+		clonedView.itemAlias = this.itemAlias;
+
+		return clonedView;
+	},
+
+	rebindElement: function(element)
+	{
+		kff.BindingView._super.rebindElement.call(this, element);
+
+		if(this.modelBindersMap !== null)
+		{
+			this.modelBindersMap.setView(this);
+		}
+
+		if(this.collectionBinder)
+		{
+			this.collectionBinder.collection = this.getModel(this.collectionBinder.collectionPathArray);
+		}
 	}
 });
