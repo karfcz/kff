@@ -73,13 +73,13 @@ kff.BindingView = kff.createClass(
 	 *
 	 * @param {Boolean} silent If true, does not trigger events
 	 */
-	startRender: function(silent)
+	renderAll: function(silent)
 	{
 		if(this.modelBindersMap === null) this.initBinding();
-		if(!this.collectionBinder) kff.BindingView._super.startRender.call(this, silent);
+		if(!this.collectionBinder) kff.BindingView._super.renderAll.call(this, silent);
 	},
 
-	startRun: function()
+	runAll: function()
 	{
 		if(this.collectionBinder)
 		{
@@ -89,7 +89,7 @@ kff.BindingView = kff.createClass(
 		else
 		{
 			if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
-			kff.BindingView._super.startRun.call(this);
+			kff.BindingView._super.runAll.call(this);
 			this.refreshOwnBinders();
 		}
 	},
@@ -99,7 +99,7 @@ kff.BindingView = kff.createClass(
 	 *
 	 * @param {Boolean} silent If true, does not trigger events
 	 */
-	startDestroy: function(silent)
+	destroyAll: function(silent)
 	{
 		this.destroyBinding();
 		this.destroyBoundViews();
@@ -110,7 +110,7 @@ kff.BindingView = kff.createClass(
 		this.itemAlias = null;
 		this.boundViews = [];
 
-		kff.BindingView._super.startDestroy.call(this, true);
+		kff.BindingView._super.destroyAll.call(this, true);
 	},
 
 	/**
@@ -398,7 +398,7 @@ kff.BindingView = kff.createClass(
 		for(i = 0, l = this.boundViews.length; i < l; i++)
 		{
 			boundView = this.boundViews[i];
-			boundView.startDestroy();
+			boundView.destroyAll();
 		}
 		this.boundViews = [];
 
@@ -506,7 +506,7 @@ kff.BindingView = kff.createClass(
 
 		for(i = 0, l = this.boundViews.length; i < l; i++)
 		{
-			this.boundViews[i].startDestroy();
+			this.boundViews[i].destroyAll();
 		}
 
 		if(that.elements)
@@ -569,7 +569,7 @@ kff.BindingView = kff.createClass(
 
 		for(var i = 0, l = that.boundViews.length; i < l; i++)
 		{
-			that.boundViews[i].startRun();
+			that.boundViews[i].runAll();
 		}
 	},
 
@@ -670,7 +670,7 @@ kff.BindingView = kff.createClass(
 	{
 		if(this.boundViews[renderIndex])
 		{
-			this.boundViews[renderIndex].startDestroy();
+			this.boundViews[renderIndex].destroyAll();
 			this.boundViews.splice(renderIndex, 1);
 			this.elements[renderIndex].remove();
 			this.elements.splice(renderIndex, 1);
@@ -707,7 +707,7 @@ kff.BindingView = kff.createClass(
 
 		// Reindex subsequent boundviews:
 		this.reindexBoundviews(renderIndex);
-		boundView.startRun();
+		boundView.runAll();
 	},
 
 	/**
@@ -776,7 +776,7 @@ kff.BindingView = kff.createClass(
 			}
 			boundView.setBindingIndex(i);
 
-			boundView.startRender();
+			boundView.renderAll();
 
 			this.viewTemplate = boundView.clone();
 			this.$elementTemplate = $element.clone();

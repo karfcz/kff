@@ -64,17 +64,17 @@ kff.PageView = kff.createClass(
 	 */
 	init: function()
 	{
-		this.startRender();
-		this.startRun();
+		this.renderALl();
+		this.runAll();
 	},
 
 	/**
 	 * Runs the view (i.e. binds events and models). It will be called automatically. Should not be called
 	 * directly.
 	 */
-	startRun: function(silent)
+	runAll: function(silent)
 	{
-		var ret = kff.View.prototype.startRun.call(this, silent);
+		var ret = kff.View.prototype.runAll.call(this, silent);
 
 		if(!((silent === true) || (ret === false)))
 		{
@@ -88,9 +88,9 @@ kff.PageView = kff.createClass(
 	 *
 	 * @param {Boolean} silent If true, the 'destroy' event won't be called
 	 */
-	startDestroy: function(silent)
+	destroyAll: function(silent)
 	{
-		var ret = kff.View.prototype.startDestroy.call(this, silent);
+		var ret = kff.View.prototype.destroyAll.call(this, silent);
 
 		if(!((silent === true) || (ret === false)))
 		{

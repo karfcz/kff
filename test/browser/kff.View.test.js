@@ -81,7 +81,7 @@ describe('kff.View', function()
 			view.init();
 			$div.html().should.equal(testString);
 			$div.attr(kff.View.DATA_RENDERED_ATTR).should.equal('true');
-			view.startDestroy();
+			view.destroyAll();
 			$div.html().should.equal('');
 			should.not.exist($div.attr(kff.View.DATA_RENDERED_ATTR));
 		});
@@ -128,7 +128,7 @@ describe('kff.View', function()
 				throw 'Error';
 			}});
 			view.init();
-			view.startDestroy();
+			view.destroyAll();
 			$div.triggerHandler('click');
 		});
 
@@ -139,7 +139,7 @@ describe('kff.View', function()
 			}});
 			view.addEvents([['mouseover', 'click']]);
 			view.init();
-			view.startDestroy();
+			view.destroyAll();
 			$div.triggerHandler('mouseover');
 		});
 
@@ -151,7 +151,7 @@ describe('kff.View', function()
 			}});
 			view.addEvents([['mouseover', 'click']]);
 			view.init();
-			view.startDestroy();
+			view.destroyAll();
 			$div.triggerHandler('mouseover');
 			$div.triggerHandler('click');
 		});
@@ -191,7 +191,7 @@ describe('kff.View', function()
 				}
 			});
 			view.init();
-			view.startDestroy();
+			view.destroyAll();
 			testModel.set('a', 42);
 		});
 
@@ -258,7 +258,7 @@ describe('kff.View', function()
 			$mainDiv.attr(kff.View.DATA_RENDERED_ATTR).should.equal('true');
 			$innerDiv.attr(kff.View.DATA_RENDERED_ATTR).should.equal('true');
 
-			view1.startDestroy();
+			view1.destroyAll();
 
 			should.not.exist($mainDiv.attr(kff.View.DATA_RENDERED_ATTR));
 			should.not.exist($innerDiv.attr(kff.View.DATA_RENDERED_ATTR));

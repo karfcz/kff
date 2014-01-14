@@ -115,11 +115,11 @@ kff.FrontController = kff.createClass(
 
 		for(i = 0; i < destroyQueue.length; i++)
 		{
-			if(destroyQueue[i + 1]) destroyQueue[i].instance.on('destroy', kff.bindFn(destroyQueue[i + 1].instance, 'startDestroy'));
+			if(destroyQueue[i + 1]) destroyQueue[i].instance.on('destroy', kff.bindFn(destroyQueue[i + 1].instance, 'destroyAll'));
 			else destroyQueue[i].instance.on('destroy', kff.bindFn(this, 'startInit'));
 		}
 
-		if(destroyQueue[0]) destroyQueue[0].instance.startDestroy();
+		if(destroyQueue[0]) destroyQueue[0].instance.destroyAll();
 		else this.startInit();
 	},
 
