@@ -1,5 +1,16 @@
 
 kff.FrontController = kff.createClass(
+{
+	statics: {
+		service: {
+			args: [{
+				viewFactory: '@kff.ViewFactory',
+				defaultView: 'kff.PageView'
+			}],
+			shared: true
+		}
+	}
+},
 /** @lends kff.FrontController.prototype */
 {
 	/**

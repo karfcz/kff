@@ -1,5 +1,15 @@
 
 kff.ViewFactory = kff.createClass(
+{
+	statics: {
+		service: {
+			args: [{
+				serviceContainer: '@'
+			}],
+			shared: true
+		}
+	}
+},
 /** @lends kff.ViewFactory.prototype */
 {
 	/**

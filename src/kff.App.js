@@ -22,27 +22,14 @@ kff.App = kff.createClass(
 		var config = {
 			parameters: {},
 			services: {
-				viewFactory: {
-					construct: 'kff.ViewFactory',
+				'kff.PageView': {
 					args: [{
-						serviceContainer: '@'
-					}],
-					shared: true
-				},
-				frontController: {
-					construct: 'kff.FrontController',
-					args: [{
-						viewFactory: '@viewFactory',
-						defaultView: 'pageView'
-					}],
-					shared: true
-				},
-				pageView: {
-					construct: 'kff.PageView',
-					args: [{
-						viewFactory: '@viewFactory',
-						models: models
+						viewFactory: '@kff.ViewFactory',
+						models: '@models'
 					}]
+				},
+				models: {
+					construct: models
 				}
 			}
 		};

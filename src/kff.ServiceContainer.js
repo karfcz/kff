@@ -5,7 +5,8 @@ kff.ServiceContainer = kff.createClass(
 	{
 		CONFIG_CONSTRUCTOR: 'construct',
 		singleParamRegex: /^%[^%]+%$/g,
-		multipleParamsRegex: /%([^%]+)%/g
+		multipleParamsRegex: /%([^%]+)%/g,
+		serviceNameRegex: /^[^\s#]*/
 	}
 },
 /** @lends kff.ServiceContainer.prototype */
@@ -305,7 +306,7 @@ kff.ServiceContainer = kff.createClass(
 	{
 		if(typeof serviceName === 'string')
 		{
-			var match = serviceName.match(/^[^\s#]*/);
+			var match = serviceName.match(kff.ServiceContainer.serviceNameRegex);
 			if(match)
 			{
 				serviceName = match[0];
