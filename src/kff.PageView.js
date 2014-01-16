@@ -64,7 +64,7 @@ kff.PageView = kff.createClass(
 	 */
 	init: function()
 	{
-		this.renderALl();
+		this.renderAll();
 		this.runAll();
 	},
 
