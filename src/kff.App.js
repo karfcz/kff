@@ -49,7 +49,7 @@ kff.App = kff.createClass(
 	 */
 	init: function()
 	{
-		this.serviceContainer.getService('frontController').init();
+		this.serviceContainer.getService('kff.FrontController').init();
 	},
 
 	/**
