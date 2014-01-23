@@ -155,7 +155,7 @@ kff.View = kff.createClass(
 		for(i = 0, l = events.length; i < l; i++)
 		{
 			event = events[i];
-			if(event.length === 3)
+			if(event.length >= 3)
 			{
 				if(typeof event[2] === 'string') fn = this.f(event[2]);
 				else fn = event[2];
@@ -189,7 +189,7 @@ kff.View = kff.createClass(
 		for(i = 0, l = events.length; i < l; i++)
 		{
 			event = events[i];
-			if(event.length === 3)
+			if(event.length >= 3)
 			{
 				if(typeof event[2] === 'string') fn = this.f(event[2]);
 				else fn = event[2];
@@ -260,6 +260,17 @@ kff.View = kff.createClass(
 				this.models[event[0]].on(event[1], fn);
 			}
 		}
+	},
+
+	delegateEventTriggers: function()
+	{
+		for(var i = 0, l = this.eventTriggers.length; i < l; i++)
+		{
+			this.eventTriggers[i][2] = this.f(function(){
+				this.callTriggerMethod.apply(this, arguments);
+			}, [this.eventTriggers[i][3]]);
+		}
+		this.delegateEvents(this.eventTriggers);
 	},
 
 	/**
@@ -387,7 +398,7 @@ kff.View = kff.createClass(
 
 	runSubviews: function()
 	{
-		this.delegateEvents(this.eventTriggers);
+		this.delegateEventTriggers();
 		for(var i = 0, l = this.subviews.length; i < l; i++)
 		{
 			this.subviews[i].runAll();
@@ -485,8 +496,10 @@ kff.View = kff.createClass(
 							onAttr = child.getAttribute(kff.View.DATA_TRIGGER_ATTR);
 							if(onAttr)
 							{
+								child.setAttribute('data-kff-triggerid', this.renderId);
 								this.processChildEventTriggers(child, onAttr);
 							}
+
 							this.findViewElements(child, subviewsStruct, forceRendered);
 						}
 					}
@@ -523,13 +536,13 @@ kff.View = kff.createClass(
 				events.push([
 					onAttrSplit2[0].replace('|', ' '),
 					$(child),
-					this.f(function(){
-						this.callTriggerMethod.apply(this, arguments);
-					}, [onAttrSplit2[1]])
+					null,
+					onAttrSplit2[1]
 				]);
 			}
 			this.addEventTriggers(events);
 		}
+
 	},
 
 	/**
@@ -540,8 +553,15 @@ kff.View = kff.createClass(
 	 */
 	callTriggerMethod: function(fn)
 	{
-		if(typeof this[fn] === 'function') this[fn].apply(this, Array.prototype.slice.call(arguments, 1));
-		else if(this.parentView) this.parentView.callTriggerMethod.apply(this.parentView, arguments);
+		if(typeof this[fn] === 'function')
+		{
+			this[fn].apply(this, Array.prototype.slice.call(arguments, 1));
+		}
+
+		else if(this.parentView)
+		{
+			this.parentView.callTriggerMethod.apply(this.parentView, arguments);
+		}
 	},
 
 	/**
@@ -632,7 +652,12 @@ kff.View = kff.createClass(
 		var clonedSubview;
 
 		clonedView.options.events = this.options.events;
-		clonedView.eventTriggers = this.eventTriggers;
+		clonedView.eventTriggers = this.eventTriggers.slice(0);
+
+		for(var i = 0, l = clonedView.eventTriggers.length; i < l; i++)
+		{
+			clonedView.eventTriggers[i] = clonedView.eventTriggers[i].slice(0);
+		}
 
 		for(var modelName in this.models)
 		{
@@ -700,6 +725,28 @@ kff.View = kff.createClass(
 				{
 					this.subviews[i].rebindElement($subviewsElements.eq(i).get(0));
 				}
+			}
+
+		}
+
+		if(this.eventTriggers.length > 0)
+		{
+			var ownTrigger = this.$element.attr('data-kff-trigger');
+			var $eventTriggersElements = $([]);
+			if(ownTrigger)
+			{
+				$eventTriggersElements = $eventTriggersElements.add(this.$element.get(0));
+			}
+
+			$eventTriggersElements = $eventTriggersElements.add(this.$element.find('[data-kff-triggerid="' + this.renderId + '"]'));
+
+			if($eventTriggersElements.length > 0)
+			{
+				for(i = 0, l = this.eventTriggers.length; i < l; i++)
+				{
+					this.eventTriggers[i][1] = $eventTriggersElements.eq(i);
+				}
+
 			}
 
 		}
