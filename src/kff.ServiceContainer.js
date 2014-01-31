@@ -211,7 +211,13 @@ kff.ServiceContainer = kff.createClass(
 
 		if(typeof params === 'string')
 		{
-			if(params.charAt(0) === '@')
+			if(params.indexOf('@@') === 0)
+			{
+				params = params.slice(2);
+				if(params.length === 0) ret = null;
+				else ret = this.createServiceFactory(params);
+			}
+			else if(params.charAt(0) === '@')
 			{
 				params = params.slice(1);
 				if(params.length === 0) ret = this;
@@ -313,5 +319,23 @@ kff.ServiceContainer = kff.createClass(
 			}
 		}
 		return kff.evalObjectPath(serviceName);
+	},
+
+	/**
+	 * Creates a factory function for a service
+	 * @param  {string} serviceName Name of the service
+	 * @return {function}           Factory function that returns the service
+	 */
+	createServiceFactory: function(serviceName)
+	{
+		var container = this;
+		return function()
+		{
+			return container.getService(serviceName);
+		};
 	}
+
 });
+
+
+

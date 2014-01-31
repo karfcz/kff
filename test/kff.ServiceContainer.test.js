@@ -50,6 +50,11 @@ describe('kff.ServiceContainer', function()
 			},
 			'Service6': {
 				'construct': Service6,
+			},
+			'Service8': {
+				'construct': Service1,
+				'args': ['@@Service2', null],
+				'shared': true
 			}
 		}
 	};
@@ -121,6 +126,12 @@ describe('kff.ServiceContainer', function()
 		{
 			var a = container.resolveParameters('%numeric%');
 			a.should.equal(42.05);
+		});
+
+		it('should interpolate string to a service factory', function()
+		{
+			var a = container.resolveParameters('@@service1');
+			a().should.be.an.instanceof(Service1);
 		});
 
 	});
