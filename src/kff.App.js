@@ -24,12 +24,8 @@ kff.App = kff.createClass(
 			services: {
 				'kff.PageView': {
 					args: [{
-						viewFactory: '@kff.ViewFactory',
-						models: '@models'
+						models: models
 					}]
-				},
-				models: {
-					construct: models
 				}
 			}
 		};
@@ -49,7 +45,9 @@ kff.App = kff.createClass(
 	 */
 	init: function()
 	{
-		this.serviceContainer.getService('kff.FrontController').init();
+		var frontController = this.serviceContainer.getService('kff.FrontController');
+		if(!frontController.getViewFactory()) frontController.setViewFactory(this.serviceContainer.getService('kff.ViewFactory'));
+		frontController.init();
 	},
 
 	/**
