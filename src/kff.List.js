@@ -59,10 +59,24 @@ kff.List = kff.createClass(
 	 */
 	remove: function(item)
 	{
-		var i = this.indexOf(item);
+		var i = kff.arrayIndexOf(this.array, item);
 		if(i === -1) return false;
 		this.array.splice(i, 1);
 		return true;
+	},
+
+	/**
+	 * Removes items that pass filter function test from the list
+	 * @param {function} fn Test function that accepts one argument (item). Returns false to remove item or true to leave it in the list.
+	 */
+	filter: function(fn)
+	{
+		var a = this.array, item;
+		for(var i = a.length - 1; i >= 0; i--)
+		{
+			item = a[i];
+			if(fn(item) !== true) this.remove(item);
+		}
 	},
 
 	/**

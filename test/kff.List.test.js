@@ -104,4 +104,18 @@ describe('kff.List', function()
 		count.should.equal(2);
 	});
 
+	it('should filter out one item from the list', function()
+	{
+		var list = new kff.List();
+		list.append('A');
+		list.append('B');
+		list.append('C');
+		list.filter(function(item){
+			return item !== 'A';
+		});
+		list.count().should.equal(2);
+		list.indexOf('B').should.equal(0);
+		list.indexOf('C').should.equal(1);
+	});
+
 });
