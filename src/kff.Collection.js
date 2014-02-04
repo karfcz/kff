@@ -158,7 +158,7 @@ kff.Collection = kff.createClass(
 		this.empty();
 		for(var i = 0; i < obj.length; i++)
 		{
-			if(itemFactory) item = itemFactory(obj[i]);
+			if(itemFactory) item = itemFactory();
 			else item = new this.itemType();
 			item.fromJson(obj[i], silent);
 			this.append(item, true);
