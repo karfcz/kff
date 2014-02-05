@@ -20,8 +20,16 @@ kff.TextBinder = kff.createClass(
 
 	refresh: function(value)
 	{
-		this.$element.text(this.value);
+		this.$element.get(0).textContent = this.value;
 	}
 });
+
+if(!('textContent' in document.documentElement))
+{
+	kff.TextBinder.prototype.refresh = function(value)
+	{
+		this.$element.get(0).innerText = this.value;
+	}
+}
 
 kff.BindingView.registerBinder('text', kff.TextBinder);
