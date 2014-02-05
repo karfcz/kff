@@ -41,7 +41,7 @@ kff.ValueBinder = kff.createClass(
 		}
 		else
 		{
-			this.$element.val(this.getFormattedValue());
+			this.$element.get(0).value = this.getFormattedValue();
 		}
 	},
 
