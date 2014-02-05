@@ -48,10 +48,7 @@ kff.ValueBinder = kff.createClass(
 	fill: function()
 	{
 		if(!this.fillVal) this.fillVal = this.$element.val();
-		kff.setZeroTimeout(this.f(function()
-		{
-			this.updateModel(this.fillVal);
-		}));
+		this.updateModel(this.fillVal);
 	}
 });
 
