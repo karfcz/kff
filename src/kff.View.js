@@ -95,7 +95,6 @@ kff.View = kff.createClass(
 		this.subviewsStruct = [];
 		this.explicitSubviewsStruct = null;
 		this.subviews = [];
-		this.renderId = null;
 		this.eventTriggers = [];
 		return this;
 	},
@@ -339,7 +338,6 @@ kff.View = kff.createClass(
 	 */
 	renderAll: function()
 	{
-		this.renderId = Math.floor(Math.random() * 100000000);
 		this.explicitSubviewsStruct = [];
 		this.render();
 		this.renderSubviews();
@@ -495,8 +493,7 @@ kff.View = kff.createClass(
 							onAttr = child.getAttribute(kff.View.DATA_TRIGGER_ATTR);
 							if(onAttr)
 							{
-								child.setAttribute('data-kff-triggerid', this.renderId);
-								this.processChildEventTriggers(child, onAttr);
+								this.processChildEventTriggers(child, onAttr, index);
 							}
 
 							index++;
@@ -525,7 +522,7 @@ kff.View = kff.createClass(
 	 * @private
 	 * @param  {DOM Element} child  DOM Element
 	 */
-	processChildEventTriggers: function(child, onAttr)
+	processChildEventTriggers: function(child, onAttr, index)
 	{
 		var onAttrSplit, onAttrSplit2, events = [], i, l;
 		onAttr = onAttr || child.getAttribute(kff.View.DATA_TRIGGER_ATTR);
@@ -539,7 +536,8 @@ kff.View = kff.createClass(
 					onAttrSplit2[0].replace('|', ' '),
 					$(child),
 					null,
-					onAttrSplit2[1]
+					onAttrSplit2[1],
+					index
 				]);
 			}
 			this.addEventTriggers(events);
@@ -593,7 +591,6 @@ kff.View = kff.createClass(
 		this.subviewsStruct = [];
 		this.explicitSubviewsStruct = null;
 		this.subviews = [];
-		this.renderId = null;
 		this.eventTriggers = [];
 
 		return ret;
@@ -672,7 +669,6 @@ kff.View = kff.createClass(
 			clonedView.subviews.push(clonedSubview);
 		}
 		clonedView.subviewsStruct = kff.mixins({}, this.subviewsStruct);
-		clonedView.renderId = this.renderId;
 
 		return clonedView;
 	},
@@ -712,42 +708,27 @@ kff.View = kff.createClass(
 
 	rebindElement: function(element)
 	{
-		var i, l;
+		var i, l, eventTriggersIndex = 0;
 
 		this.$element = $(element);
+
+		while(this.eventTriggers[eventTriggersIndex] && typeof this.eventTriggers[eventTriggersIndex][4] === 'undefined')
+		{
+			this.eventTriggers[eventTriggersIndex][1] = this.$element;
+			eventTriggersIndex++;
+		}
 
 		this.rebindSubViews(element, {
 			subviewIndex: 0,
 			subviewsStructIndex: 0,
+			eventTriggersIndex: eventTriggersIndex,
 			index: 0
 		});
-
-		if(this.eventTriggers.length > 0)
-		{
-			var ownTrigger = this.$element.attr('data-kff-trigger');
-			var $eventTriggersElements = $([]);
-			if(ownTrigger)
-			{
-				$eventTriggersElements = $eventTriggersElements.add(this.$element.get(0));
-			}
-
-			$eventTriggersElements = $eventTriggersElements.add(this.$element.find('[data-kff-triggerid="' + this.renderId + '"]'));
-
-			if($eventTriggersElements.length > 0)
-			{
-				for(i = 0, l = this.eventTriggers.length; i < l; i++)
-				{
-					this.eventTriggers[i][1] = $eventTriggersElements.eq(i);
-				}
-
-			}
-
-		}
 	},
 
 	rebindSubViews: function(el, ids)
 	{
-		var i, l, children, child;
+		var i, l, children, child, doSubviews;
 		if(el.hasChildNodes())
 		{
 			children = el.childNodes;
@@ -767,12 +748,23 @@ kff.View = kff.createClass(
 
 							}
 							ids.subviewIndex++;
+							doSubviews = false;
 						}
-						else
+						else doSubviews = true;
+
+					}
+					else
+					{
+						while(this.eventTriggers[ids.eventTriggersIndex] && this.eventTriggers[ids.eventTriggersIndex][4] === ids.index)
 						{
-							ids.index++
-							this.rebindSubViews(child, ids);
+							this.eventTriggers[ids.eventTriggersIndex][1] = $(child);
+							ids.eventTriggersIndex++;
 						}
+					}
+					if(doSubviews)
+					{
+						ids.index++
+						this.rebindSubViews(child, ids);
 					}
 					ids.index++;
 				}
