@@ -378,7 +378,7 @@ kff.View = kff.createClass(
 		var i, l, element = this.$element.get(0),
 			subView, options, opt, rendered, subviewsStruct;
 
-		if(element) this.findViewElements(element, this.subviewsStruct);
+		if(element) this.findViewElements(element, this.subviewsStruct, 0);
 
 		subviewsStruct = this.subviewsStruct.concat(this.explicitSubviewsStruct);
 
@@ -460,7 +460,7 @@ kff.View = kff.createClass(
 	 *                           (items will be objects { objPath: viewName, $element: jQuery wrapper })
 	 * @param  {string} filter  A jQuery selector for filtering elements (optional)
 	 */
-	findViewElements: function(el, subviewsStruct, forceRendered)
+	findViewElements: function(el, subviewsStruct, index, forceRendered)
 	{
 		var i, l, children, child, viewName, rendered, onAttr, optAttr;
 		if(el.hasChildNodes())
@@ -483,10 +483,9 @@ kff.View = kff.createClass(
 						if(viewName)
 						{
 							optAttr = child.getAttribute(kff.View.DATA_OPTIONS_ATTR);
-							child.setAttribute('data-kff-renderid', this.renderId);
 							subviewsStruct.push({
 								viewName: viewName,
-								renderId: this.renderId,
+								index: index,
 								$element: $(child),
 								options: optAttr ? JSON.parse(optAttr) : {}
 							});
@@ -500,12 +499,15 @@ kff.View = kff.createClass(
 								this.processChildEventTriggers(child, onAttr);
 							}
 
-							this.findViewElements(child, subviewsStruct, forceRendered);
+							index++;
+							index = this.findViewElements(child, subviewsStruct, index, forceRendered);
 						}
 					}
+					index++;
 				}
 			}
 		}
+		return index;
 	},
 
 	/**
@@ -542,7 +544,6 @@ kff.View = kff.createClass(
 			}
 			this.addEventTriggers(events);
 		}
-
 	},
 
 	/**
@@ -715,19 +716,11 @@ kff.View = kff.createClass(
 
 		this.$element = $(element);
 
-		var $subviewsElements = this.$element.find('[data-kff-renderid="' + this.renderId + '"]');
-
-		if($subviewsElements.length > 0)
-		{
-			for(i = 0, l = this.subviews.length; i < l; i++)
-			{
-				if(this.subviews[i])
-				{
-					this.subviews[i].rebindElement($subviewsElements.eq(i).get(0));
-				}
-			}
-
-		}
+		this.rebindSubViews(element, {
+			subviewIndex: 0,
+			subviewsStructIndex: 0,
+			index: 0
+		});
 
 		if(this.eventTriggers.length > 0)
 		{
@@ -749,6 +742,41 @@ kff.View = kff.createClass(
 
 			}
 
+		}
+	},
+
+	rebindSubViews: function(el, ids)
+	{
+		var i, l, children, child;
+		if(el.hasChildNodes())
+		{
+			children = el.childNodes;
+			for(i = 0, l = children.length; i < l; i++)
+			{
+				child = children[i];
+				if(child.nodeType === 1)
+				{
+					if(this.subviewsStruct[ids.subviewIndex])
+					{
+						ids.subviewsStructIndex = this.subviewsStruct[ids.subviewIndex].index;
+						if(ids.index === ids.subviewsStructIndex)
+						{
+							if(this.subviews[ids.subviewIndex])
+							{
+								this.subviews[ids.subviewIndex].rebindElement(child);
+
+							}
+							ids.subviewIndex++;
+						}
+						else
+						{
+							ids.index++
+							this.rebindSubViews(child, ids);
+						}
+					}
+					ids.index++;
+				}
+			}
 		}
 	}
 });
