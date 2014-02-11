@@ -96,7 +96,7 @@ kff.Collection = kff.createClass(
 	{
 		this.unbindOnOne(item);
 		var ret = kff.Collection._super.remove.call(this, item);
-		if(ret && !silent) this.trigger('change', { type: 'remove', item: item });
+		if(ret !== false && !silent) this.trigger('change', { type: 'remove', item: item, index: ret });
 		return ret;
 	},
 

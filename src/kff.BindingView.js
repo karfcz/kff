@@ -362,6 +362,8 @@ kff.BindingView = kff.createClass(
 		this.$element.before(this.$anchor);
 		this.$element.remove();
 		this.boundViewsMap = [];
+		this.boundViewsToRemove = [];
+		this.reindexFrom = null;
 
 		// Boundview options:
 		this.boundViewName = this.$element.attr(kff.View.DATA_VIEW_ATTR);
@@ -474,15 +476,13 @@ kff.BindingView = kff.createClass(
 		}
 
 		var renderIndex = i;
-		var realIndex = kff.arrayIndexOf(this.boundViewsMap, renderIndex);
+		var realIndex = event.index;
 
 		if(realIndex !== -1)
 		{
-			if(this.boundViewsMap[i] !== false) this.removeBoundViewAt(renderIndex);
-			this.boundViewsMap.splice(i, 1);
+			if(this.boundViewsMap[realIndex] !== false) this.removeBoundViewAt(renderIndex);
+			this.boundViewsMap.splice(realIndex, 1);
 		}
-
-		this.reindexBoundviews(i);
 	},
 
 	/**
@@ -658,16 +658,47 @@ kff.BindingView = kff.createClass(
 	 */
 	removeBoundViewAt: function(renderIndex)
 	{
+		// console.log('removeBoundViewAt');
 		if(this.boundViews[renderIndex])
 		{
-			this.boundViews[renderIndex].destroyAll();
+			this.boundViewsToRemove.push(this.boundViews[renderIndex]);
+			// this.boundViews[renderIndex].destroyAll();
 			this.boundViews.splice(renderIndex, 1);
-			this.elements[renderIndex].remove();
+
+			// this.elements[renderIndex].remove();
 			this.elements.splice(renderIndex, 1);
 
-			// Reindex subsequent boundviews:
-			this.reindexBoundviews(renderIndex);
+
+
+			if(this.reindexFrom === null || this.reindexFrom > renderIndex) this.reindexFrom = renderIndex;
+
+			this.scheduleBatchRemove();
 		}
+	},
+
+	scheduleBatchRemove: function()
+	{
+		if(this.removeTimeout) cancelAnimationFrame(this.removeTimeout);
+		this.removeTimeout = requestAnimationFrame(this.f('removeBoundViewsBatch'));
+		// if(this.removeTimeout) clearTimeout(this.removeTimeout);
+		// this.removeTimeout = setTimeout(this.f('removeBoundViewsBatch'), 80);
+	},
+
+	removeBoundViewsBatch: function()
+	{
+		var i = this.boundViewsToRemove.length - 1, renderIndex, reindexFrom = Infinity;
+
+		for(; i >= 0; i--)
+		{
+			// console.log('removing ', i, this.boundViewsToRemove[i].$element);
+			this.boundViewsToRemove[i].$element.remove();
+			this.boundViewsToRemove[i].destroyAll();
+		}
+
+		this.boundViewsToRemove = [];
+		// Reindex subsequent boundviews:
+		this.reindexBoundviews(this.reindexFrom);
+		this.reindexFrom = null;
 	},
 
 	/**

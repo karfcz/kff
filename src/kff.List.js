@@ -55,14 +55,14 @@ kff.List = kff.createClass(
 	/**
 	 * Removes item from the list
 	 * @param {mixed} item Reference to the item to be removed
-	 * @returns {Boolean} True if item was removed or false if not found
+	 * @returns {number|false} Index of removed item or false if not found
 	 */
 	remove: function(item)
 	{
 		var i = kff.arrayIndexOf(this.array, item);
 		if(i === -1) return false;
 		this.array.splice(i, 1);
-		return true;
+		return i;
 	},
 
 	/**
