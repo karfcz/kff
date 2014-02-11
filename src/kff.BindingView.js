@@ -474,19 +474,9 @@ kff.BindingView = kff.createClass(
 		}
 
 		var renderIndex = i;
-		var realIndex = null;
+		var realIndex = kff.arrayIndexOf(this.boundViewsMap, renderIndex);
 
-		// Find real index in collection:
-		for(var i = 0, l = this.boundViewsMap.length; i < l; i++)
-		{
-			if(this.boundViewsMap[i] === renderIndex)
-			{
-				realIndex = i;
-				break;
-			}
-		}
-
-		if(realIndex !== null)
+		if(realIndex !== -1)
 		{
 			if(this.boundViewsMap[i] !== false) this.removeBoundViewAt(renderIndex);
 			this.boundViewsMap.splice(i, 1);
