@@ -20,7 +20,7 @@ kff.TextBinder = kff.createClass(
 
 	refresh: function(value)
 	{
-		this.$element.get(0).textContent = this.value;
+		this.$element[0].textContent = this.value;
 	}
 });
 
@@ -28,7 +28,7 @@ if(!('textContent' in document.documentElement))
 {
 	kff.TextBinder.prototype.refresh = function(value)
 	{
-		this.$element.get(0).innerText = this.value;
+		this.$element[0].innerText = this.value;
 	}
 }
 
