@@ -26,10 +26,7 @@ kff.DisabledBinder = kff.createClass(
 	fill: function()
 	{
 		if(!this.fillVal) this.fillVal = this.$element.is(':disbaled');
-		kff.setZeroTimeout(this.f(function()
-		{
-			this.updateModel(this.fillVal);
-		}));
+		this.updateModel(this.fillVal);
 	}
 });
 
