@@ -362,8 +362,6 @@ kff.BindingView = kff.createClass(
 		this.$element.before(this.$anchor);
 		this.$element.remove();
 		this.boundViewsMap = [];
-		this.boundViewsToRemove = [];
-		this.reindexFrom = null;
 
 		// Boundview options:
 		this.boundViewName = this.$element.attr(kff.View.DATA_VIEW_ATTR);
@@ -658,47 +656,18 @@ kff.BindingView = kff.createClass(
 	 */
 	removeBoundViewAt: function(renderIndex)
 	{
+		var boundView = this.boundViews[renderIndex];
 		// console.log('removeBoundViewAt');
-		if(this.boundViews[renderIndex])
+		if(boundView)
 		{
-			this.boundViewsToRemove.push(this.boundViews[renderIndex]);
-			// this.boundViews[renderIndex].destroyAll();
 			this.boundViews.splice(renderIndex, 1);
-
-			// this.elements[renderIndex].remove();
 			this.elements.splice(renderIndex, 1);
 
+			boundView.$element.remove();
+			boundView.destroyAll();
 
-
-			if(this.reindexFrom === null || this.reindexFrom > renderIndex) this.reindexFrom = renderIndex;
-
-			this.scheduleBatchRemove();
+			this.reindexBoundviews(renderIndex);
 		}
-	},
-
-	scheduleBatchRemove: function()
-	{
-		if(this.removeTimeout) cancelAnimationFrame(this.removeTimeout);
-		this.removeTimeout = requestAnimationFrame(this.f('removeBoundViewsBatch'));
-		// if(this.removeTimeout) clearTimeout(this.removeTimeout);
-		// this.removeTimeout = setTimeout(this.f('removeBoundViewsBatch'), 80);
-	},
-
-	removeBoundViewsBatch: function()
-	{
-		var i = this.boundViewsToRemove.length - 1, renderIndex, reindexFrom = Infinity;
-
-		for(; i >= 0; i--)
-		{
-			// console.log('removing ', i, this.boundViewsToRemove[i].$element);
-			this.boundViewsToRemove[i].$element.remove();
-			this.boundViewsToRemove[i].destroyAll();
-		}
-
-		this.boundViewsToRemove = [];
-		// Reindex subsequent boundviews:
-		this.reindexBoundviews(this.reindexFrom);
-		this.reindexFrom = null;
 	},
 
 	/**
