@@ -31,11 +31,8 @@ kff.EventBinder = kff.createClass(
 
 	triggerEvent: function(event)
 	{
-		kff.setZeroTimeout(this.f(function()
-		{
-			this.updateModel(this.userValue);
-		}));
 		event.preventDefault();
+		this.updateModel(this.userValue);
 	},
 
 	compareValues: function(value1, value2)
