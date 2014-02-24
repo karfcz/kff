@@ -58,7 +58,6 @@ kff.View = kff.createClass(
 			modelEvents: []
 		};
 
-		this.viewFactory = options.viewFactory || new kff.ViewFactory();
 		this.subviewsStruct = [];
 		this.explicitSubviewsStruct = null;
 		this.subviews = [];
@@ -335,6 +334,7 @@ kff.View = kff.createClass(
 	 */
 	renderAll: function()
 	{
+		if(!this.viewFactory) this.viewFactory = new kff.ViewFactory();
 		this.explicitSubviewsStruct = [];
 		this.render();
 		this.renderSubviews();
@@ -706,6 +706,11 @@ kff.View = kff.createClass(
 				this.subviews[i].setParentView(this);
 			}
 		}
+	},
+
+	setViewFactory: function(viewFactory)
+	{
+		this.viewFactory = viewFactory;
 	},
 
 	rebindElement: function(element)

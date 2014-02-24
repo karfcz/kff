@@ -126,13 +126,18 @@ kff.FrontController = kff.createClass(
 
 	startInit: function()
 	{
-		var i, l,
+		var i, l, view,
 			precedingViewNames = this.getPrecedingViews(this.newViewName),
 			from = 0;
 
 		for(i = 0, l = precedingViewNames.length; i < l; i++)
 		{
-			if(i >= this.viewsQueue.length) this.pushView({ name: precedingViewNames[i], instance: this.viewFactory.createView(precedingViewNames[i], { viewFactory: this.viewFactory })});
+			if(i >= this.viewsQueue.length)
+			{
+				view = this.viewFactory.createView(precedingViewNames[i]);
+				view.setViewFactory(this.viewFactory);
+				this.pushView({ name: precedingViewNames[i], instance: view });
+			}
 			else from = i + 1;
 		}
 

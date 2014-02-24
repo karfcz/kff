@@ -43,12 +43,16 @@ kff.ViewFactory = kff.createClass(
 		var view = null, viewClass;
 		options = options || {};
 
-		if(typeof viewName !== 'function' && this.serviceContainer && this.serviceContainer.hasService(viewName)) view = this.serviceContainer.getService(viewName, [options]);
+		if(typeof viewName !== 'function' && this.serviceContainer && this.serviceContainer.hasService(viewName))
+		{
+			view = this.serviceContainer.getService(viewName, [options]);
+		}
 		else
 		{
 			if(typeof viewName !== 'function') viewClass = kff.evalObjectPath(viewName);
 			else viewClass = viewName;
-			if(viewClass) view = new viewClass(kff.mixins({}, options, { viewFactory: this }));
+			if(viewClass) view = new viewClass(kff.mixins({}, options));
+			view.setViewFactory(this);
 		}
 		return view;
 	},
