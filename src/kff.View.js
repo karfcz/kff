@@ -58,14 +58,16 @@ kff.View = kff.createClass(
 			modelEvents: []
 		};
 
+		this.viewFactory = options.viewFactory || new kff.ViewFactory();
+		this.subviewsStruct = [];
+		this.explicitSubviewsStruct = null;
+		this.subviews = [];
+		this.eventTriggers = [];
 		this.initEvents();
 
 		if(options.parentView)
 		{
-			this.parentView = options.parentView;
-			F = function(){};
-			F.prototype = this.parentView.models;
-			this.models = new F();
+			this.setParentView(options.parentView);
 		}
 		else this.models = {};
 
@@ -91,11 +93,6 @@ kff.View = kff.createClass(
 		}
 		kff.mixins(this.options, options);
 
-		this.viewFactory = options.viewFactory || new kff.ViewFactory();
-		this.subviewsStruct = [];
-		this.explicitSubviewsStruct = null;
-		this.subviews = [];
-		this.eventTriggers = [];
 		return this;
 	},
 
@@ -675,9 +672,11 @@ kff.View = kff.createClass(
 
 	setParentView: function(parentView)
 	{
-		var oldModels, F;
+		var oldModels, F, key, i, l;
 
 		this.parentView = parentView;
+
+		if(!this.models) this.models = {};
 
 		if(this.models.__proto__)
 		{
@@ -685,21 +684,24 @@ kff.View = kff.createClass(
 		}
 		else
 		{
-			oldModels = this.models || {};
+			oldModels = this.models || null;
 
 			F = function(){};
 			F.prototype = this.parentView.models;
 			this.models = new F();
 
-			for(var key in oldModels)
+			if(oldModels !== null)
 			{
-				if(oldModels.hasOwnProperty(key))
+				for(key in oldModels)
 				{
-					this.models[key] = oldModels[key];
+					if(oldModels.hasOwnProperty(key))
+					{
+						this.models[key] = oldModels[key];
+					}
 				}
 			}
 
-			for(var i = 0; i < this.subviews.length; i++)
+			for(i = 0, l = this.subviews.length; i < l; i++)
 			{
 				this.subviews[i].setParentView(this);
 			}
