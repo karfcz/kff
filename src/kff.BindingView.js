@@ -2,7 +2,7 @@
 kff.BindingView = kff.createClass(
 {
 	extend: kff.View,
-	staticProperties:
+	statics:
 	/** @lends kff.BindingView */
 	{
 		bindingRegex: /(?:([.a-zA-Z0-9*-]+))((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g,

@@ -3,7 +3,7 @@ kff.View = kff.createClass(
 {
 	mixins: kff.EventsMixin,
 
-	staticProperties:
+	statics:
 	/** @lends kff.View */
 	{
 		/**
