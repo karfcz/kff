@@ -754,7 +754,7 @@ kff.BindingView = kff.createClass(
 			boundView = new this.constructor(boundViewOptions);
 
 			boundView.collectionBinder = null;
-
+			boundView.modelBindersMap = this.modelBindersMap.clone();
 			if(i === undefined)
 			{
 				this.boundViews.push(boundView);
@@ -795,6 +795,8 @@ kff.BindingView = kff.createClass(
 		}
 
 		$element.attr(kff.View.DATA_RENDERED_ATTR, true);
+
+		boundView.modelBindersMap.setView(boundView);
 
 		return boundView;
 	},

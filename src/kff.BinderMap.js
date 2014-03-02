@@ -31,7 +31,7 @@ kff.BinderMap = kff.createClass(
 		{
 			this.binders[i].view = view;
 			this.binders[i].$element = view.$element;
-			this.binders[i].model = view.getModel([].concat(this.binders[i].modelPathArray));
+			this.binders[i].model = view.getModel(this.binders[i].modelPathArray);
 			this.binders[i].value = null;
 		}
 	},
