@@ -134,6 +134,27 @@ describe('kff.ServiceContainer', function()
 			a().should.be.an.instanceof(Service1);
 		});
 
+		it('should interpolate string to a service factory that returns separate instances of service', function()
+		{
+			var a = container.resolveParameters('@@service1');
+			var instance1 = a();
+			var instance2 = a();
+			instance1.should.be.an.instanceof(Service1);
+			instance2.should.be.an.instanceof(Service1);
+			instance1.should.not.equal(instance2);
+		});
+
+		it('should interpolate string to the same service factory everytime', function()
+		{
+			var a = container.resolveParameters('@@service1');
+			var b = container.resolveParameters('@@service1');
+			var instance1 = a();
+			var instance2 = b();
+			instance1.should.be.an.instanceof(Service1);
+			instance2.should.be.an.instanceof(Service1);
+			instance1.should.not.equal(instance2);
+		});
+
 	});
 
 	describe('#createService', function()
