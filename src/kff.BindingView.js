@@ -896,7 +896,6 @@ kff.BindingView = kff.createClass(
 			clonedView.modelBindersMap.setView(clonedView);
 			clonedView.boundViews = [];
 		}
-		clonedView.options.isBoundView = this.options.isBoundView;
 		clonedView.itemAlias = this.itemAlias;
 
 		return clonedView;

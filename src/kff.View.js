@@ -59,7 +59,7 @@ kff.View = kff.createClass(
 		};
 
 		this.subviewsStruct = [];
-		this.explicitSubviewsStruct = null;
+		this.explicitSubviewsStruct = [];
 		this.subviews = [];
 		this.eventTriggers = [];
 		this.initEvents();
@@ -586,7 +586,7 @@ kff.View = kff.createClass(
 		if(typeof this.afterDestroy === 'function') this.afterDestroy();
 
 		this.subviewsStruct = [];
-		this.explicitSubviewsStruct = null;
+		this.explicitSubviewsStruct = [];
 		this.subviews = [];
 		this.eventTriggers = [];
 
@@ -639,14 +639,14 @@ kff.View = kff.createClass(
 
 	clone: function()
 	{
-		var options = {
+		var options = kff.mixins({}, this.options, {
 			parentView: this.parentView,
 			viewFactory: this.viewFactory
-		};
+		});
+
 		var clonedView = new this.constructor(options);
 		var clonedSubview;
 
-		clonedView.options.events = this.options.events;
 		clonedView.eventTriggers = this.eventTriggers.slice(0);
 
 		for(var i = 0, l = clonedView.eventTriggers.length; i < l; i++)
@@ -665,7 +665,9 @@ kff.View = kff.createClass(
 			clonedSubview.setParentView(clonedView);
 			clonedView.subviews.push(clonedSubview);
 		}
-		clonedView.subviewsStruct = kff.mixins({}, this.subviewsStruct);
+
+		clonedView.subviewsStruct = this.subviewsStruct.slice();
+		clonedView.explicitSubviewsStruct = this.explicitSubviewsStruct.slice();
 
 		return clonedView;
 	},
