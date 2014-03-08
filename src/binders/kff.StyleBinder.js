@@ -21,12 +21,15 @@ kff.StyleBinder = kff.createClass(
 	init: function()
 	{
 		this.styleProperty = this.params[0] || null;
+		this.styleUnit = this.params[1] || '';
 		kff.StyleBinder._super.init.call(this);
 	},
 
 	refresh: function()
 	{
-		if(this.styleProperty) this.$element.css(this.styleProperty, this.value);
+		var value = this.value;
+		if(this.styleUnit) value += this.styleUnit;
+		if(this.styleProperty) this.$element.css(this.styleProperty, this.value + this.styleUnit);
 	}
 });
 
