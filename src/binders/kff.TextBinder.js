@@ -28,7 +28,9 @@ if(!('textContent' in document.documentElement))
 {
 	kff.TextBinder.prototype.refresh = function(value)
 	{
-		this.$element[0].innerText = this.value;
+		var val = this.value;
+		if(val === null || val === undefined) val = '';
+		this.$element[0].innerText = val;
 	}
 }
 

@@ -28,7 +28,9 @@ kff.AttrBinder = kff.createClass(
 
 	refresh: function()
 	{
-		if(this.attribute) this.$element.attr(this.attribute, this.prefix + this.value + this.suffix);
+		var val = this.value;
+		if(val === null || val === undefined) val = '';
+		if(this.attribute) this.$element.attr(this.attribute, this.prefix + val + this.suffix);
 	}
 });
 
