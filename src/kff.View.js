@@ -612,6 +612,18 @@ kff.View = kff.createClass(
 	},
 
 	/**
+	 * Destroys and renders+runs the view with optional new html content
+	 * @param  {string} html HTML tepmlate (optional)
+	 */
+	rerender: function(html)
+	{
+		this.destroyAll();
+		if(html !== undefined) this.$element.html(html);
+		this.renderAll();
+		this.runAll();
+	},
+
+	/**
 	 * Method for refreshing the view. Does nothing in this base class, it's intended to be overloaded in subclasses.
 	 */
 	refresh: function(){},
