@@ -82,6 +82,41 @@ describe('kff.Model', function()
 
 	});
 
+	describe('#unset', function()
+	{
+
+		it('should trigger events for one property unset', function(done)
+		{
+			var obj = new kff.Model({
+				a: 1
+			});
+			var count = 0;
+			obj.on('change:a', function(event){
+				if(event.changed.a === undefined) count++;
+			});
+			obj.on('change', function(event){
+				if(event.changed.a === undefined) count++;
+				if(count === 2) done();
+			});
+			obj.unset('a');
+		});
+
+		it('should trigger events for two property unset', function(done)
+		{
+			var obj = new kff.Model({
+				a: 1,
+				b: 2
+			});
+
+			var count = 0;
+			obj.on('change', function(event){
+				if(event.changed.a === undefined && event.changed.b === undefined) done();
+			});
+			obj.unset(['a', 'b']);
+		});
+
+	});
+
 
 	describe('#createComputed', function()
 	{

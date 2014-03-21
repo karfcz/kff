@@ -71,7 +71,7 @@ kff.Model = kff.createClass(
 	/**
 	 * Sets the value(s) of given attribute(s). Triggers a change event.
 	 *
-	 * @param {string} attr Attribute name
+	 * @param {string|Object} attr Attribute name
 	 * @param {mixed} value Attribute value
 	 * @param {Boolean} silent If true, do not trigger event
 	 */
@@ -90,6 +90,43 @@ kff.Model = kff.createClass(
 			silent = value;
 			changed = attr;
 			for(var key in changed) this.attrs[key] = changed[key];
+		}
+
+		if(!silent)
+		{
+			for(var changedAttr in changed)
+			{
+				this.trigger('change:' + changedAttr, { model: this, changed: changed, changedAttributes: changed });
+			}
+			this.trigger('change', { model: this, changed: changed, changedAttributes: changed });
+		}
+	},
+
+	/**
+	 * Unsets (deletes) the attribute(s). Triggers a change event.
+	 *
+	 * @param {string|Array} attr Attribute name or array of attribute names
+	 * @param {Boolean} silent If true, do not trigger event
+	 */
+	unset: function(attr,  silent)
+	{
+		var changed = {};
+
+		if(typeof attr === 'string')
+		{
+			if(attr in this.attrs) delete this.attrs[attr];
+			changed[attr] = undefined;
+		}
+		else if(attr !== null && attr instanceof Array)
+		{
+			for(var i = 0, l = attr.length; i < l; i++)
+			{
+				if(attr in this.attrs)
+				{
+					delete this.attrs[attr[i]];
+					changed[attr[i]] = undefined;
+				}
+			}
 		}
 
 		if(!silent)
