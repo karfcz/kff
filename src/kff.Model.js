@@ -121,7 +121,7 @@ kff.Model = kff.createClass(
 		{
 			for(var i = 0, l = attr.length; i < l; i++)
 			{
-				if(attr in this.attrs)
+				if(attr[i] in this.attrs)
 				{
 					delete this.attrs[attr[i]];
 					changed[attr[i]] = undefined;
@@ -137,6 +137,18 @@ kff.Model = kff.createClass(
 			}
 			this.trigger('change', { model: this, changed: changed, changedAttributes: changed });
 		}
+	},
+
+	unsetAll: function(silent)
+	{
+		var unset = [];
+
+		for(var attr in this.attrs)
+		{
+			unset.push(attr);
+		}
+
+		this.unset(unset, silent);
 	},
 
 	/**
