@@ -9,6 +9,7 @@ kff.Router = kff.createClass(
 	{
 		this.options = options || {};
 		this.routes = [];
+		this.params = options.params || null;
 		this.buildRoutes();
 	},
 
@@ -28,7 +29,34 @@ kff.Router = kff.createClass(
 		for(var i = 0, l = this.routes.length; i < l; i++)
 		{
 			params = [];
-			if(this.routes[i].match(path, params)) return { target: this.routes[i].getTarget(), params: params };
+			if(this.routes[i].match(path, params))
+			{
+				if(this.params instanceof kff.Model)
+				{
+					var attrs = {};
+					var unset = [];
+					for(var key in params)
+					{
+						if(isNaN(parseFloat(key)) && params.hasOwnProperty(key))
+						{
+							attrs[key] = params[key];
+						}
+					}
+					this.params.each(function(key, val)
+					{
+						if(!(key in attrs))
+						{
+							unset.push(key);
+						}
+					});
+
+					attrs.unnamed = params.slice();
+
+					this.params.unset(unset);
+					this.params.set(attrs);
+				}
+				return { target: this.routes[i].getTarget(), params: params };
+			}
 		}
 		return null;
 	}
