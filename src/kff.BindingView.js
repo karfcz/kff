@@ -537,21 +537,15 @@ kff.BindingView = kff.createClass(
 			}
 		});
 
-		if('Zepto' in window && $ === window.Zepto)
-		{
-			var elems = [];
 
-			for(var i = 0, l = that.elements.length; i < l; i++)
-			{
-				elems.push(that.elements[i].get(0));
-			}
+		var docFragment = document.createDocumentFragment(), anchor = that.$anchor.get(0);
 
-			that.$anchor.after(elems);
-		}
-		else
+		for(var i = 0, l = that.elements.length; i < l; i++)
 		{
-			that.$anchor.after(that.elements);
+			docFragment.appendChild(that.elements[i].get(0));
 		}
+
+		anchor.parentNode.insertBefore(docFragment, anchor.nextSibling);
 
 		that.reindexBoundviews();
 
