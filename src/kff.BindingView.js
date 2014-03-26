@@ -413,6 +413,12 @@ kff.BindingView = kff.createClass(
 			this.$anchor.remove();
 			this.$anchor = null;
 		}
+		if(this.$elementTemplate)
+		{
+			this.$elementTemplate.remove();
+			this.$elementTemplate = null;
+		}
+		this.viewTemplate = null;
 	},
 
 	/**
@@ -545,7 +551,10 @@ kff.BindingView = kff.createClass(
 			docFragment.appendChild(that.elements[i].get(0));
 		}
 
-		anchor.parentNode.insertBefore(docFragment, anchor.nextSibling);
+		if(anchor.parentNode)
+		{
+			anchor.parentNode.insertBefore(docFragment, anchor.nextSibling);
+		}
 
 		that.reindexBoundviews();
 
