@@ -49,7 +49,6 @@ kff.View = kff.createClass(
 	 */
 	constructor: function(options)
 	{
-		var F;
 		options = options || {};
 		this.options = {
 			element: null,
@@ -88,9 +87,9 @@ kff.View = kff.createClass(
 		}
 		if(options.models)
 		{
-			kff.mixins(this.models, options.models);
+			kff.mixins2(this.models, options.models);
 		}
-		kff.mixins(this.options, options);
+		kff.mixins2(this.options, options);
 
 		return this;
 	},
@@ -355,7 +354,7 @@ kff.View = kff.createClass(
 
 		if(typeof this.afterRender === 'function') this.afterRender();
 
-		this.$element.attr(kff.View.DATA_RENDERED_ATTR, true);
+		this.$element[0].setAttribute(kff.View.DATA_RENDERED_ATTR, true);
 
 		return ret;
 	},
@@ -577,7 +576,7 @@ kff.View = kff.createClass(
 	destroyAll: function(silent)
 	{
 		var ret;
-		this.$element.removeAttr(kff.View.DATA_RENDERED_ATTR);
+		this.$element[0].removeAttribute(kff.View.DATA_RENDERED_ATTR);
 		this.undelegateEvents();
 		this.undelegateModelEvents();
 		this.destroySubviews();

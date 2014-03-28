@@ -64,6 +64,7 @@ kff.BindingView = kff.createClass(
 		this.bindingIndex = null;
 		this.itemAlias = null;
 		this.boundViews = [];
+		this.anchor = null;
 
 		kff.View.call(this, options);
 	},
@@ -122,7 +123,7 @@ kff.BindingView = kff.createClass(
 	{
 		var model, attr, result, result2, modelPathArray, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill, i, watchModelPath;
 		var modifierName, modifierParams;
-		var dataBindAttr = this.$element.attr(kff.View.DATA_BIND_ATTR);
+		var dataBindAttr = this.$element[0].getAttribute(kff.View.DATA_BIND_ATTR);
 		var modelName;
 
 		var bindingRegex = kff.BindingView.bindingRegex;
@@ -358,14 +359,20 @@ kff.BindingView = kff.createClass(
 	 */
 	renderBoundViews: function()
 	{
-		this.$anchor = $(document.createTextNode(''));
-		this.$element.before(this.$anchor);
+		this.anchor = document.createTextNode('');
+		var el = this.$element[0];
+
+		if(el.parentNode)
+		{
+			el.parentNode.insertBefore(this.anchor, el.nextSibling);
+		}
+
 		this.$element.remove();
 		this.boundViewsMap = [];
 
 		// Boundview options:
-		this.boundViewName = this.$element.attr(kff.View.DATA_VIEW_ATTR);
-		var opt = this.$element.attr(kff.View.DATA_OPTIONS_ATTR);
+		this.boundViewName = this.$element[0].getAttribute(kff.View.DATA_VIEW_ATTR);
+		var opt = this.$element[0].getAttribute(kff.View.DATA_OPTIONS_ATTR);
 
 		this.initCollectionFilter();
 
@@ -407,11 +414,14 @@ kff.BindingView = kff.createClass(
 			for(var i = 0, l = this.elements.length; i < l; i++) this.elements[i].remove();
 		}
 		this.elements = [];
-		if(this.$anchor)
+		if(this.anchor)
 		{
-			this.$anchor.after(this.$element);
-			this.$anchor.remove();
-			this.$anchor = null;
+			if(this.anchor.parentNode)
+			{
+				this.anchor.parentNode.insertBefore(this.$element[0], this.anchor.nextSibling);
+				this.anchor.parentNode.removeChild(this.anchor);
+			}
+			this.anchor = null;
 		}
 		if(this.$elementTemplate)
 		{
@@ -544,23 +554,24 @@ kff.BindingView = kff.createClass(
 		});
 
 
-		var docFragment = document.createDocumentFragment(), anchor = that.$anchor.get(0);
+		var docFragment = document.createDocumentFragment();
 
 		for(var i = 0, l = that.elements.length; i < l; i++)
 		{
 			docFragment.appendChild(that.elements[i].get(0));
 		}
 
-		if(anchor.parentNode)
-		{
-			anchor.parentNode.insertBefore(docFragment, anchor.nextSibling);
-		}
 
 		that.reindexBoundviews();
 
 		for(var i = 0, l = that.boundViews.length; i < l; i++)
 		{
 			that.boundViews[i].runAll();
+		}
+
+		if(this.anchor.parentNode)
+		{
+			this.anchor.parentNode.insertBefore(docFragment, this.anchor.nextSibling);
 		}
 	},
 
@@ -571,7 +582,7 @@ kff.BindingView = kff.createClass(
 	 */
 	initCollectionFilter: function()
 	{
-		var filterName = this.$element.attr('data-kff-filter');
+		var filterName = this.$element[0].getAttribute('data-kff-filter');
 
 		if(filterName)
 		{
@@ -688,7 +699,10 @@ kff.BindingView = kff.createClass(
 
 		if(renderIndex === 0)
 		{
-			this.$anchor.after($element);
+			if(this.anchor.parentNode)
+			{
+				this.anchor.parentNode.insertBefore($element[0], this.anchor.nextSibling);
+			}
 		}
 		else
 		{
@@ -797,7 +811,7 @@ kff.BindingView = kff.createClass(
 			boundView.rebindElement($element.get(0));
 		}
 
-		$element.attr(kff.View.DATA_RENDERED_ATTR, true);
+		$element[0].setAttribute(kff.View.DATA_RENDERED_ATTR, true);
 
 		boundView.modelBindersMap.setView(boundView);
 
