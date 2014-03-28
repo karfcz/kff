@@ -50,14 +50,6 @@ kff.View = kff.createClass(
 	constructor: function(options)
 	{
 		options = options || {};
-		this.options = {
-			element: null,
-			models: null,
-			events: [],
-			modelEvents: []
-		};
-
-
 
 		this.subviewsStruct = [];
 		this.explicitSubviewsStruct = [];
@@ -70,8 +62,6 @@ kff.View = kff.createClass(
 		if(options.models)
 		{
 			this.models = options.models;
-
-			// kff.mixins(this.models, options.models);
 			options.models = null;
 		}
 		else this.models = {};
@@ -81,14 +71,6 @@ kff.View = kff.createClass(
 			this.setParentView(options.parentView);
 		}
 
-		// if(options.events)
-		// {
-		// 	this.options.events = this.options.events.concat(options.events);
-		// }
-		// if(options.modelEvents)
-		// {
-		// 	this.options.modelEvents = this.options.modelEvents.concat(options.modelEvents);
-		// }
 		if(options.events)
 		{
 			this.domEvents = options.events.slice();
@@ -106,12 +88,13 @@ kff.View = kff.createClass(
 			this.$element = $(options.element);
 			options.element = null;
 		}
+
 		if(options.viewFactory)
 		{
 			this.viewFactory = options.viewFactory;
 		}
+
 		this.options = options;
-		// kff.mixins(this.options, options);
 
 		return this;
 	},
