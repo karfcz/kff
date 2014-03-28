@@ -8,22 +8,16 @@ kff.Binder = kff.createClass(
 	constructor: function(options)
 	{
 		this.options = options;
-		this.eventNames = options.eventNames;
-		this.events = options.events || [];
+		this.options.events = options.events || [];
+
 		this.view = options.view;
 		this.$element = options.$element;
-		this.attr = options.attr;
 		this.model = options.model;
-		this.modelName = options.modelName;
-		this.modelPathArray = options.modelPathArray;
-		this.parsers = options.parsers;
-		this.formatters = options.formatters;
-		this.setter = (options.setters instanceof Array && options.setters.length > 0) ? options.setters[0] : null;
-		this.getter = (options.getters instanceof Array && options.getters.length > 0) ? options.getters[0] : null;
-		this.params = options.params;
+		this.setter = (options.setters && options.setters.length > 0) ? options.setters[0] : null;
+		this.getter = (options.getters && options.getters.length > 0) ? options.getters[0] : null;
 		this.currentValue = null;
 		this.bindingIndex = null;
-		this.dynamicBindings = [];
+		this.dynamicBindings = null;
 		this.value = null;
 	},
 
@@ -35,17 +29,17 @@ kff.Binder = kff.createClass(
 		}
 		else if(this.model instanceof kff.Model)
 		{
-			this.model.on('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
-			if(this.$element && this.events.length > 0) this.delegateEvents.call(this, this.events);
+			this.model.on('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
+			if(this.$element && this.options.events.length > 0) this.delegateEvents.call(this, this.options.events);
 		}
 		if(this.options.fill && this.model instanceof kff.Model) this.fill();
 	},
 
 	destroy: function()
 	{
-		if(this.model instanceof kff.Model) this.model.off('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
+		if(this.model instanceof kff.Model) this.model.off('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
 		if(this.options.watchModelPath) this.unbindDynamic();
-		if(this.$element && this.events.length > 0) this.undelegateEvents.call(this, this.events);
+		if(this.$element && this.options.events.length > 0) this.undelegateEvents.call(this, this.options.events);
 		this.currentValue = null;
 		this.value = null;
 	},
@@ -59,9 +53,9 @@ kff.Binder = kff.createClass(
 		var modelValue;
 		if(this.model instanceof kff.Model)
 		{
-			if(this.getter && typeof this.model[this.getter] === 'function') modelValue = this.model[this.getter](this.attr);
-			else if(event !== true) modelValue = event.changed[this.attr];
-			else if(typeof this.attr === 'string') modelValue = this.model.get(this.attr);
+			if(this.getter && typeof this.model[this.getter] === 'function') modelValue = this.model[this.getter](this.options.attr);
+			else if(event !== true) modelValue = event.changed[this.options.attr];
+			else if(typeof this.options.attr === 'string') modelValue = this.model.get(this.options.attr);
 			else modelValue = null;
 
 			if(event === true || !this.compareValues(modelValue, this.currentValue))
@@ -109,10 +103,10 @@ kff.Binder = kff.createClass(
 		this.currentValue = value;
 		if(this.setter && typeof this.model[this.setter] === 'function')
 		{
-			if(this.attr === null) this.model[this.setter](this.currentValue);
-			else this.model[this.setter](this.attr, this.currentValue);
+			if(this.options.attr === null) this.model[this.setter](this.currentValue);
+			else this.model[this.setter](this.options.attr, this.currentValue);
 		}
-		else this.model.set(this.attr, this.currentValue);
+		else this.model.set(this.options.attr, this.currentValue);
 	},
 
 	refresh: function(value){},
@@ -120,15 +114,15 @@ kff.Binder = kff.createClass(
 	format: function(value)
 	{
 		var i, l, j, k, value2;
-		for(i = 0, l = this.formatters.length; i < l; i++)
+		for(i = 0, l = this.options.formatters.length; i < l; i++)
 		{
 			if(value instanceof Array)
 			{
 				value2 = [];
-				for(j = 0, k = value.length; j < k; j++) value2[j] = this.formatters[i].fn.apply(this, [value[j]].concat(this.formatters[i].args));
+				for(j = 0, k = value.length; j < k; j++) value2[j] = this.options.formatters[i].fn.apply(this, [value[j]].concat(this.options.formatters[i].args));
 				value = value2;
 			}
-			else value = this.formatters[i].fn.apply(this, [value].concat(this.formatters[i].args));
+			else value = this.options.formatters[i].fn.apply(this, [value].concat(this.options.formatters[i].args));
 		}
 		return value;
 	},
@@ -136,43 +130,28 @@ kff.Binder = kff.createClass(
 	parse: function(value)
 	{
 		var i, l, j, k, value2;
-		for(i = 0, l = this.parsers.length; i < l; i++)
+		for(i = 0, l = this.options.parsers.length; i < l; i++)
 		{
 			if(value instanceof Array)
 			{
 				value2 = [];
-				for(j = 0, k = value.length; j < k; j++) value2[j] = this.parsers[i].fn.apply(this, [value[j]].concat(this.parsers[i].args));
+				for(j = 0, k = value.length; j < k; j++) value2[j] = this.options.parsers[i].fn.apply(this, [value[j]].concat(this.options.parsers[i].args));
 				value = value2;
 			}
-			else value = this.parsers[i].fn.apply(this, [value].concat(this.parsers[i].args));
+			else value = this.options.parsers[i].fn.apply(this, [value].concat(this.options.parsers[i].args));
 		}
 		return value;
 	},
 
 	getBindingIndex: function(modelName)
 	{
-		modelName = modelName || this.modelName;
+		modelName = modelName || this.options.modelName;
 		return this.view.getBindingIndex(modelName);
 	},
 
 	clone: function()
 	{
-		var obj = new this.constructor({
-			eventNames: this.eventNames,
-			view: null,
-			$element: this.$element,
-			attr: this.attr,
-			model: null,
-			modelName: this.modelName,
-			modelPathArray: this.modelPathArray,
-			parsers: this.parsers,
-			formatters: this.formatters,
-			params: this.params,
-			fill: this.options.fill
-		});
-		obj.setter = this.setter;
-		obj.getter = this.getter;
-		return obj;
+		return new this.constructor(this.options);
 	},
 
 	fill: function(){},
@@ -187,28 +166,30 @@ kff.Binder = kff.createClass(
 		this.unbindDynamic();
 		if(this.model instanceof kff.Model)
 		{
-			this.model.off('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
-			if(this.$element && this.events.length > 0) this.undelegateEvents.call(this, this.events);
+			this.model.off('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
+			if(this.$element && this.options.events.length > 0) this.undelegateEvents.call(this, this.options.events);
 		}
 
 		this.bindDynamic();
 		if(this.model instanceof kff.Model)
 		{
-			this.model.on('change' + (this.attr === null ? '' : ':' + this.attr), this.f('modelChange'));
-			if(this.$element && this.events.length > 0) this.delegateEvents.call(this, this.events);
+			this.model.on('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
+			if(this.$element && this.options.events.length > 0) this.delegateEvents.call(this, this.options.events);
 			this.modelChange(true);
 		}
 	},
 
 	bindDynamic: function()
 	{
-		var modelName = this.modelPathArray[0],
+		var modelName = this.options.modelPathArray[0],
 			model = this.view.getModel(modelName),
 			attr;
 
-		for(var i = 1, l = this.modelPathArray.length; i < l; i++)
+		this.dynamicBindings = [];
+
+		for(var i = 1, l = this.options.modelPathArray.length; i < l; i++)
 		{
-			attr = this.modelPathArray[i];
+			attr = this.options.modelPathArray[i];
 			if(model instanceof kff.Model)
 			{
 				model.on('change:' + attr, this.f('rebindTimed'));
@@ -224,11 +205,14 @@ kff.Binder = kff.createClass(
 
 	unbindDynamic: function()
 	{
-		for(var i = 0, l = this.dynamicBindings.length; i < l; i++)
+		if(this.dynamicBindings)
 		{
-			this.dynamicBindings[i].model.off('change:' + this.dynamicBindings[i].attr, this.f('rebindTimed'));
+			for(var i = 0, l = this.dynamicBindings.length; i < l; i++)
+			{
+				this.dynamicBindings[i].model.off('change:' + this.dynamicBindings[i].attr, this.f('rebindTimed'));
+			}
+			this.dynamicBindings = null;
 		}
-		this.dynamicBindings = [];
 	}
 
 });

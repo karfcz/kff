@@ -18,6 +18,7 @@ kff.ClickBinder = kff.createClass(
 		if(options.eventNames.length === 0)	options.eventNames = ['click'];
 		kff.EventBinder.call(this, options);
 	}
+
 });
 
 kff.BindingView.registerBinder('click', kff.ClickBinder);

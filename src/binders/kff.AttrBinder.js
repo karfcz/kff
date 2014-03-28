@@ -20,9 +20,9 @@ kff.AttrBinder = kff.createClass(
 
 	init: function()
 	{
-		this.attribute = this.params[0] || null;
-		this.prefix = this.params[1] || '';
-		this.suffix = this.params[2] || '';
+		this.attribute = this.options.params[0] || null;
+		this.prefix = this.options.params[1] || '';
+		this.suffix = this.options.params[2] || '';
 		kff.AttrBinder._super.init.call(this);
 	},
 
@@ -30,7 +30,10 @@ kff.AttrBinder = kff.createClass(
 	{
 		var val = this.value;
 		if(val === null || val === undefined) val = '';
-		if(this.attribute) this.$element.attr(this.attribute, this.prefix + val + this.suffix);
+		if(this.attribute)
+		{
+			this.$element[0].setAttribute(this.attribute, this.prefix + val + this.suffix);
+		}
 	}
 });
 

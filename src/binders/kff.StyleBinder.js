@@ -20,8 +20,8 @@ kff.StyleBinder = kff.createClass(
 
 	init: function()
 	{
-		this.styleProperty = this.params[0] || null;
-		this.styleUnit = this.params[1] || '';
+		this.styleProperty = this.options.params[0] || null;
+		this.styleUnit = this.options.params[1] || '';
 		kff.StyleBinder._super.init.call(this);
 	},
 

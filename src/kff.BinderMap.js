@@ -26,13 +26,14 @@ kff.BinderMap = kff.createClass(
 
 	setView: function(view)
 	{
-		var i, l;
+		var i, l, b;
 		for(i = 0, l = this.binders.length; i < l; i++)
 		{
-			this.binders[i].view = view;
-			this.binders[i].$element = view.$element;
-			this.binders[i].model = view.getModel(this.binders[i].modelPathArray);
-			this.binders[i].value = null;
+			b = this.binders[i];
+			b.view = view;
+			b.$element = view.$element;
+			b.model = view.getModel(b.options.modelPathArray);
+			b.value = null;
 		}
 	},
 

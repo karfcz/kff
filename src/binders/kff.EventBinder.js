@@ -25,7 +25,7 @@ kff.EventBinder = kff.createClass(
 
 	init: function()
 	{
-		this.userValue = this.params[0] || null;
+		this.userValue = this.options.params[0] || null;
 		kff.EventBinder._super.init.call(this);
 	},
 
