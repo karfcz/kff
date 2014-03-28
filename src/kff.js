@@ -24,6 +24,22 @@ kff.extend = function(child, parent)
 	child.prototype.constructor = child;
 };
 
+kff.createObject = function(parent)
+{
+	var child;
+	if(Object.create)
+	{
+		child = Object.create(parent);
+	}
+	else
+	{
+		F = function(){};
+		F.prototype = parent;
+		child = new F();
+	}
+	return child;
+};
+
 /**
  * Mixins (using a shallow copy) properties from one object to another.
  * Function accepts multiple arguments with multiple extending objects.
@@ -60,6 +76,18 @@ kff.mixins = function(obj, properties)
 			}
 		}
 		i++;
+	}
+	return obj;
+};
+
+kff.mixins2 = function(obj, properties)
+{
+	for(var key in properties)
+	{
+		if(properties.hasOwnProperty(key))
+		{
+			obj[key] = properties[key];
+		}
 	}
 	return obj;
 };
