@@ -57,39 +57,61 @@ kff.View = kff.createClass(
 			modelEvents: []
 		};
 
+
+
 		this.subviewsStruct = [];
 		this.explicitSubviewsStruct = [];
 		this.subviews = [];
 		this.eventTriggers = [];
+		this.viewFactory = null;
+
 		this.initEvents();
+
+		if(options.models)
+		{
+			this.models = options.models;
+
+			// kff.mixins(this.models, options.models);
+			options.models = null;
+		}
+		else this.models = {};
 
 		if(options.parentView)
 		{
 			this.setParentView(options.parentView);
 		}
-		else this.models = {};
 
+		// if(options.events)
+		// {
+		// 	this.options.events = this.options.events.concat(options.events);
+		// }
+		// if(options.modelEvents)
+		// {
+		// 	this.options.modelEvents = this.options.modelEvents.concat(options.modelEvents);
+		// }
 		if(options.events)
 		{
-			this.options.events = this.options.events.concat(options.events);
+			this.domEvents = options.events.slice();
 		}
+		else this.domEvents = [];
+
 		if(options.modelEvents)
 		{
-			this.options.modelEvents = this.options.modelEvents.concat(options.modelEvents);
+			this.modelEvents = options.modelEvents.slice();
 		}
+		else this.modelEvents = [];
+
 		if(options.element)
 		{
 			this.$element = $(options.element);
+			options.element = null;
 		}
 		if(options.viewFactory)
 		{
 			this.viewFactory = options.viewFactory;
 		}
-		if(options.models)
-		{
-			kff.mixins2(this.models, options.models);
-		}
-		kff.mixins2(this.options, options);
+		this.options = options;
+		// kff.mixins(this.options, options);
 
 		return this;
 	},
@@ -108,15 +130,15 @@ kff.View = kff.createClass(
 	{
 		var modelName;
 		if(typeof modelPath === 'string') modelPath = modelPath.split('.');
-		else modelPath = [].concat(modelPath);
 
-		modelName = modelPath.shift();
+		modelName = modelPath[0];
+		modelPath = modelPath.slice(1);
 
 		if(this.models && modelName in this.models)
 		{
 			if(modelPath.length > 0)
 			{
-				if(this.models[modelName] instanceof kff.Model) return this.models[modelName].mget(modelPath);
+				if(this.models[modelName]) return this.models[modelName].mget(modelPath);
 				else return null;
 			}
 			else return this.models[modelName];
@@ -144,7 +166,7 @@ kff.View = kff.createClass(
 	{
 		var event, i, l, fn;
 		this.undelegateEvents(events, $element);
-		events = events || this.options.events;
+		events = events || this.domEvents;
 		$element = $element || this.$element;
 		for(i = 0, l = events.length; i < l; i++)
 		{
@@ -178,7 +200,7 @@ kff.View = kff.createClass(
 	undelegateEvents: function(events, $element)
 	{
 		var event, i, l, fn;
-		events = events || this.options.events;
+		events = events || this.domEvents;
 		$element = $element || this.$element;
 		for(i = 0, l = events.length; i < l; i++)
 		{
@@ -209,7 +231,7 @@ kff.View = kff.createClass(
 	 */
 	addEvents: function(events)
 	{
-		this.options.events = this.options.events.concat(events);
+		this.domEvents = this.domEvents.concat(events);
 	},
 
 	/**
@@ -241,7 +263,7 @@ kff.View = kff.createClass(
 	{
 		var event, i, l, fn;
 		this.undelegateModelEvents();
-		events = events || this.options.modelEvents;
+		events = events || this.modelEvents;
 
 		for(i = 0, l = events.length; i < l; i++)
 		{
@@ -283,7 +305,7 @@ kff.View = kff.createClass(
 	undelegateModelEvents: function(events)
 	{
 		var event, i, l, fn;
-		events = events || this.options.modelEvents;
+		events = events || this.modelEvents;
 
 		for(i = 0, l = events.length; i < l; i++)
 		{
@@ -650,13 +672,11 @@ kff.View = kff.createClass(
 
 	clone: function()
 	{
-		var options = kff.mixins({}, this.options, {
-			parentView: this.parentView,
-			viewFactory: this.viewFactory
-		});
-
-		var clonedView = new this.constructor(options);
+		var clonedView = new this.constructor(this.options);
 		var clonedSubview;
+
+		clonedView.setParentView(this.parentView);
+		clonedView.viewFactory = this.viewFactory;
 
 		clonedView.eventTriggers = this.eventTriggers.slice(0);
 
