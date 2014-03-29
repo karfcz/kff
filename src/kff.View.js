@@ -658,7 +658,7 @@ kff.View = kff.createClass(
 		var clonedView = new this.constructor(this.options);
 		var clonedSubview;
 
-		clonedView.setParentView(this.parentView);
+		clonedView.parentView = this.parentView;
 		clonedView.viewFactory = this.viewFactory;
 
 		clonedView.eventTriggers = this.eventTriggers.slice(0);
@@ -668,10 +668,7 @@ kff.View = kff.createClass(
 			clonedView.eventTriggers[i] = clonedView.eventTriggers[i].slice(0);
 		}
 
-		for(var modelName in this.models)
-		{
-			if(this.models.hasOwnProperty(modelName)) clonedView.models[modelName] = this.models[modelName];
-		}
+		clonedView.models = kff.createObject(this.models);
 
 		for(var i = 0; i < this.subviews.length; i++)
 		{
