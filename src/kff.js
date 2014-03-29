@@ -24,21 +24,34 @@ kff.extend = function(child, parent)
 	child.prototype.constructor = child;
 };
 
-kff.createObject = function(parent)
-{
-	var child;
-	if(Object.create)
+(function(){
+
+	if('__proto__' in Object)
 	{
-		child = Object.create(parent);
+		kff.createObject = function(parent)
+		{
+			var child = {};
+			child.__proto__ = parent;
+			return child;
+		};
+	}
+	else if(Object.create)
+	{
+		kff.createObject = Object.create;
 	}
 	else
 	{
-		F = function(){};
-		F.prototype = parent;
-		child = new F();
+		kff.createObject = function(parent)
+		{
+			var child;
+			F = function(){};
+			F.prototype = parent;
+			child = new F();
+			return child;
+		};
 	}
-	return child;
-};
+
+})();
 
 /**
  * Mixins (using a shallow copy) properties from one object to another.
@@ -76,18 +89,6 @@ kff.mixins = function(obj, properties)
 			}
 		}
 		i++;
-	}
-	return obj;
-};
-
-kff.mixins2 = function(obj, properties)
-{
-	for(var key in properties)
-	{
-		if(properties.hasOwnProperty(key))
-		{
-			obj[key] = properties[key];
-		}
 	}
 	return obj;
 };
@@ -179,11 +180,23 @@ kff.classMixin = {
 	{
 		var obj = this;
 		if(typeof fnName === 'string') return kff.bindFn(obj, fnName, args);
-		if(typeof fnName === 'function') return function()
+		if(typeof fnName === 'function')
 		{
-			if(args) return fnName.apply(obj, args.concat(Array.prototype.slice.call(arguments)));
-			else return fnName.apply(obj, arguments);
-		};
+			if(args)
+			{
+				return function()
+				{
+					return fnName.apply(obj, args.concat(Array.prototype.slice.call(arguments)));
+				};
+			}
+			else
+			{
+				return function()
+				{
+					return fnName.apply(obj, arguments);
+				};
+			}
+		}
 		throw new TypeError("Expected function: " + fnName + ' (kff.f)');
 	}
 };
