@@ -26,7 +26,16 @@ kff.extend = function(child, parent)
 
 (function(){
 
-	if('__proto__' in Object)
+	if('setPrototypeOf' in Object)
+	{
+		kff.createObject = function(parent)
+		{
+			var child = {};
+			Object.setPrototypeOf(child, parent);
+			return child;
+		};
+	}
+	else if('__proto__' in Object)
 	{
 		kff.createObject = function(parent)
 		{
