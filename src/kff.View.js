@@ -117,15 +117,12 @@ kff.View = kff.createClass(
 		modelName = modelPath[0];
 		modelPath = modelPath.slice(1);
 
-		if(this.models && modelName in this.models)
+		if(modelPath.length > 0)
 		{
-			if(modelPath.length > 0)
-			{
-				if(this.models[modelName]) return this.models[modelName].mget(modelPath);
-				else return null;
-			}
-			else return this.models[modelName];
+			if(this.models[modelName]) return this.models[modelName].mget(modelPath);
+			else return null;
 		}
+		else return this.models[modelName];
 		return null;
 	},
 
@@ -687,39 +684,24 @@ kff.View = kff.createClass(
 
 		this.parentView = parentView;
 
-		if(!this.models) this.models = {};
+		oldModels = this.models || null;
 
-		if('setPrototypeOf' in Object)
-		{
-			Object.setPrototypeOf(this.models, parentView.models);
-		}
-		else if('__proto__' in this.models)
-		{
-			this.models.__proto__ = parentView.models;
-		}
-		else
-		{
-			oldModels = this.models || null;
+		this.models = kff.createObject(this.parentView.models)
 
-			F = function(){};
-			F.prototype = this.parentView.models;
-			this.models = new F();
-
-			if(oldModels !== null)
+		if(oldModels)
+		{
+			for(key in oldModels)
 			{
-				for(key in oldModels)
+				if(oldModels.hasOwnProperty(key))
 				{
-					if(oldModels.hasOwnProperty(key))
-					{
-						this.models[key] = oldModels[key];
-					}
+					this.models[key] = oldModels[key];
 				}
 			}
+		}
 
-			for(i = 0, l = this.subviews.length; i < l; i++)
-			{
-				this.subviews[i].setParentView(this);
-			}
+		for(i = 0, l = this.subviews.length; i < l; i++)
+		{
+			this.subviews[i].setParentView(this);
 		}
 	},
 

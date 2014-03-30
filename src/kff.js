@@ -1,4 +1,23 @@
 
+(function(){
+
+	if(Object.create)
+	{
+		kff.createObject = Object.create;
+	}
+	else
+	{
+		kff.createObject = function(parent)
+		{
+			var child, F = function(){};
+			F.prototype = parent;
+			child = new F();
+			return child;
+		};
+	}
+
+})();
+
 /**
  * Extends constructor function (class) from parent constructor using prototype
  * inherinatce.
@@ -9,58 +28,10 @@
  */
 kff.extend = function(child, parent)
 {
-	var F;
-	if(Object.create)
-	{
-		child.prototype = Object.create(parent.prototype);
-	}
-	else
-	{
-		F = function(){};
-		F.prototype = parent.prototype;
-		child.prototype = new F();
-	}
+	child.prototype = kff.createObject(parent.prototype);
 	child._super = parent.prototype;
 	child.prototype.constructor = child;
 };
-
-(function(){
-
-	if('setPrototypeOf' in Object)
-	{
-		kff.createObject = function(parent)
-		{
-			var child = {};
-			Object.setPrototypeOf(child, parent);
-			return child;
-		};
-	}
-	else if('__proto__' in Object)
-	{
-		kff.createObject = function(parent)
-		{
-			var child = {};
-			child.__proto__ = parent;
-			return child;
-		};
-	}
-	else if(Object.create)
-	{
-		kff.createObject = Object.create;
-	}
-	else
-	{
-		kff.createObject = function(parent)
-		{
-			var child;
-			F = function(){};
-			F.prototype = parent;
-			child = new F();
-			return child;
-		};
-	}
-
-})();
 
 /**
  * Mixins (using a shallow copy) properties from one object to another.
@@ -176,13 +147,17 @@ kff.bindFn = function(obj, fnName, args)
 	if(typeof obj[fnName] !== 'function') throw new TypeError("Expected function: " + fnName + ' (kff.bindFn)');
 	if(!('_boundFns' in obj)) obj._boundFns = {};
 	if(fnName in obj._boundFns) return obj._boundFns[fnName];
-	else obj._boundFns[fnName] = function()
+	else
 	{
-		if(args) return obj[fnName].apply(obj, args.concat(Array.prototype.slice.call(arguments)));
-		else return obj[fnName].apply(obj, arguments);
-	};
+		obj._boundFns[fnName] = function()
+		{
+			if(args) return obj[fnName].apply(obj, args.concat(Array.prototype.slice.call(arguments)));
+			else return obj[fnName].apply(obj, arguments);
+		};
+	}
 	return obj._boundFns[fnName];
 };
+
 
 kff.classMixin = {
 	f: function(fnName, args)
@@ -191,20 +166,11 @@ kff.classMixin = {
 		if(typeof fnName === 'string') return kff.bindFn(obj, fnName, args);
 		if(typeof fnName === 'function')
 		{
-			if(args)
+			return function()
 			{
-				return function()
-				{
-					return fnName.apply(obj, args.concat(Array.prototype.slice.call(arguments)));
-				};
-			}
-			else
-			{
-				return function()
-				{
-					return fnName.apply(obj, arguments);
-				};
-			}
+				if(args) return fnName.apply(obj, args.concat(Array.prototype.slice.call(arguments)));
+				else return fnName.apply(obj, arguments);
+			};
 		}
 		throw new TypeError("Expected function: " + fnName + ' (kff.f)');
 	}
