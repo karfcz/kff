@@ -652,10 +652,13 @@ kff.View = kff.createClass(
 
 	clone: function()
 	{
-		var clonedView = new this.constructor(this.options);
+		var options = {};
+		kff.mixins(options, this.options, {
+			parentView: null
+		});
+		var clonedView = new this.constructor(options);
 		var clonedSubview;
 
-		clonedView.setParentView(this.parentView);
 		clonedView.viewFactory = this.viewFactory;
 
 		clonedView.eventTriggers = this.eventTriggers.slice(0);
@@ -668,7 +671,6 @@ kff.View = kff.createClass(
 		for(var i = 0; i < this.subviews.length; i++)
 		{
 			clonedSubview = this.subviews[i].clone();
-			clonedSubview.setParentView(clonedView);
 			clonedView.subviews.push(clonedSubview);
 		}
 

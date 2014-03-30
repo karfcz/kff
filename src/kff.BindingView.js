@@ -785,6 +785,7 @@ kff.BindingView = kff.createClass(
 		{
 			$element = this.$elementTemplate.clone();
 			boundView = this.viewTemplate.clone();
+			boundView.setParentView(this.parentView)
 
 			if(i === undefined)
 			{
