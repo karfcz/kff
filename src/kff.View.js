@@ -661,11 +661,11 @@ kff.View = kff.createClass(
 
 		clonedView.viewFactory = this.viewFactory;
 
-		clonedView.eventTriggers = this.eventTriggers.slice(0);
+		clonedView.eventTriggers = this.eventTriggers.slice();
 
 		for(var i = 0, l = clonedView.eventTriggers.length; i < l; i++)
 		{
-			clonedView.eventTriggers[i] = clonedView.eventTriggers[i].slice(0);
+			clonedView.eventTriggers[i] = clonedView.eventTriggers[i].slice();
 		}
 
 		for(var i = 0; i < this.subviews.length; i++)
