@@ -25,7 +25,7 @@ kff.RadioBinder = kff.createClass(
 
 	inputChange: function(event)
 	{
-		if(this.$element.prop('checked'))
+		if(this.$element[0].checked)
 		{
 			this.updateModel(this.$element[0].value);
 		}
@@ -33,15 +33,15 @@ kff.RadioBinder = kff.createClass(
 
 	refresh: function()
 	{
-		this.$element.prop('checked', this.parse(this.$element.val()) === this.currentValue);
+		this.$element[0].checked = this.parse(this.$element[0].value) === this.currentValue;
 	},
 
 	fill: function()
 	{
-		if(!this.fillVal) this.fillVal = this.$element.is(':checked');
+		if(!this.fillVal) this.fillVal = this.$element[0].checked;
 		if(this.fillVal)
 		{
-			this.updateModel(this.$element.val());
+			this.updateModel(this.$element[0].value);
 		}
 	}
 
