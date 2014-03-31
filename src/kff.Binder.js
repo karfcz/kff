@@ -69,6 +69,11 @@ kff.Binder = kff.createClass(
 
 	compareValues: function(value1, value2)
 	{
+		return value1 === value2;
+	},
+
+	compareArrayValues: function(value1, value2)
+	{
 		if((value1 instanceof Array) && (value2 instanceof Array))
 		{
 
@@ -80,7 +85,7 @@ kff.Binder = kff.createClass(
 			}
 			return true;
 		}
-		else return value1 === value2;
+		else return false;
 	},
 
 	getFormattedValue: function()

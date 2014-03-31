@@ -19,14 +19,27 @@ kff.ValueBinder = kff.createClass(
 		options.events = [
 			[eventNames, 'inputChange']
 		];
+		this.multiple = false;
 		kff.Binder.call(this, options);
+	},
+
+	init: function()
+	{
+		this.multiple = this.$element[0].nodeName === 'SELECT' && this.$element[0].multiple;
+		if(this.multiple)
+		{
+			this.getValue = this.getArrayValue;
+			this.setValue = this.setArrayValue;
+			this.compareValues = this.compareArrayValues;
+		}
+		kff.Binder.prototype.init.call(this);
 	},
 
 	inputChange: function(event)
 	{
 		kff.setZeroTimeout(this.f(function()
 		{
-			this.updateModel(this.$element.val());
+			this.updateModel(this.getValue());
 		}));
 	},
 
@@ -39,19 +52,59 @@ kff.ValueBinder = kff.createClass(
 		{
 			kff.setZeroTimeout(this.f(function()
 			{
-				this.$element.val(val);
+				this.setValue(val);
 			}));
 		}
 		else
 		{
-			this.$element[0].value = val;
+			this.setValue(val);
 		}
 	},
 
 	fill: function()
 	{
-		if(!this.fillVal) this.fillVal = this.$element.val();
+		if(!this.fillVal) this.fillVal = this.getValue();
 		this.updateModel(this.fillVal);
+	},
+
+	getValue: function()
+	{
+		return this.$element[0].value;
+	},
+
+	setValue: function(val)
+	{
+		this.$element[0].value = val;
+	},
+
+	getArrayValue: function()
+	{
+		var result = [];
+		var options = this.$element[0] && this.$element[0].options;
+		var option;
+
+		for(var i = 0, l = options.length; i < l; i++)
+		{
+			option = options[i];
+			if(option.selected)
+			{
+				result.push(option.value || option.text);
+			}
+		}
+		return result;
+	},
+
+	setArrayValue: function(val)
+	{
+		if(!(val instanceof Array)) val = [val];
+		var options = this.$element[0] && this.$element[0].options;
+		var option;
+
+		for(var i = 0, l = options.length; i < l; i++)
+		{
+			option = options[i];
+			option.selected = kff.arrayIndexOf(val, this.parse(option.value)) !== -1;
+		}
 	}
 });
 
