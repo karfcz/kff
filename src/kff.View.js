@@ -371,7 +371,7 @@ kff.View = kff.createClass(
 	 */
 	renderSubviews: function()
 	{
-		var i, l, element = this.$element.get(0),
+		var i, l, element = this.$element[0],
 			subView, options, opt, rendered, subviewsStruct;
 
 		if(element) this.findViewElements(element, this.subviewsStruct, 0);
@@ -512,7 +512,7 @@ kff.View = kff.createClass(
 	 */
 	processEventTriggers: function()
 	{
-		this.processChildEventTriggers(this.$element.get(0));
+		this.processChildEventTriggers(this.$element[0]);
 	},
 
 	/**

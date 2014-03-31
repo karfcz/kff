@@ -546,7 +546,7 @@ kff.BindingView = kff.createClass(
 				that.elements.push(boundView.$element);
 				that.boundViewsMap.push(renderIndex);
 				renderIndex++;
-				docFragment.appendChild(boundView.$element.get(0));
+				docFragment.appendChild(boundView.$element[0]);
 			}
 			else
 			{
@@ -801,7 +801,7 @@ kff.BindingView = kff.createClass(
 			if(this.itemAlias) boundView.models[this.itemAlias] = item;
 
 			boundView.setBindingIndex(i);
-			boundView.rebindElement($element.get(0));
+			boundView.rebindElement($element[0]);
 		}
 
 		$element[0].setAttribute(kff.View.DATA_RENDERED_ATTR, true);
