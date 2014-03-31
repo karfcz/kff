@@ -28,8 +28,16 @@ kff.StyleBinder = kff.createClass(
 	refresh: function()
 	{
 		var value = this.value;
-		if(this.styleUnit) value += this.styleUnit;
-		if(this.styleProperty) this.$element.css(this.styleProperty, this.value + this.styleUnit);
+
+		if(this.styleProperty)
+		{
+			if(value === undefined) delete this.$element[0].style[this.styleProperty];
+			else
+			{
+				if(this.styleUnit) value += this.styleUnit;
+				this.$element[0].style[this.styleProperty] = value;
+			}
+		}
 	}
 });
 
