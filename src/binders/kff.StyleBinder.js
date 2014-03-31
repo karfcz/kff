@@ -35,7 +35,10 @@ kff.StyleBinder = kff.createClass(
 			else
 			{
 				if(this.styleUnit) value += this.styleUnit;
-				this.$element[0].style[this.styleProperty] = value;
+				try {
+					this.$element[0].style[this.styleProperty] = value;
+				}
+				catch(e) {}
 			}
 		}
 	}
