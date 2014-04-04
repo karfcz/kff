@@ -163,7 +163,7 @@ kff.Model = kff.createClass(
 		var obj = {};
 		for(var key in this.attrs)
 		{
-			if((!serializeAttrs || $.inArray(key, serializeAttrs) !== -1) && this.attrs.hasOwnProperty(key))
+			if((!serializeAttrs || kff.arrayIndexOf(serializeAttrs, key) !== -1) && this.attrs.hasOwnProperty(key))
 			{
 				if(this.attrs[key] && typeof this.attrs[key] === 'object' && 'toJson' in this.attrs[key]) obj[key] = this.attrs[key].toJson();
 				else obj[key] = this.attrs[key];

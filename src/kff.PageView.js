@@ -25,7 +25,7 @@ kff.PageView = kff.createClass(
 	constructor: function(options)
 	{
 		options = options || {};
-		options.element = $('body');
+		options.element = $(document.getElementsByTagName('body')[0]);
 		return kff.View.call(this, options);
 	},
 

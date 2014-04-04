@@ -364,9 +364,9 @@ kff.BindingView = kff.createClass(
 		if(el.parentNode)
 		{
 			el.parentNode.insertBefore(this.anchor, el.nextSibling);
+			el.parentNode.removeChild(el);
 		}
 
-		this.$element.remove();
 		this.boundViewsMap = [];
 
 		// Boundview options:
@@ -669,7 +669,7 @@ kff.BindingView = kff.createClass(
 			this.boundViews.splice(renderIndex, 1);
 			this.elements.splice(renderIndex, 1);
 
-			boundView.$element.remove();
+			boundView.$element[0].parentNode.removeChild(boundView.$element[0]);
 			boundView.destroyAll();
 
 			this.reindexBoundviews(renderIndex);
@@ -698,7 +698,11 @@ kff.BindingView = kff.createClass(
 		}
 		else
 		{
-			this.elements[renderIndex - 1].after($element);
+			var elAfter = this.elements[renderIndex - 1][0];
+			if(elAfter.parentNode)
+			{
+				elAfter.parentNode.insertBefore($element[0], elAfter.nextSibling);
+			}
 		}
 		this.elements.splice(renderIndex, 0, $element);
 
@@ -751,7 +755,7 @@ kff.BindingView = kff.createClass(
 
 		if(!this.viewTemplate)
 		{
-			$element = this.$element.clone();
+			$element = $(this.$element[0].cloneNode(true));
 
 			this.boundViewOptions.element = $element[0];
 			this.boundViewOptions.parentView = this;
@@ -779,11 +783,11 @@ kff.BindingView = kff.createClass(
 			boundView.renderAll();
 
 			this.viewTemplate = boundView.clone();
-			this.$elementTemplate = $element.clone();
+			this.$elementTemplate = $($element[0].cloneNode(true));
 		}
 		else
 		{
-			$element = this.$elementTemplate.clone();
+			$element = $(this.$elementTemplate[0].cloneNode(true));
 			boundView = this.viewTemplate.clone();
 			boundView.setParentView(this.parentView)
 

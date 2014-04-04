@@ -7,6 +7,7 @@ module.exports = function(grunt) {
 				src: [
 					'./src/kff-prologue',
 					'./src/kff.js',
+					'./src/kff.Dom.js',
 					'./src/kff.Events.js',
 					'./src/kff.List.js',
 					'./src/kff.Collection.js',

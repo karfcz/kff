@@ -619,7 +619,7 @@ kff.View = kff.createClass(
 	rerender: function(html)
 	{
 		this.destroyAll();
-		if(html !== undefined) this.$element.html(html);
+		if(html !== undefined) this.$element[0].innerHTML = html;
 		this.renderAll();
 		this.runAll();
 	},
