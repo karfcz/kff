@@ -1,11 +1,11 @@
 
-kff.useJQuery = true;
+kff.useJquery = true;
 
-var matchesName;
-if('webkitMatchesSelector' in document.documentElement) matchesName = 'webkitMatchesSelector';
-else if('mozMatchesSelector' in document.documentElement) matchesName = 'mozMatchesSelector';
-else if('oMatchesSelector' in document.documentElement) matchesName = 'oMatchesSelector';
-else if('msMatchesSelector' in document.documentElement) matchesName = 'msMatchesSelector';
+var matchesMethodName;
+if('webkitMatchesSelector' in document.documentElement) matchesMethodName = 'webkitMatchesSelector';
+else if('mozMatchesSelector' in document.documentElement) matchesMethodName = 'mozMatchesSelector';
+else if('oMatchesSelector' in document.documentElement) matchesMethodName = 'oMatchesSelector';
+else if('msMatchesSelector' in document.documentElement) matchesMethodName = 'msMatchesSelector';
 
 kff.Dom = kff.createClass(
 {
@@ -16,18 +16,6 @@ kff.Dom = kff.createClass(
 		this.$element = null;
 	},
 
-	// on: function()
-	// {
-	// 	if(!this.$element) this.$element = jQuery(this['0']);
-	// 	return this.$element.on.apply(this.$element, arguments);
-	// },
-
-	// off: function()
-	// {
-	// 	if(!this.$element) this.$element = jQuery(this['0']);
-	// 	return this.$element.off.apply(this.$element, arguments);
-	// },
-
 	on: function(type, selector, handler)
 	{
 		var types = type.split(/\s+/);
@@ -37,7 +25,7 @@ kff.Dom = kff.createClass(
 			{
 				if(!this.handlers[selector])
 				{
-					this.handlers[selector] = this.createHandler(this['0'], selector, handler);
+					this.handlers[selector] = this.f(this.delegatedEventHandler, [this['0'], selector, handler]);
 				}
 				this['0'].addEventListener(types[i], this.handlers[selector], false);
 			}
@@ -67,34 +55,32 @@ kff.Dom = kff.createClass(
 		}
 	},
 
-	createHandler: function(el, selector, handler)
+	delegatedEventHandler: function(el, selector, handler, event)
 	{
-		var that = this;
-		return function(event)
-		{
-			var target = event.target;
+		var target = event.target;
 
-			while(target !== el)
+		while(target !== el)
+		{
+			if(matchesMethodName)
 			{
-				if(matchesName)
+				if(target[matchesMethodName](selector))
 				{
-					if(target[matchesName](selector))
-					{
-						handler.call(target, event, target);
-						break;
-					}
+					event.matchedTarget = target;
+					handler.call(target, event);
+					break;
 				}
-				else
-				{
-					if(that.matches(el, target, selector))
-					{
-						handler.call(target, event, target);
-						break;
-					}
-				}
-				target = target.parentNode;
 			}
-		};
+			else
+			{
+				if(this.matches(el, target, selector))
+				{
+					event.matchedTarget = target;
+					handler.call(target, event);
+					break;
+				}
+			}
+			target = target.parentNode;
+		}
 	},
 
 	matches: function(el, target, selector)
@@ -104,20 +90,22 @@ kff.Dom = kff.createClass(
 	}
 });
 
-var $ = function(element)
+kff.$ = function(element)
 {
-	if(kff.useJQuery && window.jQuery)
+	if(kff.useJquery && window.jQuery)
 	{
-		$ = window.jQuery;
+		kff.$ = window.jQuery;
 	}
 	else
 	{
-		$ = function(element)
+		kff.$ = function(element)
 		{
 			if(element instanceof kff.Dom) var el = new kff.Dom(element[0]);
 			else var el =  new kff.Dom(element);
 			return el;
 		};
 	}
-	return $(element);
+	return kff.$(element);
 };
+
+var $ = kff.$;
