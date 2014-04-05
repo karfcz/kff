@@ -29,7 +29,11 @@ kff.FrontController = kff.createClass(
 	init: function()
 	{
 		if(!this.viewFactory) this.viewFactory = new kff.ViewFactory();
-		if(this.router) $(window).bind('hashchange', this.f('hashChange')).trigger('hashchange');
+		if(this.router)
+		{
+			$(window).on('hashchange', this.f('hashChange'));
+			this.hashChange();
+		}
 		else this.setState(null);
 	},
 
