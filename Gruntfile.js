@@ -35,6 +35,7 @@ module.exports = function(grunt) {
 					'./src/binders/kff.TextBinder.js',
 					'./src/binders/kff.TemplateBinder.js',
 					'./src/binders/kff.ValueBinder.js',
+					'./src/binders/kff.InsertBinder.js',
 					'./src/kff.ValueBinder.js',
 					'./src/kff.ViewFactory.js',
 					'./src/kff.Route.js',
