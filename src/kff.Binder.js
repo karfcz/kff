@@ -53,7 +53,22 @@ kff.Binder = kff.createClass(
 		var modelValue;
 		if(this.model instanceof kff.Model)
 		{
-			if(this.getter && typeof this.model[this.getter] === 'function') modelValue = this.model[this.getter](this.options.attr);
+			if(this.getter && typeof this.model[this.getter.fn] === 'function')
+			{
+				if(this.getter.args.length > 0)
+				{
+					var args = [];
+					for(var i = 0, l = this.getter.args.length; i < l; i++)
+					{
+						args[i] = this.view.getModel(this.getter.args[i]);
+					}
+					modelValue = this.model[this.getter.fn].apply(this.model, args);
+				}
+				else
+				{
+					modelValue = this.model[this.getter.fn](this.options.attr);
+				}
+			}
 			else if(event !== true) modelValue = event.changed[this.options.attr];
 			else if(typeof this.options.attr === 'string') modelValue = this.model.get(this.options.attr);
 			else modelValue = null;
@@ -105,11 +120,29 @@ kff.Binder = kff.createClass(
 			value = this.parse(value);
 		}
 		if(this.compareValues(value, this.currentValue)) return;
+
 		this.currentValue = value;
-		if(this.setter && typeof this.model[this.setter] === 'function')
+
+		if(this.setter && typeof this.model[this.setter.fn] === 'function')
 		{
-			if(this.options.attr === null) this.model[this.setter](this.currentValue);
-			else this.model[this.setter](this.options.attr, this.currentValue);
+			if(this.setter.args.length > 0)
+			{
+				var args = [];
+				for(var i = 0, l = this.setter.args.length; i < l; i++)
+				{
+					if(this.setter.args[i] === '@val') args[i] = this.currentValue;
+					else args[i] = this.view.getModel(this.setter.args[i]);
+				}
+				this.model[this.setter.fn].apply(this.model, args);
+			}
+			else if(this.options.attr === null)
+			{
+				this.model[this.setter.fn](this.currentValue);
+			}
+			else
+			{
+				this.model[this.setter.fn](this.options.attr, this.currentValue);
+			}
 		}
 		else this.model.set(this.options.attr, this.currentValue);
 	},

@@ -11,7 +11,7 @@ kff.BindingView = kff.createClass(
 
 		commaSeparateRegex: /\s*,\s*/,
 
-		modifierSeparateRegex: /([^{},\s]+)|({[a-zA-Z0-9,\[\]_\-\.\s*]+})/g,
+		modifierSeparateRegex: /([^{},\s]+)|({[a-zA-Z0-9,\[\]_\-\.\s@*]+})/g,
 
 		leadingPeriodRegex: /^\./,
 
@@ -188,10 +188,10 @@ kff.BindingView = kff.createClass(
 							this.parseSetters(modifierParams, itemAliases);
 							break;
 						case 'set':
-							this.parseSetters(modifierParams, setters);
+							this.parseGetters(modifierParams, setters);
 							break;
 						case 'get':
-							this.parseSetters(modifierParams, getters);
+							this.parseGetters(modifierParams, getters);
 							break;
 						case 'fill':
 							fill = true;
@@ -323,6 +323,31 @@ kff.BindingView = kff.createClass(
 				modifierArgs = [];
 			}
 			if(kff.BindingView.helpers[modifierParam]) modifiers.push({ fn: kff.BindingView.helpers[modifierParam], args: modifierArgs });
+		}
+	},
+
+	parseGetters: function(modifierParams, modifiers)
+	{
+		var modifierParam, modifierArgs;
+
+		for(var j = 0, l = modifierParams.length; j < l; j++)
+		{
+			modifierParam = modifierParams[j];
+
+			if(j + 1 < l && modifierParams[j + 1].indexOf('{') === 0)
+			{
+				modifierArgs = modifierParams[j + 1].match(/([^,{}]+)/g);
+				j++;
+			}
+			else
+			{
+				modifierArgs = [];
+			}
+			for(var i = 0, n = modifierArgs.length; i < n; i++)
+			{
+				modifierArgs[i] = modifierArgs[i].replace(/^\s+|\s+$/g, '').replace(/^\./, '*.');
+			}
+			modifiers.push({ fn: modifierParam, args: modifierArgs });
 		}
 	},
 
