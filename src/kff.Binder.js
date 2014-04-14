@@ -60,7 +60,8 @@ kff.Binder = kff.createClass(
 					var args = [];
 					for(var i = 0, l = this.getter.args.length; i < l; i++)
 					{
-						args[i] = this.view.getModel(this.getter.args[i]);
+						if(this.getter.args[i] === '@attr') args[i] = this.options.attr;
+						else args[i] = this.view.getModel(this.getter.args[i]);
 					}
 					modelValue = this.model[this.getter.fn].apply(this.model, args);
 				}
@@ -131,6 +132,7 @@ kff.Binder = kff.createClass(
 				for(var i = 0, l = this.setter.args.length; i < l; i++)
 				{
 					if(this.setter.args[i] === '@val') args[i] = this.currentValue;
+					else if(this.setter.args[i] === '@attr') args[i] = this.options.attr;
 					else args[i] = this.view.getModel(this.setter.args[i]);
 				}
 				this.model[this.setter.fn].apply(this.model, args);
