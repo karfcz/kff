@@ -458,47 +458,60 @@ kff.View = kff.createClass(
 	 */
 	findViewElements: function(el, subviewsStruct, index, forceRendered)
 	{
-		var i, l, children, child, viewName, rendered, onAttr, optAttr;
+		var node, viewName, rendered, onAttr, optAttr;
+
 		if(el.hasChildNodes())
 		{
-			children = el.childNodes;
-			for(i = 0, l = children.length; i < l; i++)
+			node = el.childNodes[0];
+
+			while(node !== null)
 			{
-				child = children[i];
-				if(child.nodeType === 1)
+				viewName = null;
+				if(node.nodeType === 1)
 				{
-					rendered = child.getAttribute(kff.View.DATA_RENDERED_ATTR);
+					rendered = node.getAttribute(kff.View.DATA_RENDERED_ATTR);
+
 					if(!rendered || forceRendered)
 					{
-						viewName = child.getAttribute(kff.View.DATA_VIEW_ATTR);
-						if(!viewName && child.getAttribute(kff.View.DATA_BIND_ATTR))
+						viewName = node.getAttribute(kff.View.DATA_VIEW_ATTR);
+						if(!viewName && node.getAttribute(kff.View.DATA_BIND_ATTR))
 						{
 							viewName = 'kff.BindingView';
-							child.setAttribute(kff.View.DATA_VIEW_ATTR, viewName);
+							node.setAttribute(kff.View.DATA_VIEW_ATTR, viewName);
 						}
 						if(viewName)
 						{
-							optAttr = child.getAttribute(kff.View.DATA_OPTIONS_ATTR);
+							optAttr = node.getAttribute(kff.View.DATA_OPTIONS_ATTR);
 							subviewsStruct.push({
 								viewName: viewName,
 								index: index,
-								$element: $(child),
+								$element: $(node),
 								options: optAttr ? JSON.parse(optAttr) : {}
 							});
 						}
 						else
 						{
-							onAttr = child.getAttribute(kff.View.DATA_TRIGGER_ATTR);
+							onAttr = node.getAttribute(kff.View.DATA_TRIGGER_ATTR);
 							if(onAttr)
 							{
-								this.processChildEventTriggers(child, onAttr, index);
+								this.processChildEventTriggers(node, onAttr, index);
 							}
-
-							index++;
-							index = this.findViewElements(child, subviewsStruct, index, forceRendered);
 						}
 					}
 					index++;
+				}
+
+				if(viewName === null && node.hasChildNodes())
+				{
+					node = node.firstChild;
+				}
+				else
+				{
+					while(node !== el && node.nextSibling === null && node.parentNode !== null)
+					{
+						node = node.parentNode;
+					}
+					node = node.nextSibling;
 				}
 			}
 		}
@@ -734,14 +747,15 @@ kff.View = kff.createClass(
 
 	rebindSubViews: function(el, ids)
 	{
-		var i, l, children, child, doSubviews;
+		var node, doSubviews;
+
 		if(el.hasChildNodes())
 		{
-			children = el.childNodes;
-			for(i = 0, l = children.length; i < l; i++)
+			node = el.childNodes[0];
+
+			while(node !== null)
 			{
-				child = children[i];
-				if(child.nodeType === 1)
+				if(node.nodeType === 1)
 				{
 					if(this.subviewsStruct[ids.subviewIndex])
 					{
@@ -750,31 +764,38 @@ kff.View = kff.createClass(
 						{
 							if(this.subviews[ids.subviewIndex])
 							{
-								this.subviews[ids.subviewIndex].rebindElement(child);
-
+								this.subviews[ids.subviewIndex].rebindElement(node);
 							}
 							ids.subviewIndex++;
 							doSubviews = false;
 						}
 						else doSubviews = true;
-
 					}
 					else
 					{
 						while(this.eventTriggers[ids.eventTriggersIndex] && this.eventTriggers[ids.eventTriggersIndex][4] === ids.index)
 						{
-							this.eventTriggers[ids.eventTriggersIndex][1] = $(child);
+							this.eventTriggers[ids.eventTriggersIndex][1] = $(node);
 							ids.eventTriggersIndex++;
 						}
 					}
-					if(doSubviews)
-					{
-						ids.index++
-						this.rebindSubViews(child, ids);
-					}
 					ids.index++;
+				}
+
+				if(doSubviews && node.hasChildNodes())
+				{
+					node = node.firstChild;
+				}
+				else
+				{
+					while(node !== el && node.nextSibling === null && node.parentNode !== null)
+					{
+						node = node.parentNode;
+					}
+					node = node.nextSibling;
 				}
 			}
 		}
+
 	}
 });
