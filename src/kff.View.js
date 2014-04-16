@@ -374,7 +374,7 @@ kff.View = kff.createClass(
 		var i, l, element = this.$element[0],
 			subView, options, opt, rendered, subviewsStruct;
 
-		if(element) this.findViewElements(element, this.subviewsStruct, 0);
+		if(element) this.findViewElements(element, this.subviewsStruct);
 
 		subviewsStruct = this.subviewsStruct.concat(this.explicitSubviewsStruct);
 
@@ -456,14 +456,13 @@ kff.View = kff.createClass(
 	 *                           (items will be objects { objPath: viewName, $element: jQuery wrapper })
 	 * @param  {string} filter  A jQuery selector for filtering elements (optional)
 	 */
-	findViewElements: function(el, subviewsStruct, index, forceRendered)
+	findViewElements: function(el, subviewsStruct)
 	{
-		var node, viewName, rendered, onAttr, optAttr;
+		var node, viewName, rendered, onAttr, optAttr, index = 0;
 
 		if(el.hasChildNodes())
 		{
-			node = el.childNodes[0];
-
+			node = el.firstChild;
 			while(node !== null)
 			{
 				viewName = null;
@@ -471,7 +470,7 @@ kff.View = kff.createClass(
 				{
 					rendered = node.getAttribute(kff.View.DATA_RENDERED_ATTR);
 
-					if(!rendered || forceRendered)
+					if(!rendered)
 					{
 						viewName = node.getAttribute(kff.View.DATA_VIEW_ATTR);
 						if(!viewName && node.getAttribute(kff.View.DATA_BIND_ATTR))
@@ -500,22 +499,9 @@ kff.View = kff.createClass(
 					}
 					index++;
 				}
-
-				if(viewName === null && node.hasChildNodes())
-				{
-					node = node.firstChild;
-				}
-				else
-				{
-					while(node !== el && node.nextSibling === null && node.parentNode !== null)
-					{
-						node = node.parentNode;
-					}
-					node = node.nextSibling;
-				}
+				node = this.nextNode(el, node, viewName === null);
 			}
 		}
-		return index;
 	},
 
 	/**
@@ -751,7 +737,7 @@ kff.View = kff.createClass(
 
 		if(el.hasChildNodes())
 		{
-			node = el.childNodes[0];
+			node = el.firstChild;
 
 			while(node !== null)
 			{
@@ -781,21 +767,25 @@ kff.View = kff.createClass(
 					}
 					ids.index++;
 				}
-
-				if(doSubviews && node.hasChildNodes())
-				{
-					node = node.firstChild;
-				}
-				else
-				{
-					while(node !== el && node.nextSibling === null && node.parentNode !== null)
-					{
-						node = node.parentNode;
-					}
-					node = node.nextSibling;
-				}
+				node = this.nextNode(el, node, doSubviews);
 			}
 		}
+	},
 
+	nextNode: function(root, node, deep)
+	{
+		if(deep && node.hasChildNodes())
+		{
+			node = node.firstChild;
+		}
+		else
+		{
+			while(node !== root && node.nextSibling === null && node.parentNode !== null)
+			{
+				node = node.parentNode;
+			}
+			node = node.nextSibling;
+		}
+		return node;
 	}
 });
