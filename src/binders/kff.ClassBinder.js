@@ -45,8 +45,12 @@ kff.ClassBinder = kff.createClass(
 	{
 		if(this.equalsTo)
 		{
-			if(this.operator === 'ne')	return this.value !== this.parse(this.equalsTo);
-			else return this.value === this.parse(this.equalsTo);
+			var parsedValue = this.parse(this.equalsTo);
+			var value = this.value;
+			if(parsedValue == null) parsedValue = null;
+			if(value == null) value = null;
+			if(this.operator === 'ne') return value !== parsedValue;
+			else return value === parsedValue;
 		}
 		else return this.value;
 	}
