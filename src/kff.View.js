@@ -241,19 +241,19 @@ kff.View = kff.createClass(
 	 */
 	delegateModelEvents: function(events)
 	{
-		var event, i, l, fn;
+		var event, i, l, fn, model;
 		this.undelegateModelEvents();
 		events = events || this.modelEvents;
 
 		for(i = 0, l = events.length; i < l; i++)
 		{
 			event = events[i];
-
-			if(event.length === 3 && this.models[event[0]])
+			model = this.getModel(event[0]);
+			if(event.length === 3 && model)
 			{
 				if(typeof event[2] === 'string') fn = this.f(event[2]);
 				else fn = event[2];
-				this.models[event[0]].on(event[1], fn);
+				model.on(event[1], fn);
 			}
 		}
 	},
@@ -284,18 +284,18 @@ kff.View = kff.createClass(
 	 */
 	undelegateModelEvents: function(events)
 	{
-		var event, i, l, fn;
+		var event, i, l, fn, model;
 		events = events || this.modelEvents;
 
 		for(i = 0, l = events.length; i < l; i++)
 		{
 			event = events[i];
-
-			if(event.length === 3 && this.models[event[0]])
+			model = this.getModel(event[0]);
+			if(event.length === 3 && model)
 			{
 				if(typeof event[2] === 'string') fn = this.f(event[2]);
 				else fn = event[2];
-				this.models[event[0]].off(event[1], fn);
+				model.off(event[1], fn);
 			}
 		}
 	},
