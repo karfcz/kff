@@ -23,14 +23,17 @@ kff.Binder = kff.createClass(
 
 	init: function()
 	{
-		if(this.options.watchModelPath)
+		if(!this.options.nobind)
 		{
-			this.rebind();
-		}
-		else if(this.model instanceof kff.Model)
-		{
-			this.model.on('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
-			if(this.$element && this.options.events.length > 0) this.delegateEvents(this.options.events);
+			if(this.options.watchModelPath)
+			{
+				this.rebind();
+			}
+			else if(this.model instanceof kff.Model)
+			{
+				this.model.on('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
+				if(this.$element && this.options.events.length > 0) this.delegateEvents(this.options.events);
+			}
 		}
 		if(this.options.fill && this.model instanceof kff.Model) this.fill();
 	},
