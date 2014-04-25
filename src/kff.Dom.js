@@ -87,6 +87,20 @@ kff.Dom = kff.createClass(
 	{
 		var elements = el.querySelectorAll(selector);
 		return kff.arrayIndexOf(elements, target) !== -1;
+	},
+
+	html: function(html)
+	{
+		this['0'].innerHTML = html;
+	},
+
+	remove: function()
+	{
+		if(this['0'].parentNode)
+		{
+			this['0'].parentNode.removeChild(this['0']);
+			this['0'] = null;
+		}
 	}
 });
 
