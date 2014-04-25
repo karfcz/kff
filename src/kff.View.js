@@ -609,6 +609,7 @@ kff.View = kff.createClass(
 			subView.destroyAll();
 		}
 		this.subviews = [];
+		this.subviewsStruct = [];
 	},
 
 	/**
@@ -784,7 +785,8 @@ kff.View = kff.createClass(
 			{
 				node = node.parentNode;
 			}
-			node = node.nextSibling;
+			if(node && node !== root) node = node.nextSibling;
+			else node = null;
 		}
 		return node;
 	}
