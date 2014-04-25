@@ -651,10 +651,10 @@ kff.View = kff.createClass(
 
 	clone: function()
 	{
-		var options = {};
-		kff.mixins(options, this.options, {
-			parentView: null
-		});
+		var options = kff.mixins({}, this.options);
+
+		options.parentView = null;
+
 		var clonedView = new this.constructor(options);
 		var clonedSubview;
 
