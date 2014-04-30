@@ -2,11 +2,17 @@ module.exports = function(grunt) {
 
 	// Project configuration.
 	grunt.initConfig({
+
+		pkg: grunt.file.readJSON('package.json'),
+
 		concat: {
 			kff: {
+				options: {
+					banner: grunt.file.read('./src/kff-banner.js')
+				},
 				src: [
 					'./src/kff-prologue',
-					'./src/kff.js',
+					'./src/kff.base.js',
 					'./src/kff.Dom.js',
 					'./src/kff.Events.js',
 					'./src/kff.List.js',
@@ -44,25 +50,23 @@ module.exports = function(grunt) {
 					'./src/kff.App.js',
 					'./src/kff-epilogue'
 				],
-				dest: './build/kff-all.js'
+				dest: './build/kff.js'
 			}
 		},
 		uglify: {
 			options: {
-				mangle: true
+				mangle: true,
+				banner: grunt.file.read('./src/kff-banner.js')
 			},
 			kff: {
-				src: ['./build/kff-all.js'],
-				dest: './build/kff-all.min.js'
+				src: ['./build/kff.js'],
+				dest: './build/kff.min.js'
 			}
 		},
 		watch: {
 	      	files: '<% concat.kff.src %>',
 	      	tasks: 'concat min'
 	    },
-	    lint: {
-			files: '<% concat.kff.sr %c>'
-		},
 		jshint: {
 			options: {
 				smarttabs: false
@@ -79,7 +83,9 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
-	// Default task.
-	grunt.registerTask('default', ['concat', 'uglify']);
+
+
+	grunt.registerTask('build', ['concat', 'uglify']);
+	grunt.registerTask('default', ['build']);
 
 };
