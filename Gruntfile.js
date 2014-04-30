@@ -67,6 +67,11 @@ module.exports = function(grunt) {
 			options: {
 				smarttabs: false
 			}
+		},
+		karma: {
+			unit: {
+		    	configFile: 'karma.conf.js'
+			}
 		}
 	});
 
