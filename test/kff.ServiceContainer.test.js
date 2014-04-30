@@ -1,4 +1,4 @@
-if(typeof require === 'function') var kff = require('../build/kff-all.js');
+if(typeof require === 'function') var kff = require('../build/kff.js');
 
 var Service7 = {};
 
@@ -59,79 +59,79 @@ describe('kff.ServiceContainer', function()
 		}
 	};
 
-	//console.log(kff.evalObjectPath('this'));
-
 	var container = new kff.ServiceContainer(config);
 
 	describe('#resolveParameters', function()
 	{
 		it('should interpolate plain string as the string itself', function()
 		{
-			container.resolveParameters('This is a plain string').should.equal('This is a plain string');
+			expect(container.resolveParameters('This is a plain string')).to.equal('This is a plain string');
 		});
 
 		it('should interpolate string with two parameters', function()
 		{
-			container.resolveParameters('Proč %kocka% není %pes%?').should.equal('Proč kočka není pes?');
+			expect(container.resolveParameters('Proč %kocka% není %pes%?')).to.equal('Proč kočka není pes?');
 		});
 
 		it('should interpolate string with referece to a service', function()
 		{
-			container.resolveParameters('@service1').should.be.an.instanceof(Service1);
+			expect(container.resolveParameters('@service1') instanceof Service1).to.be.true;
 		});
 
 		it('should interpolate object with refereces to parameters and services', function()
 		{
 			var a = container.resolveParameters({ x: '@service1', y: { z: 'Proč %kocka% není %pes%?' }});
-			a.should.have.keys('x', 'y');
-			a.x.should.be.an.instanceof(Service1);
-			a.y.should.have.property('z', 'Proč kočka není pes?');
+			expect(a).to.have.keys('x', 'y');
+			expect(a.x instanceof Service1).to.be.true;
+			expect(a.y).to.have.property('z', 'Proč kočka není pes?');
+
 		});
 
 		it('should interpolate array with refereces to parameters and services', function()
 		{
 			var a = container.resolveParameters([ '@service1', { z: 'Proč %kocka% není %pes%?' }]);
-			a[0].should.be.an.instanceof(Service1);
-			a[1].should.have.property('z', 'Proč kočka není pes?');
+
+			expect(a[0] instanceof Service1).to.be.true;
+			expect(a[1]).to.have.property('z', 'Proč kočka není pes?');
 		});
 
 		it('should interpolate referece to container itself', function()
 		{
 			var a = container.resolveParameters({ x: '@' });
-			a.should.have.property('x');
-			a.x.should.equal(container);
+			expect(a).to.have.property('x');
+			expect(a.x).to.equal(container);
 		});
 
 		it('should interpolate parameter with single % character', function()
 		{
 			var a = container.resolveParameters('Proč %kocka% není %pes?');
-			a.should.equal('Proč kočka není %pes?');
+			expect(a).to.equal('Proč kočka není %pes?');
 		});
 
 		it('should interpolate parameter with escaped %% character', function()
 		{
 			var a = container.resolveParameters('Proč %kocka% není %%pes, ale %kocka%?');
-			a.should.equal('Proč kočka není %pes, ale kočka?');
+			expect(a).to.equal('Proč kočka není %pes, ale kočka?');
 		});
 
 		it('should return cached interpolated parameter', function()
 		{
 			var a = container.resolveParameters('Proč %kocka% není %%pes, ale %kocka%?');
-			a.should.equal('Proč kočka není %pes, ale kočka?');
+			expect(a).to.equal('Proč kočka není %pes, ale kočka?');
 			a = container.resolveParameters('Proč %kocka% není %%pes, ale %kocka%?');
-			a.should.equal('Proč kočka není %pes, ale kočka?');
+			expect(a).to.equal('Proč kočka není %pes, ale kočka?');
 		});
 
 		it('should interpolate single numeric parameter', function()
 		{
 			var a = container.resolveParameters('%numeric%');
-			a.should.equal(42.05);
+			expect(a).to.equal(42.05);
 		});
 
 		it('should interpolate string to a service factory', function()
 		{
 			var a = container.resolveParameters('@@service1');
-			a().should.be.an.instanceof(Service1);
+			expect(a() instanceof Service1).to.be.true;
 		});
 
 		it('should interpolate string to a service factory that returns separate instances of service', function()
@@ -139,9 +139,10 @@ describe('kff.ServiceContainer', function()
 			var a = container.resolveParameters('@@service1');
 			var instance1 = a();
 			var instance2 = a();
-			instance1.should.be.an.instanceof(Service1);
-			instance2.should.be.an.instanceof(Service1);
-			instance1.should.not.equal(instance2);
+
+			expect(instance1 instanceof Service1).to.be.true;
+			expect(instance2 instanceof Service1).to.be.true;
+			expect(instance1 === instance2).to.be.false;
 		});
 
 		it('should interpolate string to the same service factory everytime', function()
@@ -150,9 +151,10 @@ describe('kff.ServiceContainer', function()
 			var b = container.resolveParameters('@@service1');
 			var instance1 = a();
 			var instance2 = b();
-			instance1.should.be.an.instanceof(Service1);
-			instance2.should.be.an.instanceof(Service1);
-			instance1.should.not.equal(instance2);
+
+			expect(instance1 instanceof Service1).to.be.true;
+			expect(instance2 instanceof Service1).to.be.true;
+			expect(instance1 === instance2).to.be.false;
 		});
 
 	});
@@ -161,46 +163,46 @@ describe('kff.ServiceContainer', function()
 	{
 		it('should create service of type Service1', function()
 		{
-			container.createService('service1').should.be.an.instanceof(Service1);
+			expect(container.createService('service1') instanceof Service1).to.be.true;
 		});
 
 		it('should create service of type Service1 that have property a === kočka', function()
 		{
-			container.createService('service1').should.have.property('a', 'kočka');
+			expect(container.createService('service1')).to.have.property('a', 'kočka');
 		});
 
 		it('should create service with overloaded arguments', function()
 		{
 			var service3 = container.createService('service3', [undefined, { o2: 3 }]);
-			service3.should.have.property('a', 'kočka');
-			service3.should.have.property('b');
-			service3.b.should.have.property('o1', 1);
-			service3.b.should.have.property('o2', 3);
+			expect(service3).to.have.property('a', 'kočka');
+			expect(service3).to.have.property('b');
+			expect(service3.b).to.have.property('o1', 1);
+			expect(service3.b).to.have.property('o2', 3);
 		});
 
 		it('should create function service of type Service4', function()
 		{
-			container.createService('service4').should.equal(Service4);
+			expect(container.createService('service4') === Service4).to.be.true;
 		});
 
 		it('should create factory service of type Service4', function()
 		{
-			container.createService('service4b').should.equal('s4');
+			expect(container.createService('service4b')).to.equal('s4');
 		});
 
 		it('should create object service Service6', function()
 		{
-			container.createService('Service6').should.equal(Service6);
+			expect(container.createService('Service6')).to.equal(Service6);
 		});
 
 		it('should create object service Service7', function()
 		{
-			container.createService('Service7').should.equal(Service7);
+			expect(container.createService('Service7')).to.equal(Service7);
 		});
 
 		it('should create object service with space', function()
 		{
-			container.createService('Service7 #1').should.equal(Service7);
+			expect(container.createService('Service7 #1')).to.equal(Service7);
 		});
 
 	});
@@ -210,24 +212,24 @@ describe('kff.ServiceContainer', function()
 		it('should return a service with another service as a constructor argument', function()
 		{
 			var a = container.getService('service2');
-			a.should.be.an.instanceof(Service2);
-			a.should.have.keys('a', 'b');
-			a.a.should.be.an.instanceof(Service1);
-			a.should.have.property('b', 'Proč kočka není pes?');
+			expect(a instanceof Service2).to.be.true;
+			expect(a).to.have.keys('a', 'b');
+			expect(a.a instanceof Service1).to.be.true;
+			expect(a).to.have.property('b', 'Proč kočka není pes?');
 		});
 
 		it('should create two different instances of service', function()
 		{
 			var a = container.getService('service1');
 			var b = container.getService('service1');
-			a.should.not.equal(b);
+			expect(a).to.not.equal(b);
 		});
 
 		it('should return the same instances of shared service', function()
 		{
 			var a = container.getService('service2');
 			var b = container.getService('service2');
-			a.should.equal(b);
+			expect(a).to.equal(b);
 		});
 	});
 
@@ -235,12 +237,12 @@ describe('kff.ServiceContainer', function()
 	{
 		it('should return false', function()
 		{
-			container.hasService('undefinedService').should.be.false;
+			expect(container.hasService('undefinedService')).to.be.false;
 		});
 
 		it('should return true', function()
 		{
-			container.hasService('service1').should.be.true;
+			expect(container.hasService('service1')).to.be.true;
 		});
 
 	});
@@ -257,8 +259,7 @@ describe('kff.ServiceContainer', function()
 				}
 			});
 
-			var ret = container.getService('service5');
-			ret.should.have.property('a', 'service 5');
+			expect(container.getService('service5')).to.have.property('a', 'service 5');
 		});
 	});
 

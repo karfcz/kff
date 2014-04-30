@@ -1,4 +1,4 @@
-if(typeof require === 'function') var kff = require('../build/kff-all.js');
+if(typeof require === 'function') var kff = require('../build/kff.js');
 
 describe('kff.ClickBinder', function()
 {
@@ -15,11 +15,13 @@ describe('kff.ClickBinder', function()
 			}
 		});
 		view.init();
-		view.getModel('myModel').get('name').should.equal('Karel');
+
+		expect(view.getModel('myModel').get('name')).to.equal('Karel');
+
 		$div.trigger('click');
 		setTimeout(function()
 		{
-			view.getModel('myModel').get('name').should.equal('Petr');
+			expect(view.getModel('myModel').get('name')).to.equal('Petr');
 			done();
 		}, 0);
 	});

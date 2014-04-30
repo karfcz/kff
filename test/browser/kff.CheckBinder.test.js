@@ -1,4 +1,4 @@
-if(typeof require === 'function') var kff = require('../build/kff-all.js');
+if(typeof require === 'function') var kff = require('../build/kff.js');
 
 describe('kff.CheckBinder', function()
 {
@@ -16,11 +16,11 @@ describe('kff.CheckBinder', function()
 		});
 		view.init();
 
-		$input.is(':checked').should.equal(true);
+		expect($input.is(':checked')).to.equal(true);
 		view.getModel('myModel').set('checked', false);
-		$input.is(':checked').should.equal(false);
+		expect($input.is(':checked')).to.equal(false);
 		$input.prop('checked', true).triggerHandler('click');
-		view.getModel('myModel').get('checked').should.equal(true);
+		expect(view.getModel('myModel').get('checked')).to.equal(true);
 	});
 
 });

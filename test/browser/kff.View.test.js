@@ -1,4 +1,4 @@
-if(typeof require === 'function') var kff = require('../build/kff-all.js');
+if(typeof require === 'function') var kff = require('../build/kff.js');
 
 describe('kff.View', function()
 {
@@ -56,7 +56,7 @@ describe('kff.View', function()
 		it('should return model associated with the view', function()
 		{
 			view = new TestView({element: $div, models: { myModel: 42 } });
-			view.getModel('myModel').should.equal(42);
+			expect(view.getModel('myModel')).to.equal(42);
 		});
 
 	});
@@ -67,8 +67,8 @@ describe('kff.View', function()
 		{
 			view = new TestView({element: $div});
 			view.init();
-			$div.html().should.equal(testString);
-			$div.attr(kff.View.DATA_RENDERED_ATTR).should.equal('true');
+			expect($div.html()).to.equal(testString);
+			expect($div.attr(kff.View.DATA_RENDERED_ATTR)).to.equal('true');
 		});
 
 	});
@@ -79,11 +79,11 @@ describe('kff.View', function()
 		{
 			view = new TestView({element: $div});
 			view.init();
-			$div.html().should.equal(testString);
-			$div.attr(kff.View.DATA_RENDERED_ATTR).should.equal('true');
+			expect($div.html()).to.equal(testString);
+			expect($div.attr(kff.View.DATA_RENDERED_ATTR)).to.equal('true');
 			view.destroyAll();
-			$div.html().should.equal('');
-			should.not.exist($div.attr(kff.View.DATA_RENDERED_ATTR));
+			expect($div.html()).to.equal('');
+			expect($div.attr(kff.View.DATA_RENDERED_ATTR)).to.be.undefined;
 		});
 
 
@@ -255,13 +255,13 @@ describe('kff.View', function()
 			var view1 = container.getService('testViewA');
 			view1.init();
 
-			$mainDiv.attr(kff.View.DATA_RENDERED_ATTR).should.equal('true');
-			$innerDiv.attr(kff.View.DATA_RENDERED_ATTR).should.equal('true');
+			expect($mainDiv.attr(kff.View.DATA_RENDERED_ATTR)).to.equal('true');
+			expect($innerDiv.attr(kff.View.DATA_RENDERED_ATTR)).to.equal('true');
 
 			view1.destroyAll();
 
-			should.not.exist($mainDiv.attr(kff.View.DATA_RENDERED_ATTR));
-			should.not.exist($innerDiv.attr(kff.View.DATA_RENDERED_ATTR));
+			expect($mainDiv.attr(kff.View.DATA_RENDERED_ATTR)).to.be.undefined;
+			expect($innerDiv.attr(kff.View.DATA_RENDERED_ATTR)).to.be.undefined;
 		});
 
 
@@ -303,8 +303,9 @@ describe('kff.View', function()
 			var view1 = container.getService('testViewA');
 			view1.init();
 
-			$mainDiv.attr(kff.View.DATA_RENDERED_ATTR).should.equal('true');
-			$innerDiv.attr(kff.View.DATA_RENDERED_ATTR).should.equal('true');
+			expect($mainDiv.attr(kff.View.DATA_RENDERED_ATTR)).to.equal('true');
+			expect($innerDiv.attr(kff.View.DATA_RENDERED_ATTR)).to.equal('true');
+
 			$innerDiv.triggerHandler('click');
 		});
 	});

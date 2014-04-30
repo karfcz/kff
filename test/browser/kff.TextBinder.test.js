@@ -1,4 +1,4 @@
-if(typeof require === 'function') var kff = require('../build/kff-all.js');
+if(typeof require === 'function') var kff = require('../build/kff.js');
 
 describe('kff.TextBinder', function()
 {
@@ -18,9 +18,9 @@ describe('kff.TextBinder', function()
 		view.init();
 		setTimeout(function()
 		{
-			$div.text().should.equal('Karel');
+			expect($div.text()).to.equal('Karel');
 			view.getModel('myModel').set('name', 'Petr');
-			$div.text().should.equal('Petr');
+			expect($div.text()).to.equal('Petr');
 		}, 0);
 	});
 
@@ -45,9 +45,9 @@ describe('kff.TextBinder', function()
 		view.init();
 		setTimeout(function()
 		{
-			$div.text().should.equal('Karel');
+			expect($div.text()).to.equal('Karel');
 			view.getModel('myModel').set('name', 'Petr');
-			$div.text().should.equal('Petr');
+			expect($div.text()).to.equal('Petr');
 		}, 0);
 	});
 

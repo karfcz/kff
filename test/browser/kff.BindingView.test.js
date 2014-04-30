@@ -1,4 +1,4 @@
-if(typeof require === 'function') var kff = require('../build/kff-all.js');
+if(typeof require === 'function') var kff = require('../build/kff.js');
 
 describe('kff.BindingView', function()
 {
@@ -22,7 +22,7 @@ describe('kff.BindingView', function()
 
 		setTimeout(function(){
 
-			$div1.find('div').length.should.equal(2);
+			expect($div1.find('div').length).to.equal(2);
 
 		}, 0);
 
@@ -49,14 +49,14 @@ describe('kff.BindingView', function()
 
 		setTimeout(function(){
 
-			$div1.find('div').length.should.equal(2);
-			$div1.find('div').eq(0).text().should.equal('foo');
-			$div1.find('div').eq(1).text().should.equal('bar');
+			expect($div1.find('div').length).to.equal(2);
+			expect($div1.find('div').eq(0).text()).to.equal('foo');
+			expect($div1.find('div').eq(1).text()).to.equal('bar');
 
 			collection.remove(model1);
 
-			$div1.find('div').length.should.equal(1);
-			$div1.find('div').eq(0).text().should.equal('bar');
+			expect($div1.find('div').length).to.equal(1);
+			expect($div1.find('div').eq(0).text()).to.equal('bar');
 		}, 0);
 
 	});
@@ -79,9 +79,11 @@ describe('kff.BindingView', function()
 		view.init();
 
 		setTimeout(function(){
-			$div.text().should.equal('2');
+			// $div.text().should.equal('2');
+			expect($div.text()).to.equal('2');
 			collection.remove(model1);
-			$div.text().should.equal('1');
+			// $div.text().should.equal('1');
+			expect($div.text()).to.equal('1');
 		}, 0);
 
 	});
@@ -114,11 +116,15 @@ describe('kff.BindingView', function()
 
 		setTimeout(function()
 		{
-			$div.text().should.equal('intel');
+			// $div.text().should.equal('intel');
+
+			expect($div.text()).to.equal('intel');
+
 			motherboard.set({ processor: amd });
 			setTimeout(function()
 			{
-				$div.text().should.equal('amd');
+				// $div.text().should.equal('amd');
+				expect($div.text()).to.equal('amd');
 			}, 0);
 
 		}, 0);

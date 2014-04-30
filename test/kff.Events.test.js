@@ -1,5 +1,5 @@
 
-if(typeof require === 'function') var kff = require('../build/kff-all.js');
+if(typeof require === 'function') var kff = require('../build/kff.js');
 
 describe('kff.Events', function()
 {
@@ -19,7 +19,7 @@ describe('kff.Events', function()
 		});
 		events.trigger('testEvent');
 		events.trigger('testEvent');
-		count.should.equal(1);
+		expect(count).to.equal(1);
 	});
 
 	it('should bind two event handlers that both catch triggered event', function(done)

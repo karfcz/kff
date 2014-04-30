@@ -1,4 +1,4 @@
-if(typeof require === 'function') var kff = require('../build/kff-all.js');
+if(typeof require === 'function') var kff = require('../build/kff.js');
 
 describe('kff.extends', function()
 {
@@ -10,8 +10,8 @@ describe('kff.extends', function()
 
 		var objB = new B;
 
-		objB.should.be.an.instanceOf(A);
-		objB.should.be.an.instanceOf(B);
+		expect(objB instanceof A).to.be.true;
+		expect(objB instanceof B).to.be.true;
 	});
 });
 
@@ -25,10 +25,10 @@ describe('kff.mixins', function()
 
 		ret = kff.mixins(b, a);
 
-		b.should.have.property('prop1');
-		b.should.have.property('prop2');
-		b.prop1.should.equal('prop1');
-		b.should.equal(ret);
+		expect(b).to.have.property('prop1');
+		expect(b).to.have.property('prop2');
+		expect(b.prop1).to.equal('prop1');
+		expect(b).to.equal(ret);
 	});
 
 	it('should mixin properties from multiple objects', function()
@@ -39,12 +39,12 @@ describe('kff.mixins', function()
 
 		kff.mixins(a, b, c);
 
-		a.should.have.property('prop1');
-		a.should.have.property('prop2');
-		a.should.have.property('prop3');
-		a.should.have.property('prop4');
-		a.prop3.should.equal('prop3c');
-		a.prop4.should.equal('prop4');
+		expect(a).to.have.property('prop1');
+		expect(a).to.have.property('prop2');
+		expect(a).to.have.property('prop3');
+		expect(a).to.have.property('prop4');
+		expect(a.prop3).to.equal('prop3c');
+		expect(a.prop4).to.equal('prop4');
 	});
 
 	it('should mixin properties from one objects using deep flag', function()
@@ -55,13 +55,13 @@ describe('kff.mixins', function()
 
 		ret = kff.mixins(a, b, true);
 
-		a.should.have.property('prop1');
-		a.should.have.property('prop2');
-		a.should.have.property('prop3');
+		expect(a).to.have.property('prop1');
+		expect(a).to.have.property('prop2');
+		expect(a).to.have.property('prop3');
 
-		a.prop2.should.equal('prop2');
-		a.prop3.prop4.should.equal('prop4b');
-		a.prop3.prop5.should.equal('prop5b');
+		expect(a.prop2).to.equal('prop2');
+		expect(a.prop3.prop4).to.equal('prop4b');
+		expect(a.prop3.prop5).to.equal('prop5b');
 	});
 
 	it('should deep mixin property with null value in extended object', function()
@@ -72,9 +72,9 @@ describe('kff.mixins', function()
 
 		ret = kff.mixins(a, b, true);
 
-		a.should.have.property('prop1');
-		a.prop1.prop2.should.equal('prop2');
-		a.prop1.prop3.should.equal('prop3');
+		expect(a).to.have.property('prop1');
+		expect(a.prop1.prop2).to.equal('prop2');
+		expect(a.prop1.prop3).to.equal('prop3');
 	});
 
 	it('should deep mixin property with null value in extending object', function()
@@ -85,10 +85,9 @@ describe('kff.mixins', function()
 
 		ret = kff.mixins(a, b, true);
 
-		a.should.have.property('prop1');
-
-		should.equal(a.prop1.prop2, null);
-		a.prop1.prop3.should.equal('prop3');
+		expect(a).to.have.property('prop1');
+		expect(a.prop1.prop2).to.be.null;
+		expect(a.prop1.prop3).to.equal('prop3');
 	});
 });
 
@@ -116,10 +115,10 @@ describe('kff.createClass', function()
 
 	it('should create a class with mixins', function()
 	{
-		objA.should.be.an.instanceof(A);
-		objA.a.should.equal(42);
-		objA.m1.should.equal(15);
-		objA.m2.should.equal('test');
+		expect(objA instanceof A).to.equal(true);
+		expect(objA.a).to.equal(42);
+		expect(objA.m1).to.equal(15);
+		expect(objA.m2).to.equal('test');
 	});
 
 	it('should create a class with mixins and extends', function()
@@ -137,14 +136,15 @@ describe('kff.createClass', function()
 		});
 
 		var objB = new B();
-		objB.should.be.an.instanceof(A);
-		objB.should.be.an.instanceof(B);
 
-		objB.a.should.equal(42);
-		objB.getA().should.equal(42);
-		objB.m1.should.equal(15);
-		objB.m2.should.equal('test');
-		objB.m3.should.equal('m3');
+		expect(objB instanceof A).to.equal(true);
+		expect(objB instanceof B).to.equal(true);
+
+		expect(objB.a).to.equal(42);
+		expect(objB.getA()).to.equal(42);
+		expect(objB.m1).to.equal(15);
+		expect(objB.m2).to.equal('test');
+		expect(objB.m3).to.equal('m3');
 	});
 
 });
@@ -155,92 +155,92 @@ describe('kff.isPlainObject', function()
 {
 	it('should return true for {}', function()
 	{
-		kff.isPlainObject({}).should.be.true;
+		expect(kff.isPlainObject({})).to.be.true;
 	});
 
 	it('should return true for new Object', function()
 	{
-		kff.isPlainObject(new Object()).should.be.true;
+		expect(kff.isPlainObject(new Object())).to.be.true;
 	});
 
 	it('should return false for a string', function()
 	{
-		kff.isPlainObject('test').should.be.false;
+		expect(kff.isPlainObject('test')).to.be.false;
 	});
 
 	it('should return false for a String wrapper', function()
 	{
-		kff.isPlainObject(new String('test')).should.be.false;
+		expect(kff.isPlainObject(new String('test'))).to.be.false;
 	});
 
 	it('should return false for a number', function()
 	{
-		kff.isPlainObject(42).should.be.false;
+		expect(kff.isPlainObject(42)).to.be.false;
 	});
 
 	it('should return false for null', function()
 	{
-		kff.isPlainObject(null).should.be.false;
+		expect(kff.isPlainObject(null)).to.be.false;
 	});
 
 	it('should return false for undefined', function()
 	{
-		kff.isPlainObject().should.be.false;
+		expect(kff.isPlainObject()).to.be.false;
 	});
 
 	it('should return false for true', function()
 	{
-		kff.isPlainObject(true).should.be.false;
+		expect(kff.isPlainObject(true)).to.be.false;
 	});
 
 	it('should return false for false', function()
 	{
-		kff.isPlainObject(false).should.be.false;
+		expect(kff.isPlainObject(false)).to.be.false;
 	});
 
 	it('should return false for a function', function()
 	{
-		kff.isPlainObject(function(){}).should.be.false;
+		expect(kff.isPlainObject(function(){})).to.be.false;
 	});
 
 	it('should return false for a window object', function()
 	{
-		kff.isPlainObject(window).should.be.false;
+		expect(kff.isPlainObject(window)).to.be.false;
 	});
 
 	it('should return false for a document object', function()
 	{
-		kff.isPlainObject(document).should.be.false;
+		expect(kff.isPlainObject(document)).to.be.false;
 	});
 
 	it('should return false for a DOM node', function()
 	{
-		kff.isPlainObject($('<div/>').get(0)).should.be.false;
+		expect(kff.isPlainObject($('<div/>').get(0))).to.be.false;
 	});
 
 	it('should return false for a jQuery object', function()
 	{
-		kff.isPlainObject($('<div/>')).should.be.false;
+		expect(kff.isPlainObject($('<div/>'))).to.be.false;
 	});
 
 	it('should return false for a Date object', function()
 	{
-		kff.isPlainObject(new Date()).should.be.false;
+		expect(kff.isPlainObject(new Date())).to.be.false;
 	});
 
 	it('should return false for an Array', function()
 	{
-		kff.isPlainObject([1, 2]).should.be.false;
+		expect(kff.isPlainObject([1, 2])).to.be.false;
 	});
 
 	it('should return false for an Array constructed via new', function()
 	{
-		kff.isPlainObject(new Array()).should.be.false;
+		expect(kff.isPlainObject(new Array())).to.be.false;
 	});
 
 	it('should return false for a Model object', function()
 	{
-		kff.isPlainObject(new kff.Model()).should.be.false;
+		expect(kff.isPlainObject(new kff.Model())).to.be.false;
 	});
 
 });

@@ -1,4 +1,4 @@
-if(typeof require === 'function') var kff = require('../build/kff-all.js');
+if(typeof require === 'function') var kff = require('../build/kff.js');
 
 describe('kff.Router', function()
 {
@@ -14,10 +14,8 @@ describe('kff.Router', function()
 
 		var ret = router.match('user/42');
 
-		ret.should.have.property('target');
-		ret.target.should.equal(1);
-		ret.params.should.have.property('id');
-		ret.params.id.should.equal('42');
+		expect(ret).to.have.property('target', 1);
+		expect(ret.params).to.have.property('id', '42');
 	});
 
 	it('should match second route', function()
@@ -32,12 +30,9 @@ describe('kff.Router', function()
 
 		var ret = router.match('user/john/42');
 
-		ret.should.have.property('target');
-		ret.target.should.equal(2);
-		ret.params.should.have.property('name');
-		ret.params.name.should.equal('john');
-		ret.params.should.have.property('id');
-		ret.params.id.should.equal('42');
+		expect(ret).to.have.property('target', 2);
+		expect(ret.params).to.have.property('name', 'john');
+		expect(ret.params).to.have.property('id', '42');
 	});
 
 

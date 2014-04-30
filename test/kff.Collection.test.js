@@ -1,6 +1,6 @@
 // var should = require('should');
 
-if(typeof require === 'function') var kff = require('../build/kff-all.js');
+if(typeof require === 'function') var kff = require('../build/kff.js');
 
 describe('kff.Collection', function()
 {
@@ -10,7 +10,7 @@ describe('kff.Collection', function()
 	it('should contain one item', function()
 	{
 		cls.append(obj1);
-		cls.count().should.equal(1);
+		expect(cls.count()).to.equal(1);
 	});
 
 });

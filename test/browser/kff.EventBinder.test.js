@@ -1,4 +1,4 @@
-if(typeof require === 'function') var kff = require('../build/kff-all.js');
+if(typeof require === 'function') var kff = require('../build/kff.js');
 
 describe('kff.EventBinder', function()
 {
@@ -15,16 +15,16 @@ describe('kff.EventBinder', function()
 			}
 		});
 		view.init();
-		view.getModel('myModel').get('name').should.equal('Karel');
+		expect(view.getModel('myModel').get('name')).to.equal('Karel');
 		$div.trigger('mouseenter');
 		setTimeout(function()
 		{
-			view.getModel('myModel').get('name').should.equal('Petr');
+			expect(view.getModel('myModel').get('name')).to.equal('Petr');
 			view.getModel('myModel').set('name', 'Honza');
-			view.getModel('myModel').get('name').should.equal('Honza');
+			expect(view.getModel('myModel').get('name')).to.equal('Honza');
 			$div.trigger('myevent');
 			setTimeout(function(){
-				view.getModel('myModel').get('name').should.equal('Petr');
+				expect(view.getModel('myModel').get('name')).to.equal('Petr');
 				done();
 			}, 0);
 		}, 0);

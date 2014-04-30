@@ -1,4 +1,4 @@
-if(typeof require === 'function') var kff = require('../build/kff-all.js');
+if(typeof require === 'function') var kff = require('../build/kff.js');
 
 describe('kff.Model', function()
 {
@@ -21,13 +21,13 @@ describe('kff.Model', function()
 
 	it('should have property "one" with value "oneValue"', function()
 	{
-		obj.get('one').should.equal('oneValue');
+		expect(obj.get('one')).to.equal('oneValue');
 	});
 
 	it('should have property "two" with value "twoValue"', function()
 	{
-		obj.get('two').should.equal('twoValue');
-		obj.get('three').should.equal('threeValue');
+		expect(obj.get('two')).to.equal('twoValue');
+		expect(obj.get('three')).to.equal('threeValue');
 	});
 
 
@@ -40,7 +40,7 @@ describe('kff.Model', function()
 
 		it('should deep get property "obj.obj2.prop" with value "prop"', function()
 		{
-			obj.mget('obj2.prop').should.equal('prop');
+			expect(obj.mget('obj2.prop')).to.equal('prop');
 		});
 
 	});
@@ -142,10 +142,10 @@ describe('kff.Model', function()
 			});
 			var obj = new ComputedModel();
 
-			obj.get('c').should.equal(3);
+			expect(obj.get('c')).to.equal(3);
 
 			obj.on('change:c', function(event){
-				obj.get('c').should.equal(7);
+				expect(obj.get('c')).to.equal(7);
 				done();
 			});
 
@@ -174,7 +174,7 @@ describe('kff.Model', function()
 				result += val;
 			});
 
-			result.should.equal(6);
+			expect(result).to.equal(6);
 		});
 	});
 

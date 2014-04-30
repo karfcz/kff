@@ -1,4 +1,4 @@
-if(typeof require === 'function') var kff = require('../build/kff-all.js');
+if(typeof require === 'function') var kff = require('../build/kff.js');
 
 describe('kff.BindingView', function()
 {
@@ -17,13 +17,13 @@ describe('kff.BindingView', function()
 		view.init();
 		setTimeout(function()
 		{
-			$input.val().should.equal('Karel');
+			expect($input.val()).to.equal('Karel');
 			view.getModel('myModel').set('name', 'Petr');
-			$input.val().should.equal('Petr');
+			expect($input.val()).to.equal('Petr');
 			$input.val('Honza').trigger('change');
 			setTimeout(function()
 			{
-				view.getModel('myModel').get('name').should.equal('Honza');
+				expect(view.getModel('myModel').get('name')).to.equal('Honza');
 				done();
 			}, 0);
 		}, 0);
