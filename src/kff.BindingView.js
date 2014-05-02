@@ -410,9 +410,10 @@ kff.BindingView = kff.createClass(
 		this.boundViewOptions.viewFactory = this.viewFactory;
 		this.boundViewOptions.isBoundView = true;
 
-		this.collectionBinder.collection.on('change', this.f('refreshBoundViews'));
-		this.collectionBinder.collection.onEach('change', this.f('collectionItemChange'));
 		this.refreshBoundViewsAll();
+
+		this.collectionBinder.collection.on('change', this.f('refreshBoundViews'));
+		if(this.collectionFilter) this.collectionBinder.collection.onEach('change', this.f('collectionItemChange'));
 	},
 
 	/**
@@ -427,7 +428,7 @@ kff.BindingView = kff.createClass(
 		if(this.collectionBinder)
 		{
 			this.collectionBinder.collection.off('change', this.f('refreshBoundViews'));
-			this.collectionBinder.collection.offEach('change', this.f('collectionItemChange'));
+			if(this.collectionFilter) this.collectionBinder.collection.offEach('change', this.f('collectionItemChange'));
 		}
 
 		// Destroy boundviews
