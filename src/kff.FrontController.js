@@ -23,6 +23,7 @@ kff.FrontController = kff.createClass(
 		this.views = null;
 		this.viewsQueue = [];
 		this.viewFactory = options.viewFactory;
+		this.defaultView = options.defaultView;
 		this.router = options.router || null;
 	},
 
@@ -53,7 +54,7 @@ kff.FrontController = kff.createClass(
 				return result.target;
 			}
 		}
-		return this.options.defaultView;
+		return this.defaultView;
 	},
 
 	hashChange: function(event)
@@ -186,5 +187,20 @@ kff.FrontController = kff.createClass(
 	setViewFactory: function(viewFactory)
 	{
 		this.viewFactory = viewFactory;
+	},
+
+	getRouter: function()
+	{
+		return this.router;
+	},
+
+	setRouter: function(router)
+	{
+		this.router = router;
+	},
+
+	setDefaultView: function(defaultView)
+	{
+		this.defaultView = defaultView;
 	}
 });

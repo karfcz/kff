@@ -15,7 +15,7 @@ kff.App = kff.createClass(
 	constructor: function(options)
 	{
 		var models;
-		options = options || {};
+		this.options = options = options || {};
 		models = options.models || {};
 
 		// Dependency injection container configuration:
@@ -47,6 +47,22 @@ kff.App = kff.createClass(
 	{
 		var frontController = this.serviceContainer.getService('kff.FrontController');
 		if(!frontController.getViewFactory()) frontController.setViewFactory(this.serviceContainer.getService('kff.ViewFactory'));
+		if(this.options.router)
+		{
+			var routerOptions = {
+				routes: this.options.router.routes || [],
+				params: this.options.router.params || null
+			};
+
+			if(this.options.router.params) routerOptions.params = this.serviceContainer.resolveParameters(this.options.router.params);
+
+			var router = this.serviceContainer.getService('kff.Router', [routerOptions]);
+			frontController.setRouter(router);
+		}
+		if(this.options.defaultView)
+		{
+			frontController.setDefaultView(this.options.defaultView);
+		}
 		frontController.init();
 	},
 
