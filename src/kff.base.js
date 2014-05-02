@@ -187,23 +187,20 @@ kff.classMixin = {
  * @param {Object} obj Object to start with (like window)
  * @returns {mixed} Property at the end of object chain or null if not found
  */
-(function()
+kff.evalObjectPath = function(path, obj)
 {
 	var parts, part, i, l;
-	kff.evalObjectPath = function(path, obj)
+	obj = obj || scope;
+	if(typeof path !== 'string') return null;
+	parts = path.split('.');
+	for(i = 0, l = parts.length; i < l; i++)
 	{
-		obj = obj || scope;
-		if(typeof path !== 'string') return null;
-		parts = path.split('.');
-		for(i = 0, l = parts.length; i < l; i++)
-		{
-			part = parts[i];
-			if(!(part in obj)) return null;
-			else obj = obj[part];
-		}
-		return obj;
-	};
-})();
+		part = parts[i];
+		if(!(part in obj)) return null;
+		else obj = obj[part];
+	}
+	return obj;
+};
 
 /**
  * Detects if an object is a plain javascript object (object created as literal
