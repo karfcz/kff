@@ -79,10 +79,8 @@ describe('kff.BindingView', function()
 		view.init();
 
 		setTimeout(function(){
-			// $div.text().should.equal('2');
 			expect($div.text()).to.equal('2');
 			collection.remove(model1);
-			// $div.text().should.equal('1');
 			expect($div.text()).to.equal('1');
 		}, 0);
 
@@ -116,14 +114,11 @@ describe('kff.BindingView', function()
 
 		setTimeout(function()
 		{
-			// $div.text().should.equal('intel');
-
 			expect($div.text()).to.equal('intel');
 
 			motherboard.set({ processor: amd });
 			setTimeout(function()
 			{
-				// $div.text().should.equal('amd');
 				expect($div.text()).to.equal('amd');
 			}, 0);
 

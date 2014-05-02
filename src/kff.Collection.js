@@ -285,7 +285,6 @@ kff.Collection = kff.createClass(
 		this.each(function(item, i){
 			item.on(eventType, fn);
 		});
-		// this.on('change', this.f('refreshOnEach'));
 	},
 
 	/**
