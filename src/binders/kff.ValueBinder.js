@@ -21,6 +21,7 @@ kff.ValueBinder = kff.createClass(
 		];
 		this.multiple = false;
 		kff.Binder.call(this, options);
+		if(this.options.fill) this.fillVal = this.getValue();
 	},
 
 	init: function()
@@ -63,7 +64,10 @@ kff.ValueBinder = kff.createClass(
 
 	fill: function()
 	{
-		if(!this.fillVal) this.fillVal = this.getValue();
+		if(!this.fillVal)
+		{
+			this.fillVal = this.getValue();
+		}
 		this.updateModel(this.fillVal);
 	},
 

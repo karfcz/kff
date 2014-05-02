@@ -21,6 +21,7 @@ kff.RadioBinder = kff.createClass(
 			[eventNames, 'inputChange']
 		];
 		kff.Binder.call(this, options);
+		if(this.options.fill) this.fillVal = this.$element[0].checked;
 	},
 
 	inputChange: function(event)
