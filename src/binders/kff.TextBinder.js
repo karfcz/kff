@@ -20,7 +20,9 @@ kff.TextBinder = kff.createClass(
 
 	refresh: function(value)
 	{
-		this.$element[0].textContent = this.value;
+		var val = this.value;
+		if(val === null || val === undefined) val = '';
+		this.$element[0].textContent = val;
 	}
 });
 
