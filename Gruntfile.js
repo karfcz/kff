@@ -65,9 +65,9 @@ module.exports = function(grunt) {
 			}
 		},
 		watch: {
-	      	files: '<% concat.kff.src %>',
-	      	tasks: 'concat min'
-	    },
+			files: '<% concat.kff.src %>',
+			tasks: 'concat min'
+		},
 		jshint: {
 			options: {
 				smarttabs: false
@@ -75,7 +75,15 @@ module.exports = function(grunt) {
 		},
 		karma: {
 			unit: {
-		    	configFile: 'karma.conf.js'
+				configFile: 'karma.conf.js'
+			}
+		},
+		shell: {
+			docs: {
+				options: {
+					stderr: true
+				},
+				command: '"./node_modules/.bin/jsdoc" ./build/kff.js --destination ./docs'
 			}
 		}
 	});
@@ -84,9 +92,11 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-shell');
 
 
 	grunt.registerTask('build', ['concat', 'uglify']);
+	grunt.registerTask('docs', ['shell:docs']);
 	grunt.registerTask('default', ['build']);
 
 };

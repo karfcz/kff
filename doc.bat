@@ -1,1 +1,0 @@
-jsdoc2 -t=docs/api-templates/jsdoc -a -d=docs/api build/kff-all.js
