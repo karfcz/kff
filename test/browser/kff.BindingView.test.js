@@ -61,6 +61,33 @@ describe('kff.BindingView', function()
 
 	});
 
+	it('should remove element from collection binding', function()
+	{
+		var collection = new kff.Collection();
+		var model1 = new kff.Model();
+		var model2 = new kff.Model();
+		var model3 = new kff.Model();
+		collection.append(model1);
+		collection.append(model2);
+		collection.append(model3);
+
+		var $div1 = $('<div/>');
+		var $div2 = $('<div data-kff-bind="collection"/>');
+		$div1.append($div2);
+		var view = new kff.BindingView(
+		{
+			element: $div1,
+			models: {
+				collection: collection
+			}
+		});
+		view.init();
+
+		expect($div1.find('div').length).to.equal(3);
+		collection.remove(model2);
+		expect($div1.find('div').length).to.equal(2);
+	});
+
 	it('should bind a collection count pseudoattribute', function()
 	{
 		var collection = new kff.Collection();
