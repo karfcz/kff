@@ -12,8 +12,8 @@ describe('kff.ServiceContainer', function()
 	var config = {
 		parameters:
 		{
-			kocka: 'kočka',
-			pes: 'pes',
+			foo: 'foo',
+			bar: 'bar',
 			numeric: 42.05,
 			obj: { o1: 1, o2: 2 }
 		},
@@ -22,7 +22,7 @@ describe('kff.ServiceContainer', function()
 			'service1':
 			{
 				'construct': Service1,
-			    'args': ['%kocka%', 'haf']
+			    'args': ['%foo%', 'haf']
 			},
 			'Service7 #1':
 			{
@@ -30,13 +30,13 @@ describe('kff.ServiceContainer', function()
 			'service2':
 			{
 				'construct': Service2,
-			    'args': ['@service1', 'Proč %kocka% není %pes%?'],
+			    'args': ['@service1', '%foo% is not a %bar%'],
 			    'shared': true
 			},
 			'service3':
 			{
 				'construct': Service1,
-			    'args': ['%kocka%', '%obj%']
+			    'args': ['%foo%', '%obj%']
 			},
 			'service4':
 			{
@@ -70,7 +70,7 @@ describe('kff.ServiceContainer', function()
 
 		it('should interpolate string with two parameters', function()
 		{
-			expect(container.resolveParameters('Proč %kocka% není %pes%?')).to.equal('Proč kočka není pes?');
+			expect(container.resolveParameters('%foo% is not a %bar%')).to.equal('foo is not a bar');
 		});
 
 		it('should interpolate string with referece to a service', function()
@@ -80,19 +80,19 @@ describe('kff.ServiceContainer', function()
 
 		it('should interpolate object with refereces to parameters and services', function()
 		{
-			var a = container.resolveParameters({ x: '@service1', y: { z: 'Proč %kocka% není %pes%?' }});
+			var a = container.resolveParameters({ x: '@service1', y: { z: '%foo% is not a %bar%' }});
 			expect(a).to.have.keys('x', 'y');
 			expect(a.x instanceof Service1).to.be.true;
-			expect(a.y).to.have.property('z', 'Proč kočka není pes?');
+			expect(a.y).to.have.property('z', 'foo is not a bar');
 
 		});
 
 		it('should interpolate array with refereces to parameters and services', function()
 		{
-			var a = container.resolveParameters([ '@service1', { z: 'Proč %kocka% není %pes%?' }]);
+			var a = container.resolveParameters([ '@service1', { z: '%foo% is not a %bar%' }]);
 
 			expect(a[0] instanceof Service1).to.be.true;
-			expect(a[1]).to.have.property('z', 'Proč kočka není pes?');
+			expect(a[1]).to.have.property('z', 'foo is not a bar');
 		});
 
 		it('should interpolate referece to container itself', function()
@@ -104,22 +104,22 @@ describe('kff.ServiceContainer', function()
 
 		it('should interpolate parameter with single % character', function()
 		{
-			var a = container.resolveParameters('Proč %kocka% není %pes?');
-			expect(a).to.equal('Proč kočka není %pes?');
+			var a = container.resolveParameters('%foo% is not a %bar?');
+			expect(a).to.equal('foo is not a %bar?');
 		});
 
 		it('should interpolate parameter with escaped %% character', function()
 		{
-			var a = container.resolveParameters('Proč %kocka% není %%pes, ale %kocka%?');
-			expect(a).to.equal('Proč kočka není %pes, ale kočka?');
+			var a = container.resolveParameters('The %foo% is not a %%bar but %foo%?');
+			expect(a).to.equal('The foo is not a %bar but foo?');
 		});
 
 		it('should return cached interpolated parameter', function()
 		{
-			var a = container.resolveParameters('Proč %kocka% není %%pes, ale %kocka%?');
-			expect(a).to.equal('Proč kočka není %pes, ale kočka?');
-			a = container.resolveParameters('Proč %kocka% není %%pes, ale %kocka%?');
-			expect(a).to.equal('Proč kočka není %pes, ale kočka?');
+			var a = container.resolveParameters('The %foo% is not a %%bar but %foo%?');
+			expect(a).to.equal('The foo is not a %bar but foo?');
+			a = container.resolveParameters('The %foo% is not a %%bar but %foo%?');
+			expect(a).to.equal('The foo is not a %bar but foo?');
 		});
 
 		it('should interpolate single numeric parameter', function()
@@ -166,15 +166,15 @@ describe('kff.ServiceContainer', function()
 			expect(container.createService('service1') instanceof Service1).to.be.true;
 		});
 
-		it('should create service of type Service1 that have property a === kočka', function()
+		it('should create service of type Service1 that have property a === foo', function()
 		{
-			expect(container.createService('service1')).to.have.property('a', 'kočka');
+			expect(container.createService('service1')).to.have.property('a', 'foo');
 		});
 
 		it('should create service with overloaded arguments', function()
 		{
 			var service3 = container.createService('service3', [undefined, { o2: 3 }]);
-			expect(service3).to.have.property('a', 'kočka');
+			expect(service3).to.have.property('a', 'foo');
 			expect(service3).to.have.property('b');
 			expect(service3.b).to.have.property('o1', 1);
 			expect(service3.b).to.have.property('o2', 3);
@@ -215,7 +215,7 @@ describe('kff.ServiceContainer', function()
 			expect(a instanceof Service2).to.be.true;
 			expect(a).to.have.keys('a', 'b');
 			expect(a.a instanceof Service1).to.be.true;
-			expect(a).to.have.property('b', 'Proč kočka není pes?');
+			expect(a).to.have.property('b', 'foo is not a bar');
 		});
 
 		it('should create two different instances of service', function()
