@@ -125,6 +125,17 @@ kff.createClass = function(meta, properties)
 		kff.mixins(constructor, meta.statics);
 	}
 
+	if(meta.service)
+	{
+		constructor.service = meta.service;
+	}
+
+	if(meta.args)
+	{
+		if(!('service' in constructor)) constructor.service = {};
+		constructor.service.args = meta.args;
+	}
+
 	// Add properties to prototype
 	kff.mixins(constructor.prototype, properties);
 
