@@ -93,10 +93,11 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-shell');
-
+	grunt.loadNpmTasks('grunt-karma');
 
 	grunt.registerTask('build', ['concat', 'uglify']);
 	grunt.registerTask('docs', ['shell:docs']);
+	grunt.registerTask('test', ['build', 'karma']);
 	grunt.registerTask('default', ['build']);
 
 };
