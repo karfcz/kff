@@ -28,6 +28,19 @@ kff.Collection = kff.createClass(
 	},
 
 	/**
+	 * Creates a new item using itemType or itemFactory if provided
+	 *
+	 * @returns {mixed} Created item
+	 */
+	createItem: function()
+	{
+		var item;
+		if(this.itemFactory) item = this.itemFactory();
+		else item = new this.itemType();
+		return item;
+	},
+
+	/**
 	 * Appends the item at the end of the collection
 	 *
 	 * Triggers a change event with folloving event object:
@@ -133,13 +146,13 @@ kff.Collection = kff.createClass(
 	 */
 	toJson: function()
 	{
-		var serializeAttrs = this.serializeAttrs, obj = [];
+		var serializeAttrs = this.serializeAttrs, array = [];
 		this.each(function(item)
 		{
-			if(item && item.toJson) obj.push(item.toJson(serializeAttrs));
-			else obj.push(item);
+			if(item && item.toJson) array.push(item.toJson(serializeAttrs));
+			else array.push(item);
 		});
-		return obj;
+		return array;
 	},
 
 	/**
@@ -149,18 +162,17 @@ kff.Collection = kff.createClass(
 	 *
 	 * { type: 'fromJson' }
 	 *
-	 * @param {Array} obj Array to read from
+	 * @param {Array} array Array to read from
 	 * @param {Boolean} silent If true, do not trigger event
 	 */
-	fromJson: function(obj, silent)
+	fromJson: function(array, silent)
 	{
-		var item, itemFactory = this.itemFactory;
+		var item;
 		this.empty();
-		for(var i = 0; i < obj.length; i++)
+		for(var i = 0, l = array.length; i < l; i++)
 		{
-			if(itemFactory) item = itemFactory();
-			else item = new this.itemType();
-			item.fromJson(obj[i], silent);
+			item = this.createItem();
+			item.fromJson(array[i], silent);
 			this.append(item, true);
 		}
 		if(!silent) this.trigger('change', { type: 'fromJson' });
