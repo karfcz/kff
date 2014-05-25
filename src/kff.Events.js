@@ -119,10 +119,30 @@ kff.EventsMixin =
 {
 	initEvents: function()
 	{
+		this.events = null;
+	},
+	createEvents: function()
+	{
 		this.events = new kff.Events();
 	},
-	on: function(eventType, fn){ return this.events.on(eventType, fn); },
-	one: function(eventType, fn){ return this.events.one(eventType, fn); },
-	off: function(eventType, fn){ return this.events.off(eventType, fn); },
-	trigger: function(eventType, eventData){ return this.events.trigger(eventType, eventData); }
+	on: function(eventType, fn)
+	{
+		if(this.events == null) this.createEvents();
+		return this.events.on(eventType, fn);
+	},
+	one: function(eventType, fn)
+	{
+		if(this.events == null) this.createEvents();
+		return this.events.one(eventType, fn);
+	},
+	off: function(eventType, fn)
+	{
+		if(this.events == null) this.createEvents();
+		return this.events.off(eventType, fn);
+	},
+	trigger: function(eventType, eventData)
+	{
+		if(this.events == null) this.createEvents();
+		return this.events.trigger(eventType, eventData);
+	}
 };
