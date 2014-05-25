@@ -107,10 +107,49 @@ kff.Collection = kff.createClass(
 	 */
 	remove: function(item, silent)
 	{
-		this.unbindOnOne(item);
-		var ret = kff.Collection._super.remove.call(this, item);
-		if(ret !== false && !silent) this.trigger('change', { type: 'remove', item: item, index: ret });
-		return ret;
+		var i, a = this.array, currentItem, removed;
+		if(typeof item === 'function')
+		{
+			removed = [];
+			for(i = a.length - 1; i >= 0; i--)
+			{
+				currentItem = a[i];
+				if(item(currentItem) === true)
+				{
+					this.array.splice(i, 1);
+					removed.push({ item: currentItem, index: i });
+					this.unbindOnOne(currentItem);
+				}
+			}
+			if(removed.length === 0) return false;
+			else
+			{
+				if(!silent) this.trigger('change', { type: 'remove', items: removed });
+				return removed;
+			}
+		}
+		else
+		{
+			i = kff.arrayIndexOf(a, item);
+			if(i === -1) return false;
+			a.splice(i, 1);
+			this.unbindOnOne(item);
+			if(!silent) this.trigger('change', { type: 'remove', item: item, index: i });
+			return i;
+		}
+	},
+
+	/**
+	 * Creates a new collection with items that pass filter function test
+	 * @param {function} fn Test function that accepts one argument (item).
+	 */
+	filter: function(fn)
+	{
+		var filteredColllection = this.clone();
+		filteredColllection.remove(function(item){
+			return !fn.call(null, item);
+		});
+		return filteredColllection;
 	},
 
 	/**

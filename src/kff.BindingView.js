@@ -513,19 +513,30 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshBoundViewsOnRemove: function(event)
 	{
-		// Find render index:
-		for(var i = 0, l = this.boundViews.length; i < l; i++)
+		var i, l;
+		if('items' in event)
 		{
-			if(event.item === this.boundViews[i].models['*']) break;
+			for(i = 0, l = event.items.length; i < l; i++)
+			{
+				this.refreshBoundViewsOnRemove(event.items[i]);
+			}
 		}
-
-		var renderIndex = i;
-		var realIndex = event.index;
-
-		if(realIndex !== -1)
+		else
 		{
-			if(this.boundViewsMap[realIndex] !== false) this.removeBoundViewAt(renderIndex);
-			this.boundViewsMap.splice(realIndex, 1);
+			// Find render index:
+			for(i = 0, l = this.boundViews.length; i < l; i++)
+			{
+				if(event.item === this.boundViews[i].models['*']) break;
+			}
+
+			var renderIndex = i;
+			var realIndex = event.index;
+
+			if(realIndex !== -1)
+			{
+				if(this.boundViewsMap[realIndex] !== false) this.removeBoundViewAt(renderIndex);
+				this.boundViewsMap.splice(realIndex, 1);
+			}
 		}
 	},
 

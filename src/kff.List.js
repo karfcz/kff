@@ -59,10 +59,29 @@ kff.List = kff.createClass(
 	 */
 	remove: function(item)
 	{
-		var i = kff.arrayIndexOf(this.array, item);
-		if(i === -1) return false;
-		this.array.splice(i, 1);
-		return i;
+		var i, a = this.array, currentItem, removed;
+		if(typeof item === 'function')
+		{
+			removed = [];
+			for(i = a.length - 1; i >= 0; i--)
+			{
+				currentItem = a[i];
+				if(item(currentItem) === true)
+				{
+					this.array.splice(i, 1);
+					removed.push({ item: currentItem, index: i });
+				}
+			}
+			if(removed.length === 0) return false;
+			else return removed;
+		}
+		else
+		{
+			i = kff.arrayIndexOf(a, item);
+			if(i === -1) return false;
+			a.splice(i, 1);
+			return i;
+		}
 	},
 
 	/**
