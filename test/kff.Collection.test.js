@@ -66,4 +66,18 @@ describe('kff.Collection', function()
 		expect(c3.get(2)).to.equal(m3);
 	});
 
+	it('should join collection', function()
+	{
+		var m1 = new kff.Model({ a: '1' });
+		var m2 = new kff.Model({ a: '2' });
+
+		m1.toString = m2.toString = function(){
+			return this.get('a');
+		};
+
+		var out = new kff.Collection().concat(m1, m2).join(' ');
+
+		expect(out).to.equal('1 2');
+	});
+
 });

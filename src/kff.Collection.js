@@ -79,6 +79,18 @@ kff.Collection = kff.createClass(
 	},
 
 	/**
+	 * Joins items of collection using toString method and separator
+	 *
+	 * Works like Array.join
+	 *
+	 * @return {String} Joined string
+	 */
+	join: function(separator)
+	{
+		return this.array.join(separator);
+	},
+
+	/**
 	 * Inserts an item at specified index
 	 *
 	 * Triggers a change event with folloving event object:
