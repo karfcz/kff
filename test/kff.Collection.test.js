@@ -80,4 +80,34 @@ describe('kff.Collection', function()
 		expect(out).to.equal('1 2');
 	});
 
+	it('should map collection to another collection', function()
+	{
+		var m1 = new kff.Model({ a: 1 });
+		var m2 = new kff.Model({ a: 2 });
+		var m3 = new kff.Model({ a: 3 });
+
+		var c1 = new kff.Collection();
+		c1 = c1.concat(m1, m2, m3);
+
+		var thisObj = {
+			increment: 2
+		};
+
+		var i = 0;
+
+		var c2 = c1.map(function(item, index, collection)
+		{
+			expect(this).to.equal(thisObj);
+			expect(collection).to.equal(c1);
+			expect(index).to.equal(i);
+
+			i++;
+			return new kff.Model({ a: item.get('a') + this.increment });
+
+		}, thisObj);
+
+		expect(c2.count()).to.equal(3);
+		expect(c2.get(1).get('a')).to.equal(4);
+	});
+
 });

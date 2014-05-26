@@ -91,6 +91,41 @@ kff.Collection = kff.createClass(
 	},
 
 	/**
+	 * Creates a new collection with the results of calling a provided function on every element in this collection
+	 *
+	 * Works like Array.concat
+	 *
+	 * @param  {Function} callback Function that produces an element of the new collection, taking three arguments:
+	 *                             currentValue: the current item being processed
+	 *                             index: the index of the current value
+	 *                             collection: the collection map was called upon
+	 * @param  {mixed}	thisArg    Value to use as this when executing callback
+	 * @return {kff.Collection}    Mapped collection
+	 */
+	map: function(callback, thisArg)
+	{
+		var thisArg = thisArg || undefined;
+		var mappedArray;
+		var array = this.array;
+
+		if(typeof callback !== "function") {
+			throw new TypeError(callback + " is not a function");
+		}
+
+		mappedArray = new Array(array.length);
+
+		for(var i = 0, l = array.length; i < l; i++)
+		{
+			mappedArray[i] = callback.call(thisArg, array[i], i, this);
+		}
+
+		var mappedCollection = new kff.Collection(this.options);
+		mappedCollection.array = mappedArray;
+
+		return mappedCollection;
+	},
+
+	/**
 	 * Inserts an item at specified index
 	 *
 	 * Triggers a change event with folloving event object:
