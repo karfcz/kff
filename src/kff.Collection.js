@@ -58,6 +58,27 @@ kff.Collection = kff.createClass(
 	},
 
 	/**
+	 * Concatenates collection with other collections, arrays or objects
+	 *
+	 * Method accepts variable length arguments, works like Array.concat
+	 *
+	 * @return {kff.Collection} A new collection
+	 */
+	concat: function()
+	{
+		var collection = new kff.Collection(this.options);
+		var args = [];
+		for(var i = 0, l = arguments.length; i < l; i++)
+		{
+			if(arguments[i] instanceof kff.Collection) args.push(arguments[i].array);
+			else args.push(arguments[i]);
+		}
+		collection.array = Array.prototype.concat.apply(this.array, args);
+
+		return collection;
+	},
+
+	/**
 	 * Inserts an item at specified index
 	 *
 	 * Triggers a change event with folloving event object:

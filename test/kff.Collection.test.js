@@ -32,4 +32,38 @@ describe('kff.Collection', function()
 		expect(c2.get(0)).to.equal(m2);
 	});
 
+	it('should concat two collections', function()
+	{
+		var m1 = new kff.Model({ a: 1 });
+		var m2 = new kff.Model({ a: 2 });
+		var m3 = new kff.Model({ a: 3 });
+
+		var c1 = new kff.Collection();
+		c1.append(m1);
+		c1.append(m2);
+
+		var c2 = new kff.Collection();
+		c2.append(m3);
+
+		var c3 = c1.concat(c2);
+
+		expect(c3.count()).to.equal(3);
+		expect(c3.get(2)).to.equal(m3);
+	});
+
+	it('should concat collection and two models', function()
+	{
+		var m1 = new kff.Model({ a: 1 });
+		var m2 = new kff.Model({ a: 2 });
+		var m3 = new kff.Model({ a: 3 });
+
+		var c1 = new kff.Collection();
+		c1.append(m1);
+
+		var c3 = c1.concat(m2, m3);
+
+		expect(c3.count()).to.equal(3);
+		expect(c3.get(2)).to.equal(m3);
+	});
+
 });
