@@ -110,4 +110,57 @@ describe('kff.Collection', function()
 		expect(c2.get(1).get('a')).to.equal(4);
 	});
 
+	it('should reduce collection', function()
+	{
+		var m1 = new kff.Model({ a: 1 });
+		var m2 = new kff.Model({ a: 2 });
+		var m3 = new kff.Model({ a: 3 });
+
+		var c1 = new kff.Collection();
+		c1 = c1.concat(m1, m2, m3);
+
+		var sum = c1.reduce(function(prev, current)
+		{
+			return new kff.Model({ a: prev.get('a') +  current.get('a') });
+		});
+
+		expect(sum.get('a')).to.equal(6);
+	});
+
+	it('should reduce collection with initial value', function()
+	{
+		var m1 = new kff.Model({ a: 1 });
+		var m2 = new kff.Model({ a: 2 });
+		var m3 = new kff.Model({ a: 3 });
+
+		var c1 = new kff.Collection();
+		c1 = c1.concat(m1, m2, m3);
+
+		var sum = c1.reduce(function(prev, current)
+		{
+			if(prev instanceof kff.Model) return prev.get('a') + current.get('a');
+			else return prev + current.get('a');
+		}, 10);
+
+		expect(sum).to.equal(16);
+	});
+
+	it('should reduceRight collection with initial value', function()
+	{
+		var m1 = new kff.Model({ a: 1 });
+		var m2 = new kff.Model({ a: 2 });
+		var m3 = new kff.Model({ a: 3 });
+
+		var c1 = new kff.Collection();
+		c1 = c1.concat(m1, m2, m3);
+
+		var sum = c1.reduceRight(function(prev, current)
+		{
+			if(prev instanceof kff.Model) return prev.get('a') - current.get('a');
+			else return prev - current.get('a');
+		}, 10);
+
+		expect(sum).to.equal(4);
+	});
+
 });

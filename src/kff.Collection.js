@@ -126,6 +126,88 @@ kff.Collection = kff.createClass(
 	},
 
 	/**
+	 * The reduce() method applies a function against an accumulator and each value of the collection
+	 * (from left-to-right) has to reduce it to a single value.
+	 *
+	 * Works like Array.reduce
+	 *
+	 * @param  {Function} callback Function to execute on each value in the collection, taking four arguments:
+	 *                             previousValue: The value previously returned in the last invocation of the callback, or initialValue, if supplied.
+	 *                             currentValue: the current item being processed
+	 *                             index: the index of the current value
+	 *                             collection: the collection reduce was called upon
+	 * @param  {mixed}	initialValue  Object to use as the first argument to the first call of the callback.
+	 * @return {mixed}  Reduced value
+	 */
+	reduce: function(callback, initialValue)
+	{
+		var array = this.array;
+		var l = array.length, value, i = 0;
+
+		if(typeof callback !== 'function')
+		{
+			throw new TypeError( callback + ' is not a function' );
+		}
+
+		if(arguments.length >= 2)
+		{
+			value = arguments[1];
+		}
+		else
+		{
+			if(l === 0) throw new TypeError('Reduce of empty collection with no initial value');
+		  	value = array[i++];
+		}
+
+		for(; i < l; i++)
+		{
+			value = callback(value, array[i], i, this);
+		}
+		return value;
+	},
+
+	/**
+	 * The reduceRight() method applies a function against an accumulator and each value of the collection
+	 * (from right-to-left) has to reduce it to a single value.
+	 *
+	 * Works like Array.reduce
+	 *
+	 * @param  {Function} callback Function to execute on each value in the collection, taking four arguments:
+	 *                             previousValue: The value previously returned in the last invocation of the callback, or initialValue, if supplied.
+	 *                             currentValue: the current item being processed
+	 *                             index: the index of the current value
+	 *                             collection: the collection reduce was called upon
+	 * @param  {mixed}	initialValue  Object to use as the first argument to the first call of the callback.
+	 * @return {mixed}  Reduced value
+	 */
+	reduceRight: function(callback, initialValue)
+	{
+		var array = this.array;
+		var l = array.length, value, i = l - 1;
+
+		if(typeof callback !== 'function')
+		{
+			throw new TypeError( callback + ' is not a function' );
+		}
+
+		if(arguments.length >= 2)
+		{
+			value = arguments[1];
+		}
+		else
+		{
+			if(l === 0) throw new TypeError('Reduce of empty collection with no initial value');
+		  	value = array[i--];
+		}
+
+		for(; i >= 0; i--)
+		{
+			value = callback(value, array[i], i, this);
+		}
+		return value;
+	},
+
+	/**
 	 * Inserts an item at specified index
 	 *
 	 * Triggers a change event with folloving event object:
