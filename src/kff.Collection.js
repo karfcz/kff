@@ -52,7 +52,7 @@ kff.Collection = kff.createClass(
 	 */
 	append: function(item, silent)
 	{
-		kff.Collection._super.append.call(this, item);
+		this.array.push(item);
 		this.bindOnOne(item);
 		if(!silent) this.trigger('change', { type: 'append', item: item });
 	},
@@ -311,6 +311,10 @@ kff.Collection = kff.createClass(
 	{
 		var collection = new kff.Collection(this.options);
 		collection.array = Array.prototype.slice.apply(this.array, arguments);
+		for(var i = 0, l = collection.array.length; i < l; i++)
+		{
+			this.unbindOnOne(collection.array[i]);
+		}
 		return collection;
 	},
 
@@ -330,6 +334,7 @@ kff.Collection = kff.createClass(
 			for(; l > 0 ; i++, l--)
 			{
 				event.items.push(this.array[i]);
+				this.bindOnOne(this.array[i]);
 			}
 			this.trigger('change', event);
 		}
@@ -344,6 +349,7 @@ kff.Collection = kff.createClass(
 	{
 		var item = this.array.pop();
 		if(item) this.trigger('change', { type: 'pop', item: item});
+		this.unbindOnOne(item);
 		return item;
 	},
 
@@ -355,6 +361,7 @@ kff.Collection = kff.createClass(
 	{
 		var item = this.array.shift();
 		if(item) this.trigger('change', { type: 'shift', item: item});
+		this.unbindOnOne(item);
 		return item;
 	},
 
@@ -374,6 +381,7 @@ kff.Collection = kff.createClass(
 			for(var i = 0; i < l ; i++)
 			{
 				event.items.push(this.array[i]);
+				this.bindOnOne(this.array[i]);
 			}
 			this.trigger('change', event);
 		}
