@@ -198,10 +198,29 @@ describe('kff.Collection', function()
 		var l = c1.push(m2, m3);
 
 		expect(l).to.equal(3);
-
 		expect(c1.get(0)).to.equal(m1);
 		expect(c1.get(1)).to.equal(m2);
 		expect(c1.get(2)).to.equal(m3);
+	});
+
+	it('should pop an item from a collection', function()
+	{
+		var m1 = new kff.Model({ a: 1 });
+		var m2 = new kff.Model({ a: 2 });
+		var m3 = new kff.Model({ a: 3 });
+
+		var c1 = new kff.Collection();
+		c1.push(m1, m2, m3);
+
+		c1.on('change', function(event){
+			expect(event.type).to.equal('pop');
+			expect(event.item).to.equal(m3);
+		});
+
+		var item = c1.pop();
+
+		expect(item).to.equal(m3);
+		expect(c1.count()).to.equal(2);
 	});
 
 });

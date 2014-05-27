@@ -337,6 +337,17 @@ kff.Collection = kff.createClass(
 	},
 
 	/**
+	 * Removes the last element from a collection and returns that element.
+	 * Works like Array.pop
+	 */
+	pop: function()
+	{
+		var item = this.array.pop();
+		if(item) this.trigger('change', { type: 'pop', item: item});
+		return item;
+	},
+
+	/**
 	 * Returns the value of given attribute using deep lookup (object.attribute.some.value)
 	 *
 	 * @param {string} attrPath Attribute path
