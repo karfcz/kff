@@ -243,4 +243,28 @@ describe('kff.Collection', function()
 		expect(c1.count()).to.equal(2);
 	});
 
+	it('should unshift two items into a collection', function()
+	{
+		var m1 = new kff.Model({ a: 1 });
+		var m2 = new kff.Model({ a: 2 });
+		var m3 = new kff.Model({ a: 3 });
+
+		var c1 = new kff.Collection();
+		c1.append(m3);
+
+		c1.on('change', function(event){
+			expect(event.type).to.equal('unshift');
+			expect(event.items.length).to.equal(2);
+			expect(event.items[0]).to.equal(m1);
+			expect(event.items[1]).to.equal(m2);
+		});
+
+		var l = c1.unshift(m1, m2);
+
+		expect(l).to.equal(3);
+		expect(c1.get(0)).to.equal(m1);
+		expect(c1.get(1)).to.equal(m2);
+		expect(c1.get(2)).to.equal(m3);
+	});
+
 });

@@ -359,6 +359,28 @@ kff.Collection = kff.createClass(
 	},
 
 	/**
+	 * Adds one or more elements to the beginning of a collection and returns the new length of the collection.
+	 * Works like Array.unshift
+	 */
+	unshift: function()
+	{
+		var l = arguments.length;
+
+		if(l > 0)
+		{
+			Array.prototype.unshift.apply(this.array, arguments);
+			var event = { type: 'unshift', items: []};
+
+			for(var i = 0; i < l ; i++)
+			{
+				event.items.push(this.array[i]);
+			}
+			this.trigger('change', event);
+		}
+		return this.array.length;
+	},
+
+	/**
 	 * Returns the value of given attribute using deep lookup (object.attribute.some.value)
 	 *
 	 * @param {string} attrPath Attribute path
