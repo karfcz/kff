@@ -315,6 +315,28 @@ kff.Collection = kff.createClass(
 	},
 
 	/**
+	 * Works like Array.push
+	 */
+	push: function()
+	{
+		var i = this.array.length;
+		var l = arguments.length;
+
+		if(l > 0)
+		{
+			Array.prototype.push.apply(this.array, arguments);
+			var event = { type: 'push', items: [], fromIndex: i };
+
+			for(; l > 0 ; i++, l--)
+			{
+				event.items.push(this.array[i]);
+			}
+			this.trigger('change', event);
+		}
+		return this.array.length;
+	},
+
+	/**
 	 * Returns the value of given attribute using deep lookup (object.attribute.some.value)
 	 *
 	 * @param {string} attrPath Attribute path
