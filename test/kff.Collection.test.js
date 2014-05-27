@@ -163,4 +163,20 @@ describe('kff.Collection', function()
 		expect(sum).to.equal(4);
 	});
 
+	it('should slice collection', function()
+	{
+		var m1 = new kff.Model({ a: 1 });
+		var m2 = new kff.Model({ a: 2 });
+		var m3 = new kff.Model({ a: 3 });
+
+		var c1 = new kff.Collection();
+		c1 = c1.concat(m1, m2, m3);
+
+		var c2 = c1.slice(1, 3);
+
+		expect(c2.count()).to.equal(2);
+		expect(c2.get(0).get('a')).to.equal(2);
+		expect(c2.get(1).get('a')).to.equal(3);
+	});
+
 });

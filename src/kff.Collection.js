@@ -303,6 +303,18 @@ kff.Collection = kff.createClass(
 	},
 
 	/**
+	 * Returns a shallow copy of a portion of an collection into a new collection
+	 *
+	 * Works like Array.slice
+	 */
+	slice: function()
+	{
+		var collection = new kff.Collection(this.options);
+		collection.array = Array.prototype.slice.apply(this.array, arguments);
+		return collection;
+	},
+
+	/**
 	 * Returns the value of given attribute using deep lookup (object.attribute.some.value)
 	 *
 	 * @param {string} attrPath Attribute path
