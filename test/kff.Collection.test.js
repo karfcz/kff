@@ -223,4 +223,24 @@ describe('kff.Collection', function()
 		expect(c1.count()).to.equal(2);
 	});
 
+	it('should shift an item from a collection', function()
+	{
+		var m1 = new kff.Model({ a: 1 });
+		var m2 = new kff.Model({ a: 2 });
+		var m3 = new kff.Model({ a: 3 });
+
+		var c1 = new kff.Collection();
+		c1.push(m1, m2, m3);
+
+		c1.on('change', function(event){
+			expect(event.type).to.equal('shift');
+			expect(event.item).to.equal(m1);
+		});
+
+		var item = c1.shift();
+
+		expect(item).to.equal(m1);
+		expect(c1.count()).to.equal(2);
+	});
+
 });
