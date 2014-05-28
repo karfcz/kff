@@ -1,7 +1,7 @@
 
 kff.Collection = kff.createClass(
 {
-	extend: kff.List,
+	// extend: kff.List,
 	mixins: kff.EventsMixin
 },
 /** @lends kff.Collection.prototype	*/
@@ -10,7 +10,6 @@ kff.Collection = kff.createClass(
 	 * Class representing a collection of models.
 
 	 * @constructs
-	 * @augments kff.List
 	 * @param {Object} options Options object
 	 * @param {function} options.itemFactory Factory function for creating new collection items (optional)
 	 * @param {function} options.itemType Type (class or constructor function) of collection items
@@ -23,7 +22,7 @@ kff.Collection = kff.createClass(
 		this.serializeAttrs = options.serializeAttrs || null;
 		this.onEachEvents = [];
 		this.initEvents();
-		kff.List.call(this);
+		this.array = [];
 		return this;
 	},
 
@@ -219,7 +218,7 @@ kff.Collection = kff.createClass(
 	 */
 	insert: function(item, index, silent)
 	{
-		kff.Collection._super.insert.call(this, item, index);
+		this.array.splice(index, 0, item);
 		this.bindOnOne(item);
 		if(!silent) this.trigger('change', { type: 'insert', item: item, index: index });
 	},
@@ -238,7 +237,8 @@ kff.Collection = kff.createClass(
 	{
 		var replacedItem = this.get(index);
 		if(replacedItem) this.unbindOnOne(replacedItem);
-		kff.Collection._super.set.call(this, item, index);
+		if(this.array[index] !== undefined)	this.array[index] = item;
+		else throw new RangeError('Bad index in kff.List.set');
 		this.bindOnOne(item);
 		if(!silent) this.trigger('change', { type: 'set', item: item, index: index });
 	},
@@ -389,6 +389,17 @@ kff.Collection = kff.createClass(
 	},
 
 	/**
+	 * Returns an item at given position
+	 *
+	 * @param {number} index Index of item
+	 * @returns {mixed} Item at given position (or undefined if not found)
+	 */
+	get: function(index)
+	{
+		return this.array[index];
+	},
+
+	/**
 	 * Returns the value of given attribute using deep lookup (object.attribute.some.value)
 	 *
 	 * @param {string} attrPath Attribute path
@@ -486,7 +497,7 @@ kff.Collection = kff.createClass(
 	empty: function(silent)
 	{
 		this.unbindEach();
-		kff.Collection._super.empty.call(this);
+		this.array = [];
 		if(!silent) this.trigger('change', { type: 'empty' });
 	},
 
@@ -503,7 +514,7 @@ kff.Collection = kff.createClass(
 	 */
 	sort: function(compareFunction, silent)
 	{
-		kff.Collection._super.sort.call(this, compareFunction);
+		this.array.sort(compareFunction);
 		if(!silent) this.trigger('change', { type: 'sort' });
 	},
 
@@ -534,7 +545,19 @@ kff.Collection = kff.createClass(
 	 */
 	shuffle: function(silent)
 	{
-		kff.Collection._super.shuffle.call(this);
+		var arr = this.array,
+			len = arr.length,
+			i = len,
+			p, t;
+
+		while(i--)
+		{
+			p = parseInt(Math.random()*len, 10);
+			t = arr[i];
+			arr[i] = arr[p];
+			arr[p] = t;
+		}
+
 		if(!silent) this.trigger('change', { type: 'shuffle' });
 	},
 
@@ -544,9 +567,43 @@ kff.Collection = kff.createClass(
 	splice: function()
 	{
 		this.unbindEach();
-		kff.Collection._super.splice.apply(this, arguments);
+		Array.prototype.splice.apply(this.array, arguments);
 		this.rebindEach();
 		this.trigger('change', { type: 'splice' });
+	},
+
+	/**
+	 * Returns an index of given item
+	 *
+	 * @param {mixed} item Value to be found
+	 * @returns {number} index of the item or -1 if not found
+	 */
+	indexOf: function(item)
+	{
+		return kff.arrayIndexOf(this.array, item);
+	},
+
+	/**
+	 * Returns number of items in the list.
+	 *
+	 * @return {number} Number of items (length of the list)
+	 */
+	count: function()
+	{
+		return this.array.length;
+	},
+
+	/**
+	 * Iterates over each item in the list
+	 * @param {function} fn A callback function to be called on each item. Takes two arguments - the iterated item and its index
+	 */
+	each: function(fn)
+	{
+		var a = this.array, l = a.length, i = 0;
+		for(; i < l; i++)
+		{
+			if(fn.call(null, a[i], i) === false) break;
+		}
 	},
 
 	/**
@@ -658,3 +715,5 @@ kff.Collection = kff.createClass(
 	}
 
 });
+
+kff.Collection.prototype.findByIndex = kff.Collection.prototype.get;

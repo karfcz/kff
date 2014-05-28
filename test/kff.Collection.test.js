@@ -7,6 +7,121 @@ describe('kff.Collection', function()
 	var cls = new kff.Collection();
 	var obj1 = new kff.Model();
 
+	it('should append two values to the collection', function()
+	{
+		var collection = new kff.Collection();
+		collection.append('A');
+		collection.append('B');
+		expect(collection.count()).to.equal(2);
+	});
+
+	it('should append two values then remove last one from the collection', function()
+	{
+		var collection = new kff.Collection();
+		collection.append('A');
+		collection.append('B');
+		collection.remove('B');
+		expect(collection.count()).to.equal(1);
+	});
+
+	it('should append two values then remove first one from the collection', function()
+	{
+		var collection = new kff.Collection();
+		collection.append('A');
+		collection.append('B');
+		collection.remove('A');
+		expect(collection.count()).to.equal(1);
+		expect(collection.indexOf('B')).to.equal(0);
+	});
+
+	it('should append two values to the collection then remove both', function()
+	{
+		var collection = new kff.Collection();
+		collection.append('A');
+		collection.append('B');
+		collection.remove('A');
+		collection.remove('B');
+		expect(collection.count()).to.equal(0);
+	});
+
+	it('should insert one value to the collection', function()
+	{
+		var collection = new kff.Collection();
+		collection.append('A');
+		collection.append('C');
+		collection.insert('B', 1);
+
+		expect(collection.count()).to.equal(3);
+		expect(collection.get(1)).to.equal('B');
+	});
+
+	it('should get value from the collection', function()
+	{
+		var collection = new kff.Collection();
+		collection.append('A');
+		expect(collection.get(0)).to.equal('A');
+	});
+
+	it('should set value in the collection', function()
+	{
+		var collection = new kff.Collection();
+		collection.append('A');
+		collection.set(0, 'B');
+		expect(collection.get(0)).to.equal('B');
+		expect(collection.count()).to.equal(1);
+	});
+
+	it('should not set value on nonexistent index in the collection', function(done)
+	{
+		var collection = new kff.Collection();
+		try
+		{
+			collection.set(42, 'B');
+		}
+		catch (error)
+		{
+			expect(collection.count()).to.equal(0);
+			done();
+		}
+	});
+
+	it('should empty the collection', function()
+	{
+		var collection = new kff.Collection();
+		collection.append('A');
+		collection.empty();
+		expect(collection.count()).to.equal(0);
+	});
+
+	it('should iterate for each item in the collection', function()
+	{
+		var collection = new kff.Collection();
+		var count = 0;
+		collection.append('A');
+		collection.append('B');
+		collection.each(function(item, i){
+			count++;
+			if(i === 0) expect(item).to.equal('A');
+			if(i === 1) expect(item).to.equal('B');
+		});
+		expect(count).to.equal(2);
+	});
+
+	it('should remove one item from the collection using callback', function()
+	{
+		var collection = new kff.Collection();
+		collection.append('A');
+		collection.append('B');
+		collection.append('C');
+		collection.remove(function(item){
+			return item === 'A';
+		});
+		expect(collection.count()).to.equal(2);
+		expect(collection.indexOf('B')).to.equal(0);
+		expect(collection.indexOf('C')).to.equal(1);
+	});
+
+
 	it('should contain one item', function()
 	{
 		cls.append(obj1);
