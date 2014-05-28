@@ -179,4 +179,31 @@ describe('kff.Model', function()
 	});
 
 
+	describe('#kff.createModelClass', function()
+	{
+		it('should create modelClass', function()
+		{
+			var M1 = kff.createModelClass({
+				args: [{
+					a: 1,
+					b: 2
+				}]
+			}, {});
+
+			var m1 = new M1({
+				a: 1,
+				b: 2
+			});
+
+			expect(m1.get('a')).to.equal(1);
+			expect(m1.a()).to.equal(1);
+			expect(m1.b()).to.equal(2);
+
+			m1.a(42);
+			expect(m1.get('a')).to.equal(42);
+			expect(m1.a()).to.equal(42);
+		});
+	});
+
+
 });

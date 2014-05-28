@@ -248,3 +248,42 @@ kff.Model = kff.createClass(
 	}
 
 });
+
+(function()
+{
+	var createGetter = function(attr)
+	{
+		return function(value)
+		{
+			if(arguments.length === 0)	return this.get(attr);
+			else return this.set(attr, value);
+		};
+	};
+
+	kff.createModelClass = function(meta, properties)
+	{
+		if(arguments.length === 1)
+		{
+			properties = meta;
+			meta = {};
+		}
+
+		if(!('extend' in meta)) meta.extend = kff.Model;
+
+		var modelClass = kff.createClass(meta, properties);
+
+		if('service' in modelClass && 'args' in modelClass.service)
+		{
+			var attrs = modelClass.service.args['0'];
+			if(typeof attrs === 'object' && attrs !== null)
+			{
+				for(var attr in attrs)
+				{
+					if(!(attr in modelClass.prototype)) modelClass.prototype[attr] = createGetter(attr);
+				}
+			}
+		}
+		return modelClass;
+	};
+
+})();
