@@ -668,7 +668,7 @@ kff.View = kff.createClass(
 			clonedView.eventTriggers[i] = clonedView.eventTriggers[i].slice();
 		}
 
-		for(var i = 0; i < this.subviews.length; i++)
+		for(var i = 0, l = this.subviews.length; i < l; i++)
 		{
 			clonedSubview = this.subviews[i].clone();
 			clonedView.subviews.push(clonedSubview);
