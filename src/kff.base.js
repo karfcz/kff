@@ -136,6 +136,12 @@ kff.createClass = function(meta, properties)
 		constructor.service.args = meta.args;
 	}
 
+	if(meta.shared)
+	{
+		if(!('service' in constructor)) constructor.service = {};
+		constructor.service.shared = meta.shared;
+	}
+
 	// Add properties to prototype
 	kff.mixins(constructor.prototype, properties);
 
