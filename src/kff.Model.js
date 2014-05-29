@@ -85,7 +85,7 @@ kff.Model = kff.createClass(
 			changed[attr] = value;
 			this.attrs[attr] = value;
 		}
-		else if(attr !== null && attr instanceof Object)
+		else if(attr !== null && typeof attr === 'object')
 		{
 			silent = value;
 			changed = attr;
