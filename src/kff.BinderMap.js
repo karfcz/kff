@@ -15,11 +15,11 @@ kff.BinderMap = kff.createClass(
 	{
 		var clonedBinderMap = new kff.BinderMap(),
 			clonedBinders = clonedBinderMap.binders,
-			i, l;
+			l = this.binders.length;
 
-		for(i = 0, l = this.binders.length; i < l; i++)
+		while(l--)
 		{
-			clonedBinders[i] = this.binders[i].clone();
+			clonedBinders[l] = this.binders[l].clone();
 		}
 		return clonedBinderMap;
 	},
