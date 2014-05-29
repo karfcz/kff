@@ -652,26 +652,30 @@ kff.View = kff.createClass(
 
 	clone: function()
 	{
+		var l;
+		var clonedSubview;
 		var options = kff.mixins({}, this.options);
+		// var options = kff.createObject(this.options);
+		// var options = this.options;
 
 		options.parentView = null;
 
 		var clonedView = new this.constructor(options);
-		var clonedSubview;
-
 		clonedView.viewFactory = this.viewFactory;
 
-		clonedView.eventTriggers = this.eventTriggers.slice();
-
-		for(var i = 0, l = clonedView.eventTriggers.length; i < l; i++)
+		l = clonedView.eventTriggers.length;
+		clonedView.eventTriggers = new Array(l);
+		while(l--)
 		{
-			clonedView.eventTriggers[i] = clonedView.eventTriggers[i].slice();
+			clonedView.eventTriggers[l] = this.eventTriggers[l].slice();
 		}
 
-		for(var i = 0, l = this.subviews.length; i < l; i++)
+		l = this.subviews.length;
+		clonedView.subviews.length = l;
+		while(l--)
 		{
-			clonedSubview = this.subviews[i].clone();
-			clonedView.subviews.push(clonedSubview);
+			clonedSubview = this.subviews[l].clone();
+			clonedView.subviews[l] = clonedSubview;
 		}
 
 		clonedView.subviewsStruct = this.subviewsStruct.slice();
