@@ -12,6 +12,7 @@ module.exports = function(grunt) {
 				},
 				src: [
 					'./src/kff-prologue',
+					'./src/kff.polyfills.js',
 					'./src/kff.base.js',
 					'./src/kff.Dom.js',
 					'./src/kff.Events.js',
@@ -56,7 +57,8 @@ module.exports = function(grunt) {
 		uglify: {
 			options: {
 				mangle: true,
-				banner: grunt.file.read('./src/kff-banner.js')
+				banner: grunt.file.read('./src/kff-banner.js'),
+				report: 'gzip'
 			},
 			kff: {
 				src: ['./build/kff.js'],
