@@ -53,7 +53,7 @@ kff.View = kff.createClass(
 
 		this.subviewsStruct = null;
 		this.explicitSubviewsStruct = null;
-		this.subviews = [];
+		this.subviews = null;
 		this.eventTriggers = null;
 		this.viewFactory = null;
 
@@ -434,6 +434,7 @@ kff.View = kff.createClass(
 		if(subView instanceof kff.View)
 		{
 			subView.viewFactory = this.viewFactory;
+			if(this.subviews === null) this.subviews = [];
 			this.subviews.push(subView);
 		}
 		return subView;
@@ -604,7 +605,7 @@ kff.View = kff.createClass(
 
 		this.subviewsStruct = null;
 		this.explicitSubviewsStruct = null;
-		this.subviews = [];
+		this.subviews = null;
 		this.eventTriggers = null;
 
 		return ret;
@@ -620,12 +621,15 @@ kff.View = kff.createClass(
 		this.undelegateEvents(this.eventTriggers);
 
 		// Destroy subviews
-		for(i = 0, l = this.subviews.length; i < l; i++)
+		if(this.subviews !== null)
 		{
-			subView = this.subviews[i];
-			subView.destroyAll();
+			for(i = 0, l = this.subviews.length; i < l; i++)
+			{
+				subView = this.subviews[i];
+				subView.destroyAll();
+			}
 		}
-		this.subviews = [];
+		this.subviews = null;
 		this.subviewsStruct = null;
 	},
 
@@ -653,7 +657,10 @@ kff.View = kff.createClass(
 	 */
 	refreshBinders: function(event)
 	{
-		for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].refreshBinders(event);
+		if(this.subviews !== null)
+		{
+			for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].refreshBinders(event);
+		}
 	},
 
 	/**
@@ -688,12 +695,15 @@ kff.View = kff.createClass(
 			}
 		}
 
-		l = this.subviews.length;
-		clonedView.subviews.length = l;
-		while(l--)
+		if(this.subviews !== null)
 		{
-			clonedSubview = this.subviews[l].clone();
-			clonedView.subviews[l] = clonedSubview;
+			l = this.subviews.length;
+			clonedView.subviews = new Array(l);
+			while(l--)
+			{
+				clonedSubview = this.subviews[l].clone();
+				clonedView.subviews[l] = clonedSubview;
+			}
 		}
 
 		if(this.subviewsStruct !== null)
@@ -729,9 +739,12 @@ kff.View = kff.createClass(
 			}
 		}
 
-		for(i = 0, l = this.subviews.length; i < l; i++)
+		if(this.subviews !== null)
 		{
-			this.subviews[i].setParentView(this);
+			for(i = 0, l = this.subviews.length; i < l; i++)
+			{
+				this.subviews[i].setParentView(this);
+			}
 		}
 	},
 
@@ -768,6 +781,7 @@ kff.View = kff.createClass(
 		var node, doSubviews;
 		if(this.subviewsStruct !== null)
 		{
+			if(this.subviews === null) this.subviews = [];
 			if(el.hasChildNodes())
 			{
 				node = el.firstChild;
