@@ -51,10 +51,10 @@ kff.View = kff.createClass(
 	{
 		options = options || {};
 
-		this.subviewsStruct = [];
-		this.explicitSubviewsStruct = [];
+		this.subviewsStruct = null;
+		this.explicitSubviewsStruct = null;
 		this.subviews = [];
-		this.eventTriggers = [];
+		this.eventTriggers = null;
 		this.viewFactory = null;
 
 		this.initEvents();
@@ -222,6 +222,7 @@ kff.View = kff.createClass(
 	 */
 	addEventTriggers: function(events)
 	{
+		if(!this.eventTriggers) this.eventTriggers = [];
 		this.eventTriggers = this.eventTriggers.concat(events);
 	},
 
@@ -260,13 +261,16 @@ kff.View = kff.createClass(
 
 	delegateEventTriggers: function()
 	{
-		for(var i = 0, l = this.eventTriggers.length; i < l; i++)
+		if(this.eventTriggers)
 		{
-			this.eventTriggers[i][2] = this.f(function(){
-				this.callTriggerMethod.apply(this, arguments);
-			}, [this.eventTriggers[i][3]]);
+			for(var i = 0, l = this.eventTriggers.length; i < l; i++)
+			{
+				this.eventTriggers[i][2] = this.f(function(){
+					this.callTriggerMethod.apply(this, arguments);
+				}, [this.eventTriggers[i][3]]);
+			}
+			this.delegateEvents(this.eventTriggers);
 		}
-		this.delegateEvents(this.eventTriggers);
 	},
 
 	/**
@@ -336,7 +340,7 @@ kff.View = kff.createClass(
 	renderAll: function()
 	{
 		if(!this.viewFactory) this.viewFactory = new kff.ViewFactory();
-		this.explicitSubviewsStruct = [];
+		this.explicitSubviewsStruct = null;
 		this.render();
 		this.renderSubviews();
 		this.processEventTriggers();
@@ -372,32 +376,42 @@ kff.View = kff.createClass(
 	renderSubviews: function()
 	{
 		var i, l, element = this.$element[0],
-			subView, options, opt, rendered, subviewsStruct;
+			subView, options, opt, rendered, subviewsStruct = null;
 
-		if(element) this.findViewElements(element, this.subviewsStruct);
+		if(element) this.subviewsStruct = this.findViewElements(element);
 
-		subviewsStruct = this.subviewsStruct.concat(this.explicitSubviewsStruct);
+		if(this.explicitSubviewsStruct !== null)
+		{
+			if(this.subviewsStruct === null) this.subviewsStruct = [];
+			subviewsStruct = this.subviewsStruct.concat(this.explicitSubviewsStruct);
+		}
+		else if(this.subviewsStruct !== null) subviewsStruct = this.subviewsStruct.slice();
 
 		// Render subviews
-		for(i = 0, l = subviewsStruct.length; i < l; i++)
+		if(subviewsStruct !== null)
 		{
-			options = subviewsStruct[i].options;
-			options.element = subviewsStruct[i].$element;
-			subView = this.createView(subviewsStruct[i].viewName, options);
-			if(subView instanceof kff.View)
+			for(i = 0, l = subviewsStruct.length; i < l; i++)
 			{
-				subView.renderAll();
+				options = subviewsStruct[i].options;
+				options.element = subviewsStruct[i].$element;
+				subView = this.createView(subviewsStruct[i].viewName, options);
+				if(subView instanceof kff.View)
+				{
+					subView.renderAll();
+				}
 			}
 		}
-
 	},
 
 	runSubviews: function()
 	{
 		this.delegateEventTriggers();
-		for(var i = 0, l = this.subviews.length; i < l; i++)
+		if(this.subviews)
 		{
-			this.subviews[i].runAll();
+			for(var i = 0, l = this.subviews.length; i < l; i++)
+			{
+				this.subviews[i].runAll();
+			}
 		}
 	},
 
@@ -440,6 +454,7 @@ kff.View = kff.createClass(
 	 */
 	addSubview: function($element, viewName, options)
 	{
+		if(this.explicitSubviewsStruct === null) this.explicitSubviewsStruct = [];
 		this.explicitSubviewsStruct.push({
 			viewName: viewName,
 			$element: $element,
@@ -456,9 +471,9 @@ kff.View = kff.createClass(
 	 *                           (items will be objects { objPath: viewName, $element: jQuery wrapper })
 	 * @param  {string} filter  A jQuery selector for filtering elements (optional)
 	 */
-	findViewElements: function(el, subviewsStruct)
+	findViewElements: function(el)
 	{
-		var node, viewName, rendered, onAttr, optAttr, index = 0;
+		var node, viewName, rendered, onAttr, optAttr, index = 0, subviewsStruct = null;
 
 		if(el.hasChildNodes())
 		{
@@ -481,6 +496,7 @@ kff.View = kff.createClass(
 						if(viewName)
 						{
 							optAttr = node.getAttribute(kff.View.DATA_OPTIONS_ATTR);
+							if(subviewsStruct === null) subviewsStruct = [];
 							subviewsStruct.push({
 								viewName: viewName,
 								index: index,
@@ -502,6 +518,7 @@ kff.View = kff.createClass(
 				node = this.nextNode(el, node, viewName === null);
 			}
 		}
+		return subviewsStruct;
 	},
 
 	/**
@@ -585,10 +602,10 @@ kff.View = kff.createClass(
 		ret = this.destroy();
 		if(typeof this.afterDestroy === 'function') this.afterDestroy();
 
-		this.subviewsStruct = [];
-		this.explicitSubviewsStruct = [];
+		this.subviewsStruct = null;
+		this.explicitSubviewsStruct = null;
 		this.subviews = [];
-		this.eventTriggers = [];
+		this.eventTriggers = null;
 
 		return ret;
 	},
@@ -609,7 +626,7 @@ kff.View = kff.createClass(
 			subView.destroyAll();
 		}
 		this.subviews = [];
-		this.subviewsStruct = [];
+		this.subviewsStruct = null;
 	},
 
 	/**
@@ -654,20 +671,21 @@ kff.View = kff.createClass(
 	{
 		var l;
 		var clonedSubview;
-		var options = kff.mixins({}, this.options);
-		// var options = kff.createObject(this.options);
-		// var options = this.options;
+		var options = this.options;
 
 		options.parentView = null;
 
 		var clonedView = new this.constructor(options);
 		clonedView.viewFactory = this.viewFactory;
 
-		l = clonedView.eventTriggers.length;
-		clonedView.eventTriggers = new Array(l);
-		while(l--)
+		if(this.eventTriggers)
 		{
-			clonedView.eventTriggers[l] = this.eventTriggers[l].slice();
+			l = this.eventTriggers.length;
+			clonedView.eventTriggers = new Array(l);
+			while(l--)
+			{
+				clonedView.eventTriggers[l] = this.eventTriggers[l].slice();
+			}
 		}
 
 		l = this.subviews.length;
@@ -678,8 +696,14 @@ kff.View = kff.createClass(
 			clonedView.subviews[l] = clonedSubview;
 		}
 
-		clonedView.subviewsStruct = this.subviewsStruct.slice();
-		clonedView.explicitSubviewsStruct = this.explicitSubviewsStruct.slice();
+		if(this.subviewsStruct !== null)
+		{
+			clonedView.subviewsStruct = this.subviewsStruct.slice();
+		}
+		if(this.explicitSubviewsStruct !== null)
+		{
+			clonedView.explicitSubviewsStruct = this.explicitSubviewsStruct.slice();
+		}
 
 		return clonedView;
 	},
@@ -722,10 +746,13 @@ kff.View = kff.createClass(
 
 		this.$element = $(element);
 
-		while(this.eventTriggers[eventTriggersIndex] && typeof this.eventTriggers[eventTriggersIndex][4] === 'undefined')
+		if(this.eventTriggers)
 		{
-			this.eventTriggers[eventTriggersIndex][1] = this.$element;
-			eventTriggersIndex++;
+			while(this.eventTriggers[eventTriggersIndex] && typeof this.eventTriggers[eventTriggersIndex][4] === 'undefined')
+			{
+				this.eventTriggers[eventTriggersIndex][1] = this.$element;
+				eventTriggersIndex++;
+			}
 		}
 
 		this.rebindSubViews(element, {
@@ -739,40 +766,43 @@ kff.View = kff.createClass(
 	rebindSubViews: function(el, ids)
 	{
 		var node, doSubviews;
-
-		if(el.hasChildNodes())
+		if(this.subviewsStruct !== null)
 		{
-			node = el.firstChild;
-
-			while(node !== null)
+			if(el.hasChildNodes())
 			{
-				if(node.nodeType === 1)
+				node = el.firstChild;
+
+				while(node !== null)
 				{
-					if(this.subviewsStruct[ids.subviewIndex])
+					if(node.nodeType === 1)
 					{
-						ids.subviewsStructIndex = this.subviewsStruct[ids.subviewIndex].index;
-						if(ids.index === ids.subviewsStructIndex)
+						if(this.subviewsStruct[ids.subviewIndex])
 						{
-							if(this.subviews[ids.subviewIndex])
+							ids.subviewsStructIndex = this.subviewsStruct[ids.subviewIndex].index;
+							if(ids.index === ids.subviewsStructIndex)
 							{
-								this.subviews[ids.subviewIndex].rebindElement(node);
+								if(this.subviews[ids.subviewIndex])
+								{
+									this.subviews[ids.subviewIndex].rebindElement(node);
+								}
+								ids.subviewIndex++;
+								doSubviews = false;
 							}
-							ids.subviewIndex++;
-							doSubviews = false;
+							else doSubviews = true;
 						}
-						else doSubviews = true;
-					}
-					else
-					{
-						while(this.eventTriggers[ids.eventTriggersIndex] && this.eventTriggers[ids.eventTriggersIndex][4] === ids.index)
+						else
 						{
-							this.eventTriggers[ids.eventTriggersIndex][1] = $(node);
-							ids.eventTriggersIndex++;
+							if(!this.eventTriggers) this.eventTriggers = [];
+							while(this.eventTriggers[ids.eventTriggersIndex] && this.eventTriggers[ids.eventTriggersIndex][4] === ids.index)
+							{
+								this.eventTriggers[ids.eventTriggersIndex][1] = $(node);
+								ids.eventTriggersIndex++;
+							}
 						}
+						ids.index++;
 					}
-					ids.index++;
+					node = this.nextNode(el, node, doSubviews);
 				}
-				node = this.nextNode(el, node, doSubviews);
 			}
 		}
 	},
