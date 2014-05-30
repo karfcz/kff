@@ -8,7 +8,7 @@ kff.Binder = kff.createClass(
 	constructor: function(options)
 	{
 		this.options = options;
-		this.options.events = options.events || [];
+		this.options.events = options.events || null;
 
 		this.view = options.view;
 		this.$element = options.$element;
@@ -32,7 +32,7 @@ kff.Binder = kff.createClass(
 			else if(this.model instanceof kff.Model)
 			{
 				this.model.on('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
-				if(this.$element && this.options.events.length > 0) this.delegateEvents(this.options.events);
+				if(this.$element && this.options.events !== null) this.delegateEvents(this.options.events);
 			}
 		}
 		if(this.options.fill && this.model instanceof kff.Model) this.fill();
@@ -42,7 +42,7 @@ kff.Binder = kff.createClass(
 	{
 		if(this.model instanceof kff.Model) this.model.off('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
 		if(this.options.watchModelPath) this.unbindDynamic();
-		if(this.$element && this.options.events.length > 0) this.undelegateEvents(this.options.events);
+		if(this.$element && this.options.events !== null) this.undelegateEvents(this.options.events);
 		this.currentValue = null;
 		this.value = null;
 	},
@@ -210,14 +210,14 @@ kff.Binder = kff.createClass(
 		if(this.model instanceof kff.Model)
 		{
 			this.model.off('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
-			if(this.$element && this.options.events.length > 0) this.undelegateEvents.call(this, this.options.events);
+			if(this.$element && this.options.events !== null) this.undelegateEvents.call(this, this.options.events);
 		}
 
 		this.bindDynamic();
 		if(this.model instanceof kff.Model)
 		{
 			this.model.on('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
-			if(this.$element && this.options.events.length > 0) this.delegateEvents.call(this, this.options.events);
+			if(this.$element && this.options.events !== null) this.delegateEvents.call(this, this.options.events);
 			this.modelChange(true);
 		}
 	},
