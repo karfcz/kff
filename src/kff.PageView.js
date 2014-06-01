@@ -5,11 +5,9 @@ kff.PageView = kff.createClass(
 	statics:
 	{
 		precedingView: null,
-		service: {
-			args: [{
-				viewFactory: '@kff.ViewFactory'
-			}]
-		}
+		args: [{
+			viewFactory: '@kff.ViewFactory'
+		}]
 	}
 },
 /** @lends kff.PageView.prototype */
