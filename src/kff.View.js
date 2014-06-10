@@ -211,7 +211,7 @@ kff.View = kff.createClass(
 	 */
 	addEvents: function(events)
 	{
-		this.domEvents = this.domEvents.concat(events);
+		Array.prototype.push.apply(this.domEvents, events);
 	},
 
 	/**
@@ -223,7 +223,7 @@ kff.View = kff.createClass(
 	addEventTriggers: function(events)
 	{
 		if(!this.eventTriggers) this.eventTriggers = [];
-		this.eventTriggers = this.eventTriggers.concat(events);
+		Array.prototype.push.apply(this.eventTriggers, events);
 	},
 
 	/**

@@ -514,7 +514,7 @@ kff.BindingView = kff.createClass(
 	refreshBoundViewsOnRemove: function(event)
 	{
 		var i, l;
-		if('items' in event)
+		if(event.items !== undefined)
 		{
 			for(i = 0, l = event.items.length; i < l; i++)
 			{
