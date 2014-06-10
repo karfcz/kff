@@ -213,7 +213,7 @@ kff.evalObjectPath = function(path, obj)
 	for(i = 0, l = parts.length; i < l; i++)
 	{
 		part = parts[i];
-		if(!(part in obj)) return null;
+		if(obj[part] === undefined) return null;
 		else obj = obj[part];
 	}
 	return obj;
