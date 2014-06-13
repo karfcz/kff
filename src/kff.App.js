@@ -59,6 +59,10 @@ kff.App = kff.createClass(
 			var router = this.serviceContainer.getService('kff.Router', [routerOptions]);
 			frontController.setRouter(router);
 		}
+		if(this.options.stateHandler)
+		{
+			frontController.setStateHandler(this.options.stateHandler);
+		}
 		if(this.options.defaultView)
 		{
 			frontController.setDefaultView(this.options.defaultView);

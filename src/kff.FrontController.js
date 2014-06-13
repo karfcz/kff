@@ -5,7 +5,8 @@ kff.FrontController = kff.createClass(
 		service: {
 			args: [{
 				viewFactory: '@kff.ViewFactory',
-				defaultView: 'kff.PageView'
+				defaultView: 'kff.PageView',
+				stateHandler: '@kff.HashStateHandler'
 			}],
 			shared: true
 		}
@@ -25,22 +26,23 @@ kff.FrontController = kff.createClass(
 		this.viewFactory = options.viewFactory;
 		this.defaultView = options.defaultView;
 		this.router = options.router || null;
+		this.stateHandler = options.stateHandler || null;
 	},
 
 	init: function()
 	{
 		if(!this.viewFactory) this.viewFactory = new kff.ViewFactory();
-		if(this.router)
+		if(this.router && this.stateHandler)
 		{
-			$(window).on('hashchange', this.f('hashChange'));
-			this.hashChange();
+			this.stateHandler.on('popstate', this.f('setState'));
+			this.stateHandler.init();
 		}
 		else this.setState(null);
 	},
 
 	createViewFromState: function(state)
 	{
-		if(this.router)
+		if(this.router && this.state)
 		{
 			var path = state.path;
 			var result;
@@ -55,15 +57,6 @@ kff.FrontController = kff.createClass(
 			}
 		}
 		return this.defaultView;
-	},
-
-	hashChange: function(event)
-	{
-		var hash = location.hash;
-		if(hash.indexOf('#') !== 0 && hash != '') return false;
-
-		this.setState({ path: hash, params: {} });
-		return false;
 	},
 
 	getLastView: function()
@@ -202,5 +195,10 @@ kff.FrontController = kff.createClass(
 	setDefaultView: function(defaultView)
 	{
 		this.defaultView = defaultView;
+	},
+
+	setStateHandler: function(stateHandler)
+	{
+		this.stateHandler = stateHandler;
 	}
 });

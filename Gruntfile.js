@@ -47,6 +47,7 @@ module.exports = function(grunt) {
 					'./src/kff.ViewFactory.js',
 					'./src/kff.Route.js',
 					'./src/kff.Router.js',
+					'./src/kff.HashStateHandler.js',
 					'./src/kff.FrontController.js',
 					'./src/kff.App.js',
 					'./src/kff-epilogue'
