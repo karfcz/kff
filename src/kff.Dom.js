@@ -12,12 +12,13 @@ kff.Dom = kff.createClass(
 	constructor: function(element)
 	{
 		this['0'] = element;
-		this.handlers = {};
+		this.handlers = null;
 		this.$element = null;
 	},
 
 	on: function(type, selector, handler)
 	{
+		if(!this.handlers) this.handlers = {};
 		var types = type.split(/\s+/);
 		for(var i = 0, l = types.length; i < l; i++)
 		{
