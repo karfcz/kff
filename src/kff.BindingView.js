@@ -62,7 +62,7 @@ kff.BindingView = kff.createClass(
 		this.collectionBinder = null;
 		this.bindingIndex = null;
 		this.itemAlias = null;
-		this.boundViews = [];
+		this.boundViews = null;
 		this.anchor = null;
 
 		kff.View.call(this, options);
@@ -108,7 +108,7 @@ kff.BindingView = kff.createClass(
 		this.collectionBinder = null;
 		this.bindingIndex = null;
 		this.itemAlias = null;
-		this.boundViews = [];
+		this.boundViews = null;
 
 		kff.BindingView._super.destroyAll.call(this, true);
 	},
@@ -222,6 +222,7 @@ kff.BindingView = kff.createClass(
 					{
 						this.itemAlias = binderParams[0];
 					}
+					this.boundViews = [];
 				}
 			}
 			else
@@ -397,6 +398,7 @@ kff.BindingView = kff.createClass(
 			el.parentNode.removeChild(el);
 		}
 
+		this.boundViews = [];
 		this.boundViewsMap = [];
 
 		// Boundview options:
