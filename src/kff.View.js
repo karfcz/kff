@@ -119,7 +119,12 @@ kff.View = kff.createClass(
 
 		if(modelPath.length > 0)
 		{
-			if(this.models[modelName]) return this.models[modelName].mget(modelPath);
+			if(this.models[modelName])
+			{
+				if(typeof this.models[modelName].mget === 'function') return this.models[modelName].mget(modelPath);
+				else return this.getModel(modelPath);
+
+			}
 			else return null;
 		}
 		else return this.models[modelName];
