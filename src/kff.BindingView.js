@@ -376,8 +376,11 @@ kff.BindingView = kff.createClass(
 	 */
 	destroyBinding: function()
 	{
-		this.modelBindersMap.destroyBinders();
-		this.modelBindersMap = null;
+		if(this.modelBindersMap !== null)
+		{
+			this.modelBindersMap.destroyBinders();
+			this.modelBindersMap = null;
+		}
 		this.destroyCollectionCountBindings();
 	},
 
@@ -414,8 +417,11 @@ kff.BindingView = kff.createClass(
 
 		this.refreshBoundViewsAll();
 
-		this.collectionBinder.collection.on('change', this.f('refreshBoundViews'));
-		if(this.collectionFilter) this.collectionBinder.collection.onEach('change', this.f('collectionItemChange'));
+		if(this.collectionBinder.collection instanceof kff.Collection)
+		{
+			this.collectionBinder.collection.on('change', this.f('refreshBoundViews'));
+			if(this.collectionFilter) this.collectionBinder.collection.onEach('change', this.f('collectionItemChange'));
+		}
 	},
 
 	/**
@@ -434,12 +440,15 @@ kff.BindingView = kff.createClass(
 		}
 
 		// Destroy boundviews
-		for(i = 0, l = this.boundViews.length; i < l; i++)
+		if(this.boundViews !== null)
 		{
-			boundView = this.boundViews[i];
-			boundView.destroyAll();
+			for(i = 0, l = this.boundViews.length; i < l; i++)
+			{
+				boundView = this.boundViews[i];
+				boundView.destroyAll();
+			}
+			this.boundViews = null;
 		}
-		this.boundViews = [];
 
 		if(this.elements)
 		{
