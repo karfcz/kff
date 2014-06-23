@@ -61,7 +61,7 @@ kff.App = kff.createClass(
 		}
 		if(this.options.stateHandler)
 		{
-			frontController.setStateHandler(this.options.stateHandler);
+			frontController.setStateHandler(this.serviceContainer.resolveParameters(this.options.stateHandler));
 		}
 		if(this.options.defaultView)
 		{
