@@ -452,7 +452,7 @@ kff.BindingView = kff.createClass(
 
 		if(this.elements)
 		{
-			for(var i = 0, l = this.elements.length; i < l; i++) this.elements[i].remove();
+			for(i = 0, l = this.elements.length; i < l; i++) this.elements[i].remove();
 		}
 		this.elements = [];
 		if(this.anchor)
@@ -828,7 +828,7 @@ kff.BindingView = kff.createClass(
 		{
 			$element = $(this.$elementTemplate[0].cloneNode(true));
 			boundView = this.viewTemplate.clone();
-			boundView.setParentView(this.parentView)
+			boundView.setParentView(this.parentView);
 
 			if(i === undefined)
 			{

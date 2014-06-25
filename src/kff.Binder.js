@@ -136,7 +136,7 @@ kff.Binder = kff.createClass(
 			if(this.setter.args.length > 0)
 			{
 				var args = [];
-				for(var i = 0, l = this.setter.args.length; i < l; i++)
+				for(i = 0, l = this.setter.args.length; i < l; i++)
 				{
 					if(this.setter.args[i] === '@val') args[i] = this.currentValue;
 					else if(this.setter.args[i] === '@attr') args[i] = this.options.attr;

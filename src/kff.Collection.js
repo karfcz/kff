@@ -103,7 +103,7 @@ kff.Collection = kff.createClass(
 	 */
 	map: function(callback, thisArg)
 	{
-		var thisArg = thisArg || undefined;
+		thisArg = thisArg || undefined;
 		var mappedArray;
 		var array = this.array;
 

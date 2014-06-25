@@ -731,7 +731,7 @@ kff.View = kff.createClass(
 
 		oldModels = this.models || null;
 
-		this.models = kff.createObject(this.parentView.models)
+		this.models = kff.createObject(this.parentView.models);
 
 		if(oldModels)
 		{

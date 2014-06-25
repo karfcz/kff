@@ -28,12 +28,13 @@ kff.InsertBinder = kff.createClass(
 
 	refresh: function()
 	{
+		var parentNode;
 		if(!this.anchor) this.anchor = document.createTextNode('');
 		if(this.matchValue())
 		{
 			if(!this.isInserted)
 			{
-				var parentNode = this.anchor.parentNode;
+				parentNode = this.anchor.parentNode;
 
 				if(parentNode)
 				{
@@ -46,7 +47,7 @@ kff.InsertBinder = kff.createClass(
 		{
 			if(this.isInserted)
 			{
-				var parentNode = this.$element[0].parentNode;
+				parentNode = this.$element[0].parentNode;
 
 				if(parentNode)
 				{

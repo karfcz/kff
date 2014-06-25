@@ -116,8 +116,9 @@ kff.$ = function(element)
 	{
 		kff.$ = function(element)
 		{
-			if(element instanceof kff.Dom) var el = new kff.Dom(element[0]);
-			else var el =  new kff.Dom(element);
+			var el;
+			if(element instanceof kff.Dom) el = new kff.Dom(element[0]);
+			else el =  new kff.Dom(element);
 			return el;
 		};
 	}

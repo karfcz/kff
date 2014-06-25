@@ -138,7 +138,7 @@ kff.ServiceContainer = kff.createClass(
 	 */
 	getServiceConstructor: function(serviceName)
 	{
-		var serviceConfig, ctor, construct = kff.ServiceContainer.CONFIG_CONSTRUCTOR, type, name, serviceObject, construct;
+		var serviceConfig, ctor, construct = kff.ServiceContainer.CONFIG_CONSTRUCTOR, type, name, serviceObject;
 		serviceConfig = this.config.services[serviceName];
 		if(!serviceConfig)
 		{

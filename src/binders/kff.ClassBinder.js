@@ -32,11 +32,11 @@ kff.ClassBinder = kff.createClass(
 		{
 			if(this.matchValue())
 			{
-				this.$element[0].classList.add(this.className)
+				this.$element[0].classList.add(this.className);
 			}
 			else
 			{
-				this.$element[0].classList.remove(this.className)
+				this.$element[0].classList.remove(this.className);
 			}
 		}
 	},
@@ -64,7 +64,7 @@ if(!('classList' in document.documentElement))
 		{
 			this.$element[this.matchValue() ? 'addClass' : 'removeClass'](this.className);
 		}
-	}
+	};
 }
 
 kff.BindingView.registerBinder('class', kff.ClassBinder);
