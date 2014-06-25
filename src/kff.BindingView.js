@@ -384,6 +384,7 @@ kff.BindingView = kff.createClass(
 		this.destroyCollectionCountBindings();
 		this.collectionFilter = null;
 		this.collectionSorter = null;
+		this.collectionCounter = null;
 	},
 
 	/**
@@ -411,12 +412,12 @@ kff.BindingView = kff.createClass(
 
 		this.initCollectionFilter();
 		this.initCollectionSorter();
+		this.initCollectionCounter();
 
 		this.boundViewOptions = opt ? JSON.parse(opt) : {};
 		this.boundViewOptions.parentView = this;
 		this.boundViewOptions.viewFactory = this.viewFactory;
 		this.boundViewOptions.isBoundView = true;
-
 
 		if(this.collectionBinder.collection instanceof kff.Collection)
 		{
@@ -501,6 +502,7 @@ kff.BindingView = kff.createClass(
 					this.refreshBoundViewsAll();
 			}
 		}
+		if(this.collectionCounter) this.collectionCounter.model.set(this.collectionCounter.attr, this.elements ? this.elements.length : 0);
 	},
 
 	/**
@@ -710,7 +712,7 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-	 * Inits filtering of colelction items
+	 * Inits filtering of collection items
 	 *
 	 * @private
 	 */
@@ -739,7 +741,7 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-	 * Inits sorting of colelction
+	 * Inits sorting of collection
 	 *
 	 * @private
 	 */
@@ -769,6 +771,33 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
+	 * Inits counting of collection
+	 *
+	 * @private
+	 */
+	initCollectionCounter: function()
+	{
+		var counterName = this.$element[0].getAttribute('data-kff-count');
+
+		if(counterName)
+		{
+			this.collectionCounter =
+			{
+				model: null,
+				attr: null
+			};
+			counterName = counterName.replace(/^\./, '').split('.');
+			if(counterName.length >= 2)
+			{
+				this.collectionCounter.attr = counterName.pop();
+				this.collectionCounter.model =  this.getModel(counterName);
+			}
+			else this.collectionCounter = null;
+		}
+		else this.collectionCounter = null;
+	},
+
+	/**
 	 * Event handler for collection item change
 	 *
 	 * @private
@@ -776,7 +805,7 @@ kff.BindingView = kff.createClass(
 	 */
 	collectionItemChange: function(event)
 	{
-		this.refreshBoundViewsAll();
+		this.refreshBoundViews();
 	},
 
 	/**
@@ -786,7 +815,7 @@ kff.BindingView = kff.createClass(
 	 */
 	refilterCollection: function()
 	{
-		this.refreshBoundViewsAll();
+		this.refreshBoundViews();
 	},
 
 	/**
