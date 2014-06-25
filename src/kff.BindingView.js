@@ -382,6 +382,8 @@ kff.BindingView = kff.createClass(
 			this.modelBindersMap = null;
 		}
 		this.destroyCollectionCountBindings();
+		this.collectionFilter = null;
+		this.collectionSorter = null;
 	},
 
 	/**
@@ -408,6 +410,7 @@ kff.BindingView = kff.createClass(
 		var opt = this.$element[0].getAttribute(kff.View.DATA_OPTIONS_ATTR);
 
 		this.initCollectionFilter();
+		this.initCollectionSorter();
 
 		this.boundViewOptions = opt ? JSON.parse(opt) : {};
 		this.boundViewOptions.parentView = this;
@@ -418,7 +421,7 @@ kff.BindingView = kff.createClass(
 		if(this.collectionBinder.collection instanceof kff.Collection)
 		{
 			this.collectionBinder.collection.on('change', this.f('refreshBoundViews'));
-			if(this.collectionFilter) this.collectionBinder.collection.onEach('change', this.f('collectionItemChange'));
+			if(this.collectionFilter || this.collectionSorter) this.collectionBinder.collection.onEach('change', this.f('collectionItemChange'));
 		}
 
 		this.refreshBoundViews();
@@ -436,7 +439,7 @@ kff.BindingView = kff.createClass(
 		if(this.collectionBinder)
 		{
 			this.collectionBinder.collection.off('change', this.f('refreshBoundViews'));
-			if(this.collectionFilter) this.collectionBinder.collection.offEach('change', this.f('collectionItemChange'));
+			if(this.collectionFilter || this.collectionSorter) this.collectionBinder.collection.offEach('change', this.f('collectionItemChange'));
 		}
 
 		// Destroy boundviews
@@ -470,6 +473,7 @@ kff.BindingView = kff.createClass(
 			this.$elementTemplate = null;
 		}
 		this.viewTemplate = null;
+		if(this.filteredCollection) this.filteredCollection = null;
 	},
 
 	/**
@@ -479,20 +483,23 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshBoundViews: function(event)
 	{
-
-		switch(event ? event.type : null)
+		if(this.collectionSorter) this.refreshBoundViewsAll();
+		else
 		{
-			case 'append':
-				this.refreshBoundViewsOnAppend(event);
-				break;
-			// case 'insert':
-			// 	this.refreshBoundViewsOnInsert(event);
-			// 	break;
-			case 'remove':
-				this.refreshBoundViewsOnRemove(event);
-				break;
-			default:
-				this.refreshBoundViewsAll();
+			switch(event ? event.type : null)
+			{
+				case 'append':
+					this.refreshBoundViewsOnAppend(event);
+					break;
+				// case 'insert':
+				// 	this.refreshBoundViewsOnInsert(event);
+				// 	break;
+				case 'remove':
+					this.refreshBoundViewsOnRemove(event);
+					break;
+				default:
+					this.refreshBoundViewsAll();
+			}
 		}
 	},
 
@@ -608,20 +615,31 @@ kff.BindingView = kff.createClass(
 		}
 		else lastElementIndex = this.elements.length - 1;
 
-		if(this.collectionFilter)
+		if(this.collectionFilter || this.collectionSorter)
 		{
-			collectionFilter = this.collectionFilter;
-			filterModel = that.collectionFilter.model || null;
-			ilterFnName = that.collectionFilter.fn;
-			this.filteredCollection = new kff.Collection();
 
-			this.collectionBinder.collection.each(function(item, i)
+			if(this.collectionFilter)
 			{
-				var currentFilterModel = filterModel || item;
-				var render = !!currentFilterModel[filterFnName](item);
+				this.filteredCollection = new kff.Collection();
+				collectionFilter = this.collectionFilter;
+				filterModel = that.collectionFilter.model || null;
+				filterFnName = that.collectionFilter.fn;
 
-				if(render) that.filteredCollection.append(item);
-			});
+				this.collectionBinder.collection.each(function(item, i)
+				{
+					var currentFilterModel = filterModel || item;
+					var render = !!currentFilterModel[filterFnName](item);
+
+					if(render) that.filteredCollection.append(item);
+				});
+			}
+			else this.filteredCollection = this.collectionBinder.collection.clone();
+
+			if(this.collectionSorter)
+			{
+				var sorterFn = this.collectionSorter.model.f(this.collectionSorter.fn);
+				this.filteredCollection.sort(sorterFn);
+			}
 
 		}
 		else this.filteredCollection = this.collectionBinder.collection;
@@ -718,6 +736,36 @@ kff.BindingView = kff.createClass(
 				this.collectionFilter.model =  this.getModel([].concat(filterName));
 			}
 		}
+	},
+
+	/**
+	 * Inits sorting of colelction
+	 *
+	 * @private
+	 */
+	initCollectionSorter: function()
+	{
+		var sorterName = this.$element[0].getAttribute('data-kff-sort');
+
+		if(sorterName)
+		{
+			this.collectionSorter =
+			{
+				model: null,
+				fn: null
+			};
+			sorterName = sorterName.replace(/^\./, '').split('.');
+			if(sorterName.length === 1)
+			{
+				this.collectionSorter.fn = sorterName[0];
+			}
+			else
+			{
+				this.collectionSorter.fn =  sorterName.pop();
+				this.collectionSorter.model =  this.getModel([].concat(sorterName));
+			}
+		}
+		else this.collectionSorter = null;
 	},
 
 	/**
