@@ -957,13 +957,13 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshBinders: function(event)
 	{
+		this.refreshOwnBinders(event);
 		if(this.collectionBinder)
 		{
 			for(var i = 0, l = this.boundViews.length; i < l; i++) this.boundViews[i].refreshBinders(event);
 		}
 		else
 		{
-			this.refreshOwnBinders(event);
 			kff.BindingView._super.refreshBinders.call(this, event);
 		}
 	},
