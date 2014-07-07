@@ -1,17 +1,24 @@
 
-kff.BindingView.registerHelper('index', function(v, modelName)
-{
-	var bindingIndex = this.getBindingIndex(modelName);
-	if(bindingIndex !== null) return bindingIndex;
-	return v;
-});
+(function(){
+	var index = function(v, modelName)
+	{
+		var bindingIndex = this.getBindingIndex(modelName);
+		if(bindingIndex !== null) return bindingIndex;
+		return v;
+	};
+	index.indexed = true;
+	kff.BindingView.registerHelper('index', index);
 
-kff.BindingView.registerHelper('indexFromOne', function(v, modelName)
-{
-	var bindingIndex = this.getBindingIndex(modelName);
-	if(bindingIndex !== null) return bindingIndex + 1;
-	return v;
-});
+	var indexFromOne = function(v, modelName)
+	{
+		var bindingIndex = this.getBindingIndex(modelName);
+		if(bindingIndex !== null) return bindingIndex + 1;
+		return v;
+	};
+	indexFromOne.indexed = true;
+	kff.BindingView.registerHelper('indexFromOne', indexFromOne);
+
+})();
 
 
 kff.BindingView.registerHelper('boolean', function(v)

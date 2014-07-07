@@ -50,6 +50,14 @@ kff.BinderMap = kff.createClass(
 	refreshBinders: function(event)
 	{
 		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].modelChange(true);
-	}
+	},
+
+	refreshIndexedBinders: function()
+	{
+		for(var i = 0, l = this.binders.length; i < l; i++)
+		{
+			if(this.binders[i].isIndexed) this.binders[i].modelChange(true);
+		}
+	},
 
 });

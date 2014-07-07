@@ -260,6 +260,12 @@ kff.Binder = kff.createClass(
 			}
 			this.dynamicBindings = null;
 		}
+	},
+
+	isIndexed: function()
+	{
+		return this.options.indexed;
 	}
+
 
 });

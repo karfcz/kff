@@ -668,6 +668,14 @@ kff.View = kff.createClass(
 		}
 	},
 
+	refreshIndexedBinders: function()
+	{
+		if(this.subviews !== null)
+		{
+			for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].refreshIndexedBinders();
+		}
+	},
+
 	/**
 	 * Returns index of item in bound collection (closest collection in the view scope)
 	 *

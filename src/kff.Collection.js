@@ -518,6 +518,27 @@ kff.Collection = kff.createClass(
 		if(!silent) this.trigger('change', { type: 'sort' });
 	},
 
+	// sortBy: function(valueFunction, silent)
+	// {
+	// 	var array = this.array;
+	// 	for(var i = 0, l = array.length; i < l; i++)
+	// 	{
+	// 		array[i] = [array[i], valueFunction(array[i])];
+	// 	}
+	// 	this.array.sort(function(a, b){
+	// 		return a[1] - b[1];
+	// 	});
+	// 	// this.array.sort(function(a, b){
+	// 	// 	return valueFunction(a) - valueFunction(b);
+	// 	// });
+	// 	for(var i = 0, l = array.length; i < l; i++)
+	// 	{
+	// 		array[i] = array[i][0];
+	// 	}
+	// 	if(!silent) this.trigger('change', { type: 'sort' });
+	// },
+
+
 	/**
 	 * Creates a clone (shallow copy) of the collection.
 	 *

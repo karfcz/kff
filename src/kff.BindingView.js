@@ -242,6 +242,12 @@ kff.BindingView = kff.createClass(
 				{
 					if(attr === 'count') model = this.bindCollectionCount(model);
 				}
+				var indexed = false;
+
+				for(var j = formatters.length - 1; j >= 0; j--)
+				{
+					if(formatters[j].fn.indexed === true) indexed = true;
+				}
 
 				var modelBinder = new kff.BindingView.binders[binderName]({
 					view: this,
@@ -258,7 +264,8 @@ kff.BindingView = kff.createClass(
 					eventNames: eventNames,
 					fill: fill,
 					nobind: nobind,
-					watchModelPath: watchModelPath
+					watchModelPath: watchModelPath,
+					indexed: indexed
 				});
 
 				this.modelBindersMap.add(modelBinder);
@@ -664,7 +671,7 @@ kff.BindingView = kff.createClass(
 				else if(boundView.getBindingIndex('*') !== renderIndex)
 				{
 					boundView.setBindingIndex(renderIndex);
-					boundView.refreshBinders(true);
+					boundView.refreshIndexedBinders(true);
 				}
 			}
 			else
@@ -950,11 +957,27 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshBinders: function(event)
 	{
-		this.refreshOwnBinders(event);
-		kff.BindingView._super.refreshBinders.call(this, event);
 		if(this.collectionBinder)
 		{
 			for(var i = 0, l = this.boundViews.length; i < l; i++) this.boundViews[i].refreshBinders(event);
+		}
+		else
+		{
+			this.refreshOwnBinders(event);
+			kff.BindingView._super.refreshBinders.call(this, event);
+		}
+	},
+
+	refreshIndexedBinders: function()
+	{
+		if(this.collectionBinder)
+		{
+			for(var i = 0, l = this.boundViews.length; i < l; i++) this.boundViews[i].refreshIndexedBinders();
+		}
+		else
+		{
+			this.modelBindersMap.refreshIndexedBinders();
+			kff.BindingView._super.refreshIndexedBinders.call(this);
 		}
 	},
 
