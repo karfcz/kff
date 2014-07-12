@@ -457,15 +457,12 @@ kff.BindingView = kff.createClass(
 			{
 				boundView = this.boundViews[i];
 				boundView.destroyAll();
+				boundView.$element.remove();
 			}
 			this.boundViews = null;
 		}
 
-		if(this.elements)
-		{
-			for(i = 0, l = this.elements.length; i < l; i++) this.elements[i].remove();
-		}
-		this.elements = [];
+
 		if(this.anchor)
 		{
 			if(this.anchor.parentNode)
@@ -509,7 +506,7 @@ kff.BindingView = kff.createClass(
 					this.refreshBoundViewsAll();
 			}
 		}
-		if(this.collectionCounter) this.collectionCounter.model.set(this.collectionCounter.attr, this.elements ? this.elements.length : 0);
+		if(this.collectionCounter) this.collectionCounter.model.set(this.collectionCounter.attr, this.boundViews ? this.boundViews.length : 0);
 	},
 
 	/**
@@ -542,12 +539,11 @@ kff.BindingView = kff.createClass(
 			else this.filteredCollection = this.collectionBinder.collection;
 
 			var boundView = this.createBoundView(item);
-			this.elements.push(boundView.$element);
 			boundView.runAll();
 			boundView.setBindingIndex(this.filteredCollection.count() - 1);
 			boundView.refreshBinders(true);
 
-			if(this.elements.length === 1)
+			if(this.boundViews.length === 1)
 			{
 				if(this.anchor.parentNode)
 				{
@@ -556,7 +552,7 @@ kff.BindingView = kff.createClass(
 			}
 			else
 			{
-				var $lastElement = this.elements[this.elements.length - 2];
+				var $lastElement = this.boundViews[this.boundViews.length - 2].$element;
 				if($lastElement && $lastElement[0].parentNode)
 				{
 					$lastElement[0].parentNode.insertBefore(boundView.$element[0], $lastElement[0].nextSibling);
@@ -617,12 +613,11 @@ kff.BindingView = kff.createClass(
 		var docFragment = null;
 
 		if(this.boundViews === null) this.boundViews = [];
-		if(!this.elements || this.elements.length === 0)
+		if(this.boundViews.length === 0)
 		{
-			this.elements = [];
 			lastElementIndex = null;
 		}
-		else lastElementIndex = this.elements.length - 1;
+		else lastElementIndex = this.boundViews.length - 1;
 
 		if(this.collectionFilter || this.collectionSorter)
 		{
@@ -677,7 +672,6 @@ kff.BindingView = kff.createClass(
 			else
 			{
 				boundView = that.createBoundView(item);
-				that.elements.push(boundView.$element);
 				if(docFragment === null)
 				{
 					docFragment = document.createDocumentFragment();
@@ -694,10 +688,9 @@ kff.BindingView = kff.createClass(
 		for(i = renderIndex, l = this.boundViews.length; i < l; i++)
 		{
 			this.boundViews[i].destroyAll();
-			this.elements[i].remove();
+			this.boundViews[i].$element.remove();
 		}
 		this.boundViews.splice(renderIndex, l - renderIndex);
-		this.elements.splice(renderIndex, l - renderIndex);
 
 		if(docFragment !== null)
 		{
@@ -710,9 +703,9 @@ kff.BindingView = kff.createClass(
 			}
 			else
 			{
-				if(this.elements[lastElementIndex] && this.elements[lastElementIndex][0].parentNode)
+				if(this.boundViews[lastElementIndex] && this.boundViews[lastElementIndex].$element[0] && this.boundViews[lastElementIndex].$element[0].parentNode)
 				{
-					this.elements[lastElementIndex][0].parentNode.insertBefore(docFragment, this.elements[lastElementIndex][0].nextSibling);
+					this.boundViews[lastElementIndex].$element[0].parentNode.insertBefore(docFragment, this.boundViews[lastElementIndex].$element[0].nextSibling);
 				}
 			}
 		}
@@ -837,7 +830,6 @@ kff.BindingView = kff.createClass(
 		if(boundView)
 		{
 			this.boundViews.splice(renderIndex, 1);
-			this.elements.splice(renderIndex, 1);
 
 			boundView.$element[0].parentNode.removeChild(boundView.$element[0]);
 			boundView.destroyAll();
