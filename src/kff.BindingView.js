@@ -609,8 +609,9 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshBoundViewsAll: function()
 	{
-		var collectionFilter, filterModel, filterFnName, renderIndex = 0, that = this, boundView, i, l, lastElementIndex = null;
+		var collectionFilter, filterModel, filterFnName, renderIndex = 0, that = this, boundView, i, l, lastElementIndex = null, newIndex, el;
 		var docFragment = null;
+		var lastView, item;
 
 		if(this.boundViews === null) this.boundViews = [];
 		if(this.boundViews.length === 0)
@@ -648,28 +649,10 @@ kff.BindingView = kff.createClass(
 		}
 		else this.filteredCollection = this.collectionBinder.collection;
 
-		this.filteredCollection.each(function(item, i)
+		if(this.boundViews.length === 0)
 		{
-			boundView = that.boundViews[renderIndex];
-			if(boundView !== undefined)
-			{
-				if(boundView.models['*'] !== item)
-				{
-					boundView.destroyAll();
-					boundView.models['*'] = item;
-					if(that.itemAlias) boundView.models[this.itemAlias] = item;
-					boundView.renderAll();
-					boundView.runAll();
-					boundView.setBindingIndex(renderIndex);
-					boundView.refreshBinders(true);
-				}
-				else if(boundView.getBindingIndex('*') !== renderIndex)
-				{
-					boundView.setBindingIndex(renderIndex);
-					boundView.refreshIndexedBinders(true);
-				}
-			}
-			else
+			// Fast initial rendering:
+			this.filteredCollection.each(function(item, i)
 			{
 				boundView = that.createBoundView(item);
 				if(docFragment === null)
@@ -680,34 +663,121 @@ kff.BindingView = kff.createClass(
 				boundView.runAll();
 				boundView.setBindingIndex(renderIndex);
 				boundView.refreshBinders(true);
-			}
-			renderIndex++;
-		});
+				renderIndex++;
+			});
 
-
-		for(i = renderIndex, l = this.boundViews.length; i < l; i++)
-		{
-			this.boundViews[i].destroyAll();
-			this.boundViews[i].$element.remove();
-		}
-		this.boundViews.splice(renderIndex, l - renderIndex);
-
-		if(docFragment !== null)
-		{
-			if(lastElementIndex === null)
+			if(docFragment !== null)
 			{
 				if(this.anchor.parentNode)
 				{
 					this.anchor.parentNode.insertBefore(docFragment, this.anchor.nextSibling);
 				}
 			}
-			else
+		}
+		else
+		{
+			// Diff based rendering:
+			var positions = new Array(this.filteredCollection.count());
+			var toRemoveViews = [];
+			var pos;
+			for(i = 0, l = this.boundViews.length; i < l; i++)
 			{
-				if(this.boundViews[lastElementIndex] && this.boundViews[lastElementIndex].$element[0] && this.boundViews[lastElementIndex].$element[0].parentNode)
+				boundView = this.boundViews[i];
+				newIndex = this.filteredCollection.indexOf(boundView.models['*']);
+				pos = {
+					oldIndex: i,
+					boundView: boundView
+				};
+				if(newIndex !== -1)
 				{
-					this.boundViews[lastElementIndex].$element[0].parentNode.insertBefore(docFragment, this.boundViews[lastElementIndex].$element[0].nextSibling);
+					positions[newIndex] = pos;
+					lastView = boundView;
+				}
+				else {
+					toRemoveViews.push(pos);
 				}
 			}
+
+			for(i = 0, l = positions.length; i < l; i++)
+			{
+				item = this.filteredCollection.get(i);
+				if(!positions[i])
+				{
+					pos = toRemoveViews.shift();
+					if(pos)
+					{
+						boundView = pos.boundView;
+						boundView.destroyAll();
+						boundView.models['*'] = item;
+						if(that.itemAlias) boundView.models[this.itemAlias] = item;
+						boundView.renderAll();
+						boundView.runAll();
+						boundView.setBindingIndex(i);
+						boundView.refreshBinders(true);
+					}
+					else
+					{
+						boundView = that.createBoundView(item);
+						boundView.runAll();
+						boundView.setBindingIndex(i);
+						boundView.refreshBinders(true);
+					}
+					positions[i] = {
+						boundView: boundView,
+						oldIndex: -1
+					};
+				}
+			}
+
+			// Remove old views:
+			for(i = 0, l = toRemoveViews.length; i < l; i++)
+			{
+				toRemoveViews[i].boundView.destroyAll();
+				toRemoveViews[i].boundView.$element.remove();
+			}
+
+			var newBoundViews = new Array(positions.length);
+
+			if(lastView)
+			{
+				// Reordering elements from the last one:
+				lastElement = lastView.$element[0];
+
+				for(i = positions.length - 1; i >= 0; i--)
+				{
+					el = positions[i].boundView.$element[0];
+
+					if(lastElement.parentNode)
+					{
+						if(el.nextSibling !== lastElement) lastElement.parentNode.insertBefore(el, lastElement);
+					}
+
+					lastElement = el;
+					newBoundViews[i] = positions[i].boundView;
+					newBoundViews[i].setBindingIndex(i);
+					newBoundViews[i].refreshIndexedBinders(true);
+				}
+			}
+			else
+			{
+				// Ordering elements from first into document fragment (faster in IE8 in worst case scenario)
+				// (This branch is theoretically never called... maybe)
+				docFragment = document.createDocumentFragment();
+				for(i = 0, l = positions.length; i < l; i++)
+				{
+					el = positions[i].boundView.$element[0];
+					docFragment.appendChild(el);
+					newBoundViews[i] = positions[i].boundView;
+					newBoundViews[i].setBindingIndex(i);
+					newBoundViews[i].refreshIndexedBinders(true);
+				}
+
+				if(this.anchor.parentNode)
+				{
+					this.anchor.parentNode.insertBefore(docFragment, this.anchor.nextSibling);
+				}
+			}
+			this.boundViews = newBoundViews;
 		}
 	},
 
