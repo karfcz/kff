@@ -609,16 +609,11 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshBoundViewsAll: function()
 	{
-		var collectionFilter, filterModel, filterFnName, renderIndex = 0, that = this, boundView, i, l, lastElementIndex = null, newIndex, el;
+		var collectionFilter, filterModel, filterFnName, boundView, i, l, newIndex, el, a;
 		var docFragment = null;
 		var lastView, item;
 
 		if(this.boundViews === null) this.boundViews = [];
-		if(this.boundViews.length === 0)
-		{
-			lastElementIndex = null;
-		}
-		else lastElementIndex = this.boundViews.length - 1;
 
 		if(this.collectionFilter || this.collectionSorter)
 		{
@@ -627,16 +622,18 @@ kff.BindingView = kff.createClass(
 			{
 				this.filteredCollection = new kff.Collection();
 				collectionFilter = this.collectionFilter;
-				filterModel = that.collectionFilter.model || null;
-				filterFnName = that.collectionFilter.fn;
+				filterModel = this.collectionFilter.model || null;
+				filterFnName = this.collectionFilter.fn;
 
-				this.collectionBinder.collection.each(function(item, i)
+				a = this.collectionBinder.collection.array;
+				for(i = 0, l = a.length; i < l; i++)
 				{
+					item = a[i];
 					var currentFilterModel = filterModel || item;
 					var render = !!currentFilterModel[filterFnName](item);
 
-					if(render) that.filteredCollection.append(item);
-				});
+					if(render) this.filteredCollection.append(item);
+				}
 			}
 			else this.filteredCollection = this.collectionBinder.collection.clone();
 
@@ -652,22 +649,21 @@ kff.BindingView = kff.createClass(
 		if(this.boundViews.length === 0)
 		{
 			// Fast initial rendering:
-			this.filteredCollection.each(function(item, i)
+			l = this.filteredCollection.count();
+			if(l > 0)
 			{
-				boundView = that.createBoundView(item);
-				if(docFragment === null)
+				a = this.filteredCollection.array;
+				docFragment = document.createDocumentFragment();
+				for(i = 0; i < l; i++)
 				{
-					docFragment = document.createDocumentFragment();
+					item = a[i];
+					boundView = this.createBoundView(item);
+					docFragment.appendChild(boundView.$element[0]);
+					boundView.runAll();
+					boundView.setBindingIndex(i);
+					boundView.refreshBinders(true);
 				}
-				docFragment.appendChild(boundView.$element[0]);
-				boundView.runAll();
-				boundView.setBindingIndex(renderIndex);
-				boundView.refreshBinders(true);
-				renderIndex++;
-			});
 
-			if(docFragment !== null)
-			{
 				if(this.anchor.parentNode)
 				{
 					this.anchor.parentNode.insertBefore(docFragment, this.anchor.nextSibling);
@@ -684,10 +680,7 @@ kff.BindingView = kff.createClass(
 			{
 				boundView = this.boundViews[i];
 				newIndex = this.filteredCollection.indexOf(boundView.models['*']);
-				pos = {
-					oldIndex: i,
-					boundView: boundView
-				};
+				pos = boundView
 				if(newIndex !== -1)
 				{
 					positions[newIndex] = pos;
@@ -706,10 +699,10 @@ kff.BindingView = kff.createClass(
 					pos = toRemoveViews.shift();
 					if(pos)
 					{
-						boundView = pos.boundView;
+						boundView = pos;
 						boundView.destroyAll();
 						boundView.models['*'] = item;
-						if(that.itemAlias) boundView.models[this.itemAlias] = item;
+						if(this.itemAlias) boundView.models[this.itemAlias] = item;
 						boundView.renderAll();
 						boundView.runAll();
 						boundView.setBindingIndex(i);
@@ -717,23 +710,20 @@ kff.BindingView = kff.createClass(
 					}
 					else
 					{
-						boundView = that.createBoundView(item);
+						boundView = this.createBoundView(item);
 						boundView.runAll();
 						boundView.setBindingIndex(i);
 						boundView.refreshBinders(true);
 					}
-					positions[i] = {
-						boundView: boundView,
-						oldIndex: -1
-					};
+					positions[i] = boundView;
 				}
 			}
 
 			// Remove old views:
 			for(i = 0, l = toRemoveViews.length; i < l; i++)
 			{
-				toRemoveViews[i].boundView.destroyAll();
-				toRemoveViews[i].boundView.$element.remove();
+				toRemoveViews[i].destroyAll();
+				toRemoveViews[i].$element.remove();
 			}
 
 			var newBoundViews = new Array(positions.length);
@@ -742,18 +732,26 @@ kff.BindingView = kff.createClass(
 			{
 				// Reordering elements from the last one:
 				lastElement = lastView.$element[0];
+				i = positions.length - 1;
 
-				for(i = positions.length - 1; i >= 0; i--)
+				el = positions[i].$element[0];
+				if(el !== lastElement && lastElement.parentNode)
 				{
-					el = positions[i].boundView.$element[0];
+					lastElement.parentNode.insertBefore(el, lastElement.nextSibling);
+					lastElement = el;
+				}
 
-					if(lastElement.parentNode)
+				for(; i >= 0; i--)
+				{
+					el = positions[i].$element[0];
+
+					if(el !== lastElement && el.nextSibling !== lastElement && lastElement.parentNode)
 					{
-						if(el.nextSibling !== lastElement) lastElement.parentNode.insertBefore(el, lastElement);
+						lastElement.parentNode.insertBefore(el, lastElement);
 					}
 
 					lastElement = el;
-					newBoundViews[i] = positions[i].boundView;
+					newBoundViews[i] = positions[i];
 					newBoundViews[i].setBindingIndex(i);
 					newBoundViews[i].refreshIndexedBinders(true);
 				}
@@ -761,13 +759,13 @@ kff.BindingView = kff.createClass(
 			else
 			{
 				// Ordering elements from first into document fragment (faster in IE8 in worst case scenario)
-				// (This branch is theoretically never called... maybe)
+				// (This branch is theoretically never called...)
 				docFragment = document.createDocumentFragment();
 				for(i = 0, l = positions.length; i < l; i++)
 				{
-					el = positions[i].boundView.$element[0];
+					el = positions[i].$element[0];
 					docFragment.appendChild(el);
-					newBoundViews[i] = positions[i].boundView;
+					newBoundViews[i] = positions[i];
 					newBoundViews[i].setBindingIndex(i);
 					newBoundViews[i].refreshIndexedBinders(true);
 				}
