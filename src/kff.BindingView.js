@@ -611,13 +611,12 @@ kff.BindingView = kff.createClass(
 	{
 		var collectionFilter, filterModel, filterFnName, boundView, i, l, newIndex, el, a;
 		var docFragment = null;
-		var lastView, item;
+		var lastView, lastChild, parentNode, item;
 
 		if(this.boundViews === null) this.boundViews = [];
 
 		if(this.collectionFilter || this.collectionSorter)
 		{
-
 			if(this.collectionFilter)
 			{
 				this.filteredCollection = new kff.Collection();
@@ -653,20 +652,23 @@ kff.BindingView = kff.createClass(
 			if(l > 0)
 			{
 				a = this.filteredCollection.array;
-				docFragment = document.createDocumentFragment();
-				for(i = 0; i < l; i++)
-				{
-					item = a[i];
-					boundView = this.createBoundView(item);
-					docFragment.appendChild(boundView.$element[0]);
-					boundView.runAll();
-					boundView.setBindingIndex(i);
-					boundView.refreshBinders(true);
-				}
-
+				lastChild = this.anchor;
 				if(this.anchor.parentNode)
 				{
-					this.anchor.parentNode.insertBefore(docFragment, this.anchor.nextSibling);
+					parentNode = this.anchor.parentNode;
+				}
+				for(i = 0; i < l; i++)
+				{
+					boundView = this.createBoundView(a[i]);
+					el = boundView.$element[0];
+					parentNode.insertBefore(el, lastChild.nextSibling);
+					boundView.setBindingIndex(i);
+					lastChild = el;
+				}
+
+				for(i = 0; i < l; i++)
+				{
+					this.boundViews[i].runAll();
 				}
 			}
 		}
@@ -703,17 +705,17 @@ kff.BindingView = kff.createClass(
 						boundView.destroyAll();
 						boundView.models['*'] = item;
 						if(this.itemAlias) boundView.models[this.itemAlias] = item;
+						boundView.setBindingIndex(i);
 						boundView.renderAll();
 						boundView.runAll();
-						boundView.setBindingIndex(i);
-						boundView.refreshBinders(true);
+						// boundView.refreshBinders(true);
 					}
 					else
 					{
 						boundView = this.createBoundView(item);
-						boundView.runAll();
 						boundView.setBindingIndex(i);
-						boundView.refreshBinders(true);
+						boundView.runAll();
+						// boundView.refreshBinders(true);
 					}
 					positions[i] = boundView;
 				}
@@ -731,26 +733,26 @@ kff.BindingView = kff.createClass(
 			if(lastView)
 			{
 				// Reordering elements from the last one:
-				lastElement = lastView.$element[0];
+				lastChild = lastView.$element[0];
 				i = positions.length - 1;
 
 				el = positions[i].$element[0];
-				if(el !== lastElement && lastElement.parentNode)
+				if(el !== lastChild && lastChild.parentNode)
 				{
-					lastElement.parentNode.insertBefore(el, lastElement.nextSibling);
-					lastElement = el;
+					lastChild.parentNode.insertBefore(el, lastChild.nextSibling);
+					lastChild = el;
 				}
 
 				for(; i >= 0; i--)
 				{
 					el = positions[i].$element[0];
 
-					if(el !== lastElement && el.nextSibling !== lastElement && lastElement.parentNode)
+					if(el !== lastChild && el.nextSibling !== lastChild && lastChild.parentNode)
 					{
-						lastElement.parentNode.insertBefore(el, lastElement);
+						lastChild.parentNode.insertBefore(el, lastChild);
 					}
 
-					lastElement = el;
+					lastChild = el;
 					newBoundViews[i] = positions[i];
 					newBoundViews[i].setBindingIndex(i);
 					newBoundViews[i].refreshIndexedBinders(true);
@@ -758,21 +760,19 @@ kff.BindingView = kff.createClass(
 			}
 			else
 			{
-				// Ordering elements from first into document fragment (faster in IE8 in worst case scenario)
-				// (This branch is theoretically never called...)
-				docFragment = document.createDocumentFragment();
+				lastChild = this.anchor;
+				if(this.anchor.parentNode)
+				{
+					parentNode = this.anchor.parentNode;
+				}
 				for(i = 0, l = positions.length; i < l; i++)
 				{
 					el = positions[i].$element[0];
-					docFragment.appendChild(el);
+					parentNode.insertBefore(el, lastChild.nextSibling);
 					newBoundViews[i] = positions[i];
 					newBoundViews[i].setBindingIndex(i);
 					newBoundViews[i].refreshIndexedBinders(true);
-				}
-
-				if(this.anchor.parentNode)
-				{
-					this.anchor.parentNode.insertBefore(docFragment, this.anchor.nextSibling);
+					lastChild = el;
 				}
 			}
 			this.boundViews = newBoundViews;
