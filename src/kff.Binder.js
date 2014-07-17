@@ -19,6 +19,7 @@ kff.Binder = kff.createClass(
 		this.bindingIndex = null;
 		this.dynamicBindings = null;
 		this.value = null;
+		this.modelPathWatcher = null;
 	},
 
 	init: function()
@@ -27,11 +28,17 @@ kff.Binder = kff.createClass(
 		{
 			if(this.options.watchModelPath)
 			{
-				this.rebind();
+				var rootModel = this.view.models[this.options.modelPathArray[0]];
+				var modelPathArray = this.options.modelPathArray.slice(1);
+				modelPathArray.push(this.options.attr);
+				this.modelPathWatcher = new kff.ModelPathWatcher(rootModel, modelPathArray);
+				this.modelPathWatcher.init();
+				this.bindModelPathWatcher();
+				if(this.$element && this.options.events !== null) this.delegateEvents(this.options.events);
 			}
 			else if(this.model instanceof kff.Model)
 			{
-				this.model.on('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
+				this.bindModel();
 				if(this.$element && this.options.events !== null) this.delegateEvents(this.options.events);
 			}
 		}
@@ -40,8 +47,8 @@ kff.Binder = kff.createClass(
 
 	destroy: function()
 	{
-		if(this.model instanceof kff.Model) this.model.off('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
-		if(this.options.watchModelPath) this.unbindDynamic();
+		if(this.model instanceof kff.Model) this.unbindModel();
+		if(this.options.watchModelPath) this.unbindModelPathWatcher();
 		if(this.$element && this.options.events !== null) this.undelegateEvents(this.options.events);
 		this.currentValue = null;
 		this.value = null;
@@ -54,6 +61,10 @@ kff.Binder = kff.createClass(
 	modelChange: function(event)
 	{
 		var modelValue;
+		if(this.modelPathWatcher)
+		{
+			this.model = this.modelPathWatcher.model;
+		}
 		if(this.model instanceof kff.Model || (typeof this.model === 'object' && this.model !== null))
 		{
 			if(this.getter && typeof this.model[this.getter.fn] === 'function')
@@ -203,69 +214,28 @@ kff.Binder = kff.createClass(
 
 	fill: function(){},
 
-	rebindTimed: function(event)
+	bindModel: function()
 	{
-		kff.setZeroTimeout(this.f('rebind'));
+		this.model.on('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
 	},
 
-	rebind: function(event)
+	unbindModel: function()
 	{
-		this.unbindDynamic();
-		if(this.model instanceof kff.Model)
-		{
-			this.model.off('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
-			if(this.$element && this.options.events !== null) this.undelegateEvents.call(this, this.options.events);
-		}
-
-		this.bindDynamic();
-		if(this.model instanceof kff.Model)
-		{
-			this.model.on('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
-			if(this.$element && this.options.events !== null) this.delegateEvents.call(this, this.options.events);
-			this.modelChange(true);
-		}
+		this.model.off('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
 	},
 
-	bindDynamic: function()
+	bindModelPathWatcher: function()
 	{
-		var modelName = this.options.modelPathArray[0],
-			model = this.view.getModel(modelName),
-			attr;
-
-		this.dynamicBindings = [];
-
-		for(var i = 1, l = this.options.modelPathArray.length; i < l; i++)
-		{
-			attr = this.options.modelPathArray[i];
-			if(model instanceof kff.Model)
-			{
-				model.on('change:' + attr, this.f('rebindTimed'));
-				this.dynamicBindings.push({ model: model, attr: attr });
-				model = model.get(attr);
-			}
-			else if(model !== null && typeof model === 'object' && (attr in model)) model = model.attr;
-			else model = null;
-		}
-		if(model instanceof kff.Model) this.model = model;
-		else this.model = null;
+		this.modelPathWatcher.on('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
 	},
 
-	unbindDynamic: function()
+	unbindModelPathWatcher: function()
 	{
-		if(this.dynamicBindings)
-		{
-			for(var i = 0, l = this.dynamicBindings.length; i < l; i++)
-			{
-				this.dynamicBindings[i].model.off('change:' + this.dynamicBindings[i].attr, this.f('rebindTimed'));
-			}
-			this.dynamicBindings = null;
-		}
+		this.modelPathWatcher.off('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
 	},
 
 	isIndexed: function()
 	{
 		return this.options.indexed;
 	}
-
-
 });

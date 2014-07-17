@@ -114,7 +114,7 @@ describe('kff.BindingView', function()
 	});
 
 
-	it('should rebind a :watch binding when model path change', function()
+	it('should rebind a :watch binding when model path change', function(done)
 	{
 		var intel = new kff.Model({
 			name: 'intel'
@@ -147,6 +147,7 @@ describe('kff.BindingView', function()
 			setTimeout(function()
 			{
 				expect($div.text()).to.equal('amd');
+				done();
 			}, 0);
 
 		}, 0);

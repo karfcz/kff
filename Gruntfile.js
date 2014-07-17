@@ -7,6 +7,7 @@ module.exports = function(grunt) {
 		'./src/kff.Events.js',
 		'./src/kff.Collection.js',
 		'./src/kff.Model.js',
+		'./src/kff.ModelPathWatcher.js',
 		'./src/kff.ServiceContainer.js',
 		'./src/kff.View.js',
 		'./src/kff.PageView.js',
