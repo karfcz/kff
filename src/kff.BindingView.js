@@ -510,26 +510,45 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-	 * Updates bound views when collection changes by appending item.
+	 * Event handler for collection item change
 	 *
-	 * @param {Object} event An event triggered by collection change
+	 * @private
+	 * @param  {mixed} event Model's event object
 	 */
-	refreshBoundViewsOnAppend: function(event)
+	collectionItemChange: function(event)
 	{
-		var render = true;
-		var item = event.item;
+		if(this.collectionSorter) this.refreshBoundViews();
+		else
+		{
+			var render = this.filterCollectionItem(event.model);
+			var index = this.filteredCollection.indexOf(event.model);
+			if((index !== -1) !== render) this.refreshBoundViews();
+		}
+	},
 
+	filterCollectionItem: function(item)
+	{
 		if(this.collectionFilter)
 		{
 			var collectionFilter = this.collectionFilter;
 			var filterModel = this.collectionFilter.model || null;
 			var filterFnName = this.collectionFilter.fn;
 			var currentFilterModel = filterModel || item;
-
-			render = !!currentFilterModel[filterFnName](item);
+			return !!currentFilterModel[filterFnName](item);
 		}
+		return true;
+	},
 
-		if(render)
+	/**
+	 * Updates bound views when collection changes by appending item.
+	 *
+	 * @param {Object} event An event triggered by collection change
+	 */
+	refreshBoundViewsOnAppend: function(event)
+	{
+		var item = event.item;
+
+		if(this.filterCollectionItem(item))
 		{
 			if(this.collectionFilter)
 			{
@@ -863,17 +882,6 @@ kff.BindingView = kff.createClass(
 			else this.collectionCounter = null;
 		}
 		else this.collectionCounter = null;
-	},
-
-	/**
-	 * Event handler for collection item change
-	 *
-	 * @private
-	 * @param  {mixed} event Model's event object
-	 */
-	collectionItemChange: function(event)
-	{
-		this.refreshBoundViews();
 	},
 
 	/**
