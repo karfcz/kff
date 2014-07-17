@@ -13,8 +13,8 @@ kff.Binder = kff.createClass(
 		this.view = options.view;
 		this.$element = options.$element;
 		this.model = options.model;
-		this.setter = (options.setters && options.setters.length > 0) ? options.setters[0] : null;
-		this.getter = (options.getters && options.getters.length > 0) ? options.getters[0] : null;
+		this.setter = options.setter;
+		this.getter = options.getter;
 		this.currentValue = null;
 		this.bindingIndex = null;
 		this.dynamicBindings = null;
@@ -110,7 +110,6 @@ kff.Binder = kff.createClass(
 	{
 		if((value1 instanceof Array) && (value2 instanceof Array))
 		{
-
 			var l = value1.length;
 			if(l !== value2.length) return false;
 			for(var i = 0; i < l; i++)
