@@ -70,7 +70,6 @@ kff.ModelPathWatcher = kff.createClass(
 
 	rebindTimed: function(event)
 	{
-		// this.rebind();
 		kff.setZeroTimeout(this.f('rebind'));
 	},
 
@@ -78,7 +77,7 @@ kff.ModelPathWatcher = kff.createClass(
 	{
 		this.destroy();
 		this.init();
-		this.modelChange(true);
+		this.modelChange();
 	},
 
 	bindModel: function()
