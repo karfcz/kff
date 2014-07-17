@@ -120,20 +120,15 @@ kff.BindingView = kff.createClass(
 	 */
 	initBinding: function()
 	{
-		var model, attr, result, result2, modelPathArray, binderName, binderParams, formatters, parsers, getters, setters, eventNames, fill, i, watchModelPath, nobind;
-		var modifierName, modifierParams;
+		var model, attr, result, result2, modelPathArray, i, ret;
 		var dataBindAttr = this.$element[0].getAttribute(kff.View.DATA_BIND_ATTR);
 		var modelName;
 
 		var bindingRegex = kff.BindingView.bindingRegex;
-		var operatorsRegex = kff.BindingView.operatorsRegex;
-		var modifierSeparateRegex = kff.BindingView.modifierSeparateRegex;
-		var commaSeparateRegex = kff.BindingView.commaSeparateRegex;
 		var leadingPeriodRegex = kff.BindingView.leadingPeriodRegex;
 		var trailingPeriodRegex = kff.BindingView.trailingPeriodRegex;
 
 		bindingRegex.lastIndex = 0;
-		operatorsRegex.lastIndex = 0;
 
 		this.modelBindersMap = new kff.BinderMap();
 
@@ -141,93 +136,29 @@ kff.BindingView = kff.createClass(
 		{
 			modelPathArray = result[1].replace(leadingPeriodRegex, '*.').replace(trailingPeriodRegex, '.*').split('.');
 
-			formatters = [];
-			parsers = [];
-			setters = [];
-			getters = [];
-			eventNames = [];
-			fill = false;
-			nobind = false;
-			watchModelPath = false;
-
-			i = 0;
-			while((result2 = operatorsRegex.exec(result[2])) !== null)
-			{
-				if(i === 0)
-				{
-					// Parse binder name and params
-					binderName = result2[1];
-					binderParams = result2[2];
-
-					if(binderParams)
-					{
-						binderParams = binderParams.split(commaSeparateRegex);
-					}
-					else binderParams = [];
-				}
-				else
-				{
-					modifierName = result2[1];
-					modifierParams = [];
-
-					if(result2[2])
-					{
-						modifierParams = result2[2].match(modifierSeparateRegex);
-					}
-
-					switch(modifierName){
-						case 'f':
-							this.parseHelpers(modifierParams, formatters);
-							break;
-						case 'p':
-							this.parseHelpers(modifierParams, parsers);
-							break;
-						case 'on':
-							this.parseSetters(modifierParams, eventNames);
-							break;
-						case 'as':
-							this.parseSetters(modifierParams, itemAliases);
-							break;
-						case 'set':
-							this.parseGetters(modifierParams, setters);
-							break;
-						case 'get':
-							this.parseGetters(modifierParams, getters);
-							break;
-						case 'fill':
-							fill = true;
-							break;
-						case 'watch':
-							watchModelPath = true;
-							break;
-						case 'nobind':
-							nobind = true;
-							break;
-					}
-				}
-				i++;
-			}
-
 			model = this.getModel(modelPathArray);
 
 			if(model instanceof kff.Collection)
 			{
+				ret = this.parseBindingRegexp(result, false);
+
 				if(!this.options.isBoundView)
 				{
 					this.collectionBinder = {
 						collection: model,
 						collectionPathArray: modelPathArray
 					};
-					if(binderName === 'as' && binderParams.length > 0)
+					if(ret.itemAliases && ret.itemAliases.length > 0)
 					{
-						this.itemAlias = binderParams[0];
+						this.itemAlias = ret.itemAliases[0];
 					}
 					this.boundViews = [];
 				}
 			}
 			else
 			{
-				if(!binderName || !(binderName in kff.BindingView.binders)) break;
+				ret = this.parseBindingRegexp(result, true);
+				if(!ret.binderName || !(ret.binderName in kff.BindingView.binders)) break;
 
 				if(modelPathArray.length > 1) attr = modelPathArray.pop();
 				else attr = null;
@@ -244,33 +175,115 @@ kff.BindingView = kff.createClass(
 				}
 				var indexed = false;
 
-				for(var j = formatters.length - 1; j >= 0; j--)
+				for(var j = ret.formatters.length - 1; j >= 0; j--)
 				{
-					if(formatters[j].fn.indexed === true) indexed = true;
+					if(ret.formatters[j].fn.indexed === true) indexed = true;
 				}
 
-				var modelBinder = new kff.BindingView.binders[binderName]({
+				var modelBinder = new kff.BindingView.binders[ret.binderName]({
 					view: this,
 					$element: this.$element,
-					params: binderParams,
+					params: ret.binderParams,
 					attr: attr,
 					model: model,
 					modelName: modelName,
 					modelPathArray: modelPathArray,
-					formatters: formatters,
-					parsers: parsers,
-					setter: (setters && setters.length > 0) ? setters[0] : null,
-					getter: (getters && getters.length > 0) ? getters[0] : null,
-					eventNames: eventNames,
-					fill: fill,
-					nobind: nobind,
-					watchModelPath: watchModelPath,
+					formatters: ret.formatters,
+					parsers: ret.parsers,
+					setter: (ret.setters && ret.setters.length > 0) ? ret.setters[0] : null,
+					getter: (ret.getters && ret.getters.length > 0) ? ret.getters[0] : null,
+					eventNames: ret.eventNames,
+					fill: ret.fill,
+					nobind: ret.nobind,
+					watchModelPath: ret.watchModelPath,
 					indexed: indexed
 				});
 
 				this.modelBindersMap.add(modelBinder);
 			}
 		}
+	},
+
+	parseBindingRegexp: function(result, parseBinderName)
+	{
+		var result2, i, modifierName, modifierParams;
+		var modifierSeparateRegex = kff.BindingView.modifierSeparateRegex;
+		var commaSeparateRegex = kff.BindingView.commaSeparateRegex;
+		var operatorsRegex = kff.BindingView.operatorsRegex;
+		operatorsRegex.lastIndex = 0;
+
+		var ret = {
+			binderName: null,
+			binderParams: null,
+			formatters: [],
+			parsers: [],
+			setters: [],
+			getters: [],
+			eventNames: [],
+			fill: false,
+			nobind: false,
+			watchModelPath: false,
+			itemAliases: []
+		};
+
+		i = 0;
+		while((result2 = operatorsRegex.exec(result[2])) !== null)
+		{
+			if(parseBinderName && i === 0)
+			{
+				// Parse binder name and params
+				ret.binderName = result2[1];
+				ret.binderParams = result2[2];
+
+				if(ret.binderParams)
+				{
+					ret.binderParams = ret.binderParams.split(commaSeparateRegex);
+				}
+				else ret.binderParams = [];
+			}
+			else
+			{
+				modifierName = result2[1];
+				modifierParams = [];
+
+				if(result2[2])
+				{
+					modifierParams = result2[2].match(modifierSeparateRegex);
+				}
+
+				switch(modifierName){
+					case 'f':
+						this.parseHelpers(modifierParams, ret.formatters);
+						break;
+					case 'p':
+						this.parseHelpers(modifierParams, ret.parsers);
+						break;
+					case 'on':
+						this.parseSetters(modifierParams, ret.eventNames);
+						break;
+					case 'as':
+						this.parseSetters(modifierParams, ret.itemAliases);
+						break;
+					case 'set':
+						this.parseGetters(modifierParams, ret.setters);
+						break;
+					case 'get':
+						this.parseGetters(modifierParams, ret.getters);
+						break;
+					case 'fill':
+						ret.fill = true;
+						break;
+					case 'watch':
+						ret.watchModelPath = true;
+						break;
+					case 'nobind':
+						ret.nobind = true;
+						break;
+				}
+			}
+			i++;
+		}
+		return ret;
 	},
 
 	/**
@@ -701,7 +714,7 @@ kff.BindingView = kff.createClass(
 			{
 				boundView = this.boundViews[i];
 				newIndex = this.filteredCollection.indexOf(boundView.models['*']);
-				pos = boundView
+				pos = boundView;
 				if(newIndex !== -1)
 				{
 					positions[newIndex] = pos;
