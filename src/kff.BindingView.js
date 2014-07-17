@@ -1134,7 +1134,8 @@ kff.BindingView = kff.createClass(
 			clonedView.collectionBinder =
 			{
 				collection: null,
-				collectionPathArray: this.collectionBinder.collectionPathArray
+				collectionPathArray: this.collectionBinder.collectionPathArray,
+				nobind: this.collectionBinder.nobind
 			};
 		}
 
