@@ -676,6 +676,14 @@ kff.View = kff.createClass(
 		}
 	},
 
+	refreshAll: function()
+	{
+		if(this.subviews !== null)
+		{
+			for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].refreshAll();
+		}
+	},
+
 	/**
 	 * Returns index of item in bound collection (closest collection in the view scope)
 	 *

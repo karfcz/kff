@@ -146,7 +146,8 @@ kff.BindingView = kff.createClass(
 				{
 					this.collectionBinder = {
 						collection: model,
-						collectionPathArray: modelPathArray
+						collectionPathArray: modelPathArray,
+						nobind: ret.nobind
 					};
 					if(ret.itemAliases && ret.itemAliases.length > 0)
 					{
@@ -439,7 +440,7 @@ kff.BindingView = kff.createClass(
 		this.boundViewOptions.viewFactory = this.viewFactory;
 		this.boundViewOptions.isBoundView = true;
 
-		if(this.collectionBinder.collection instanceof kff.Collection)
+		if(this.collectionBinder.nobind === false && this.collectionBinder.collection instanceof kff.Collection)
 		{
 			this.collectionBinder.collection.on('change', this.f('refreshBoundViews'));
 			if(this.collectionFilter || this.collectionSorter) this.collectionBinder.collection.onEach('change', this.f('collectionItemChange'));
@@ -457,7 +458,7 @@ kff.BindingView = kff.createClass(
 	{
 		var boundView, i, l;
 
-		if(this.collectionBinder)
+		if(this.collectionBinder && this.collectionBinder.nobind === false)
 		{
 			this.collectionBinder.collection.off('change', this.f('refreshBoundViews'));
 			if(this.collectionFilter || this.collectionSorter) this.collectionBinder.collection.offEach('change', this.f('collectionItemChange'));
@@ -1019,6 +1020,19 @@ kff.BindingView = kff.createClass(
 		return boundView;
 	},
 
+	refreshAll: function()
+	{
+		this.refreshOwnBinders(true);
+		if(this.collectionBinder)
+		{
+			this.refreshBoundViews();
+			for(var i = 0, l = this.boundViews.length; i < l; i++) this.boundViews[i].refreshAll();
+		}
+		else
+		{
+			kff.BindingView._super.refreshAll.call(this);
+		}
+	},
 
 	/**
 	 * Refreshes own data-binders
