@@ -206,13 +206,13 @@ kff.classMixin = {
  */
 kff.evalObjectPath = function(path, obj)
 {
-	var parts, part, i, l;
+	var part, i, l;
 	obj = obj || scope;
-	if(typeof path !== 'string') return null;
-	parts = path.split('.');
-	for(i = 0, l = parts.length; i < l; i++)
+	if(typeof path === 'string') path = path.split('.');
+	if(!(path instanceof Array)) return null;
+	for(i = 0, l = path.length; i < l; i++)
 	{
-		part = parts[i];
+		part = path[i];
 		if(obj[part] === undefined) return null;
 		else obj = obj[part];
 	}

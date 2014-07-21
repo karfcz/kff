@@ -122,7 +122,7 @@ kff.View = kff.createClass(
 			if(this.models[modelName])
 			{
 				if(typeof this.models[modelName].mget === 'function') return this.models[modelName].mget(modelPath);
-				else return this.getModel(modelPath);
+				else return kff.evalObjectPath(modelPath, this.models[modelName]);
 
 			}
 			else return null;
@@ -678,6 +678,7 @@ kff.View = kff.createClass(
 
 	refreshAll: function()
 	{
+		if(typeof this.refresh === 'function') this.refresh();
 		if(this.subviews !== null)
 		{
 			for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].refreshAll();

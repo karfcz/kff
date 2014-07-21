@@ -1022,6 +1022,7 @@ kff.BindingView = kff.createClass(
 
 	refreshAll: function()
 	{
+		if(typeof this.refresh === 'function') this.refresh();
 		this.refreshOwnBinders(true);
 		if(this.collectionBinder)
 		{

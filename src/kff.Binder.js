@@ -26,7 +26,7 @@ kff.Binder = kff.createClass(
 	{
 		if(!this.options.nobind)
 		{
-			if(this.options.watchModelPath)
+			if(1 || this.options.watchModelPath)
 			{
 				var rootModel = this.view.models[this.options.modelPathArray[0]];
 				var modelPathArray = this.options.modelPathArray.slice(1);
@@ -64,6 +64,10 @@ kff.Binder = kff.createClass(
 		if(this.modelPathWatcher)
 		{
 			this.model = this.modelPathWatcher.model;
+		}
+		if(this.options.nobind && this.options.watch)
+		{
+			this.model = this.view.getModel(this.options.modelPathArray);
 		}
 		if(this.model instanceof kff.Model || (typeof this.model === 'object' && this.model !== null))
 		{
