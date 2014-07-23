@@ -84,7 +84,6 @@ kff.BindingView = kff.createClass(
 		if(this.collectionBinder)
 		{
 			this.runSubviews();
-			this.refreshOwnBinders();
 		}
 		else
 		{
@@ -899,16 +898,6 @@ kff.BindingView = kff.createClass(
 	},
 
 	/**
-	 * Applies filter to the whole collection. Used when the filter changes.
-	 *
-	 * @private
-	 */
-	refilterCollection: function()
-	{
-		this.refreshBoundViews();
-	},
-
-	/**
 	 * Removes a view at given index (rendered index)
 	 *
 	 * @private
@@ -1024,7 +1013,6 @@ kff.BindingView = kff.createClass(
 	{
 		if(typeof this.refresh === 'function') this.refresh();
 		this.rebindModels();
-		this.refreshOwnBinders(true);
 		if(this.collectionBinder)
 		{
 			this.collectionBinder.collection = this.getModel(this.collectionBinder.collectionPathArray);
@@ -1033,6 +1021,7 @@ kff.BindingView = kff.createClass(
 		}
 		else
 		{
+			this.refreshOwnBinders();
 			kff.BindingView._super.refreshAll.call(this);
 		}
 	},
@@ -1050,7 +1039,6 @@ kff.BindingView = kff.createClass(
 	refreshOwnBinders: function(event)
 	{
 		if(this.modelBindersMap) this.modelBindersMap.refreshBinders();
-		if(event !== true && this.collectionBinder && this.collectionFilter) this.refilterCollection();
 	},
 
 	/**
@@ -1060,13 +1048,14 @@ kff.BindingView = kff.createClass(
 	 */
 	refreshBinders: function(event)
 	{
-		this.refreshOwnBinders(event);
 		if(this.collectionBinder)
 		{
+			this.refreshBoundViews();
 			for(var i = 0, l = this.boundViews.length; i < l; i++) this.boundViews[i].refreshBinders(event);
 		}
 		else
 		{
+			this.refreshOwnBinders();
 			kff.BindingView._super.refreshBinders.call(this, event);
 		}
 	},
