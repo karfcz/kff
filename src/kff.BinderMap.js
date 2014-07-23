@@ -52,6 +52,11 @@ kff.BinderMap = kff.createClass(
 		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].modelChange();
 	},
 
+	rebindModels: function(event)
+	{
+		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].rebindModel();
+	},
+
 	refreshIndexedBinders: function()
 	{
 		for(var i = 0, l = this.binders.length; i < l; i++)

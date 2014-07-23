@@ -1023,9 +1023,11 @@ kff.BindingView = kff.createClass(
 	refreshAll: function()
 	{
 		if(typeof this.refresh === 'function') this.refresh();
+		this.rebindModels();
 		this.refreshOwnBinders(true);
 		if(this.collectionBinder)
 		{
+			this.collectionBinder.collection = this.getModel(this.collectionBinder.collectionPathArray);
 			this.refreshBoundViews();
 			for(var i = 0, l = this.boundViews.length; i < l; i++) this.boundViews[i].refreshAll();
 		}
@@ -1033,6 +1035,11 @@ kff.BindingView = kff.createClass(
 		{
 			kff.BindingView._super.refreshAll.call(this);
 		}
+	},
+
+	rebindModels: function()
+	{
+		if(this.modelBindersMap) this.modelBindersMap.rebindModels();
 	},
 
 	/**

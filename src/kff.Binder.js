@@ -26,7 +26,7 @@ kff.Binder = kff.createClass(
 	{
 		if(!this.options.nobind)
 		{
-			if(1 || this.options.watchModelPath)
+			if(this.options.watchModelPath)
 			{
 				var rootModel = this.view.models[this.options.modelPathArray[0]];
 				var modelPathArray = this.options.modelPathArray.slice(1);
@@ -64,10 +64,6 @@ kff.Binder = kff.createClass(
 		if(this.modelPathWatcher)
 		{
 			this.model = this.modelPathWatcher.model;
-		}
-		if(this.options.nobind && this.options.watch)
-		{
-			this.model = this.view.getModel(this.options.modelPathArray);
 		}
 		if(this.model instanceof kff.Model || (typeof this.model === 'object' && this.model !== null))
 		{
@@ -219,12 +215,12 @@ kff.Binder = kff.createClass(
 
 	bindModel: function()
 	{
-		this.model.on('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
+		if(this.model instanceof kff.Model) this.model.on('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
 	},
 
 	unbindModel: function()
 	{
-		this.model.off('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
+		if(this.model instanceof kff.Model) this.model.off('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
 	},
 
 	bindModelPathWatcher: function()
@@ -235,6 +231,19 @@ kff.Binder = kff.createClass(
 	unbindModelPathWatcher: function()
 	{
 		this.modelPathWatcher.off('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
+	},
+
+	rebindModel: function()
+	{
+		if(!this.options.nobind)
+		{
+			this.unbindModel();
+		}
+		this.model = this.view.getModel(this.options.modelPathArray);
+		if(!this.options.nobind)
+		{
+			this.bindModel();
+		}
 	},
 
 	isIndexed: function()
