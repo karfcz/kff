@@ -660,11 +660,11 @@ kff.View = kff.createClass(
 	 *
 	 * @param  {Object} event Any event object that caused refreshing
 	 */
-	refreshBinders: function(event)
+	refreshBinders: function(force)
 	{
 		if(this.subviews !== null)
 		{
-			for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].refreshBinders(event);
+			for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].refreshBinders(force);
 		}
 	},
 

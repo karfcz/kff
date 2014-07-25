@@ -47,9 +47,9 @@ kff.BinderMap = kff.createClass(
 		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].destroy();
 	},
 
-	refreshBinders: function(event)
+	refreshBinders: function(force)
 	{
-		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].modelChange();
+		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].modelChange(null, force);
 	},
 
 	rebindModels: function(event)
@@ -61,7 +61,7 @@ kff.BinderMap = kff.createClass(
 	{
 		for(var i = 0, l = this.binders.length; i < l; i++)
 		{
-			if(this.binders[i].isIndexed) this.binders[i].modelChange();
+			if(this.binders[i].isIndexed) this.binders[i].modelChange(null, true);
 		}
 	},
 

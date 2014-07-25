@@ -58,7 +58,7 @@ kff.Binder = kff.createClass(
 
 	undelegateEvents: kff.View.prototype.undelegateEvents,
 
-	modelChange: function(event)
+	modelChange: function(event, force)
 	{
 		var modelValue;
 		if(this.modelPathWatcher)
@@ -92,7 +92,7 @@ kff.Binder = kff.createClass(
 			}
 			else modelValue = null;
 
-			if(!event || !this.compareValues(modelValue, this.currentValue))
+			if(force || !this.compareValues(modelValue, this.currentValue))
 			{
 				this.value = this.format(modelValue);
 				this.currentValue = modelValue;

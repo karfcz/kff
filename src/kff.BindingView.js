@@ -89,7 +89,7 @@ kff.BindingView = kff.createClass(
 		{
 			if(this.modelBindersMap !== null) this.modelBindersMap.initBinders();
 			kff.BindingView._super.runAll.call(this);
-			this.refreshOwnBinders();
+			this.refreshOwnBinders(true);
 		}
 	},
 
@@ -1066,9 +1066,9 @@ kff.BindingView = kff.createClass(
 	 *
 	 * @private
 	 */
-	refreshOwnBinders: function(event)
+	refreshOwnBinders: function(force)
 	{
-		if(this.modelBindersMap) this.modelBindersMap.refreshBinders();
+		if(this.modelBindersMap) this.modelBindersMap.refreshBinders(force);
 	},
 
 	/**
@@ -1076,17 +1076,17 @@ kff.BindingView = kff.createClass(
 	 *
 	 * @private
 	 */
-	refreshBinders: function(event)
+	refreshBinders: function(force)
 	{
 		if(this.collectionBinder)
 		{
 			this.refreshBoundViews();
-			for(var i = 0, l = this.boundViews.length; i < l; i++) this.boundViews[i].refreshBinders(event);
+			for(var i = 0, l = this.boundViews.length; i < l; i++) this.boundViews[i].refreshBinders(force);
 		}
 		else
 		{
-			this.refreshOwnBinders();
-			kff.BindingView._super.refreshBinders.call(this, event);
+			this.refreshOwnBinders(force);
+			kff.BindingView._super.refreshBinders.call(this, force);
 		}
 	},
 
