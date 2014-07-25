@@ -121,7 +121,7 @@ kff.BindingView = kff.createClass(
 	{
 		var model, attr, result, result2, modelPathArray, i, ret;
 		var dataBindAttr = this.$element[0].getAttribute(kff.View.DATA_BIND_ATTR);
-		var modelName;
+		var modelName, isCollectionBinder;
 
 		var bindingRegex = kff.BindingView.bindingRegex;
 		var leadingPeriodRegex = kff.BindingView.leadingPeriodRegex;
@@ -136,10 +136,70 @@ kff.BindingView = kff.createClass(
 			modelPathArray = result[1].replace(leadingPeriodRegex, '*.').replace(trailingPeriodRegex, '.*').split('.');
 
 			model = this.getModel(modelPathArray);
+			ret = null;
 
-			if(model instanceof kff.Collection)
+			isCollectionBinder = model instanceof kff.Collection;
+
+			if(!isCollectionBinder)
 			{
-				ret = this.parseBindingRegexp(result, false);
+				ret = this.parseBindingRegexp(result, true);
+
+				if(ret.binderName === 'list' && model instanceof Array)
+				{
+					isCollectionBinder = true;
+				}
+				else
+				{
+					if(!ret.binderName || !(ret.binderName in kff.BindingView.binders)) break;
+
+
+					if(modelPathArray.length > 1) attr = modelPathArray.pop();
+					else attr = null;
+
+					if(attr === '*') attr = null;
+
+					modelName = modelPathArray.length > 0 ? modelPathArray[0] : null;
+					model = this.getModel(modelPathArray);
+
+					// Special binding for collection count property
+					if(model instanceof kff.Collection)
+					{
+						if(attr === 'count') model = this.bindCollectionCount(model);
+					}
+					var indexed = false;
+
+					for(var j = ret.formatters.length - 1; j >= 0; j--)
+					{
+						if(ret.formatters[j].fn.indexed === true) indexed = true;
+					}
+
+					var modelBinder = new kff.BindingView.binders[ret.binderName]({
+						view: this,
+						$element: this.$element,
+						params: ret.binderParams,
+						attr: attr,
+						model: model,
+						modelName: modelName,
+						modelPathArray: modelPathArray,
+						formatters: ret.formatters,
+						parsers: ret.parsers,
+						setter: (ret.setters && ret.setters.length > 0) ? ret.setters[0] : null,
+						getter: (ret.getters && ret.getters.length > 0) ? ret.getters[0] : null,
+						eventNames: ret.eventNames,
+						fill: ret.fill,
+						nobind: ret.nobind,
+						watchModelPath: ret.watchModelPath,
+						indexed: indexed
+					});
+
+					this.modelBindersMap.add(modelBinder);
+				}
+			}
+
+			if(isCollectionBinder)
+			{
+				if(!ret) ret = this.parseBindingRegexp(result, false);
+				else ret.nobind = true;
 
 				if(!this.options.isBoundView)
 				{
@@ -154,52 +214,6 @@ kff.BindingView = kff.createClass(
 					}
 					this.boundViews = [];
 				}
-			}
-			else
-			{
-				ret = this.parseBindingRegexp(result, true);
-				if(!ret.binderName || !(ret.binderName in kff.BindingView.binders)) break;
-
-				if(modelPathArray.length > 1) attr = modelPathArray.pop();
-				else attr = null;
-
-				if(attr === '*') attr = null;
-
-				modelName = modelPathArray.length > 0 ? modelPathArray[0] : null;
-				model = this.getModel(modelPathArray);
-
-				// Special binding for collection count property
-				if(model instanceof kff.Collection)
-				{
-					if(attr === 'count') model = this.bindCollectionCount(model);
-				}
-				var indexed = false;
-
-				for(var j = ret.formatters.length - 1; j >= 0; j--)
-				{
-					if(ret.formatters[j].fn.indexed === true) indexed = true;
-				}
-
-				var modelBinder = new kff.BindingView.binders[ret.binderName]({
-					view: this,
-					$element: this.$element,
-					params: ret.binderParams,
-					attr: attr,
-					model: model,
-					modelName: modelName,
-					modelPathArray: modelPathArray,
-					formatters: ret.formatters,
-					parsers: ret.parsers,
-					setter: (ret.setters && ret.setters.length > 0) ? ret.setters[0] : null,
-					getter: (ret.getters && ret.getters.length > 0) ? ret.getters[0] : null,
-					eventNames: ret.eventNames,
-					fill: ret.fill,
-					nobind: ret.nobind,
-					watchModelPath: ret.watchModelPath,
-					indexed: indexed
-				});
-
-				this.modelBindersMap.add(modelBinder);
 			}
 		}
 	},
@@ -666,7 +680,15 @@ kff.BindingView = kff.createClass(
 					if(render) this.filteredCollection.append(item);
 				}
 			}
-			else this.filteredCollection = this.collectionBinder.collection.clone();
+			else
+			{
+				if(this.collectionBinder.collection instanceof kff.Collection) this.filteredCollection = this.collectionBinder.collection.clone();
+				else
+				{
+					this.filteredCollection = new kff.Collection();
+					this.filteredCollection.array = this.collectionBinder.collection.slice();
+				}
+			}
 
 			if(this.collectionSorter)
 			{
@@ -675,7 +697,15 @@ kff.BindingView = kff.createClass(
 			}
 
 		}
-		else this.filteredCollection = this.collectionBinder.collection;
+		else
+		{
+			if(this.collectionBinder.collection instanceof kff.Collection) this.filteredCollection = this.collectionBinder.collection;
+			else
+			{
+				this.filteredCollection = new kff.Collection();
+				this.filteredCollection.array = this.collectionBinder.collection;
+			}
+		}
 
 		if(this.boundViews.length === 0)
 		{
