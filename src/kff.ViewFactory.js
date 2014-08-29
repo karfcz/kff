@@ -48,7 +48,7 @@ kff.ViewFactory = kff.createClass(
 			if(typeof viewName !== 'function') viewClass = kff.evalObjectPath(viewName);
 			else viewClass = viewName;
 			if(viewClass) view = new viewClass(kff.mixins({}, options));
-			view.setViewFactory(this);
+			if(view) view.setViewFactory(this);
 		}
 		return view;
 	},
