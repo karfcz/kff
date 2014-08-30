@@ -799,7 +799,7 @@ kff.BindingView = kff.createClass(
 				i = positions.length - 1;
 
 				el = positions[i].$element[0];
-				if(el !== lastChild && lastChild.parentNode)
+				if(el !== lastChild && lastChild.parentNode && lastChild.parentNode.nodeType === 1)
 				{
 					lastChild.parentNode.insertBefore(el, lastChild.nextSibling);
 					lastChild = el;
@@ -809,7 +809,7 @@ kff.BindingView = kff.createClass(
 				{
 					el = positions[i].$element[0];
 
-					if(el !== lastChild && el.nextSibling !== lastChild && lastChild.parentNode)
+					if(el !== lastChild && el.nextSibling !== lastChild && lastChild.parentNode && lastChild.parentNode.nodeType === 1)
 					{
 						lastChild.parentNode.insertBefore(el, lastChild);
 					}
