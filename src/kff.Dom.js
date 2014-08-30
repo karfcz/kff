@@ -1,11 +1,14 @@
 
 kff.useJquery = true;
 
-var matchesMethodName;
-if('webkitMatchesSelector' in document.documentElement) matchesMethodName = 'webkitMatchesSelector';
-else if('mozMatchesSelector' in document.documentElement) matchesMethodName = 'mozMatchesSelector';
-else if('oMatchesSelector' in document.documentElement) matchesMethodName = 'oMatchesSelector';
-else if('msMatchesSelector' in document.documentElement) matchesMethodName = 'msMatchesSelector';
+if(typeof document === 'object' && document !== null)
+{
+	var matchesMethodName;
+	if('webkitMatchesSelector' in document.documentElement) matchesMethodName = 'webkitMatchesSelector';
+	else if('mozMatchesSelector' in document.documentElement) matchesMethodName = 'mozMatchesSelector';
+	else if('oMatchesSelector' in document.documentElement) matchesMethodName = 'oMatchesSelector';
+	else if('msMatchesSelector' in document.documentElement) matchesMethodName = 'msMatchesSelector';
+}
 
 kff.Dom = kff.createClass(
 {

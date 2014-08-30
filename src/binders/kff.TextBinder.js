@@ -26,14 +26,17 @@ kff.TextBinder = kff.createClass(
 	}
 });
 
-if(!('textContent' in document.documentElement))
+if(typeof document === 'object' && document !== null)
 {
-	kff.TextBinder.prototype.refresh = function(value)
+	if(!('textContent' in document.documentElement))
 	{
-		var val = this.value;
-		if(val === null || val === undefined) val = '';
-		this.$element[0].innerText = val;
-	};
+		kff.TextBinder.prototype.refresh = function(value)
+		{
+			var val = this.value;
+			if(val === null || val === undefined) val = '';
+			this.$element[0].innerText = val;
+		};
+	}
 }
 
 kff.BindingView.registerBinder('text', kff.TextBinder);
