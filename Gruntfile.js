@@ -69,8 +69,8 @@ module.exports = function(grunt) {
 			}
 		},
 		watch: {
-			files: '<% concat.kff.src %>',
-			tasks: 'concat min'
+			files: allJsFiles,
+			tasks: 'concat'
 		},
 		jshint: {
 			all: jsFiles,
