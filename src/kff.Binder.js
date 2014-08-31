@@ -249,5 +249,13 @@ kff.Binder = kff.createClass(
 	isIndexed: function()
 	{
 		return this.options.indexed;
+	},
+
+	createFilterTriggerEvent: function(originalTriggerEvent, eventFilter)
+	{
+		return function(event)
+		{
+			return eventFilter.fn.apply(this, [originalTriggerEvent, event].concat(eventFilter.args));
+		}
 	}
 });

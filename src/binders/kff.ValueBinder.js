@@ -33,6 +33,10 @@ kff.ValueBinder = kff.createClass(
 			this.setValue = this.setArrayValue;
 			this.compareValues = this.compareArrayValues;
 		}
+		if(this.options.eventFilters && this.options.eventFilters[0])
+		{
+			this.inputChange = this.createFilterTriggerEvent(this.inputChange, this.options.eventFilters[0]);
+		}
 		kff.Binder.prototype.init.call(this);
 	},
 

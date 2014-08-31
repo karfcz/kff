@@ -20,12 +20,17 @@ kff.EventBinder = kff.createClass(
 		options.events = [
 			[eventNames, 'triggerEvent']
 		];
+
 		kff.Binder.call(this, options);
 	},
 
 	init: function()
 	{
 		this.userValue = this.options.params[0] || null;
+		if(this.options.eventFilters && this.options.eventFilters[0])
+		{
+			this.triggerEvent = this.createFilterTriggerEvent(this.triggerEvent, this.options.eventFilters[0]);
+		}
 		kff.EventBinder._super.init.call(this);
 	},
 
