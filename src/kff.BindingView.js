@@ -120,7 +120,7 @@ kff.BindingView = kff.createClass(
 	initBinding: function()
 	{
 		var model, attr, result, result2, modelPathArray, i, ret;
-		var dataBindAttr = this.$element[0].getAttribute(kff.View.DATA_BIND_ATTR);
+		var dataBindAttr = this.$element[0].getAttribute(kff.DATA_BIND_ATTR);
 		var modelName, isCollectionBinder;
 
 		var bindingRegex = kff.BindingView.bindingRegex;
@@ -441,8 +441,8 @@ kff.BindingView = kff.createClass(
 		this.boundViews = [];
 
 		// Boundview options:
-		this.boundViewName = this.$element[0].getAttribute(kff.View.DATA_VIEW_ATTR);
-		var opt = this.$element[0].getAttribute(kff.View.DATA_OPTIONS_ATTR);
+		this.boundViewName = this.$element[0].getAttribute(kff.DATA_VIEW_ATTR);
+		var opt = this.$element[0].getAttribute(kff.DATA_OPTIONS_ATTR);
 
 		this.initCollectionFilter();
 		this.initCollectionSorter();
@@ -848,7 +848,7 @@ kff.BindingView = kff.createClass(
 	 */
 	initCollectionFilter: function()
 	{
-		var filterName = this.$element[0].getAttribute('data-kff-filter');
+		var filterName = this.$element[0].getAttribute(kff.DATA_FILTER_ATTR);
 
 		if(filterName)
 		{
@@ -877,7 +877,7 @@ kff.BindingView = kff.createClass(
 	 */
 	initCollectionSorter: function()
 	{
-		var sorterName = this.$element[0].getAttribute('data-kff-sort');
+		var sorterName = this.$element[0].getAttribute(kff.DATA_SORT_ATTR);
 
 		if(sorterName)
 		{
@@ -907,7 +907,7 @@ kff.BindingView = kff.createClass(
 	 */
 	initCollectionCounter: function()
 	{
-		var counterName = this.$element[0].getAttribute('data-kff-count');
+		var counterName = this.$element[0].getAttribute(kff.DATA_COUNT_ATTR);
 
 		if(counterName)
 		{
@@ -1032,7 +1032,7 @@ kff.BindingView = kff.createClass(
 			boundView.rebindElement($element[0]);
 		}
 
-		$element[0].setAttribute(kff.View.DATA_RENDERED_ATTR, true);
+		$element[0].setAttribute(kff.DATA_RENDERED_ATTR, true);
 
 		boundView.modelBindersMap.setView(boundView);
 

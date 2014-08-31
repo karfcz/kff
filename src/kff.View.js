@@ -1,41 +1,7 @@
 
 kff.View = kff.createClass(
 {
-	mixins: kff.EventsMixin,
-
-	statics:
-	/** @lends kff.View */
-	{
-		/**
-		 * Data-attribute name used for view names
-		 * @constant
-		 */
-		DATA_VIEW_ATTR: 'data-kff-view',
-
-		/**
-		 * Data-attribute name used for view options (as JSON serialized object)
-		 * @constant
-		 */
-		DATA_OPTIONS_ATTR: 'data-kff-options',
-
-		/**
-		 * Data-attribute name used for marking of rendered views
-		 * @constant
-		 */
-		DATA_RENDERED_ATTR: 'data-kff-rendered',
-
-		/**
-		 * Data-attribute name used for data-binding
-		 * @constant
-		 */
-		DATA_BIND_ATTR: 'data-kff-bind',
-
-		/**
-		 * Data-attribute name used for action-binding
-		 * @constant
-		 */
-		DATA_TRIGGER_ATTR: 'data-kff-trigger'
-	}
+	mixins: kff.EventsMixin
 },
 /** @lends kff.View.prototype */
 {
@@ -365,17 +331,17 @@ kff.View = kff.createClass(
 
 		if(typeof this.afterRender === 'function') this.afterRender();
 
-		this.$element[0].setAttribute(kff.View.DATA_RENDERED_ATTR, true);
+		this.$element[0].setAttribute(kff.DATA_RENDERED_ATTR, true);
 
 		return ret;
 	},
 
 	/**
 	 * Renders subviews. Will find all DOM descendats with
-	 * kff.View.DATA_KFF_VIEW (or kff.View.DATA_BIND_ATTR) attribute and
+	 * kff.DATA_KFF_VIEW (or kff.DATA_BIND_ATTR) attribute and
 	 * initializes subviews on them. If an element has the
-	 * kff.View.DATA_BIND_ATTR but not the kff.View.DATA_KFF_VIEW attribute,
-	 * adds kff.View.DATA_KFF_VIEW attribute = "kff.BindingView" and inits
+	 * kff.DATA_BIND_ATTR but not the kff.DATA_KFF_VIEW attribute,
+	 * adds kff.DATA_KFF_VIEW attribute = "kff.BindingView" and inits
 	 * implicit data-binding.
 	 */
 	renderSubviews: function()
@@ -489,19 +455,19 @@ kff.View = kff.createClass(
 				viewName = null;
 				if(node.nodeType === 1)
 				{
-					rendered = node.getAttribute(kff.View.DATA_RENDERED_ATTR);
+					rendered = node.getAttribute(kff.DATA_RENDERED_ATTR);
 
 					if(!rendered)
 					{
-						viewName = node.getAttribute(kff.View.DATA_VIEW_ATTR);
-						if(!viewName && node.getAttribute(kff.View.DATA_BIND_ATTR))
+						viewName = node.getAttribute(kff.DATA_VIEW_ATTR);
+						if(!viewName && node.getAttribute(kff.DATA_BIND_ATTR))
 						{
 							viewName = 'kff.BindingView';
-							node.setAttribute(kff.View.DATA_VIEW_ATTR, viewName);
+							node.setAttribute(kff.DATA_VIEW_ATTR, viewName);
 						}
 						if(viewName)
 						{
-							optAttr = node.getAttribute(kff.View.DATA_OPTIONS_ATTR);
+							optAttr = node.getAttribute(kff.DATA_OPTIONS_ATTR);
 							if(subviewsStruct === null) subviewsStruct = [];
 							subviewsStruct.push({
 								viewName: viewName,
@@ -512,7 +478,7 @@ kff.View = kff.createClass(
 						}
 						else
 						{
-							onAttr = node.getAttribute(kff.View.DATA_TRIGGER_ATTR);
+							onAttr = node.getAttribute(kff.DATA_TRIGGER_ATTR);
 							if(onAttr)
 							{
 								this.processChildEventTriggers(node, onAttr, index);
@@ -545,7 +511,7 @@ kff.View = kff.createClass(
 	processChildEventTriggers: function(child, onAttr, index)
 	{
 		var onAttrSplit, onAttrSplit2, events = [], i, l;
-		onAttr = onAttr || child.getAttribute(kff.View.DATA_TRIGGER_ATTR);
+		onAttr = onAttr || child.getAttribute(kff.DATA_TRIGGER_ATTR);
 		if(onAttr)
 		{
 			onAttrSplit = onAttr.split(/\s+/);
@@ -600,7 +566,7 @@ kff.View = kff.createClass(
 	destroyAll: function(silent)
 	{
 		var ret;
-		this.$element[0].removeAttribute(kff.View.DATA_RENDERED_ATTR);
+		this.$element[0].removeAttribute(kff.DATA_RENDERED_ATTR);
 		this.undelegateEvents();
 		this.undelegateModelEvents();
 		this.destroySubviews();

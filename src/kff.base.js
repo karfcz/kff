@@ -1,4 +1,53 @@
 
+/**
+ * Data-attribute name used for view names
+ * @constant
+ */
+kff.DATA_VIEW_ATTR = 'data-kff-view';
+
+/**
+ * Data-attribute name used for view options (as JSON serialized object)
+ * @constant
+ */
+kff.DATA_OPTIONS_ATTR = 'data-kff-options';
+
+/**
+ * Data-attribute name used for marking of rendered views
+ * @constant
+ */
+kff.DATA_RENDERED_ATTR = 'data-kff-rendered';
+
+/**
+ * Data-attribute name used for data-binding
+ * @constant
+ */
+kff.DATA_BIND_ATTR = 'data-kff-bind';
+
+/**
+ * Data-attribute name used for event triggers
+ * @constant
+ */
+kff.DATA_TRIGGER_ATTR = 'data-kff-trigger';
+
+/**
+ * Data-attribute name used for collection filtering
+ * @constant
+ */
+kff.DATA_FILTER_ATTR = 'data-kff-filter';
+
+/**
+ * Data-attribute name used for collection sorting
+ * @constant
+ */
+kff.DATA_SORT_ATTR = 'data-kff-sort';
+
+/**
+ * Data-attribute name used forcollection count
+ * @constant
+ */
+kff.DATA_COUNT_ATTR = 'data-kff-count';
+
+
 (function(){
 
 	if(Object.create)
