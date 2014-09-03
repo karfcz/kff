@@ -21,8 +21,25 @@ kff.InsertBinder = kff.createClass(
 	{
 		this.equalsTo = this.options.params[0] || true;
 		this.operator = this.options.params[1] || null;
+		this.forceRerender = this.options.params[2] === 'force';
 
 		this.isInserted = true;
+
+		if(this.forceRerender)
+		{
+			this.isRun = false;
+			this.isRendered = true;
+			var noop = function(){};
+
+			this.renderSubviews = this.view.renderSubviews;
+			this.runSubviews = this.view.runSubviews;
+			this.destroySubviews = this.view.destroySubviews;
+
+			this.view.renderSubviews = noop;
+			this.view.runSubviews = noop;
+			this.view.destroySubviews = noop;
+		}
+
 		kff.InsertBinder._super.init.call(this);
 	},
 
@@ -42,6 +59,19 @@ kff.InsertBinder = kff.createClass(
 				}
 				this.isInserted = true;
 			}
+			if(this.forceRerender)
+			{
+				if(!this.isRendered)
+				{
+					this.renderSubviews.call(this.view);
+					this.isRendered = true;
+				}
+				if(!this.isRun)
+				{
+					this.runSubviews.call(this.view);
+					this.isRun = true;
+				}
+			}
 		}
 		else
 		{
@@ -54,6 +84,12 @@ kff.InsertBinder = kff.createClass(
 					parentNode.replaceChild(this.anchor, this.$element[0]);
 				}
 				this.isInserted = false;
+			}
+			if(this.forceRerender && this.isRendered)
+			{
+				this.destroySubviews.call(this.view);
+				this.isRendered = false;
+				this.isRun = false;
 			}
 		}
 	},
