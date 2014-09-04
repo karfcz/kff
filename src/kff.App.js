@@ -14,9 +14,10 @@ kff.App = kff.createClass(
 	 */
 	constructor: function(options)
 	{
-		var models;
+		var models, helpers;
 		this.options = options = options || {};
 		models = options.models || {};
+		helpers = options.helpers || {};
 
 		// Dependency injection container configuration:
 		var config = {
@@ -24,7 +25,8 @@ kff.App = kff.createClass(
 			services: {
 				'kff.PageView': {
 					args: [{
-						models: models
+						models: models,
+						helpers: helpers
 					}]
 				}
 			}
