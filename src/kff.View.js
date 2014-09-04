@@ -32,6 +32,13 @@ kff.View = kff.createClass(
 		}
 		else this.models = {};
 
+		if(options.helpers)
+		{
+			this.helpers = options.helpers;
+			options.helpers = null;
+		}
+		else this.helpers = {};
+
 		if(options.parentView)
 		{
 			this.setParentView(options.parentView);
@@ -708,7 +715,7 @@ kff.View = kff.createClass(
 
 	setParentView: function(parentView)
 	{
-		var oldModels, F, key, i, l;
+		var oldModels, oldHelpers, F, key, i, l;
 
 		this.parentView = parentView;
 
@@ -723,6 +730,21 @@ kff.View = kff.createClass(
 				if(oldModels.hasOwnProperty(key))
 				{
 					this.models[key] = oldModels[key];
+				}
+			}
+		}
+
+		oldHelpers = this.helpers || null;
+
+		this.helpers = kff.createObject(this.parentView.helpers);
+
+		if(oldHelpers)
+		{
+			for(key in oldHelpers)
+			{
+				if(oldHelpers.hasOwnProperty(key))
+				{
+					this.helpers[key] = oldHelpers[key];
 				}
 			}
 		}

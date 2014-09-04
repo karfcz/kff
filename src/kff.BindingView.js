@@ -367,7 +367,8 @@ kff.BindingView = kff.createClass(
 			{
 				modifierArgs = [];
 			}
-			if(kff.BindingView.helpers[modifierParam]) modifiers.push({ fn: kff.BindingView.helpers[modifierParam], args: modifierArgs });
+			if(this.helpers[modifierParam]) modifiers.push({ fn: this.helpers[modifierParam], args: modifierArgs });
+			else if(kff.BindingView.helpers[modifierParam]) modifiers.push({ fn: kff.BindingView.helpers[modifierParam], args: modifierArgs });
 		}
 	},
 
