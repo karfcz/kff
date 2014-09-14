@@ -24,7 +24,8 @@ kff.PageView = kff.createClass(
 	{
 		options = options || {};
 		options.element = $(document.getElementsByTagName('body')[0]);
-		return kff.View.call(this, options);
+		this.cachedRegions = {};
+		kff.View.call(this, options);
 	},
 
 	/**
@@ -66,6 +67,13 @@ kff.PageView = kff.createClass(
 		this.runAll();
 	},
 
+	renderAll: function()
+	{
+		this.renderRegions(this.options.regions);
+
+		kff.PageView._super.renderAll.call(this);
+	},
+
 	/**
 	 * Runs the view (i.e. binds events and models). It will be called automatically. Should not be called
 	 * directly.
@@ -90,9 +98,70 @@ kff.PageView = kff.createClass(
 	{
 		var ret = kff.View.prototype.destroyAll.call(this, silent);
 
+		this.clearRegions(this.options.regions);
+
 		if(!((silent === true) || (ret === false)))
 		{
 			this.trigger('destroy');
+		}
+	},
+
+	renderRegions: function(regions)
+	{
+		var selector, i, l, i2, l2, nodes, node, childNodes, fragment;
+		if(kff.isPlainObject(regions))
+		{
+			for(selector in regions)
+			{
+				nodes = document.querySelectorAll(selector);
+				for(i = 0, l = nodes.length; i < l; i++)
+				{
+					node = nodes[i];
+					if(node.hasChildNodes())
+					{
+						if(!this.cachedRegions[selector]) this.cachedRegions[selector] = [];
+
+						this.cachedRegions[selector][i] = fragment = document.createDocumentFragment();
+
+						childNodes = new Array(node.childNodes.length);
+						for(i2 = 0, l2 = childNodes.length; i2 < l2; i2++)
+						{
+							childNodes[i2] = node.childNodes[i2];
+						}
+						for(i2 = 0, l2 = childNodes.length; i2 < l2; i2++)
+						{
+							fragment.appendChild(childNodes[i2]);
+						}
+					}
+					node.innerHTML = regions[selector];
+				}
+			}
+		}
+	},
+
+	clearRegions: function(regions)
+	{
+		var selector, i, l, nodes, node, fragment;
+		if(kff.isPlainObject(regions))
+		{
+			for(var selector in regions)
+			{
+				var nodes = document.querySelectorAll(selector);
+				for(var i = nodes.length - 1; i >= 0; i--)
+				{
+					node = nodes[i];
+					node.innerHTML = '';
+					if(this.cachedRegions[selector])
+					{
+						fragment = this.cachedRegions[selector][i];
+						if(fragment)
+						{
+							node.appendChild(fragment);
+							this.cachedRegions[selector][i] = null;
+						}
+					}
+				}
+			}
 		}
 	}
 
