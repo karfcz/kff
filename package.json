@@ -1,6 +1,6 @@
 {
   "name": "kff",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-alpha.2",
   "description": "KFF is an MVC-like JavaScript framework for building client-side applications or large websites.",
   "author": {
     "name": "Karel Fučík",
