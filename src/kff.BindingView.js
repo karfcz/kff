@@ -676,7 +676,8 @@ kff.BindingView = kff.createClass(
 				filterModel = this.collectionFilter.model || null;
 				filterFnName = this.collectionFilter.fn;
 
-				a = this.collectionBinder.collection.array;
+				if(this.collectionBinder.collection instanceof kff.Collection) a = this.collectionBinder.collection.array;
+				else if(this.collectionBinder.collection instanceof Array) a = this.collectionBinder.collection;
 				for(i = 0, l = a.length; i < l; i++)
 				{
 					item = a[i];
