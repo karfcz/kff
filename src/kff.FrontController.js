@@ -42,6 +42,34 @@ kff.FrontController = kff.createClass(
 		else this.setState(null);
 	},
 
+	destroy: function()
+	{
+		var destroyQueue = [], lastViewName, i;
+		while((lastViewName = this.getLastView() ? this.getLastView().name : null) !== null)
+		{
+			destroyQueue.push(this.popView());
+		}
+
+		for(i = 0; i < destroyQueue.length; i++)
+		{
+			if(destroyQueue[i + 1]) destroyQueue[i].instance.on('destroy', kff.bindFn(destroyQueue[i + 1].instance, 'destroyAll'));
+			else destroyQueue[i].instance.on('destroy', kff.bindFn(this, 'destroyDone'));
+		}
+
+		if(destroyQueue[0]) destroyQueue[0].instance.destroyAll();
+		else this.destroyDone();
+	},
+
+	destroyDone: function()
+	{
+		if(this.router && this.stateHandler)
+		{
+			this.stateHandler.off('popstate', this.f('setState'));
+			this.stateHandler.destroy();
+		}
+		if(this.viewFactory) this.viewFactory = null;
+	},
+
 	createViewFromState: function(state)
 	{
 		if(this.router && this.state)

@@ -14,6 +14,11 @@ kff.HashStateHandler = kff.createClass(
 		this.hashChange();
 	},
 
+	destroy: function()
+	{
+		$(window).off('hashchange', this.f('hashChange'));
+	},
+
 	pushState: function(state, title, url)
 	{
 		location.hash = url;

@@ -49,7 +49,7 @@ kff.App = kff.createClass(
 	 */
 	init: function()
 	{
-		var frontController = this.serviceContainer.getService('kff.FrontController', [{ element: this.options.element }]);
+		var frontController = this.frontController = this.serviceContainer.getService('kff.FrontController', [{ element: this.options.element }]);
 		if(!frontController.getViewFactory()) frontController.setViewFactory(this.serviceContainer.getService('kff.ViewFactory'));
 		if(this.options.router)
 		{
@@ -72,6 +72,11 @@ kff.App = kff.createClass(
 			frontController.setDefaultView(this.options.defaultView);
 		}
 		frontController.init();
+	},
+
+	destroy: function()
+	{
+		if(this.frontController) this.frontController.destroy();
 	},
 
 	/**
