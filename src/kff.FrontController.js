@@ -6,7 +6,8 @@ kff.FrontController = kff.createClass(
 			args: [{
 				viewFactory: '@kff.ViewFactory',
 				defaultView: 'kff.PageView',
-				stateHandler: '@kff.HashStateHandler'
+				stateHandler: '@kff.HashStateHandler',
+				element: null
 			}],
 			shared: true
 		}
@@ -26,6 +27,7 @@ kff.FrontController = kff.createClass(
 		this.viewFactory = options.viewFactory;
 		this.defaultView = options.defaultView;
 		this.router = options.router || null;
+		this.rootElement = options.element || null;
 		this.stateHandler = options.stateHandler || null;
 	},
 
@@ -124,15 +126,17 @@ kff.FrontController = kff.createClass(
 
 	startInit: function()
 	{
-		var i, l, view,
+		var i, l, view, options,
 			precedingViewNames = this.getPrecedingViews(this.newViewName),
 			from = 0;
+
+		if(this.rootElement) options = { element: this.rootElement };
 
 		for(i = 0, l = precedingViewNames.length; i < l; i++)
 		{
 			if(i >= this.viewsQueue.length)
 			{
-				view = this.viewFactory.createView(precedingViewNames[i]);
+				view = this.viewFactory.createView(precedingViewNames[i], options);
 				view.setViewFactory(this.viewFactory);
 				this.pushView({ name: precedingViewNames[i], instance: view });
 			}

@@ -22,6 +22,7 @@ kff.View = kff.createClass(
 		this.subviews = null;
 		this.eventTriggers = null;
 		this.viewFactory = null;
+		this.cachedRegions = null;
 
 		this.initEvents();
 
@@ -298,16 +299,12 @@ kff.View = kff.createClass(
 	/**
 	 * Renders the view. It will be called automatically. Should not be called
 	 * directly.
-	 *
-	 * @param {Boolean} silent If true, the 'render' event won't be called
 	 */
 	render: function(){},
 
 	/**
 	 * Renders the view. It will be called automatically. Should not be called
 	 * directly.
-	 *
-	 * @param {Boolean} silent If true, the 'render' event won't be called
 	 */
 	run: function(){},
 
@@ -319,6 +316,7 @@ kff.View = kff.createClass(
 	{
 		if(!this.viewFactory) this.viewFactory = new kff.ViewFactory();
 		this.explicitSubviewsStruct = null;
+		this.renderRegions(this.options.regions);
 		this.render();
 		this.renderSubviews();
 		this.processEventTriggers();
@@ -328,7 +326,7 @@ kff.View = kff.createClass(
 	 * Runs the view (i.e. binds events and models). It will be called automatically. Should not be called
 	 * directly.
 	 */
-	runAll: function(silent)
+	runAll: function()
 	{
 		var ret = this.run();
 		this.runSubviews();
@@ -559,18 +557,14 @@ kff.View = kff.createClass(
 	/**
 	 * Destroys the view (destroys all subviews and unbinds previously bound DOM events.
 	 * It will be called automatically. Should not be called directly.
-	 *
-	 * @param {Boolean} silent If true, the 'destroy' event won't be called
 	 */
 	destroy: function(){},
 
 	/**
 	 * Destroys the view (destroys all subviews and unbinds previously bound DOM events.
 	 * It will be called automatically. Should not be called directly.
-	 *
-	 * @param {Boolean} silent If true, the 'destroy' event won't be called
 	 */
-	destroyAll: function(silent)
+	destroyAll: function()
 	{
 		var ret;
 		this.$element[0].removeAttribute(kff.DATA_RENDERED_ATTR);
@@ -585,6 +579,8 @@ kff.View = kff.createClass(
 		this.explicitSubviewsStruct = null;
 		this.subviews = null;
 		this.eventTriggers = null;
+
+		this.clearRegions(this.options.regions);
 
 		return ret;
 	},
@@ -708,6 +704,11 @@ kff.View = kff.createClass(
 		if(this.explicitSubviewsStruct !== null)
 		{
 			clonedView.explicitSubviewsStruct = this.explicitSubviewsStruct.slice();
+		}
+		if(this.cachedRegions)
+		{
+			clonedView.cachedRegions = this.cachedRegions;
+			clonedView.cloneCachedRegions();
 		}
 
 		return clonedView;
@@ -847,5 +848,94 @@ kff.View = kff.createClass(
 			else node = null;
 		}
 		return node;
+	},
+
+	renderRegions: function(regions)
+	{
+		var selector, i, l, i2, l2, nodes, node, childNodes, fragment;
+		if(kff.isPlainObject(regions))
+		{
+			if(!this.cachedRegions) this.cachedRegions = {};
+			for(selector in regions)
+			{
+				if(selector === 'self') nodes = [this.$element[0]];
+				else nodes = this.$docElement[0].querySelectorAll(selector);
+				for(i = 0, l = nodes.length; i < l; i++)
+				{
+					node = nodes[i];
+					if(node.hasChildNodes())
+					{
+						if(!this.cachedRegions[selector]) this.cachedRegions[selector] = [];
+
+						this.cachedRegions[selector][i] = fragment = document.createDocumentFragment();
+
+						childNodes = new Array(node.childNodes.length);
+						for(i2 = 0, l2 = childNodes.length; i2 < l2; i2++)
+						{
+							childNodes[i2] = node.childNodes[i2];
+						}
+						for(i2 = 0, l2 = childNodes.length; i2 < l2; i2++)
+						{
+							fragment.appendChild(childNodes[i2]);
+						}
+					}
+					node.innerHTML = regions[selector];
+				}
+			}
+		}
+	},
+
+	clearRegions: function(regions)
+	{
+		var selector, i, l, nodes, node, fragment;
+		if(kff.isPlainObject(regions))
+		{
+			for(var selector in regions)
+			{
+				if(selector === 'self') nodes = [this.$element[0]];
+				else nodes = this.$docElement[0].querySelectorAll(selector);
+				for(var i = nodes.length - 1; i >= 0; i--)
+				{
+					node = nodes[i];
+					node.innerHTML = '';
+					if(this.cachedRegions[selector])
+					{
+						fragment = this.cachedRegions[selector][i];
+						if(fragment)
+						{
+							node.appendChild(fragment);
+							this.cachedRegions[selector][i] = null;
+						}
+					}
+				}
+			}
+		}
+	},
+
+	cloneCachedRegions: function()
+	{
+		var selector, i, l, nodes, node, fragment;
+		if(this.cachedRegions)
+		{
+			for(selector in this.cachedRegions)
+			{
+				fragments = this.cachedRegions[selector];
+				for(i = 0, l = fragments.length; i < l; i++)
+				{
+					if(fragments[i].hasChildNodes())
+					{
+						childNodes = fragments[i].childNodes;
+						fragment = document.createDocumentFragment();
+
+						for(i2 = 0, l2 = childNodes.length; i2 < l2; i2++)
+						{
+							fragment.appendChild(childNodes[i2].cloneNode(true));
+						}
+						fragments[i] = fragment;
+					}
+				}
+			}
+		}
 	}
+
 });
