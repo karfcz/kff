@@ -68,7 +68,7 @@ describe('kff.View', function()
 			view = new TestView({element: $div});
 			view.init();
 			expect($div.html()).to.equal(testString);
-			expect($div.attr(kff.View.DATA_RENDERED_ATTR)).to.equal('true');
+			expect($div.attr(kff.DATA_RENDERED_ATTR)).to.equal('true');
 		});
 
 	});
@@ -80,10 +80,10 @@ describe('kff.View', function()
 			view = new TestView({element: $div});
 			view.init();
 			expect($div.html()).to.equal(testString);
-			expect($div.attr(kff.View.DATA_RENDERED_ATTR)).to.equal('true');
+			expect($div.attr(kff.DATA_RENDERED_ATTR)).to.equal('true');
 			view.destroyAll();
 			expect($div.html()).to.equal('');
-			expect($div.attr(kff.View.DATA_RENDERED_ATTR)).to.be.undefined;
+			expect($div.attr(kff.DATA_RENDERED_ATTR)).to.be.undefined;
 		});
 
 
@@ -255,13 +255,13 @@ describe('kff.View', function()
 			var view1 = container.getService('testViewA');
 			view1.init();
 
-			expect($mainDiv.attr(kff.View.DATA_RENDERED_ATTR)).to.equal('true');
-			expect($innerDiv.attr(kff.View.DATA_RENDERED_ATTR)).to.equal('true');
+			expect($mainDiv.attr(kff.DATA_RENDERED_ATTR)).to.equal('true');
+			expect($innerDiv.attr(kff.DATA_RENDERED_ATTR)).to.equal('true');
 
 			view1.destroyAll();
 
-			expect($mainDiv.attr(kff.View.DATA_RENDERED_ATTR)).to.be.undefined;
-			expect($innerDiv.attr(kff.View.DATA_RENDERED_ATTR)).to.be.undefined;
+			expect($mainDiv.attr(kff.DATA_RENDERED_ATTR)).to.be.undefined;
+			expect($innerDiv.attr(kff.DATA_RENDERED_ATTR)).to.be.undefined;
 		});
 
 
@@ -303,8 +303,8 @@ describe('kff.View', function()
 			var view1 = container.getService('testViewA');
 			view1.init();
 
-			expect($mainDiv.attr(kff.View.DATA_RENDERED_ATTR)).to.equal('true');
-			expect($innerDiv.attr(kff.View.DATA_RENDERED_ATTR)).to.equal('true');
+			expect($mainDiv.attr(kff.DATA_RENDERED_ATTR)).to.equal('true');
+			expect($innerDiv.attr(kff.DATA_RENDERED_ATTR)).to.equal('true');
 
 			$innerDiv.triggerHandler('click');
 		});
