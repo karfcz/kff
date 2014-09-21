@@ -69,8 +69,6 @@ kff.View = kff.createClass(
 		}
 
 		this.options = options;
-
-		return this;
 	},
 
 	/**
