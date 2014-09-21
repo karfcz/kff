@@ -369,7 +369,7 @@ kff.View = kff.createClass(
 			for(i = 0, l = subviewsStruct.length; i < l; i++)
 			{
 				options = subviewsStruct[i].options;
-				options.element = subviewsStruct[i].$element;
+				options.element = subviewsStruct[i].$element[0];
 				subView = this.createView(subviewsStruct[i].viewName, options);
 				if(subView instanceof kff.View)
 				{
