@@ -852,35 +852,45 @@ kff.View = kff.createClass(
 
 	renderRegions: function(regions)
 	{
-		var selector, i, l, i2, l2, nodes, node, childNodes, fragment;
+		var selector;
+
+		var saveRegion = function(regions, cachedRegions, nodes, selector)
+		{
+			var node, fragment, childNodes;
+			for(var i = 0, l = nodes.length; i < l; i++)
+			{
+				node = nodes[i];
+				if(node.hasChildNodes())
+				{
+					if(!cachedRegions[selector]) cachedRegions[selector] = [];
+
+					cachedRegions[selector][i] = fragment = document.createDocumentFragment();
+
+					childNodes = new Array(node.childNodes.length);
+					for(var i2 = 0, l2 = childNodes.length; i2 < l2; i2++)
+					{
+						childNodes[i2] = node.childNodes[i2];
+					}
+					for(i2 = 0, l2 = childNodes.length; i2 < l2; i2++)
+					{
+						fragment.appendChild(childNodes[i2]);
+					}
+				}
+				node.innerHTML = regions[selector];
+			}
+		};
+
 		if(kff.isPlainObject(regions))
 		{
 			if(!this.cachedRegions) this.cachedRegions = {};
+			if('self' in regions) saveRegion(regions, this.cachedRegions, [this.$element[0]], 'self');
 			for(selector in regions)
 			{
-				if(selector === 'self') nodes = [this.$element[0]];
-				else nodes = this.$docElement[0].querySelectorAll(selector);
-				for(i = 0, l = nodes.length; i < l; i++)
+				if(selector !== 'self')
 				{
-					node = nodes[i];
-					if(node.hasChildNodes())
-					{
-						if(!this.cachedRegions[selector]) this.cachedRegions[selector] = [];
-
-						this.cachedRegions[selector][i] = fragment = document.createDocumentFragment();
-
-						childNodes = new Array(node.childNodes.length);
-						for(i2 = 0, l2 = childNodes.length; i2 < l2; i2++)
-						{
-							childNodes[i2] = node.childNodes[i2];
-						}
-						for(i2 = 0, l2 = childNodes.length; i2 < l2; i2++)
-						{
-							fragment.appendChild(childNodes[i2]);
-						}
-					}
-					node.innerHTML = regions[selector];
+					saveRegion(regions, this.cachedRegions, this.$docElement[0].querySelectorAll(selector), selector);
 				}
+
 			}
 		}
 	},
@@ -888,25 +898,34 @@ kff.View = kff.createClass(
 	clearRegions: function(regions)
 	{
 		var selector, i, l, nodes, node, fragment;
+
+		var unsaveRegion = function(regions, cachedRegions, nodes, selector)
+		{
+			var node, fragment;
+			for(var i = nodes.length - 1; i >= 0; i--)
+			{
+				node = nodes[i];
+				node.innerHTML = '';
+				if(cachedRegions[selector])
+				{
+					fragment = cachedRegions[selector][i];
+					if(fragment)
+					{
+						node.appendChild(fragment);
+						cachedRegions[selector][i] = null;
+					}
+				}
+			}
+		};
+
 		if(kff.isPlainObject(regions))
 		{
+			if('self' in regions) unsaveRegion(regions, this.cachedRegions, [this.$element[0]], 'self');
 			for(var selector in regions)
 			{
-				if(selector === 'self') nodes = [this.$element[0]];
-				else nodes = this.$docElement[0].querySelectorAll(selector);
-				for(var i = nodes.length - 1; i >= 0; i--)
+				if(selector !== 'self')
 				{
-					node = nodes[i];
-					node.innerHTML = '';
-					if(this.cachedRegions[selector])
-					{
-						fragment = this.cachedRegions[selector][i];
-						if(fragment)
-						{
-							node.appendChild(fragment);
-							this.cachedRegions[selector][i] = null;
-						}
-					}
+					unsaveRegion(regions, this.cachedRegions, this.$docElement[0].querySelectorAll(selector), selector);
 				}
 			}
 		}
