@@ -188,7 +188,36 @@ kff.View = kff.createClass(
 	 */
 	addEvents: function(events)
 	{
+		if(!(events instanceof Array))
+		{
+			if(arguments.length === 2 || arguments.length === 3) this.domEvents.push(Array.prototype.slice.apply(arguments));
+			return;
+		}
+		else if(!(events[0] instanceof Array))
+		{
+			events = Array.prototype.slice.apply(arguments);
+		}
 		Array.prototype.push.apply(this.domEvents, events);
+	},
+
+	/**
+	 * Adds events config to the internal events array.
+	 *
+	 * @private
+	 * @param {Array} events Array of arrays of binding config
+	 */
+	addModelEvents: function(events)
+	{
+		if(!(events instanceof Array))
+		{
+			if(arguments.length === 3) this.modelEvents.push(Array.prototype.slice.apply(arguments));
+			return;
+		}
+		else if(!(events[0] instanceof Array))
+		{
+			events = Array.prototype.slice.apply(arguments);
+		}
+		Array.prototype.push.apply(this.modelEvents, events);
 	},
 
 	/**
@@ -423,16 +452,16 @@ kff.View = kff.createClass(
 	 * that is not parsed from html/template (for example for an element that
 	 * sits at the end od the body element).
 	 *
-	 * @param {jQuery} $element Element of the subview
+	 * @param {DOM element} element Element of the subview
 	 * @param {String} viewName Name of the view
 	 * @param {[type]} options  Options object for the subview constructor
 	 */
-	addSubview: function($element, viewName, options)
+	addSubview: function(element, viewName, options)
 	{
 		if(this.explicitSubviewsStruct === null) this.explicitSubviewsStruct = [];
 		this.explicitSubviewsStruct.push({
 			viewName: viewName,
-			$element: $element,
+			$element: $(element),
 			options: options || {}
 		});
 	},
