@@ -14,11 +14,12 @@ kff.App = kff.createClass(
 	 */
 	constructor: function(options)
 	{
-		var models, helpers, element;
+		var models, helpers, element, require;
 		this.options = options = options || {};
 		models = options.models || {};
 		helpers = options.helpers || {};
 		element = options.element || null;
+		require = options.require || kff.require;
 
 		// Dependency injection container configuration:
 		var config = {
@@ -34,7 +35,7 @@ kff.App = kff.createClass(
 			}
 		};
 
-		this.serviceContainer = new kff.ServiceContainer(config);
+		this.serviceContainer = new kff.ServiceContainer(config, require);
 		if('parameters' in options) this.serviceContainer.registerParameters(options.parameters, true);
 		if('services' in options) this.serviceContainer.registerServices(options.services, true);
 

@@ -332,3 +332,44 @@ kff.arrayIndexOf = function(array, item)
 	}
 	return -1;
 };
+
+
+
+kff.modules = {};
+
+kff.define = function(name, deps, factory)
+{
+	if(!factory && typeof deps === 'function')
+	{
+		factoy = deps;
+		deps = [];
+	}
+	kff.modules[name] = {
+		deps: deps,
+		factory: factory
+	};
+};
+
+kff.require = function(serviceName)
+{
+	if(typeof serviceName === 'string')
+	{
+		var match = serviceName.match(kff.ServiceContainer.serviceNameRegex);
+		if(match)
+		{
+			serviceName = match[0];
+		}
+
+		if(serviceName in kff.modules)
+		{
+			var deps = [];
+			for(var i = 0; i < kff.modules[serviceName].deps.length; i++)
+			{
+				deps[i] = kff.require(kff.modules[serviceName].deps[i]);
+			}
+
+			return kff.modules[serviceName].factory.apply(this, deps);
+		}
+	}
+	return kff.evalObjectPath(serviceName);
+};
