@@ -93,8 +93,6 @@ kff.PageView = kff.createClass(
 	{
 		var ret = kff.View.prototype.destroyAll.call(this);
 
-		this.clearRegions(this.options.regions);
-
 		if(ret !== false)
 		{
 			this.trigger('destroy');
