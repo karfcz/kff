@@ -189,6 +189,7 @@ kff.BindingView = kff.createClass(
 						eventFilters: ret.eventFilters,
 						fill: ret.fill,
 						nobind: ret.nobind,
+						nopreventdef: ret.nopreventdef,
 						watchModelPath: ret.watchModelPath,
 						indexed: indexed
 					});
@@ -239,6 +240,7 @@ kff.BindingView = kff.createClass(
 			fill: false,
 			nobind: false,
 			watchModelPath: false,
+			nopreventdef: false,
 			itemAliases: []
 		};
 
@@ -297,6 +299,9 @@ kff.BindingView = kff.createClass(
 						break;
 					case 'nobind':
 						ret.nobind = true;
+						break;
+					case 'nopreventdef':
+						ret.nopreventdef = true;
 						break;
 				}
 			}

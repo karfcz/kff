@@ -36,7 +36,7 @@ kff.EventBinder = kff.createClass(
 
 	triggerEvent: function(event)
 	{
-		event.preventDefault();
+		if(!this.options.nopreventdef) event.preventDefault();
 		this.updateModel(this.userValue);
 	},
 
