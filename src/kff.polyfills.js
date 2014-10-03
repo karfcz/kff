@@ -20,9 +20,13 @@ if(typeof window === 'object' && window !== null)
 						event.pageX = event.clientX + document.documentElement.scrollLeft;
 						event.pageY = event.clientY + document.documentElement.scrollTop;
 						event.preventDefault = function () { event.returnValue = false };
-						event.relatedTarget = event.fromElement || null;
+						if(event.type === 'mouseleave' || event.type === 'mouseout') {
+							event.relatedTarget = event.toElement || null;
+						}
+						else {
+							event.relatedTarget = event.fromElement || null;
+						}
 						event.stopPropagation = function () { event.cancelBubble = true };
-						event.relatedTarget = event.fromElement || null;
 						event.target = event.srcElement || target;
 						event.timeStamp = +new Date;
 
