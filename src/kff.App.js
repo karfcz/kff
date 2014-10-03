@@ -50,7 +50,9 @@ kff.App = kff.createClass(
 	 */
 	init: function()
 	{
-		var frontController = this.frontController = this.serviceContainer.getService('kff.FrontController', [{ element: this.options.element }]);
+		var frontControllerOptions = { element: this.options.element };
+		if(this.options.middlewares) frontControllerOptions.middlewares = this.options.middlewares;
+		var frontController = this.frontController = this.serviceContainer.getService('kff.FrontController', [frontControllerOptions]);
 		if(!frontController.getViewFactory()) frontController.setViewFactory(this.serviceContainer.getService('kff.ViewFactory'));
 		if(this.options.router)
 		{

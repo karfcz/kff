@@ -29,6 +29,7 @@ kff.FrontController = kff.createClass(
 		this.router = options.router || null;
 		this.rootElement = options.element || null;
 		this.stateHandler = options.stateHandler || null;
+		this.middlewares = options.middlewares || [];
 	},
 
 	init: function()
@@ -72,10 +73,10 @@ kff.FrontController = kff.createClass(
 
 	createViewFromState: function(state)
 	{
+		var result = null, viewName = null;
 		if(this.router && this.state)
 		{
 			var path = state.path;
-			var result;
 
 			if(path === '') path = '#';
 
@@ -83,10 +84,22 @@ kff.FrontController = kff.createClass(
 			if(result)
 			{
 				state.params = result.params;
-				return result.target;
 			}
 		}
-		return this.defaultView;
+		if(result) viewName = result.target;
+
+		viewName = this.processMiddlewares(viewName, state);
+
+		return viewName;
+	},
+
+	processMiddlewares: function(viewName, state)
+	{
+		for(var i = 0, l = this.middlewares.length; i < l; i++)
+		{
+			viewName = this.middlewares[i].call(null, viewName, state);
+		}
+		return viewName;
 	},
 
 	getLastView: function()
