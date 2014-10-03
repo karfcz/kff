@@ -73,7 +73,7 @@ kff.FrontController = kff.createClass(
 
 	createViewFromState: function(state)
 	{
-		var result = null, viewName = null;
+		var result = null, viewName = this.defaultView;
 		if(this.router && this.state)
 		{
 			var path = state.path;
