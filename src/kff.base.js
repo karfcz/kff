@@ -341,7 +341,7 @@ kff.define = function(name, deps, factory)
 {
 	if(!factory && typeof deps === 'function')
 	{
-		factoy = deps;
+		factory = deps;
 		deps = [];
 	}
 	kff.modules[name] = {
