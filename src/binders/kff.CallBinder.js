@@ -27,7 +27,11 @@ kff.CallBinder = kff.createClass(
 		for(i = 0, l = callParams.length; i < l; i++)
 		{
 			if(callParams[i].charAt(0) === '@') args[i] = this.view.getModel(callParams[i].slice(1));
-			else args[i] = this.parse(callParams[i]);
+			else
+			{
+				if(this.options.parsers.length === 0) args[i] = this.convertValueType(callParams[i]);
+				else args[i] = this.parse(callParams[i]);
+			}
 		}
 		fn.apply(this.model, args);
 	}

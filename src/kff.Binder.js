@@ -257,5 +257,15 @@ kff.Binder = kff.createClass(
 		{
 			return eventFilter.fn.apply(this, [originalTriggerEvent, event].concat(eventFilter.args));
 		}
+	},
+
+	convertValueType: function(value)
+	{
+		if(value === 'null') return null;
+		if(value === 'true') return true;
+		if(value === 'false') return false;
+		var n = value - 0;
+		if(n == value) return n;
+		return value;
 	}
 });
