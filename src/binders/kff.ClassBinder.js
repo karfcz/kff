@@ -21,7 +21,15 @@ kff.ClassBinder = kff.createClass(
 	init: function()
 	{
 		this.className = this.options.params[0] || null;
-		this.equalsTo = this.options.params[1] || true;
+		this.equalsTo = true;
+
+		if(this.options.params[1])
+		{
+			if(this.options.parsers.length === 0) this.equalsTo = this.convertValueType(this.options.params[1]);
+			else this.equalsTo = this.parse(this.options.params[1]);
+			if(this.equalsTo == null) this.equalsTo = null;
+		}
+
 		this.operator = this.options.params[2] || null;
 		kff.ClassBinder._super.init.call(this);
 	},
@@ -43,17 +51,12 @@ kff.ClassBinder = kff.createClass(
 
 	matchValue: function()
 	{
-		var parsedValue;
 		if(this.equalsTo)
 		{
-			if(this.options.parsers.length === 0) parsedValue = this.convertValueType(this.equalsTo);
-			else parsedValue = this.parse(this.equalsTo);
-
 			var value = this.value;
-			if(parsedValue == null) parsedValue = null;
 			if(value == null) value = null;
-			if(this.operator === 'ne') return value !== parsedValue;
-			else return value === parsedValue;
+			if(this.operator === 'ne') return value !== this.equalsTo;
+			else return value === this.equalsTo;
 		}
 		else return this.value;
 	}
