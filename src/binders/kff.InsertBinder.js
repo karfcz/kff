@@ -50,6 +50,29 @@ kff.InsertBinder = kff.createClass(
 		kff.InsertBinder._super.init.call(this);
 	},
 
+	destroy: function()
+	{
+		if(this.forceRerender)
+		{
+			this.view.renderSubviews = this.renderSubviews;
+			this.view.runSubviews = this.runSubviews;
+			this.view.destroySubviews = this.destroySubviews;
+		}
+		if(!this.isInserted)
+		{
+			parentNode = this.anchor.parentNode;
+
+			if(parentNode)
+			{
+				parentNode.replaceChild(this.$element[0], this.anchor);
+			}
+			this.isInserted = true;
+		}
+		this.anchor = null;
+
+		kff.InsertBinder._super.destroy.call(this);
+	},
+
 	refresh: function()
 	{
 		var parentNode;
