@@ -43,9 +43,12 @@ kff.ClassBinder = kff.createClass(
 
 	matchValue: function()
 	{
+		var parsedValue;
 		if(this.equalsTo)
 		{
-			var parsedValue = this.parse(this.equalsTo);
+			if(this.options.parsers.length === 0) parsedValue = this.convertValueType(this.equalsTo);
+			else parsedValue = this.parse(this.equalsTo);
+
 			var value = this.value;
 			if(parsedValue == null) parsedValue = null;
 			if(value == null) value = null;

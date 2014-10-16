@@ -26,7 +26,14 @@ kff.EventBinder = kff.createClass(
 
 	init: function()
 	{
-		this.userValue = this.options.params[0] || null;
+		this.userValue = null;
+
+		if(this.options.params[0])
+		{
+			if(this.options.parsers.length === 0) this.userValue = this.convertValueType(this.options.params[0]);
+			else this.userValue = this.parse(this.options.params[0]);
+		}
+
 		if(this.options.eventFilters && this.options.eventFilters[0])
 		{
 			this.triggerEvent = this.createFilterTriggerEvent(this.triggerEvent, this.options.eventFilters[0]);
