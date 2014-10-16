@@ -51,7 +51,7 @@ kff.ClassBinder = kff.createClass(
 
 	matchValue: function()
 	{
-		if(this.equalsTo)
+		if(this.options.params.length > 1)
 		{
 			var value = this.value;
 			if(value == null) value = null;
