@@ -19,7 +19,14 @@ kff.InsertBinder = kff.createClass(
 
 	init: function()
 	{
-		this.equalsTo = this.options.params[0] || true;
+		this.equalsTo = true;
+
+		if(this.options.params[0])
+		{
+			if(this.options.parsers.length === 0) this.equalsTo = this.convertValueType(this.options.params[0]);
+			else this.equalsTo = this.parse(this.options.params[0]);
+		}
+
 		this.operator = this.options.params[1] || null;
 		this.forceRerender = this.options.params[2] === 'force';
 
@@ -98,8 +105,8 @@ kff.InsertBinder = kff.createClass(
 	{
 		if(this.equalsTo)
 		{
-			if(this.operator === 'ne')	return this.value !== this.parse(this.equalsTo);
-			else return this.value === this.parse(this.equalsTo);
+			if(this.operator === 'ne')	return this.value !== this.equalsTo;
+			else return this.value === this.equalsTo;
 		}
 		else return this.value;
 	}
