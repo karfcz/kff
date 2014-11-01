@@ -1,6 +1,8 @@
 
 var createInsertBinder = function(negate, force){
 
+	var noop = function(){};
+
 	return kff.createClass(
 	{
 		extend: kff.Binder
@@ -28,6 +30,7 @@ var createInsertBinder = function(negate, force){
 				if(this.options.parsers.length === 0) this.equalsTo = this.convertValueType(this.options.params[0]);
 				else this.equalsTo = this.parse(this.options.params[0]);
 			}
+			else this.options.params[0] = this.equalsTo;
 
 			this.negate = this.options.params[1] === 'ne' || negate;
 
@@ -39,7 +42,6 @@ var createInsertBinder = function(negate, force){
 			{
 				this.isRun = false;
 				this.isRendered = true;
-				var noop = function(){};
 
 				this.renderSubviews = this.view.renderSubviews;
 				this.runSubviews = this.view.runSubviews;
