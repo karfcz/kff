@@ -16,7 +16,7 @@ kff.Collection = kff.createClass(
 	 */
 	constructor: function(options)
 	{
-		options = options || {};
+		this.options = options = options || {};
 		this.itemFactory = options.itemFactory || null;
 		this.itemType = options.itemType || kff.Model;
 		this.serializeAttrs = options.serializeAttrs || null;
