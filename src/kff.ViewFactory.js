@@ -49,6 +49,7 @@ kff.ViewFactory = kff.createClass(
 			else viewClass = viewName;
 			if(viewClass) view = new viewClass(kff.mixins({}, options));
 			if(view) view.setViewFactory(this);
+			else kff.log('Could not create a view "' + viewName + '" (kff.ViewFactory#createView)');
 		}
 		return view;
 	},

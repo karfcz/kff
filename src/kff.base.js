@@ -47,6 +47,7 @@ kff.DATA_SORT_ATTR = 'data-kff-sort';
  */
 kff.DATA_COUNT_ATTR = 'data-kff-count';
 
+kff.debug = false;
 
 (function(){
 
@@ -372,4 +373,10 @@ kff.require = function(serviceName)
 		}
 	}
 	return kff.evalObjectPath(serviceName);
+};
+
+
+kff.log = function(message)
+{
+	if(kff.debug === true && typeof console === 'object') console.log(message);
 };
