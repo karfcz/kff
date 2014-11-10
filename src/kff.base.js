@@ -371,6 +371,11 @@ kff.require = function(serviceName)
 
 			return kff.modules[serviceName].factory.apply(this, deps);
 		}
+
+		if(serviceName.indexOf('kff.') === 0)
+		{
+			return kff.evalObjectPath(serviceName.slice(4), kff);
+		}
 	}
 	return kff.evalObjectPath(serviceName);
 };

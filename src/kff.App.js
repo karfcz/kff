@@ -20,6 +20,7 @@ kff.App = kff.createClass(
 		helpers = options.helpers || {};
 		element = options.element || null;
 		require = options.require || kff.require;
+		this.context = options.context || { document: document, window: window };
 
 		if(this.options.middlewares instanceof Array) middlewares = this.options.middlewares;
 		else middlewares = [];
@@ -41,7 +42,8 @@ kff.App = kff.createClass(
 						defaultView: 'kff.PageView',
 						stateHandler: '@kff.HashStateHandler',
 						middlewares: middlewares,
-						element: null
+						element: null,
+						context: this.context
 					}]
 				}
 			}

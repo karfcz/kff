@@ -23,18 +23,18 @@ kff.FocusBlurBinder = kff.createClass(
 
 	triggerEvent: function(event)
 	{
-		this.updateModel(document.activeElement === this.$element[0]);
+		this.updateModel(this.view.context.document.activeElement === this.$element[0]);
 	},
 
 	refresh: function()
 	{
 		if(this.value)
 		{
-			if(document.activeElement !== this.$element[0]) this.$element[0].focus();
+			if(this.view.context.document.activeElement !== this.$element[0]) this.$element[0].focus();
 		}
 		else
 		{
-			if(document.activeElement === this.$element[0]) this.$element[0].blur();
+			if(this.view.context.document.activeElement === this.$element[0]) this.$element[0].blur();
 		}
 	}
 });

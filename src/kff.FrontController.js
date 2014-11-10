@@ -30,6 +30,7 @@ kff.FrontController = kff.createClass(
 		this.rootElement = options.element || null;
 		this.stateHandler = options.stateHandler || null;
 		this.middlewares = options.middlewares || [];
+		this.context = options.context || { document: document, window: window };
 	},
 
 	init: function()
@@ -167,7 +168,7 @@ kff.FrontController = kff.createClass(
 
 	startInit: function()
 	{
-		var i, l, view, options,
+		var i, l, view, options = {},
 			precedingViewNames = this.getPrecedingViews(this.newViewName),
 			from = 0;
 
@@ -177,6 +178,7 @@ kff.FrontController = kff.createClass(
 		{
 			if(i >= this.viewsQueue.length)
 			{
+				options.context = this.context;
 				view = this.viewFactory.createView(precedingViewNames[i], options);
 				view.setViewFactory(this.viewFactory);
 				this.pushView({ name: precedingViewNames[i], instance: view });

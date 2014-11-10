@@ -111,7 +111,7 @@ kff.Dom = kff.createClass(
 
 kff.$ = function(element)
 {
-	if(kff.useJquery && window.jQuery)
+	if(kff.useJquery && typeof window === 'object' && window.jQuery)
 	{
 		kff.$ = window.jQuery;
 	}
