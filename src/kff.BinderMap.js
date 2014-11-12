@@ -61,8 +61,11 @@ kff.BinderMap = kff.createClass(
 	{
 		for(var i = 0, l = this.binders.length; i < l; i++)
 		{
-			if(this.binders[i].isIndexed) this.binders[i].modelChange(null, true);
+			if(this.binders[i].isIndexed())
+			{
+				this.binders[i].modelChange(null, true);
+			}
 		}
-	},
+	}
 
 });
