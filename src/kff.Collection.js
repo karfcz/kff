@@ -454,7 +454,7 @@ kff.Collection = kff.createClass(
 	fromJson: function(array, silent)
 	{
 		var item;
-		this.empty();
+		this.empty(true);
 		for(var i = 0, l = array.length; i < l; i++)
 		{
 			item = this.createItem();
