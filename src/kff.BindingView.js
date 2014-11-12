@@ -841,7 +841,11 @@ kff.BindingView = kff.createClass(
 				for(i = 0, l = positions.length; i < l; i++)
 				{
 					el = positions[i].$element[0];
-					parentNode.insertBefore(el, lastChild.nextSibling);
+
+					if(el !== lastChild.nextSibling)
+					{
+						parentNode.insertBefore(el, lastChild.nextSibling);
+					}
 					newBoundViews[i] = positions[i];
 					newBoundViews[i].setBindingIndex(i);
 					newBoundViews[i].refreshIndexedBinders(true);
@@ -1053,7 +1057,6 @@ kff.BindingView = kff.createClass(
 	refreshAll: function()
 	{
 		if(typeof this.refresh === 'function') this.refresh();
-		this.rebindModels();
 		if(this.collectionBinder)
 		{
 			this.collectionBinder.collection = this.getModel(this.collectionBinder.collectionPathArray);
@@ -1062,6 +1065,7 @@ kff.BindingView = kff.createClass(
 		}
 		else
 		{
+			this.rebindModels();
 			this.refreshOwnBinders();
 			if(this.subviews !== null)
 			{
