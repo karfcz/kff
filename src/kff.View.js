@@ -315,6 +315,24 @@ kff.View = kff.createClass(
 		}
 	},
 
+	delegateModelEventsAll: function()
+	{
+		this.delegateModelEvents();
+		if(this.subviews !== null)
+		{
+			for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].delegateModelEventsAll();
+		}
+	},
+
+	undelegateModelEventsAll: function()
+	{
+		this.undelegateModelEvents();
+		if(this.subviews !== null)
+		{
+			for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].undelegateModelEventsAll();
+		}
+	},
+
 	/**
 	 * Initializes the view. Calls the render method. Should not be overloaded
 	 * by subclasses.

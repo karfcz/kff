@@ -777,20 +777,18 @@ kff.BindingView = kff.createClass(
 					if(pos)
 					{
 						boundView = pos;
-						boundView.destroyAll();
+						boundView.undelegateModelEventsAll();
 						boundView.models['*'] = item;
 						if(this.itemAlias) boundView.models[this.itemAlias] = item;
 						boundView.setBindingIndex(i);
-						boundView.renderAll();
-						boundView.runAll();
-						// boundView.refreshBinders(true);
+						boundView.delegateModelEventsAll();
+						boundView.refreshAll();
 					}
 					else
 					{
 						boundView = this.createBoundView(item);
 						boundView.setBindingIndex(i);
 						boundView.runAll();
-						// boundView.refreshBinders(true);
 					}
 					positions[i] = boundView;
 				}
@@ -1065,7 +1063,10 @@ kff.BindingView = kff.createClass(
 		else
 		{
 			this.refreshOwnBinders();
-			kff.BindingView._super.refreshAll.call(this);
+			if(this.subviews !== null)
+			{
+				for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].refreshAll();
+			}
 		}
 	},
 
@@ -1202,6 +1203,36 @@ kff.BindingView = kff.createClass(
 		if(this.collectionBinder)
 		{
 			this.collectionBinder.collection = this.getModel(this.collectionBinder.collectionPathArray);
+		}
+	},
+
+	delegateModelEventsAll: function()
+	{
+		if(this.collectionBinder)
+		{
+			if(this.boundViews !== null)
+			{
+				for(var i = 0, l = this.boundViews.length; i < l; i++) this.boundViews[i].delegateModelEventsAll();
+			}
+		}
+		else
+		{
+			kff.View.prototype.delegateModelEventsAll.call(this);
+		}
+	},
+
+	undelegateModelEventsAll: function()
+	{
+		if(this.collectionBinder)
+		{
+			if(this.boundViews !== null)
+			{
+				for(var i = 0, l = this.boundViews.length; i < l; i++) this.boundViews[i].undelegateModelEventsAll();
+			}
+		}
+		else
+		{
+			kff.View.prototype.undelegateModelEventsAll.call(this);
 		}
 	}
 });
