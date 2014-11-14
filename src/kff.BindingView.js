@@ -144,7 +144,7 @@ kff.BindingView = kff.createClass(
 			{
 				ret = this.parseBindingRegexp(result, true);
 
-				if(ret.binderName === 'list' && model instanceof Array)
+				if(ret.binderName === 'list' || ret.binderName === 'each' && model instanceof Array)
 				{
 					isCollectionBinder = true;
 				}
