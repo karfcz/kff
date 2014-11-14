@@ -91,7 +91,13 @@ kff.Binder = kff.createClass(
 				else modelValue = this.model[this.options.attr];
 			}
 			else modelValue = null;
-
+		}
+		else if(typeof this.model === 'string' || typeof this.model === 'number' || typeof this.model === 'boolean')
+		{
+			modelValue = this.model;
+		}
+		if(modelValue !== 'undefined')
+		{
 			if(force || !this.compareValues(modelValue, this.currentValue))
 			{
 				this.value = this.format(modelValue);
