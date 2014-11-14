@@ -2,6 +2,10 @@ if(typeof require === 'function') var kff = require('../build/kff.js');
 
 describe('kff.BindingView', function()
 {
+	var env = {
+		window: window,
+		document: document
+	};
 
 	it('should bind a simple collection', function()
 	{
@@ -13,6 +17,7 @@ describe('kff.BindingView', function()
 		$div1.append($div2);
 		var view = new kff.BindingView(
 		{
+			env: env,
 			element: $div1,
 			models: {
 				collection: collection
@@ -40,6 +45,7 @@ describe('kff.BindingView', function()
 		$div1.append($div2);
 		var view = new kff.BindingView(
 		{
+			env: env,
 			element: $div1,
 			models: {
 				collection: collection
@@ -76,6 +82,7 @@ describe('kff.BindingView', function()
 		$div1.append($div2);
 		var view = new kff.BindingView(
 		{
+			env: env,
 			element: $div1,
 			models: {
 				collection: collection
@@ -98,6 +105,7 @@ describe('kff.BindingView', function()
 		var $div = $('<div data-kff-bind="collection.count:text"/>');
 		var view = new kff.BindingView(
 		{
+			env: env,
 			element: $div,
 			models: {
 				collection: collection
@@ -132,6 +140,7 @@ describe('kff.BindingView', function()
 		var $div = $('<div data-kff-bind="computer.motherboard.processor.name:text:watch"/>');
 		var view = new kff.BindingView(
 		{
+			env: env,
 			element: $div,
 			models: {
 				computer: computer
@@ -174,6 +183,7 @@ describe('kff.BindingView', function()
 		$div1.append($div2);
 		var view = new kff.BindingView(
 		{
+			env: env,
 			element: $div1,
 			models: {
 				collection: collection,
@@ -205,6 +215,7 @@ describe('kff.BindingView', function()
 		$div1.append($div2);
 		var view = new kff.BindingView(
 		{
+			env: env,
 			element: $div1,
 			models: {
 				collection: collection,
@@ -242,6 +253,7 @@ describe('kff.BindingView', function()
 		$div1.append($div2);
 		var view = new kff.BindingView(
 		{
+			env: env,
 			element: $div1,
 			models: {
 				collection: collection,
