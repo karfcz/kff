@@ -81,7 +81,7 @@ var createInsertBinder = function(negate, force){
 		refresh: function()
 		{
 			var parentNode;
-			if(!this.anchor) this.anchor = this.view.context.document.createTextNode('');
+			if(!this.anchor) this.anchor = this.view.env.document.createTextNode('');
 			if(this.matchValue())
 			{
 				if(!this.isInserted)

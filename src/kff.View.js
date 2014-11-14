@@ -68,9 +68,9 @@ kff.View = kff.createClass(
 			this.viewFactory = options.viewFactory;
 		}
 
-		if(options.context)
+		if(options.env)
 		{
-			this.context = options.context;
+			this.env = options.env;
 		}
 
 		this.options = options;
@@ -420,7 +420,7 @@ kff.View = kff.createClass(
 			{
 				options = subviewsStruct[i].options;
 				options.element = subviewsStruct[i].$element[0];
-				options.context = this.context;
+				options.env = this.env;
 				subView = this.createView(subviewsStruct[i].viewName, options);
 				if(subView instanceof kff.View)
 				{
@@ -723,7 +723,7 @@ kff.View = kff.createClass(
 		var options = this.options;
 
 		options.parentView = null;
-		options.context = this.context;
+		options.env = this.env;
 
 		var clonedView = new this.constructor(options);
 		clonedView.viewFactory = this.viewFactory;
@@ -904,7 +904,7 @@ kff.View = kff.createClass(
 
 	renderRegions: function(regions)
 	{
-		var selector, context = this.context;
+		var selector, env = this.env;
 
 		var saveRegion = function(regions, cachedRegions, nodes, selector)
 		{
@@ -916,7 +916,7 @@ kff.View = kff.createClass(
 				{
 					if(!cachedRegions[selector]) cachedRegions[selector] = [];
 
-					cachedRegions[selector][i] = fragment = context.document.createDocumentFragment();
+					cachedRegions[selector][i] = fragment = env.document.createDocumentFragment();
 
 					childNodes = new Array(node.childNodes.length);
 					for(var i2 = 0, l2 = childNodes.length; i2 < l2; i2++)
@@ -996,7 +996,7 @@ kff.View = kff.createClass(
 					if(fragments[i].hasChildNodes())
 					{
 						childNodes = fragments[i].childNodes;
-						fragment = this.context.document.createDocumentFragment();
+						fragment = this.env.document.createDocumentFragment();
 
 						for(i2 = 0, l2 = childNodes.length; i2 < l2; i2++)
 						{

@@ -440,7 +440,7 @@ kff.BindingView = kff.createClass(
 	 */
 	renderBoundViews: function()
 	{
-		this.anchor = this.context.document.createTextNode('');
+		this.anchor = this.env.document.createTextNode('');
 		var el = this.$element[0];
 
 		if(el.parentNode)
@@ -462,7 +462,7 @@ kff.BindingView = kff.createClass(
 		this.boundViewOptions = opt ? JSON.parse(opt) : {};
 		this.boundViewOptions.parentView = this;
 		this.boundViewOptions.viewFactory = this.viewFactory;
-		this.boundViewOptions.context = this.context;
+		this.boundViewOptions.env = this.env;
 		this.boundViewOptions.isBoundView = true;
 
 		if(this.collectionBinder.nobind === false && this.collectionBinder.collection instanceof kff.Collection)
