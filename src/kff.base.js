@@ -385,3 +385,5 @@ kff.log = function(message)
 {
 	if(kff.debug === true && typeof console === 'object') console.log(message);
 };
+
+kff.noop = function(){};
