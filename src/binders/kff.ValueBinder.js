@@ -15,7 +15,7 @@ kff.ValueBinder = kff.createClass(
 	 */
 	constructor: function(options)
 	{
-		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'keydown drop change';
+		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'keypress keydown drop change';
 		options.events = [
 			[eventNames, 'inputChange']
 		];
@@ -44,7 +44,7 @@ kff.ValueBinder = kff.createClass(
 	{
 		kff.setZeroTimeout(this.f(function()
 		{
-			this.updateModel(this.getValue());
+			this.updateModel(this.getValue(), event);
 		}));
 	},
 

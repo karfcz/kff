@@ -44,7 +44,7 @@ kff.EventBinder = kff.createClass(
 	triggerEvent: function(event)
 	{
 		if(!this.options.nopreventdef) event.preventDefault();
-		this.updateModel(this.userValue);
+		this.updateModel(this.userValue, event);
 	},
 
 	compareValues: function(value1, value2)

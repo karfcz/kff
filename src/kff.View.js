@@ -705,6 +705,8 @@ kff.View = kff.createClass(
 		}
 	},
 
+	dispatchEvent: kff.noop,
+
 	/**
 	 * Returns index of item in bound collection (closest collection in the view scope)
 	 *

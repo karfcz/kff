@@ -28,7 +28,7 @@ kff.RadioBinder = kff.createClass(
 	{
 		if(this.$element[0].checked)
 		{
-			this.updateModel(this.$element[0].value);
+			this.updateModel(this.$element[0].value, event);
 		}
 	},
 

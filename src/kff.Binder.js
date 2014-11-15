@@ -15,6 +15,7 @@ kff.Binder = kff.createClass(
 		this.model = options.model;
 		this.setter = options.setter;
 		this.getter = options.getter;
+		this.dispatch = options.dispatch;
 		this.currentValue = null;
 		this.bindingIndex = null;
 		this.dynamicBindings = null;
@@ -39,8 +40,8 @@ kff.Binder = kff.createClass(
 			else if(this.model instanceof kff.Model)
 			{
 				this.bindModel();
-				if(this.$element && this.options.events !== null) this.delegateEvents(this.options.events);
 			}
+			if(this.$element && this.options.events !== null) this.delegateEvents(this.options.events);
 		}
 		if(this.options.fill && this.model instanceof kff.Model) this.fill();
 	},
@@ -132,7 +133,7 @@ kff.Binder = kff.createClass(
 		return this.value;
 	},
 
-	updateModel: function(value)
+	updateModel: function(value, event)
 	{
 		var i, l;
 		if(value instanceof Array)
@@ -147,32 +148,58 @@ kff.Binder = kff.createClass(
 
 		this.currentValue = value;
 
-		if(this.setter && typeof this.model[this.setter.fn] === 'function')
+		if(this.dispatch)
 		{
-			if(this.setter.args.length > 0)
-			{
-				var args = [];
-				for(i = 0, l = this.setter.args.length; i < l; i++)
-				{
-					if(this.setter.args[i] === '@val') args[i] = this.currentValue;
-					else if(this.setter.args[i] === '@attr') args[i] = this.options.attr;
-					else args[i] = this.view.getModel(this.setter.args[i]);
-				}
-				this.model[this.setter.fn].apply(this.model, args);
-			}
-			else if(this.options.attr === null)
-			{
-				this.model[this.setter.fn](this.currentValue);
-			}
-			else
-			{
-				this.model[this.setter.fn](this.options.attr, this.currentValue);
-			}
+			this.dispatchEvent({
+				originalEvent: event,
+				value: value,
+				model: this.model,
+				attr: this.options.attr
+			});
 		}
-		else this.model.set(this.options.attr, this.currentValue);
+		else if(typeof this.model === 'object' && this.model !== null)
+		{
+			if(this.setter && typeof this.model[this.setter.fn] === 'function')
+			{
+				if(this.setter.args.length > 0)
+				{
+					var args = [];
+					for(i = 0, l = this.setter.args.length; i < l; i++)
+					{
+						if(this.setter.args[i] === '@val') args[i] = this.currentValue;
+						else if(this.setter.args[i] === '@attr') args[i] = this.options.attr;
+						else args[i] = this.view.getModel(this.setter.args[i]);
+					}
+					this.model[this.setter.fn].apply(this.model, args);
+				}
+				else if(this.options.attr === null)
+				{
+					this.model[this.setter.fn](this.currentValue);
+				}
+				else
+				{
+					this.model[this.setter.fn](this.options.attr, this.currentValue);
+				}
+			}
+			else if(typeof this.model.set === 'function') this.model.set(this.options.attr, this.currentValue);
+		}
 	},
 
 	refresh: function(value){},
+
+	dispatchEvent: function(event)
+	{
+		var res, view = this.view;
+		while(view)
+		{
+			if(view.dispatchEvent !== kff.noop)
+			{
+				res = view.dispatchEvent(event);
+				if(res === false) break;
+			}
+			view = view.parentView;
+		}
+	},
 
 	format: function(value)
 	{

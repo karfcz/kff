@@ -185,6 +185,7 @@ kff.BindingView = kff.createClass(
 						parsers: ret.parsers,
 						setter: (ret.setters && ret.setters.length > 0) ? ret.setters[0] : null,
 						getter: (ret.getters && ret.getters.length > 0) ? ret.getters[0] : null,
+						dispatch: ret.dispatch,
 						eventNames: ret.eventNames,
 						eventFilters: ret.eventFilters,
 						fill: ret.fill,
@@ -237,6 +238,7 @@ kff.BindingView = kff.createClass(
 			getters: [],
 			eventNames: [],
 			eventFilters: [],
+			dispatch: false,
 			fill: false,
 			nobind: false,
 			watchModelPath: false,
@@ -290,6 +292,9 @@ kff.BindingView = kff.createClass(
 						break;
 					case 'evf':
 						this.parseHelpers(modifierParams, ret.eventFilters);
+						break;
+					case 'dispatch':
+						ret.dispatch = true;
 						break;
 					case 'fill':
 						ret.fill = true;
