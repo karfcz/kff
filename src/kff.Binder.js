@@ -185,7 +185,6 @@ kff.Binder = kff.createClass(
 		}
 	},
 
-	refresh: function(value){},
 
 	dispatchEvent: function(event)
 	{
@@ -244,7 +243,9 @@ kff.Binder = kff.createClass(
 		return new this.constructor(this.options);
 	},
 
-	fill: function(){},
+	refresh: kff.noop,
+
+	fill: kff.noop,
 
 	bindModel: function()
 	{

@@ -350,13 +350,13 @@ kff.View = kff.createClass(
 	 * Renders the view. It will be called automatically. Should not be called
 	 * directly.
 	 */
-	render: function(){},
+	render: kff.noop,
 
 	/**
 	 * Renders the view. It will be called automatically. Should not be called
 	 * directly.
 	 */
-	run: function(){},
+	run: kff.noop,
 
 	/**
 	 * Renders the view. It will be called automatically. Should not be called
@@ -367,7 +367,7 @@ kff.View = kff.createClass(
 		if(!this.viewFactory) this.viewFactory = new kff.ViewFactory();
 		this.explicitSubviewsStruct = null;
 		this.renderRegions(this.options.regions);
-		this.render();
+		if(this.render !== kff.noop) this.render();
 		this.renderSubviews();
 		this.processEventTriggers();
 	},
@@ -378,7 +378,9 @@ kff.View = kff.createClass(
 	 */
 	runAll: function()
 	{
-		var ret = this.run();
+		var ret;
+
+		if(this.run !== kff.noop) ret = this.run();
 		this.runSubviews();
 
 		this.delegateEvents();
@@ -609,7 +611,7 @@ kff.View = kff.createClass(
 	 * Destroys the view (destroys all subviews and unbinds previously bound DOM events.
 	 * It will be called automatically. Should not be called directly.
 	 */
-	destroy: function(){},
+	destroy: kff.noop,
 
 	/**
 	 * Destroys the view (destroys all subviews and unbinds previously bound DOM events.
@@ -623,7 +625,7 @@ kff.View = kff.createClass(
 		this.undelegateModelEvents();
 		this.destroySubviews();
 
-		ret = this.destroy();
+		if(this.destroy !== kff.noop) ret = this.destroy();
 		if(typeof this.afterDestroy === 'function') this.afterDestroy();
 
 		this.subviewsStruct = null;
@@ -673,7 +675,7 @@ kff.View = kff.createClass(
 	/**
 	 * Method for refreshing the view. Does nothing in this base class, it's intended to be overloaded in subclasses.
 	 */
-	refresh: function(){},
+	refresh: kff.noop,
 
 	/**
 	 * Refreshes data-binders in all subviews.
