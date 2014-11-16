@@ -761,7 +761,9 @@ kff.BindingView = kff.createClass(
 			for(i = 0, l = this.boundViews.length; i < l; i++)
 			{
 				boundView = this.boundViews[i];
-				newIndex = this.filteredCollection.indexOf(boundView.models['*']);
+				item = boundView.models['*'];
+				if(typeof(item) !== 'object') newIndex = -1;
+				else newIndex = this.filteredCollection.indexOf(item);
 				pos = boundView;
 				if(newIndex !== -1)
 				{
