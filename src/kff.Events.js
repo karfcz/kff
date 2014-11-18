@@ -3,8 +3,8 @@ kff.Events = kff.createClass(
 /** @lends kff.Events.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * @constructs
+	 */
 	constructor: function()
 	{
 		this.subscribers = {};
@@ -12,11 +12,11 @@ kff.Events = kff.createClass(
 	},
 
 	/**
-		Binds event handler.
-
-		@param {string|Array} eventType Event name(s)
-		@param {function} fn Event handler
-	*/
+	 * Binds event handler.
+	 *
+	 * @param {string|Array} eventType Event name(s)
+	 * @param {function} fn Event handler
+	 */
 	on: function(eventType, fn)
 	{
 		if(typeof eventType === 'string')
@@ -38,11 +38,11 @@ kff.Events = kff.createClass(
 	},
 
 	/**
-		Binds event handler that will be executed only once.
-
-		@param {string|Array} eventType Event name(s)
-		@param {function} fn Event handler
-	*/
+	 * Binds event handler that will be executed only once.
+	 *
+	 * @param {string|Array} eventType Event name(s)
+	 * @param {function} fn Event handler
+	 */
 	one: function(eventType, fn)
 	{
 		if(!(eventType in this.oneSubscribers)) this.oneSubscribers[eventType] = [];
@@ -51,11 +51,11 @@ kff.Events = kff.createClass(
 	},
 
 	/**
-		Unbinds event handler.
-
-		@param {string|Array} eventType Event name(s)
-		@param {function} fn Event handler
-	*/
+	 * Unbinds event handler.
+	 *
+	 * @param {string|Array} eventType Event name(s)
+	 * @param {function} fn Event handler
+	 */
 	off: function(eventType, fn)
 	{
 		var i, l;
@@ -77,11 +77,11 @@ kff.Events = kff.createClass(
 	},
 
 	/**
-		Triggers an event.
-
-		@param {string|Array} eventType Event name(s)
-		@param {mixed} eventData Arbitrary data that will be passed to the event handlers as an argument
-	*/
+	 * Triggers an event.
+	 *
+	 * @param {string|Array} eventType Event name(s)
+	 * @param {mixed} eventData Arbitrary data that will be passed to the event handlers as an argument
+	 */
 	trigger: function(eventType, eventData)
 	{
 		var i, l;
