@@ -79,6 +79,9 @@ kff.BindingView = kff.createClass(
 		if(!this.collectionBinder) kff.BindingView._super.renderAll.call(this, silent);
 	},
 
+	/**
+	 * Runs this view and all its subviews
+	 */
 	runAll: function()
 	{
 		if(this.collectionBinder)
@@ -221,6 +224,14 @@ kff.BindingView = kff.createClass(
 		}
 	},
 
+	/**
+	 * Parses single binding expression
+	 *
+	 * @private
+	 * @param  {string} result           binding subexpression
+	 * @param  {boolean} parseBinderName False for collection binder, true for regular binder
+	 * @return {object}                  Object with parsed binding data
+	 */
 	parseBindingRegexp: function(result, parseBinderName)
 	{
 		var result2, i, modifierName, modifierParams;
@@ -382,6 +393,11 @@ kff.BindingView = kff.createClass(
 		}
 	},
 
+	/**
+	 * Parses modifier that accepts one or more parameters
+	 * @param  {Array} modifierParams Array of modifier params
+	 * @param  {Array} modifiers      Array of modifiers
+	 */
 	parseGetters: function(modifierParams, modifiers)
 	{
 		var modifierParam, modifierArgs;
@@ -442,6 +458,8 @@ kff.BindingView = kff.createClass(
 	 * This method generates DOM elements corresponding to each item in the bound collection and
 	 * creates the bindingView for each element. If the collection changes, it reflects those changes
 	 * automatically in real time.
+	 *
+	 * @private
 	 */
 	renderBoundViews: function()
 	{
@@ -528,6 +546,7 @@ kff.BindingView = kff.createClass(
 	/**
 	 * Updates bound views when collection changes.
 	 *
+	 * @private
 	 * @param {Object} event An event triggered by collection change
 	 */
 	refreshBoundViews: function(event)
@@ -540,9 +559,6 @@ kff.BindingView = kff.createClass(
 				case 'append':
 					this.refreshBoundViewsOnAppend(event);
 					break;
-				// case 'insert':
-				// 	this.refreshBoundViewsOnInsert(event);
-				// 	break;
 				case 'remove':
 					this.refreshBoundViewsOnRemove(event);
 					break;
@@ -570,6 +586,13 @@ kff.BindingView = kff.createClass(
 		}
 	},
 
+	/**
+	 * Accepts or rejects an item of filtered collection binding
+	 *
+	 * @private
+	 * @param  {object} item  Item to filter
+	 * @return {boolean}      True if the item matches filter, false otherwise
+	 */
 	filterCollectionItem: function(item)
 	{
 		if(this.collectionFilter)
@@ -586,6 +609,7 @@ kff.BindingView = kff.createClass(
 	/**
 	 * Updates bound views when collection changes by appending item.
 	 *
+	 * @private
 	 * @param {Object} event An event triggered by collection change
 	 */
 	refreshBoundViewsOnAppend: function(event)
@@ -623,16 +647,6 @@ kff.BindingView = kff.createClass(
 			}
 		}
 	},
-	/**
-	 * Updates bound views when collection changes by inserting item.
-	 *
-	 * @param {Object} event An event triggered by collection change
-	 */
-	// refreshBoundViewsOnInsert: function(event)
-	// {
-	// 	this.boundViewsMap.splice(event.index, 0, false);
-	// 	this.collectionItemChange({ model: event.item });
-	// },
 
 	/**
 	 * Updates bound views when collection changes by removing item.
@@ -713,7 +727,6 @@ kff.BindingView = kff.createClass(
 				var sorterFn = this.collectionSorter.model.f(this.collectionSorter.fn);
 				this.filteredCollection.sort(sorterFn);
 			}
-
 		}
 		else
 		{
@@ -991,6 +1004,8 @@ kff.BindingView = kff.createClass(
 
 	/**
 	 * Creates a new bound view for item in collection
+	 *
+	 * @private
 	 * @param  {kff.Model} item Item for data-binding
 	 * @param  {number} i 		Binding index
 	 * @return {kff.View} 		created view
@@ -1061,6 +1076,9 @@ kff.BindingView = kff.createClass(
 		return boundView;
 	},
 
+	/**
+	 * Refreshes all binders, subviews and bound views
+	 */
 	refreshAll: function()
 	{
 		if(typeof this.refresh === 'function') this.refresh();
@@ -1081,6 +1099,11 @@ kff.BindingView = kff.createClass(
 		}
 	},
 
+	/**
+	 * Rebinds models of all binders that belong to this view
+	 *
+	 * @private
+	 */
 	rebindModels: function()
 	{
 		if(this.modelBindersMap) this.modelBindersMap.rebindModels();
@@ -1115,6 +1138,12 @@ kff.BindingView = kff.createClass(
 		}
 	},
 
+	/**
+	 * Refreshes all indexed binders of this view or subviews
+	 *
+	 * @private
+	 * @return {[type]} [description]
+	 */
 	refreshIndexedBinders: function()
 	{
 		if(this.collectionBinder)
@@ -1128,11 +1157,17 @@ kff.BindingView = kff.createClass(
 		}
 	},
 
+	/**
+	 * Renders subviews
+	 */
 	renderSubviews: function()
 	{
 		if(!this.collectionBinder) kff.BindingView._super.renderSubviews.call(this);
 	},
 
+	/**
+	 * Runs subviews
+	 */
 	runSubviews: function()
 	{
 		if(this.collectionBinder)
@@ -1144,6 +1179,8 @@ kff.BindingView = kff.createClass(
 
 	/**
 	 * Destroys the subviews. It will be called automatically. Should not be called directly.
+	 *
+	 * @private
 	 */
 	destroySubviews: function()
 	{
@@ -1177,6 +1214,11 @@ kff.BindingView = kff.createClass(
 		this.bindingIndex = index;
 	},
 
+	/**
+	 * Clones this binding view
+	 *
+	 * @return {kff.BindingView} Cloned view
+	 */
 	clone: function()
 	{
 		var clonedView = kff.View.prototype.clone.call(this);
@@ -1202,6 +1244,12 @@ kff.BindingView = kff.createClass(
 		return clonedView;
 	},
 
+	/**
+	 * Rebinds the view to another DOM element
+	 *
+	 * @private
+	 * @param  {DOMELement} element New DOM element of the view
+	 */
 	rebindElement: function(element)
 	{
 		kff.BindingView._super.rebindElement.call(this, element);
@@ -1217,6 +1265,9 @@ kff.BindingView = kff.createClass(
 		}
 	},
 
+	/**
+	 * Delegates model events for this view, its binders and recursively for all subviews or boundviews
+	 */
 	delegateModelEventsAll: function()
 	{
 		if(this.collectionBinder)
@@ -1232,6 +1283,9 @@ kff.BindingView = kff.createClass(
 		}
 	},
 
+	/**
+	 * Undelegates model events for this view, its binders and recursively for all subviews or boundviews
+	 */
 	undelegateModelEventsAll: function()
 	{
 		if(this.collectionBinder)
