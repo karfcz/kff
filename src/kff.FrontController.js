@@ -16,8 +16,8 @@ kff.FrontController = kff.createClass(
 /** @lends kff.FrontController.prototype */
 {
 	/**
-		@constructs
-	*/
+	 * @constructs
+	 */
 	constructor: function(options)
 	{
 		options = options || {};
@@ -33,6 +33,9 @@ kff.FrontController = kff.createClass(
 		this.env = options.env || { document: document, window: window };
 	},
 
+	/**
+	 * Inits front controller
+	 */
 	init: function()
 	{
 		if(!this.viewFactory) this.viewFactory = new kff.ViewFactory();
@@ -44,6 +47,9 @@ kff.FrontController = kff.createClass(
 		else this.setState(null);
 	},
 
+	/**
+	 * Destroys front controller
+	 */
 	destroy: function()
 	{
 		var destroyQueue = [], lastViewName, i;
@@ -62,6 +68,11 @@ kff.FrontController = kff.createClass(
 		else this.destroyDone();
 	},
 
+	/**
+	 * Async callback for destroy method
+	 *
+	 * @private
+	 */
 	destroyDone: function()
 	{
 		if(this.router && this.stateHandler)
@@ -72,6 +83,12 @@ kff.FrontController = kff.createClass(
 		if(this.viewFactory) this.viewFactory = null;
 	},
 
+	/**
+	 * Constructs view name from state object
+	 *
+	 * @param  {object} state State object
+	 * @return {string}       Name (service name) of the view
+	 */
 	createViewFromState: function(state)
 	{
 		var result = null, viewName = this.defaultView;
@@ -94,6 +111,14 @@ kff.FrontController = kff.createClass(
 		return viewName;
 	},
 
+	/**
+	 * Process/transforms view name by middleware functions
+	 *
+	 * @private
+	 * @param  {string} viewName Service name of the view
+	 * @param  {object} state    State object
+	 * @return {string}          Transformed view name
+	 */
 	processMiddlewares: function(viewName, state)
 	{
 		for(var i = 0, l = this.middlewares.length; i < l; i++)
@@ -103,12 +128,24 @@ kff.FrontController = kff.createClass(
 		return viewName;
 	},
 
+	/**
+	 * Returns last view metaobject in the views queue
+	 *
+	 * @private
+	 * @return {object} Metaobject with the last view
+	 */
 	getLastView: function()
 	{
 		if(this.viewsQueue.length > 0) return this.viewsQueue[this.viewsQueue.length - 1];
 		else return null;
 	},
 
+	/**
+	 * Adds view metaobject to the queue
+	 *
+	 * @private
+	 * @param  {object} view View metaobject
+	 */
 	pushView: function(view)
 	{
 		var lastView = this.getLastView();
@@ -120,6 +157,10 @@ kff.FrontController = kff.createClass(
 		}
 	},
 
+	/**
+	 * Returns, destroys and removes last view from the queue
+	 * @return {object} View metaobject
+	 */
 	popView: function()
 	{
 		if(this.viewsQueue.length === 0) return;
