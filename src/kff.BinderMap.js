@@ -1,17 +1,32 @@
 
 kff.BinderMap = kff.createClass(
+/** @lends kff.BinderMap.prototype */
 {
+	/**
+	 * Class for keeping multiple view binders together
+	 *
+	 * @constructs
+	 */
 	constructor: function()
 	{
 		this.binders = [];
 	},
 
+	/**
+	 * Adds binder
+	 * @param {kff.Binder} binder Binder to add
+	 */
 	add: function(binder)
 	{
 		this.binders.push(binder);
 	},
 
-	clone: function(options)
+	/**
+	 * Clones binder map
+	 *
+	 * @return {kff.BinderMap}  Cloned binder map
+	 */
+	clone: function()
 	{
 		var clonedBinderMap = new kff.BinderMap(),
 			clonedBinders = clonedBinderMap.binders,
@@ -24,6 +39,11 @@ kff.BinderMap = kff.createClass(
 		return clonedBinderMap;
 	},
 
+	/**
+	 * Sets an owner view to the binder map
+	 *
+	 * @param {kff.BindingView} view Owner view
+	 */
 	setView: function(view)
 	{
 		var i, l, b;
@@ -37,26 +57,43 @@ kff.BinderMap = kff.createClass(
 		}
 	},
 
+	/**
+	 * Inits all binders
+	 */
 	initBinders: function()
 	{
 		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].init();
 	},
 
+	/**
+	 * Destroys all binders
+	 */
 	destroyBinders: function()
 	{
 		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].destroy();
 	},
 
+	/**
+	 * Refreshes all binders
+	 *
+	 * @param  {boolean} force Force rebinding models and refreshing DOM
+	 */
 	refreshBinders: function(force)
 	{
 		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].modelChange(null, force);
 	},
 
-	rebindModels: function(event)
+	/**
+	 * Rebinds models of all binders
+	 */
+	rebindModels: function()
 	{
 		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].rebindModel();
 	},
 
+	/**
+	 * Refreshes only binders that depend on their binding index
+	 */
 	refreshIndexedBinders: function()
 	{
 		for(var i = 0, l = this.binders.length; i < l; i++)
