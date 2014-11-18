@@ -1,7 +1,6 @@
 
 kff.Collection = kff.createClass(
 {
-	// extend: kff.List,
 	mixins: kff.EventsMixin
 },
 /** @lends kff.Collection.prototype	*/
@@ -21,9 +20,7 @@ kff.Collection = kff.createClass(
 		this.itemType = options.itemType || kff.Model;
 		this.serializeAttrs = options.serializeAttrs || null;
 		this.onEachEvents = [];
-		this.initEvents();
 		this.array = [];
-		return this;
 	},
 
 	/**
@@ -602,6 +599,38 @@ kff.Collection = kff.createClass(
 	indexOf: function(item)
 	{
 		return kff.arrayIndexOf(this.array, item);
+	},
+
+	some: function(item)
+	{
+		if (!Array.prototype.some)
+		{
+			Array.prototype.some = function(fun /*, thisArg*/)
+			{
+				'use strict';
+
+				if (this == null) {
+					throw new TypeError('Array.prototype.some called on null or undefined');
+				}
+
+				if (typeof fun !== 'function') {
+					throw new TypeError();
+				}
+
+				var t = Object(this);
+				var len = t.length >>> 0;
+
+				var thisArg = arguments.length >= 2 ? arguments[1] : void 0;
+				for (var i = 0; i < len; i++) {
+					if (i in t && fun.call(thisArg, t[i], i, t)) {
+						return true;
+					}
+				}
+
+				return false;
+			};
+		}
+		return this.array.some(item);
 	},
 
 	/**
