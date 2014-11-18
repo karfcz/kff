@@ -4,7 +4,7 @@ kff.Binder = kff.createClass(
 {
 	/**
 	 * @constructs
-	*/
+	 */
 	constructor: function(options)
 	{
 		this.options = options;
@@ -23,6 +23,9 @@ kff.Binder = kff.createClass(
 		this.modelPathWatcher = null;
 	},
 
+	/**
+	 * Initializes the binder, binds DOM or model events if needed and optionally fetches data from DOM
+	 */
 	init: function()
 	{
 		if(!this.options.nobind)
@@ -46,6 +49,9 @@ kff.Binder = kff.createClass(
 		if(this.options.fill && this.model instanceof kff.Model) this.fill();
 	},
 
+	/**
+	 * Destroys the binder, unbinds any events or model watchers
+	 */
 	destroy: function()
 	{
 		if(this.model instanceof kff.Model) this.unbindModel();
@@ -55,10 +61,21 @@ kff.Binder = kff.createClass(
 		this.value = null;
 	},
 
+	/**
+	 * Delegates events. Using the method from kff.View
+	 */
 	delegateEvents: kff.View.prototype.delegateEvents,
 
+	/**
+	 * Undelegates events. Using the method from kff.View
+	 */
 	undelegateEvents: kff.View.prototype.undelegateEvents,
 
+	/**
+	 * Refreshes the binder whenever the model changes.
+	 * @param  {Object} event  Event from the model change
+	 * @param  {boolean} force If true, force refreshing even if value does not change
+	 */
 	modelChange: function(event, force)
 	{
 		var modelValue;
@@ -108,11 +125,25 @@ kff.Binder = kff.createClass(
 		}
 	},
 
+	/**
+	 * Simple compare two values using strict equal operator.
+	 *
+	 * @param  {mixed} value1 Value 1
+	 * @param  {mixed} value2 Value 2
+	 * @return {boolean}      Result of comparsion
+	 */
 	compareValues: function(value1, value2)
 	{
 		return value1 === value2;
 	},
 
+	/**
+	 * Compare if two arrays are of the same length and contain the same values compared by the strict equal operator
+	 *
+	 * @param  {Array} value1 Array 1
+	 * @param  {Array} value2 Array 2
+	 * @return {boolean}      Result of comparsion
+	 */
 	compareArrayValues: function(value1, value2)
 	{
 		if((value1 instanceof Array) && (value2 instanceof Array))
@@ -128,11 +159,22 @@ kff.Binder = kff.createClass(
 		else return false;
 	},
 
+	/**
+	 * Returns current formatted value of the model prepared to insertion to the DOM
+	 *
+	 * @return {mixed} Formatted value
+	 */
 	getFormattedValue: function()
 	{
 		return this.value;
 	},
 
+	/**
+	 * Updates model with the value changed by some DOM event
+	 *
+	 * @param  {mixed} value    Raw unparsed value from the DOM
+	 * @param  {DOMEvent} event Original DOM event
+	 */
 	updateModel: function(value, event)
 	{
 		var i, l;
@@ -185,7 +227,11 @@ kff.Binder = kff.createClass(
 		}
 	},
 
-
+	/**
+	 * Dispatches event to the view
+	 *
+	 * @param  {object} event Event object to dispatch
+	 */
 	dispatchEvent: function(event)
 	{
 		var res, view = this.view;
@@ -200,6 +246,12 @@ kff.Binder = kff.createClass(
 		}
 	},
 
+	/**
+	 * Process a value from model through formatting pipeline
+	 *
+	 * @param  {mixed} value The original value from model
+	 * @return {mixed}       Formatted value
+	 */
 	format: function(value)
 	{
 		var i, l, j, k, value2;
@@ -216,6 +268,12 @@ kff.Binder = kff.createClass(
 		return value;
 	},
 
+	/**
+	 * Process a value from DOM through parsing pipeline
+	 *
+	 * @param  {mixed} value The original value from DOM
+	 * @return {mixed}       Parsed value
+	 */
 	parse: function(value)
 	{
 		var i, l, j, k, value2;
@@ -232,41 +290,79 @@ kff.Binder = kff.createClass(
 		return value;
 	},
 
+	/**
+	 * Returns binding index of the view in a colelction binding
+	 * @param  {string} modelName Model keypath
+	 * @return {number}           BInding index
+	 */
 	getBindingIndex: function(modelName)
 	{
 		modelName = modelName || this.options.modelName;
 		return this.view.getBindingIndex(modelName);
 	},
 
+	/**
+	 * Create a clone of this object
+	 * @return {mixed} Clone of type kff.Binding
+	 */
 	clone: function()
 	{
 		return new this.constructor(this.options);
 	},
 
+	/**
+	 * Refreshes DOM projection of the binding
+	 */
 	refresh: kff.noop,
 
+	/**
+	 * In case of two-way binding, fetches the current binding state/value from the DOM and passes it to
+	 * the corresponding model. Most useful for fetching form data into the model.
+	 */
 	fill: kff.noop,
 
+	/**
+	 * Binds event listeners to the model
+	 */
 	bindModel: function()
 	{
 		if(this.model instanceof kff.Model) this.model.on('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
 	},
 
+	/**
+	 * Unbinds event listeners from the model
+	 */
 	unbindModel: function()
 	{
 		if(this.model instanceof kff.Model) this.model.off('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
 	},
 
+	/**
+	 * Sets up the model path watcher on the model. The model path watcher binds listeners to every model in model
+	 * keypath and rebinds them on a change of any intermediate model so that model is always up to date.
+	 *
+	 * @private
+	 */
 	bindModelPathWatcher: function()
 	{
 		this.modelPathWatcher.on('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
 	},
 
+	/**
+	 * Unbinds any listeners previously bound by bindModelPathWatcher
+	 *
+	 * @private
+	 */
 	unbindModelPathWatcher: function()
 	{
 		this.modelPathWatcher.off('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
 	},
 
+	/**
+	 * Rebinds model event listeners for the actual model retrieved by model keypath.
+	 *
+	 * @private
+	 */
 	rebindModel: function()
 	{
 		if(!this.options.nobind)
@@ -280,11 +376,26 @@ kff.Binder = kff.createClass(
 		}
 	},
 
+	/**
+	 * Returns true if any of formatters uses binding index property.
+	 * Used by the binding view to decide which binders need to be refreshed when their binding index changes
+	 *
+	 * @private
+	 * @return {Boolean} True if rendering of the value depends on the binding index
+	 */
 	isIndexed: function()
 	{
 		return this.options.indexed;
 	},
 
+	/**
+	 * Creates a new function that works as event pipeline when event filter is used
+	 *
+	 * @private
+	 * @param  {DOMEvent} originalTriggerEvent Original event
+	 * @param  {function} eventFilter          Filter function
+	 * @return {function}                      Composed function
+	 */
 	createFilterTriggerEvent: function(originalTriggerEvent, eventFilter)
 	{
 		return function(event)
@@ -293,6 +404,18 @@ kff.Binder = kff.createClass(
 		}
 	},
 
+	/**
+	 * Converts string from binder atribute to primitive type using some basic implicit rules.
+	 * 'null' => null
+	 * 'true' => true
+	 * 'false' => false
+	 * numeric values => number
+	 * otherwise => keep original string
+	 *
+	 * @private
+	 * @param  {string} value Original value
+	 * @return {mixed}        Converted value
+	 */
 	convertValueType: function(value)
 	{
 		if(value === 'null') return null;
