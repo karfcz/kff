@@ -6,9 +6,9 @@ kff.App = kff.createClass(
 	 * Convenient class for basic application structure. Contains service
 	 * container with preddefined services:
 	 *
-	 * - viewFactory
-	 * - frontController
-	 * - pageView
+	 * * kff.ViewFactory
+	 * * kff.FrontController
+	 * * kff.PageView
 	 *
 	 * @constructs
 	 */
@@ -90,6 +90,9 @@ kff.App = kff.createClass(
 		frontController.init();
 	},
 
+	/**
+	 * Destroys the application
+	 */
 	destroy: function()
 	{
 		if(this.frontController) this.frontController.destroy();
