@@ -125,6 +125,14 @@ kff.mixins = function(obj, properties)
 
 /**
  * Factory function for creating a class
+ *
+ * The first "meta" parameter must be an object with the following optional properties:
+ * * extend - reference to base class to be extended
+ * * statics - object with static properties of the class. These properties will be set directly to the constructor
+ *   function
+ * * service, args, shared - shorthands for service constructor annotations. These will be included into the
+ *   statics.service object
+ *
  * @param {Object} meta Object with metadata describing inheritance and static properties of the class
  * @param {Object} properties Properties of a class prototype (or class members)
  * @returns {function} A constructor function (class)
@@ -202,16 +210,19 @@ kff.createClass = function(meta, properties)
 };
 
 /**
- * Binds function to an object.
+ * Binds function to an object with object's *this*.
+ *
  * Note that it adds a _boundFns property to the object which is an object
- * containing references to the bound methods for caching purposes.
+ * containing references to bound methods for caching purposes. It always returns reference to the same function
+ * for each fnName.
  *
  * @param {Object} obj Object to which bind a function
  * @param {string} fnName Method name to bind
+ * @returns {function} Bound function
  */
 kff.bindFn = function(obj, fnName, args)
 {
-	if(typeof obj[fnName] !== 'function') throw new TypeError("Expected function: " + fnName + ' (kff.bindFn)');
+	if(typeof obj[fnName] !== 'function') throw new TypeError('Expected function: ' + fnName + ' in object ' + obj + '  (kff.bindFn)');
 	if(!('_boundFns' in obj)) obj._boundFns = {};
 	if(fnName in obj._boundFns) return obj._boundFns[fnName];
 	else
@@ -244,7 +255,7 @@ kff.classMixin = {
 };
 
 /**
- * Evaluates object path recursively and returns last property in chain
+ * Evaluates key path of an object recursively and returns last property in chain
  *
  * Example:
  * window.something = { foo: { bar: 42 } };
@@ -325,6 +336,16 @@ kff.setZeroTimeout = function(fn)
 	kff.setZeroTimeout(fn);
 };
 
+
+/**
+ * Returns index of an item in an array or -1 if not found
+ * This is just a faster replacement for native Array#indexOf
+ * It returns index of first occurence of the item.
+ *
+ * @param  {Array} array The array to search in
+ * @param  {mixed} item  The item to look for
+ * @return {number}      Index of the item
+ */
 kff.arrayIndexOf = function(array, item)
 {
 	for(var i = 0, l = array.length; i < l; i++)
@@ -335,9 +356,22 @@ kff.arrayIndexOf = function(array, item)
 };
 
 
-
+/**
+ * Object for storing modules/factory functions
+ * @type {Object}
+ */
 kff.modules = {};
 
+/**
+ * Defines a module. The module can be anything in Javascript - object, function, string, whatever.
+ * Every module has an unique name and an optional array of dependencies. Dependency is just a name of a module that
+ * is resolved before the factory function is called. Arguments of the factory function are resolved modules from
+ * the deps array. Modules can be required by kff.require.
+ *
+ * @param  {string} name    Name of the module
+ * @param  {Array} deps     Array of module names that this module depends on. Optional
+ * @param  {function} factory Function that takes arguments according to the deps array and returns the module.
+ */
 kff.define = function(name, deps, factory)
 {
 	if(!factory && typeof deps === 'function')
@@ -351,6 +385,12 @@ kff.define = function(name, deps, factory)
 	};
 };
 
+/**
+ * Returns a module defined by kff.define.
+ *
+ * @param  {string} serviceName Name of the module (service)
+ * @return {mixed}              Reference to the module
+ */
 kff.require = function(serviceName)
 {
 	if(typeof serviceName === 'string')
@@ -380,10 +420,16 @@ kff.require = function(serviceName)
 	return kff.evalObjectPath(serviceName);
 };
 
-
+/**
+ * Logs a debug message to the console if kff.debug is set to true
+ * @param  {string} message The message to log
+ */
 kff.log = function(message)
 {
 	if(kff.debug === true && typeof console === 'object') console.log(message);
 };
 
+/**
+ * Empty placeholder function
+ */
 kff.noop = function(){};
