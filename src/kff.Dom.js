@@ -21,7 +21,6 @@ kff.Dom = kff.createClass(
 	{
 		this['0'] = element;
 		this.handlers = null;
-		this.$element = null;
 	},
 
 	/**
