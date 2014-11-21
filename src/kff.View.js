@@ -979,7 +979,7 @@ kff.View = kff.createClass(
 
 		oldModels = this.models || null;
 
-		this.models = kff.createObject(this.parentView.models);
+		this.models = kff.createObject(parentView.models);
 
 		if(oldModels)
 		{
@@ -994,7 +994,7 @@ kff.View = kff.createClass(
 
 		oldHelpers = this.helpers || null;
 
-		this.helpers = kff.createObject(this.parentView.helpers);
+		this.helpers = kff.createObject(parentView.helpers);
 
 		if(oldHelpers)
 		{
@@ -1109,17 +1109,22 @@ kff.View = kff.createClass(
 
 	nextNode: function(root, node, deep)
 	{
+		var parentNode, nextSibling;
 		if(deep && node.hasChildNodes())
 		{
 			node = node.firstChild;
 		}
 		else
 		{
-			while(node !== root && node.nextSibling === null && node.parentNode !== null)
+			parentNode = node.parentNode;
+			nextSibling = node.nextSibling;
+			while(node !== root && nextSibling === null && parentNode !== null)
 			{
-				node = node.parentNode;
+				node = parentNode;
+				parentNode = node.parentNode;
+				nextSibling = node.nextSibling;
 			}
-			if(node && node !== root) node = node.nextSibling;
+			if(node && node !== root) node = nextSibling;
 			else node = null;
 		}
 		return node;
