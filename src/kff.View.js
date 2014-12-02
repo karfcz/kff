@@ -2171,7 +2171,7 @@ kff.View = kff.createClass(
 		{
 			$element = $(this.$elementTemplate[0].cloneNode(true));
 			boundView = this.viewTemplate.clone();
-			boundView.setParentView(this.parentView);
+			boundView.setParentView(this);
 
 			if(i === undefined)
 			{
