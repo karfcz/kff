@@ -2219,6 +2219,37 @@ kff.View = kff.createClass(
 	refreshOwnBinders: function(force)
 	{
 		if(this.modelBindersMap) this.modelBindersMap.refreshBinders(force);
+	},
+
+	getBoundModelPathArray: function(modelPathArray)
+	{
+		var rootModelPathArray = [];
+		var modelName = modelPathArray[0];
+		var view = this;
+
+		while(view)
+		{
+			if(view.models.hasOwnProperty(modelName))
+			{
+				rootModelPathArray = modelPathArray.concat(rootModelPathArray);
+				if(view.options.isBoundView)
+				{
+					if(modelName === '*' || modelName === view.itemAlias)
+					{
+						rootModelPathArray[0] = view.getBindingIndex();
+
+						modelPathArray = view.parentView.collectionBinder.collectionPathArray;
+						modelName = modelPathArray[0];
+						view = view.parentView;
+					}
+				}
+			}
+
+			view = view.parentView;
+		}
+
+		return rootModelPathArray;
 	}
+
 
 });

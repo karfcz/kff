@@ -192,11 +192,14 @@ kff.Binder = kff.createClass(
 
 		if(this.dispatch)
 		{
+			var pathArray = this.view.getBoundModelPathArray(this.options.modelPathArray);
+			if(this.options.attr) pathArray.push(this.options.attr);
 			this.dispatchEvent({
 				originalEvent: event,
 				value: value,
 				model: this.model,
-				attr: this.options.attr
+				attr: this.options.attr,
+				modelPathArray: pathArray
 			});
 		}
 		else if(typeof this.model === 'object' && this.model !== null)
