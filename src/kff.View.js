@@ -1895,6 +1895,7 @@ kff.View = kff.createClass(
 			var positions = new Array(this.filteredCollection.count());
 			var toRemoveViews = [];
 			var pos;
+			var lastViewIndex = null;
 			for(i = 0, l = this.boundViews.length; i < l; i++)
 			{
 				boundView = this.boundViews[i];
@@ -1906,6 +1907,7 @@ kff.View = kff.createClass(
 				{
 					positions[newIndex] = pos;
 					lastView = boundView;
+					lastViewIndex = i;
 				}
 				else {
 					toRemoveViews.push(pos);
@@ -1927,6 +1929,7 @@ kff.View = kff.createClass(
 						boundView.setBindingIndex(i);
 						boundView.delegateModelEventsAll();
 						boundView.refreshAll();
+						if(i >= lastViewIndex) lastView = boundView;
 					}
 					else
 					{
