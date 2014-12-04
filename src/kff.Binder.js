@@ -21,6 +21,8 @@ kff.Binder = kff.createClass(
 		this.dynamicBindings = null;
 		this.value = null;
 		this.modelPathWatcher = null;
+		this.rootModel = null;
+		this.rootAttr = null;
 	},
 
 	/**
@@ -44,6 +46,13 @@ kff.Binder = kff.createClass(
 			{
 				this.bindModel();
 			}
+			else
+			{
+				var rootModelPathArray = this.view.getBoundModelPathArray(this.options.modelPathArray);
+				this.rootModel = this.view.models[rootModelPathArray[0]];
+				this.rootAttr = rootModelPathArray[1] || null;
+				this.bindRootModel();
+			}
 			if(this.$element && this.options.events !== null) this.delegateEvents(this.options.events);
 		}
 		if(this.options.fill && this.model instanceof kff.Model) this.fill();
@@ -55,6 +64,7 @@ kff.Binder = kff.createClass(
 	destroy: function()
 	{
 		if(this.model instanceof kff.Model) this.unbindModel();
+		if(this.rootModel instanceof kff.Model) this.unbindRootModel();
 		if(this.options.watchModelPath) this.unbindModelPathWatcher();
 		if(this.$element && this.options.events !== null) this.undelegateEvents(this.options.events);
 		this.currentValue = null;
@@ -123,6 +133,12 @@ kff.Binder = kff.createClass(
 				this.refresh();
 			}
 		}
+	},
+
+	rootModelChange: function()
+	{
+		this.model = this.view.getModel(this.view.getBoundModelPathArray(this.options.modelPathArray));
+		this.modelChange();
 	},
 
 	/**
@@ -195,11 +211,13 @@ kff.Binder = kff.createClass(
 			var pathArray = this.view.getBoundModelPathArray(this.options.modelPathArray);
 			if(this.options.attr) pathArray.push(this.options.attr);
 			this.dispatchEvent({
+				action: 'set',
 				originalEvent: event,
 				value: value,
-				model: this.model,
-				attr: this.options.attr,
-				modelPathArray: pathArray
+				rootModel: this.rootModel,
+				// model: this.model,
+				// attr: this.options.attr,
+				keyPath: pathArray
 			});
 		}
 		else if(typeof this.model === 'object' && this.model !== null)
@@ -338,6 +356,22 @@ kff.Binder = kff.createClass(
 	unbindModel: function()
 	{
 		if(this.model instanceof kff.Model) this.model.off('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
+	},
+
+	/**
+	 * Binds event listeners to the model
+	 */
+	bindRootModel: function()
+	{
+		if(this.rootModel instanceof kff.Model) this.rootModel.on('change' + (this.rootAttr === null ? '' : ':' + this.rootAttr), this.f('rootModelChange'));
+	},
+
+	/**
+	 * Unbinds event listeners from the model
+	 */
+	unbindRootModel: function()
+	{
+		if(this.rootModel instanceof kff.Model) this.rootModel.off('change' + (this.rootAttr === null ? '' : ':' + this.rootAttr), this.f('rootModelChange'));
 	},
 
 	/**
