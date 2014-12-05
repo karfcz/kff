@@ -15,6 +15,7 @@ module.exports = function(grunt) {
 		'./src/kff.BindingView.js',
 		'./src/kff.BindingView.helpers.js',
 		'./src/kff.Binder.js',
+		'./src/kff.CollectionCountBinder.js',
 		'./src/kff.CollectionBinder.js',
 		'./src/kff.ModelView.js',
 		'./src/binders/kff.EventBinder.js',

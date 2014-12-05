@@ -62,6 +62,7 @@ kff.View = kff.createClass(
 
 		this.modelBindersMap = null;
 		this.collectionBinder = null;
+		this.collectionCountBinder = null;
 		this.bindingIndex = null;
 		this.itemAlias = null;
 
@@ -1284,9 +1285,10 @@ kff.View = kff.createClass(
 					model = this.getModel(modelPathArray);
 
 					// Special binding for collection count property
-					if(model instanceof kff.Collection)
+					if(model instanceof kff.Collection && attr === 'count')
 					{
-						if(attr === 'count') model = this.bindCollectionCount(model);
+						if(!this.collectionCountBinder) this.collectionCountBinder = new kff.CollectionCountBinder();
+						model = this.collectionCountBinder.bindCollectionCount(model);
 					}
 					var indexed = false;
 
@@ -1447,45 +1449,6 @@ kff.View = kff.createClass(
 	},
 
 	/**
-	 * Special binding for Collection count property which is not bindable in a standard way.
-	 * Creates a proxy model object that observes the collection for a change event and mirrors the
-	 * count property of collection in the count attribute of the proxy model.
-	 *
-	 * @param {kff.Collection} collection The collection to be observed
-	 */
-	bindCollectionCount: function(collection)
-	{
-		var model = new kff.Model();
-		var handler = function(){
-			model.set('count', collection.count());
-		};
-
-		handler();
-
-		if(!this.boundCollectionCounts) this.boundCollectionCounts = [];
-		this.boundCollectionCounts.push({
-			collection: collection,
-			handler: handler
-		});
-		collection.on('change', handler);
-		return model;
-	},
-
-	/**
-	 * Destroys all collection count bindings previously created by the bindCollectionCount method
-	 */
-	destroyCollectionCountBindings: function()
-	{
-		if(this.boundCollectionCounts)
-		{
-			for(var i = 0, l = this.boundCollectionCounts.length; i < l; i++)
-			{
-				this.boundCollectionCounts[i].collection.off('change', this.boundCollectionCounts[i].handler);
-			}
-		}
-	},
-
-	/**
 	 * Parses modifier parameters of binding. Used to create parsers and formatters.
 	 *
 	 * @param {Array} modifierParams An arrray with modifier names
@@ -1567,7 +1530,11 @@ kff.View = kff.createClass(
 			this.modelBindersMap.destroyBinders();
 			this.modelBindersMap = null;
 		}
-		this.destroyCollectionCountBindings();
+		if(this.collectionCountBinder)
+		{
+			this.collectionCountBinder.destroy();
+			this.collectionCountBinder = null;
+		}
 	},
 
 	/**
