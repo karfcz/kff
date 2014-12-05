@@ -192,15 +192,33 @@ kff.Binder = kff.createClass(
 
 		if(this.dispatch)
 		{
+			var action = 'set';
+			var params = [];
+			if(this.dispatch.length > 0)
+			{
+				action = this.dispatch[0];
+				for(i = 1, l = this.dispatch.length; i < l; i++)
+				{
+					if(this.dispatch[i].charAt(0) === '@') params.push(this.view.getModel(this.dispatch[i].slice(1)));
+					else
+					{
+						if(this.options.parsers.length === 0) params.push(this.convertValueType(this.dispatch[i]));
+						else params.push(this.parse(this.dispatch[i]));
+					}
+				}
+
+			}
+
 			var rootModelPathArray = this.view.getBoundModelPathArray(this.options.modelPathArray);
 			var rootModel = this.view.models[rootModelPathArray[0]];
 			if(this.options.attr) rootModelPathArray.push(this.options.attr);
 			this.view.dispatchEvent({
-				action: 'set',
+				action: action,
 				model: rootModel,
 				keyPath: rootModelPathArray,
 				value: value,
-				domEvent: event
+				domEvent: event,
+				params: params
 			});
 		}
 		else if(typeof this.model === 'object' && this.model !== null)

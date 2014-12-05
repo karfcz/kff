@@ -1395,7 +1395,7 @@ kff.View = kff.createClass(
 			getters: [],
 			eventNames: [],
 			eventFilters: [],
-			dispatch: false,
+			dispatch: null,
 			fill: false,
 			nobind: false,
 			watchModelPath: false,
@@ -1451,7 +1451,8 @@ kff.View = kff.createClass(
 						this.parseHelpers(modifierParams, ret.eventFilters);
 						break;
 					case 'dispatch':
-						ret.dispatch = true;
+						ret.dispatch = [];
+						this.parseSetters(modifierParams, ret.dispatch);
 						break;
 					case 'fill':
 						ret.fill = true;
