@@ -644,6 +644,7 @@ kff.CollectionBinder = kff.createClass(
 
 		$element[0].setAttribute(kff.DATA_RENDERED_ATTR, true);
 
+		boundView.itemAlias = this.view.itemAlias;
 		boundView.modelBindersMap.setView(boundView);
 
 		return boundView;
