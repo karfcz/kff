@@ -30,7 +30,9 @@ kff.FrontController = kff.createClass(
 		this.rootElement = options.element || null;
 		this.stateHandler = options.stateHandler || null;
 		this.middlewares = options.middlewares || [];
+		this.dispatcher = options.dispatcher || null;
 		this.env = options.env || { document: document, window: window };
+		this.pendingRefresh = false;
 	},
 
 	/**
@@ -45,6 +47,11 @@ kff.FrontController = kff.createClass(
 			this.stateHandler.init();
 		}
 		else this.setState(null);
+
+		if(this.dispatcher)
+		{
+			this.dispatcher.on('refresh', this.f('requestRefreshAll'));
+		}
 	},
 
 	/**
@@ -214,12 +221,13 @@ kff.FrontController = kff.createClass(
 			from = 0;
 
 		if(this.rootElement) options = { element: this.rootElement };
+		if(this.dispatcher) options.dispatcher = this.dispatcher;
+		options.env = this.env;
 
 		for(i = 0, l = precedingViewNames.length; i < l; i++)
 		{
 			if(i >= this.viewsQueue.length)
 			{
-				options.env = this.env;
 				view = this.viewFactory.createView(precedingViewNames[i], options);
 				view.setViewFactory(this.viewFactory);
 				this.pushView({ name: precedingViewNames[i], instance: view });
@@ -258,6 +266,28 @@ kff.FrontController = kff.createClass(
 			if(c) a.unshift(c);
 		}
 		return a;
+	},
+
+	requestRefreshAll: function()
+	{
+		if(this.env.window.requestAnimationFrame)
+		{
+			if(!this.pendingRefresh)
+			{
+				this.pendingRefresh = true;
+				this.env.window.requestAnimationFrame(this.f('refreshAll'));
+			}
+		}
+		else this.refreshAll();
+	},
+
+	refreshAll: function()
+	{
+		for(var i = 0, l = this.viewsQueue.length; i < l; i++)
+		{
+			this.viewsQueue[i].instance.refreshAll();
+		}
+		this.pendingRefresh = false;
 	},
 
 	getViewFactory: function()

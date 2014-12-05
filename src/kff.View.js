@@ -117,6 +117,12 @@ kff.View = kff.createClass(
 			this.viewFactory = options.viewFactory;
 		}
 
+		if(options.dispatcher)
+		{
+			this.dispatcher = options.dispatcher;
+		}
+		else this.dispatcher = null;
+
 		if(options.env)
 		{
 			this.env = options.env;
@@ -866,7 +872,25 @@ kff.View = kff.createClass(
 		}
 	},
 
-	dispatchEvent: kff.noop,
+	/**
+	 * Dispatches event to the dispatcher
+	 *
+	 * @param  {object} event Event object to dispatch
+	 */
+	dispatchEvent: function(event)
+	{
+		var res, view = this;
+		while(view)
+		{
+			if(view.dispatcher !== null)
+			{
+				view.dispatcher.dispatchEvent(event);
+				break;
+			}
+			view = view.parentView;
+		}
+	},
+
 
 	/**
 	 * Returns index of item in bound collection (closest collection in the view scope)

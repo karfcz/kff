@@ -21,8 +21,6 @@ kff.Binder = kff.createClass(
 		this.dynamicBindings = null;
 		this.value = null;
 		this.modelPathWatcher = null;
-		this.rootModel = null;
-		this.rootAttr = null;
 	},
 
 	/**
@@ -46,13 +44,6 @@ kff.Binder = kff.createClass(
 			{
 				this.bindModel();
 			}
-			else
-			{
-				var rootModelPathArray = this.view.getBoundModelPathArray(this.options.modelPathArray);
-				this.rootModel = this.view.models[rootModelPathArray[0]];
-				this.rootAttr = rootModelPathArray[1] || null;
-				this.bindRootModel();
-			}
 			if(this.$element && this.options.events !== null) this.delegateEvents(this.options.events);
 		}
 		if(this.options.fill && this.model instanceof kff.Model) this.fill();
@@ -64,7 +55,6 @@ kff.Binder = kff.createClass(
 	destroy: function()
 	{
 		if(this.model instanceof kff.Model) this.unbindModel();
-		if(this.rootModel instanceof kff.Model) this.unbindRootModel();
 		if(this.options.watchModelPath) this.unbindModelPathWatcher();
 		if(this.$element && this.options.events !== null) this.undelegateEvents(this.options.events);
 		this.currentValue = null;
@@ -135,12 +125,6 @@ kff.Binder = kff.createClass(
 		}
 	},
 
-	rootModelChange: function()
-	{
-		this.model = this.view.getModel(this.view.getBoundModelPathArray(this.options.modelPathArray));
-		this.modelChange();
-	},
-
 	/**
 	 * Simple compare two values using strict equal operator.
 	 *
@@ -208,16 +192,15 @@ kff.Binder = kff.createClass(
 
 		if(this.dispatch)
 		{
-			var pathArray = this.view.getBoundModelPathArray(this.options.modelPathArray);
-			if(this.options.attr) pathArray.push(this.options.attr);
-			this.dispatchEvent({
+			var rootModelPathArray = this.view.getBoundModelPathArray(this.options.modelPathArray);
+			var rootModel = this.view.models[rootModelPathArray[0]];
+			if(this.options.attr) rootModelPathArray.push(this.options.attr);
+			this.view.dispatchEvent({
 				action: 'set',
-				originalEvent: event,
+				model: rootModel,
+				keyPath: rootModelPathArray,
 				value: value,
-				rootModel: this.rootModel,
-				// model: this.model,
-				// attr: this.options.attr,
-				keyPath: pathArray
+				domEvent: event
 			});
 		}
 		else if(typeof this.model === 'object' && this.model !== null)
@@ -245,25 +228,6 @@ kff.Binder = kff.createClass(
 				}
 			}
 			else if(typeof this.model.set === 'function') this.model.set(this.options.attr, this.currentValue);
-		}
-	},
-
-	/**
-	 * Dispatches event to the view
-	 *
-	 * @param  {object} event Event object to dispatch
-	 */
-	dispatchEvent: function(event)
-	{
-		var res, view = this.view;
-		while(view)
-		{
-			if(view.dispatchEvent !== kff.noop)
-			{
-				res = view.dispatchEvent(event);
-				if(res === false) break;
-			}
-			view = view.parentView;
 		}
 	},
 
@@ -356,22 +320,6 @@ kff.Binder = kff.createClass(
 	unbindModel: function()
 	{
 		if(this.model instanceof kff.Model) this.model.off('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
-	},
-
-	/**
-	 * Binds event listeners to the model
-	 */
-	bindRootModel: function()
-	{
-		if(this.rootModel instanceof kff.Model) this.rootModel.on('change' + (this.rootAttr === null ? '' : ':' + this.rootAttr), this.f('rootModelChange'));
-	},
-
-	/**
-	 * Unbinds event listeners from the model
-	 */
-	unbindRootModel: function()
-	{
-		if(this.rootModel instanceof kff.Model) this.rootModel.off('change' + (this.rootAttr === null ? '' : ':' + this.rootAttr), this.f('rootModelChange'));
 	},
 
 	/**

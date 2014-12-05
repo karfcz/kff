@@ -14,11 +14,12 @@ kff.App = kff.createClass(
 	 */
 	constructor: function(options)
 	{
-		var models, helpers, element, require, middlewares;
+		var models, helpers, element, require, middlewares, dispatcher;
 		this.options = options = options || {};
 		models = options.models || {};
 		helpers = options.helpers || {};
 		element = options.element || null;
+		dispatcher = options.dispatcher || null;
 		require = options.require || kff.require;
 		this.env = options.env || { document: document, window: window };
 
@@ -43,6 +44,7 @@ kff.App = kff.createClass(
 						stateHandler: '@kff.HashStateHandler',
 						middlewares: middlewares,
 						element: null,
+						dispatcher: dispatcher,
 						env: this.env
 					}]
 				}
