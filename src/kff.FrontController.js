@@ -318,5 +318,10 @@ kff.FrontController = kff.createClass(
 	setStateHandler: function(stateHandler)
 	{
 		this.stateHandler = stateHandler;
+	},
+
+	setDispatcher: function(dispatcher)
+	{
+		this.dispatcher = dispatcher;
 	}
 });

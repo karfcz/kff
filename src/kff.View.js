@@ -877,14 +877,14 @@ kff.View = kff.createClass(
 	 *
 	 * @param  {object} event Event object to dispatch
 	 */
-	dispatchEvent: function(event)
+	dispatchEvent: function(action, event)
 	{
 		var res, view = this;
 		while(view)
 		{
 			if(view.dispatcher !== null)
 			{
-				view.dispatcher.dispatchEvent(event);
+				view.dispatcher.trigger(action, event);
 				break;
 			}
 			view = view.parentView;

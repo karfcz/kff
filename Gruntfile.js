@@ -42,6 +42,7 @@ module.exports = function(grunt) {
 		'./src/kff.Router.js',
 		'./src/kff.HashStateHandler.js',
 		'./src/kff.FrontController.js',
+		'./src/kff.Dispatcher.js',
 		'./src/kff.App.js'
 	];
 	var allJsFiles = ['./src/kff-prologue'].concat(jsFiles).concat('./src/kff-epilogue');

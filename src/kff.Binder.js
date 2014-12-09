@@ -210,10 +210,9 @@ kff.Binder = kff.createClass(
 			}
 
 			var rootModelPathArray = this.view.getBoundModelPathArray(this.options.modelPathArray);
-			var rootModel = this.view.models[rootModelPathArray[0]];
+			var rootModel = this.view.models[rootModelPathArray.shift()];
 			if(this.options.attr) rootModelPathArray.push(this.options.attr);
-			this.view.dispatchEvent({
-				action: action,
+			this.view.dispatchEvent(action, {
 				model: rootModel,
 				keyPath: rootModelPathArray,
 				value: value,

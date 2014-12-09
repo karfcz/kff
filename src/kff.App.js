@@ -19,9 +19,9 @@ kff.App = kff.createClass(
 		models = options.models || {};
 		helpers = options.helpers || {};
 		element = options.element || null;
-		dispatcher = options.dispatcher || null;
 		require = options.require || kff.require;
 		this.env = options.env || { document: document, window: window };
+		this.dispatcher = null;
 
 		if(this.options.middlewares instanceof Array) middlewares = this.options.middlewares;
 		else middlewares = [];
@@ -44,7 +44,6 @@ kff.App = kff.createClass(
 						stateHandler: '@kff.HashStateHandler',
 						middlewares: middlewares,
 						element: null,
-						dispatcher: dispatcher,
 						env: this.env
 					}]
 				}
@@ -84,6 +83,15 @@ kff.App = kff.createClass(
 		if(this.options.stateHandler)
 		{
 			frontController.setStateHandler(this.serviceContainer.resolveParameters(this.options.stateHandler));
+		}
+		if(this.options.dispatcher)
+		{
+			var dispatcher = this.serviceContainer.resolveParameters(this.options.dispatcher);
+			if(dispatcher && typeof dispatcher.registerActions === 'function')
+			{
+				if(this.options.actions) dispatcher.registerActions(this.options.actions);
+				frontController.setDispatcher(dispatcher);
+			}
 		}
 		if(this.options.defaultView)
 		{
