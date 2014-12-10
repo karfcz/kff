@@ -72,6 +72,7 @@ kff.View = kff.createClass(
 		this.eventTriggers = null;
 		this.viewFactory = null;
 		this.cachedRegions = null;
+		this.pendingRefresh = false;
 
 		this.initEvents();
 
@@ -207,6 +208,7 @@ kff.View = kff.createClass(
 
 			this.delegateEvents();
 			this.delegateModelEvents();
+			if(this.dispatcher) this.dispatcher.on('refresh', this.f('requestRefreshAll'));
 
 			if(typeof this.afterRender === 'function') this.afterRender();
 
@@ -217,6 +219,19 @@ kff.View = kff.createClass(
 			return ret;
 		}
 
+	},
+
+	requestRefreshAll: function()
+	{
+		if(this.env.window.requestAnimationFrame)
+		{
+			if(!this.pendingRefresh)
+			{
+				this.pendingRefresh = true;
+				this.env.window.requestAnimationFrame(this.f('refreshAll'));
+			}
+		}
+		else this.refreshAll();
 	},
 
 	/**
@@ -240,6 +255,7 @@ kff.View = kff.createClass(
 				for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].refreshAll();
 			}
 		}
+		this.pendingRefresh = false;
 	},
 
 	/**
@@ -262,6 +278,7 @@ kff.View = kff.createClass(
 		this.undelegateEvents();
 		this.undelegateModelEvents();
 		this.destroySubviews();
+		if(this.dispatcher) this.dispatcher.off('refresh', this.f('requestRefreshAll'));
 
 		if(this.destroy !== kff.noop) ret = this.destroy();
 		if(typeof this.afterDestroy === 'function') this.afterDestroy();
@@ -275,7 +292,6 @@ kff.View = kff.createClass(
 
 		return ret;
 	},
-
 
 	/**
 	 * Renders subviews. Will find all DOM descendats with
@@ -882,7 +898,7 @@ kff.View = kff.createClass(
 		var res, view = this;
 		while(view)
 		{
-			if(view.dispatcher !== null)
+			if(view.dispatcher !== null && view.dispatcher.hasAction(action))
 			{
 				view.dispatcher.trigger(action, event);
 				break;
@@ -890,7 +906,6 @@ kff.View = kff.createClass(
 			view = view.parentView;
 		}
 	},
-
 
 	/**
 	 * Returns index of item in bound collection (closest collection in the view scope)

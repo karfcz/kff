@@ -37,5 +37,10 @@ kff.Dispatcher = kff.createClass({
 				}
 			}
 		}
+	},
+
+	hasAction: function(action)
+	{
+		return action in this.actions;
 	}
 });

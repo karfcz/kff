@@ -47,11 +47,6 @@ kff.FrontController = kff.createClass(
 			this.stateHandler.init();
 		}
 		else this.setState(null);
-
-		if(this.dispatcher)
-		{
-			this.dispatcher.on('refresh', this.f('requestRefreshAll'));
-		}
 	},
 
 	/**
@@ -266,28 +261,6 @@ kff.FrontController = kff.createClass(
 			if(c) a.unshift(c);
 		}
 		return a;
-	},
-
-	requestRefreshAll: function()
-	{
-		if(this.env.window.requestAnimationFrame)
-		{
-			if(!this.pendingRefresh)
-			{
-				this.pendingRefresh = true;
-				this.env.window.requestAnimationFrame(this.f('refreshAll'));
-			}
-		}
-		else this.refreshAll();
-	},
-
-	refreshAll: function()
-	{
-		for(var i = 0, l = this.viewsQueue.length; i < l; i++)
-		{
-			this.viewsQueue[i].instance.refreshAll();
-		}
-		this.pendingRefresh = false;
 	},
 
 	getViewFactory: function()
