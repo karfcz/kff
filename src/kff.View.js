@@ -1602,6 +1602,7 @@ kff.View = kff.createClass(
 		var rootModelPathArray = [];
 		var modelName = modelPathArray[0];
 		var view = this;
+		var collectionBinder;
 
 		while(view)
 		{
@@ -1612,15 +1613,15 @@ kff.View = kff.createClass(
 				{
 					if(modelName === '*' || modelName === view.itemAlias)
 					{
-						rootModelPathArray[0] = view.getBindingIndex();
+						collectionBinder =  view.parentView.collectionBinder;
+						rootModelPathArray[0] = collectionBinder.getCollectionIndex(view.models[modelName]);
 
-						modelPathArray = view.parentView.collectionBinder.collectionPathArray;
+						modelPathArray = collectionBinder.collectionPathArray;
 						modelName = modelPathArray[0];
 						view = view.parentView;
 					}
 				}
 			}
-
 			view = view.parentView;
 		}
 

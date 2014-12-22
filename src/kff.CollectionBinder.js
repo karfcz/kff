@@ -681,5 +681,18 @@ kff.CollectionBinder = kff.createClass(
 		{
 			for(var i = 0, l = this.boundViews.length; i < l; i++) this.boundViews[i].refreshIndexedBinders();
 		}
+	},
+
+	getCollectionIndex: function(item)
+	{
+		if(this.collection instanceof kff.Collection)
+		{
+			return this.collection.indexOf(item)
+		}
+		else if(this.collection instanceof Array)
+		{
+			return kff.arrayIndexOf(this.collection, item);
+		}
+		else return -1;
 	}
 });
