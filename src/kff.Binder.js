@@ -78,7 +78,7 @@ kff.Binder = kff.createClass(
 	 */
 	modelChange: function(event, force)
 	{
-		var modelValue;
+		var modelValue, formattedValue;
 		if(this.modelPathWatcher)
 		{
 			this.model = this.modelPathWatcher.model;
@@ -116,9 +116,10 @@ kff.Binder = kff.createClass(
 		}
 		if(modelValue !== 'undefined')
 		{
-			if(force || !this.compareValues(modelValue, this.currentValue))
+			formattedValue = this.format(modelValue);
+			if(force || !this.compareValues(formattedValue, this.value))
 			{
-				this.value = this.format(modelValue);
+				this.value = formattedValue;
 				this.currentValue = modelValue;
 				this.refresh();
 			}
@@ -178,6 +179,7 @@ kff.Binder = kff.createClass(
 	updateModel: function(value, event)
 	{
 		var i, l;
+		this.value = value;
 		if(value instanceof Array)
 		{
 			for(i = 0, l = value.length; i < l; i++) value[i] = this.parse(value[i]);
