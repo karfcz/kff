@@ -208,7 +208,7 @@ kff.View = kff.createClass(
 
 			this.delegateEvents();
 			this.delegateModelEvents();
-			if(this.dispatcher) this.dispatcher.on('refresh', this.f('requestRefreshAll'));
+			if(this.dispatcher) this.dispatcher.on('refresh', this.f('refreshAll'));
 
 			if(typeof this.afterRender === 'function') this.afterRender();
 
@@ -278,7 +278,7 @@ kff.View = kff.createClass(
 		this.undelegateEvents();
 		this.undelegateModelEvents();
 		this.destroySubviews();
-		if(this.dispatcher) this.dispatcher.off('refresh', this.f('requestRefreshAll'));
+		if(this.dispatcher) this.dispatcher.off('refresh', this.f('refreshAll'));
 
 		if(this.destroy !== kff.noop) ret = this.destroy();
 		if(typeof this.afterDestroy === 'function') this.afterDestroy();
@@ -1603,6 +1603,7 @@ kff.View = kff.createClass(
 		var modelName = modelPathArray[0];
 		var view = this;
 		var collectionBinder;
+
 
 		while(view)
 		{
