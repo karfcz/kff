@@ -45,7 +45,8 @@ kff.App = kff.createClass(
 						middlewares: middlewares,
 						element: null,
 						env: this.env
-					}]
+					}],
+					shared: true
 				}
 			}
 		};
