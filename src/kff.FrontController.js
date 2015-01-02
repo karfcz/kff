@@ -32,7 +32,6 @@ kff.FrontController = kff.createClass(
 		this.middlewares = options.middlewares || [];
 		this.dispatcher = options.dispatcher || null;
 		this.env = options.env || { document: document, window: window };
-		this.pendingRefresh = false;
 	},
 
 	/**
@@ -207,6 +206,13 @@ kff.FrontController = kff.createClass(
 
 		if(destroyQueue[0]) destroyQueue[0].instance.destroyAll();
 		else this.startInit();
+
+		if(this.dispatcher)
+		{
+			this.dispatcher.trigger('route', {
+				state: state
+			});
+		}
 	},
 
 	startInit: function()
