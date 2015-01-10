@@ -11,10 +11,26 @@ kff.Dispatcher = kff.createClass({
 	createCallback: function(fn)
 	{
 		var dispatcher = this;
-		return function(event)
+		if(fn.length <= 1)
 		{
-			fn.call(null, event, dispatcher);
-		};
+			return function(event)
+			{
+				var nextEvent = fn.call(null, event);
+				if(nextEvent) dispatcher.trigger(nextEvent.action, nextEvent);
+			};
+		}
+		else
+		{
+			return function(event)
+			{
+				var done = function(err, nextEvent)
+				{
+					if(err) return;
+					if(nextEvent) dispatcher.trigger(nextEvent.action, nextEvent);
+				};
+				fn.call(null, event, done);
+			};
+		}
 	},
 
 	registerActions: function(actions)
