@@ -51,6 +51,15 @@ kff.App = kff.createClass(
 			}
 		};
 
+		if(this.options.dispatcher)
+		{
+			config.services['kff.Dispatcher'] = {
+				args: [this.options.dispatcher.actions || {}]
+			};
+
+			config.services['kff.FrontController'].args[0].dispatcher = '@kff.Dispatcher';
+		}
+
 		this.serviceContainer = new kff.ServiceContainer(config, require);
 		if('parameters' in options) this.serviceContainer.registerParameters(options.parameters, true);
 		if('services' in options) this.serviceContainer.registerServices(options.services, true);
@@ -84,15 +93,6 @@ kff.App = kff.createClass(
 		if(this.options.stateHandler)
 		{
 			frontController.setStateHandler(this.serviceContainer.resolveParameters(this.options.stateHandler));
-		}
-		if(this.options.dispatcher)
-		{
-			var dispatcher = this.serviceContainer.resolveParameters(this.options.dispatcher);
-			if(dispatcher && typeof dispatcher.registerActions === 'function')
-			{
-				if(this.options.actions) dispatcher.registerActions(this.options.actions);
-				frontController.setDispatcher(dispatcher);
-			}
 		}
 		if(this.options.defaultView)
 		{

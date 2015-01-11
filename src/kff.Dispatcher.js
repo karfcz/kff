@@ -11,6 +11,9 @@ kff.Dispatcher = kff.createClass({
 	createCallback: function(fn)
 	{
 		var dispatcher = this;
+		if(typeof fn !== 'function') {
+			throw new Error('Dispatcher action is not a function');
+		}
 		if(fn.length <= 1)
 		{
 			return function(event)
