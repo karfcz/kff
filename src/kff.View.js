@@ -3,7 +3,7 @@ kff.View = kff.createClass(
 {
 	mixins: kff.EventsMixin,
 	statics: {
-		bindingRegex: /(?:([.a-zA-Z0-9*-]+))(?:\(([.a-zA-Z0-9*,\s-]+)*\))?((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g,
+		bindingRegex: /(?:([.a-zA-Z0-9*-]+))(?:\((@?[.a-zA-Z0-9*,\s-]+)*\))?((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g,
 
 		operatorsRegex: /:([a-zA-Z0-9]+)(?:\(([^()]*)\))?/g,
 
@@ -1305,7 +1305,8 @@ kff.View = kff.createClass(
 				modelArgs = modelArgs.split(commaSeparateRegex);
 				for(var k = 0, kl = modelArgs.length; k < kl; k++)
 				{
-					modelArgs[k] = modelArgs[k].split('.');
+					if(modelArgs[k].charAt(0) === '@')
+						modelArgs[k] = modelArgs[k].slice(1).split('.');
 				}
 			}
 

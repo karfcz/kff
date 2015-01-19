@@ -448,7 +448,8 @@ kff.Binder = kff.createClass(
 		{
 			for(i = 0, l = modelArgs.length; i < l; i++)
 			{
-				args[i] = this.view.getModel(modelArgs[i]);
+				if(modelArgs[i] instanceof Array) args[i] = this.view.getModel(modelArgs[i]);
+				else args[i] = this.convertValueType(modelArgs[i]);
 			}
 		}
 		return model.apply(null, args);
