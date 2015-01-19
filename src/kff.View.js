@@ -69,7 +69,6 @@ kff.View = kff.createClass(
 		this.subviewsStruct = null;
 		this.explicitSubviewsStruct = null;
 		this.subviews = null;
-		this.eventTriggers = null;
 		this.viewFactory = null;
 		this.cachedRegions = null;
 		this.pendingRefresh = false;
@@ -100,12 +99,6 @@ kff.View = kff.createClass(
 			this.domEvents = options.events.slice();
 		}
 		else this.domEvents = [];
-
-		if(options.modelEvents)
-		{
-			this.modelEvents = options.modelEvents.slice();
-		}
-		else this.modelEvents = [];
 
 		if(options.element)
 		{
@@ -183,7 +176,6 @@ kff.View = kff.createClass(
 			this.renderRegions(this.options.regions);
 			if(this.render !== kff.noop) this.render();
 			this.renderSubviews();
-			this.processEventTriggers();
 		}
 	},
 
@@ -207,7 +199,7 @@ kff.View = kff.createClass(
 			this.runSubviews();
 
 			this.delegateEvents();
-			this.delegateModelEvents();
+
 			if(this.dispatcher) this.dispatcher.on('refresh', this.f('refreshAll'));
 
 			if(typeof this.afterRender === 'function') this.afterRender();
@@ -276,7 +268,6 @@ kff.View = kff.createClass(
 		var ret;
 		this.$element[0].removeAttribute(kff.DATA_RENDERED_ATTR);
 		this.undelegateEvents();
-		this.undelegateModelEvents();
 		this.destroySubviews();
 		if(this.dispatcher) this.dispatcher.off('refresh', this.f('refreshAll'));
 
@@ -286,7 +277,6 @@ kff.View = kff.createClass(
 		this.subviewsStruct = null;
 		this.explicitSubviewsStruct = null;
 		this.subviews = null;
-		this.eventTriggers = null;
 
 		this.clearRegions(this.options.regions);
 
@@ -346,7 +336,6 @@ kff.View = kff.createClass(
 		}
 		else
 		{
-			this.delegateEventTriggers();
 			if(this.subviews)
 			{
 				for(var i = 0, l = this.subviews.length; i < l; i++)
@@ -369,8 +358,6 @@ kff.View = kff.createClass(
 		else
 		{
 			var subView, i, l;
-
-			this.undelegateEvents(this.eventTriggers);
 
 			// Destroy subviews
 			if(this.subviews !== null)
@@ -452,38 +439,6 @@ kff.View = kff.createClass(
 	},
 
 	/**
-	 * Adds events config to the internal events array.
-	 *
-	 * @private
-	 * @param {Array} events Array of arrays of binding config
-	 */
-	addModelEvents: function(events)
-	{
-		if(!(events instanceof Array))
-		{
-			if(arguments.length === 3) this.modelEvents.push(Array.prototype.slice.apply(arguments));
-			return;
-		}
-		else if(!(events[0] instanceof Array))
-		{
-			events = Array.prototype.slice.apply(arguments);
-		}
-		Array.prototype.push.apply(this.modelEvents, events);
-	},
-
-	/**
-	 * Adds events config to the internal eventTriggers array.
-	 *
-	 * @private
-	 * @param {Array} events Array of arrays of binding config
-	 */
-	addEventTriggers: function(events)
-	{
-		if(!this.eventTriggers) this.eventTriggers = [];
-		Array.prototype.push.apply(this.eventTriggers, events);
-	},
-
-	/**
 	 * Binds DOM events to the view element. Accepts array of arrays in the form:
 	 *
 	 * [
@@ -557,123 +512,6 @@ kff.View = kff.createClass(
 
 				$element.off(event[0], fn);
 			}
-		}
-	},
-
-	/**
-	 * Delegates model events for this view, its binders and recursively for all subviews or boundviews
-	 */
-	delegateModelEventsAll: function()
-	{
-		if(this.collectionBinder)
-		{
-			this.collectionBinder.delegateModelEventsAll();
-		}
-		else
-		{
-			this.delegateModelEvents();
-			if(this.subviews !== null)
-			{
-				for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].delegateModelEventsAll();
-			}
-		}
-	},
-
-	/**
-	 * Undelegates model events for this view, its binders and recursively for all subviews or boundviews
-	 */
-	undelegateModelEventsAll: function()
-	{
-		if(this.collectionBinder)
-		{
-			this.collectionBinder.undelegateModelEventsAll();
-		}
-		else
-		{
-			this.undelegateModelEvents();
-			if(this.subviews !== null)
-			{
-				for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].undelegateModelEventsAll();
-			}
-		}
-	},
-
-
-	/**
-	 * Binds model events to the view. Accepts array of arrays in the form:
-	 *
-	 * [
-	 *     ['modelName', 'eventType', 'methodName'],
-	 * ]
-	 *
-	 * The first item is a name of the model.
-	 * The second item is an event name
-	 * The third item is the view method name (string) that acts as an event
-	 * handler
-	 *
-	 * @param {Array} events Array of arrays of binding config
-	 */
-	delegateModelEvents: function(events)
-	{
-		var event, i, l, fn, model;
-		this.undelegateModelEvents();
-		events = events || this.modelEvents;
-
-		for(i = 0, l = events.length; i < l; i++)
-		{
-			event = events[i];
-			model = this.getModel(event[0]);
-			if(event.length === 3 && model)
-			{
-				if(typeof event[2] === 'string') fn = this.f(event[2]);
-				else fn = event[2];
-				model.on(event[1], fn);
-			}
-		}
-	},
-
-	/**
-	 * Unbinds model events from the view. Accepts array of arrays in the form:
-	 *
-	 * [
-	 *     ['modelName', 'eventType', 'methodName']
-	 * ]
-	 *
-	 * The first item is a name of the model. The second item is an event name
-	 * The third item is the view method name (string) that acts as an event
-	 * handler
-	 *
-	 * @param {Array} events Array of arrays of binding config
-	 */
-	undelegateModelEvents: function(events)
-	{
-		var event, i, l, fn, model;
-		events = events || this.modelEvents;
-
-		for(i = 0, l = events.length; i < l; i++)
-		{
-			event = events[i];
-			model = this.getModel(event[0]);
-			if(event.length === 3 && model)
-			{
-				if(typeof event[2] === 'string') fn = this.f(event[2]);
-				else fn = event[2];
-				model.off(event[1], fn);
-			}
-		}
-	},
-
-	delegateEventTriggers: function()
-	{
-		if(this.eventTriggers)
-		{
-			for(var i = 0, l = this.eventTriggers.length; i < l; i++)
-			{
-				this.eventTriggers[i][2] = this.f(function(){
-					this.callTriggerMethod.apply(this, arguments);
-				}, [this.eventTriggers[i][3]]);
-			}
-			this.delegateEvents(this.eventTriggers);
 		}
 	},
 
@@ -767,14 +605,6 @@ kff.View = kff.createClass(
 								options: optAttr ? JSON.parse(optAttr) : {}
 							});
 						}
-						else
-						{
-							onAttr = node.getAttribute(kff.DATA_TRIGGER_ATTR);
-							if(onAttr)
-							{
-								this.processChildEventTriggers(node, onAttr, index);
-							}
-						}
 					}
 					index++;
 				}
@@ -783,64 +613,6 @@ kff.View = kff.createClass(
 		}
 		return subviewsStruct;
 	},
-
-	/**
-	 * Process declarative events bound throught data-kff-trigger attribute on root view element
-	 *
-	 * @private
-	 */
-	processEventTriggers: function()
-	{
-		this.processChildEventTriggers(this.$element[0]);
-	},
-
-	/**
-	 * Process declarative events bound throught data-kff-trigger attribute on child element
-	 * @private
-	 * @param  {DOM Element} child  DOM Element
-	 */
-	processChildEventTriggers: function(child, onAttr, index)
-	{
-		var onAttrSplit, onAttrSplit2, events = [], i, l;
-		onAttr = onAttr || child.getAttribute(kff.DATA_TRIGGER_ATTR);
-		if(onAttr)
-		{
-			onAttrSplit = onAttr.split(/\s+/);
-			for(i = 0, l = onAttrSplit.length; i < l; i++)
-			{
-				onAttrSplit2 = onAttrSplit[i].split(':');
-				events.push([
-					onAttrSplit2[0].replace('|', ' '),
-					$(child),
-					null,
-					onAttrSplit2[1],
-					index
-				]);
-			}
-			this.addEventTriggers(events);
-		}
-	},
-
-	/**
-	 * Finds and calls a method registered as trigger handler.
-	 *
-	 * @private
-	 * @param  {Function} fn Function to be called
-	 */
-	callTriggerMethod: function(fn)
-	{
-		if(typeof this[fn] === 'function')
-		{
-			this[fn].apply(this, Array.prototype.slice.call(arguments, 1));
-		}
-
-		else if(this.parentView)
-		{
-			this.parentView.callTriggerMethod.apply(this.parentView, arguments);
-		}
-	},
-
-
 
 	/**
 	 * Refreshes data-binders in all subviews.
@@ -948,15 +720,6 @@ kff.View = kff.createClass(
 		var clonedView = new this.constructor(options);
 		clonedView.viewFactory = this.viewFactory;
 
-		if(this.eventTriggers)
-		{
-			l = this.eventTriggers.length;
-			clonedView.eventTriggers = new Array(l);
-			while(l--)
-			{
-				clonedView.eventTriggers[l] = this.eventTriggers[l].slice();
-			}
-		}
 
 		if(this.subviews !== null)
 		{
@@ -990,8 +753,7 @@ kff.View = kff.createClass(
 			{
 				view: clonedView,
 				collection: null,
-				collectionPathArray: this.collectionBinder.collectionPathArray,
-				nobind: this.collectionBinder.nobind
+				collectionPathArray: this.collectionBinder.collectionPathArray
 			});
 		}
 
@@ -1064,23 +826,15 @@ kff.View = kff.createClass(
 	 */
 	rebindElement: function(element)
 	{
-		var i, l, eventTriggersIndex = 0;
+		var i, l;
 
 		this.$element = $(element);
 
-		if(this.eventTriggers)
-		{
-			while(this.eventTriggers[eventTriggersIndex] && typeof this.eventTriggers[eventTriggersIndex][4] === 'undefined')
-			{
-				this.eventTriggers[eventTriggersIndex][1] = this.$element;
-				eventTriggersIndex++;
-			}
-		}
+
 
 		this.rebindSubViews(element, {
 			subviewIndex: 0,
 			subviewsStructIndex: 0,
-			eventTriggersIndex: eventTriggersIndex,
 			index: 0
 		});
 
@@ -1124,15 +878,6 @@ kff.View = kff.createClass(
 								doSubviews = false;
 							}
 							else doSubviews = true;
-						}
-						else
-						{
-							if(!this.eventTriggers) this.eventTriggers = [];
-							while(this.eventTriggers[ids.eventTriggersIndex] && this.eventTriggers[ids.eventTriggersIndex][4] === ids.index)
-							{
-								this.eventTriggers[ids.eventTriggersIndex][1] = $(node);
-								ids.eventTriggersIndex++;
-							}
 						}
 						ids.index++;
 					}
@@ -1313,20 +1058,19 @@ kff.View = kff.createClass(
 			model = this.getModel(modelPathArray);
 			ret = null;
 
-			isCollectionBinder = model instanceof kff.Collection;
+			isCollectionBinder = false;
 
-			if(!isCollectionBinder)
+			if(true)
 			{
 				ret = this.parseBindingRegexp(result, true);
 
-				if(ret.binderName === 'list' || ret.binderName === 'each' && model instanceof Array)
+				if(ret.binderName === 'each')
 				{
 					isCollectionBinder = true;
 				}
 				else
 				{
 					if(!ret.binderName || !(ret.binderName in kff.View.binders)) break;
-
 
 					if(modelPathArray.length > 1) attr = modelPathArray.pop();
 					else attr = null;
@@ -1336,12 +1080,6 @@ kff.View = kff.createClass(
 					modelName = modelPathArray.length > 0 ? modelPathArray[0] : null;
 					model = this.getModel(modelPathArray);
 
-					// Special binding for collection count property
-					if(model instanceof kff.Collection && attr === 'count')
-					{
-						if(!this.collectionCountBinder) this.collectionCountBinder = new kff.CollectionCountBinder();
-						model = this.collectionCountBinder.bindCollectionCount(model);
-					}
 					var indexed = false;
 
 					for(var j = ret.formatters.length - 1; j >= 0; j--)
@@ -1366,9 +1104,7 @@ kff.View = kff.createClass(
 						eventNames: ret.eventNames,
 						eventFilters: ret.eventFilters,
 						fill: ret.fill,
-						nobind: ret.nobind,
 						nopreventdef: ret.nopreventdef,
-						watchModelPath: ret.watchModelPath,
 						indexed: indexed
 					});
 
@@ -1393,7 +1129,6 @@ kff.View = kff.createClass(
 					{
 						this.itemAlias = ret.itemAliases[0];
 					}
-					// this.boundViews = [];
 				}
 			}
 		}
@@ -1426,7 +1161,6 @@ kff.View = kff.createClass(
 			eventFilters: [],
 			dispatch: null,
 			fill: false,
-			nobind: false,
 			watchModelPath: false,
 			nopreventdef: false,
 			itemAliases: []
@@ -1485,12 +1219,6 @@ kff.View = kff.createClass(
 						break;
 					case 'fill':
 						ret.fill = true;
-						break;
-					case 'watch':
-						ret.watchModelPath = true;
-						break;
-					case 'nobind':
-						ret.nobind = true;
 						break;
 					case 'nopreventdef':
 						ret.nopreventdef = true;
@@ -1584,11 +1312,6 @@ kff.View = kff.createClass(
 			this.modelBindersMap.destroyBinders();
 			this.modelBindersMap = null;
 		}
-		if(this.collectionCountBinder)
-		{
-			this.collectionCountBinder.destroy();
-			this.collectionCountBinder = null;
-		}
 	},
 
 	/**
@@ -1617,7 +1340,6 @@ kff.View = kff.createClass(
 		var modelName = modelPathArray[0];
 		var view = this;
 		var collectionBinder;
-
 
 		while(view)
 		{

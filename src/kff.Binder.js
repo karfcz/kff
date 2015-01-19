@@ -18,9 +18,7 @@ kff.Binder = kff.createClass(
 		this.dispatch = options.dispatch;
 		this.currentValue = null;
 		this.bindingIndex = null;
-		this.dynamicBindings = null;
 		this.value = null;
-		this.modelPathWatcher = null;
 	},
 
 	/**
@@ -30,23 +28,9 @@ kff.Binder = kff.createClass(
 	{
 		if(!this.options.nobind)
 		{
-			if(this.options.watchModelPath)
-			{
-				var rootModel = this.view.models[this.options.modelPathArray[0]];
-				var modelPathArray = this.options.modelPathArray.slice(1);
-				modelPathArray.push(this.options.attr);
-				this.modelPathWatcher = new kff.ModelPathWatcher(rootModel, modelPathArray);
-				this.modelPathWatcher.init();
-				this.bindModelPathWatcher();
-				if(this.$element && this.options.events !== null) this.delegateEvents(this.options.events);
-			}
-			else if(this.model instanceof kff.Model)
-			{
-				this.bindModel();
-			}
 			if(this.$element && this.options.events !== null) this.delegateEvents(this.options.events);
 		}
-		if(this.options.fill && this.model instanceof kff.Model) this.fill();
+		if(this.options.fill) this.fill();
 	},
 
 	/**
@@ -54,8 +38,6 @@ kff.Binder = kff.createClass(
 	 */
 	destroy: function()
 	{
-		if(this.model instanceof kff.Model) this.unbindModel();
-		if(this.options.watchModelPath) this.unbindModelPathWatcher();
 		if(this.$element && this.options.events !== null) this.undelegateEvents(this.options.events);
 		this.currentValue = null;
 		this.value = null;
@@ -79,11 +61,8 @@ kff.Binder = kff.createClass(
 	modelChange: function(event, force)
 	{
 		var modelValue, formattedValue;
-		if(this.modelPathWatcher)
-		{
-			this.model = this.modelPathWatcher.model;
-		}
-		if(this.model instanceof kff.Model || (typeof this.model === 'object' && this.model !== null))
+
+		if(typeof this.model === 'object' && this.model !== null)
 		{
 			if(this.getter && typeof this.model[this.getter.fn] === 'function')
 			{
@@ -203,7 +182,7 @@ kff.Binder = kff.createClass(
 
 		this.currentValue = value;
 
-		if(this.dispatch)
+		if(true)
 		{
 			var action = 'set';
 			var params = [];
@@ -233,32 +212,32 @@ kff.Binder = kff.createClass(
 				params: params
 			});
 		}
-		else if(typeof this.model === 'object' && this.model !== null)
-		{
-			if(this.setter && typeof this.model[this.setter.fn] === 'function')
-			{
-				if(this.setter.args.length > 0)
-				{
-					var args = [];
-					for(i = 0, l = this.setter.args.length; i < l; i++)
-					{
-						if(this.setter.args[i] === '@val') args[i] = this.currentValue;
-						else if(this.setter.args[i] === '@attr') args[i] = this.options.attr;
-						else args[i] = this.view.getModel(this.setter.args[i]);
-					}
-					this.model[this.setter.fn].apply(this.model, args);
-				}
-				else if(this.options.attr === null)
-				{
-					this.model[this.setter.fn](this.currentValue);
-				}
-				else
-				{
-					this.model[this.setter.fn](this.options.attr, this.currentValue);
-				}
-			}
-			else if(typeof this.model.set === 'function') this.model.set(this.options.attr, this.currentValue);
-		}
+		// else if(typeof this.model === 'object' && this.model !== null)
+		// {
+		// 	if(this.setter && typeof this.model[this.setter.fn] === 'function')
+		// 	{
+		// 		if(this.setter.args.length > 0)
+		// 		{
+		// 			var args = [];
+		// 			for(i = 0, l = this.setter.args.length; i < l; i++)
+		// 			{
+		// 				if(this.setter.args[i] === '@val') args[i] = this.currentValue;
+		// 				else if(this.setter.args[i] === '@attr') args[i] = this.options.attr;
+		// 				else args[i] = this.view.getModel(this.setter.args[i]);
+		// 			}
+		// 			this.model[this.setter.fn].apply(this.model, args);
+		// 		}
+		// 		else if(this.options.attr === null)
+		// 		{
+		// 			this.model[this.setter.fn](this.currentValue);
+		// 		}
+		// 		else
+		// 		{
+		// 			this.model[this.setter.fn](this.options.attr, this.currentValue);
+		// 		}
+		// 	}
+		// 	else if(typeof this.model.set === 'function') this.model.set(this.options.attr, this.currentValue);
+		// }
 	},
 
 	/**
@@ -337,58 +316,13 @@ kff.Binder = kff.createClass(
 	fill: kff.noop,
 
 	/**
-	 * Binds event listeners to the model
-	 */
-	bindModel: function()
-	{
-		if(this.model instanceof kff.Model) this.model.on('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
-	},
-
-	/**
-	 * Unbinds event listeners from the model
-	 */
-	unbindModel: function()
-	{
-		if(this.model instanceof kff.Model) this.model.off('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
-	},
-
-	/**
-	 * Sets up the model path watcher on the model. The model path watcher binds listeners to every model in model
-	 * keypath and rebinds them on a change of any intermediate model so that model is always up to date.
-	 *
-	 * @private
-	 */
-	bindModelPathWatcher: function()
-	{
-		this.modelPathWatcher.on('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
-	},
-
-	/**
-	 * Unbinds any listeners previously bound by bindModelPathWatcher
-	 *
-	 * @private
-	 */
-	unbindModelPathWatcher: function()
-	{
-		this.modelPathWatcher.off('change' + (this.options.attr === null ? '' : ':' + this.options.attr), this.f('modelChange'));
-	},
-
-	/**
 	 * Rebinds model event listeners for the actual model retrieved by model keypath.
 	 *
 	 * @private
 	 */
 	rebindModel: function()
 	{
-		if(!this.options.nobind)
-		{
-			this.unbindModel();
-		}
 		this.model = this.view.getModel(this.options.modelPathArray);
-		if(!this.options.nobind)
-		{
-			this.bindModel();
-		}
 	},
 
 	/**
