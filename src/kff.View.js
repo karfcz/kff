@@ -3,7 +3,7 @@ kff.View = kff.createClass(
 {
 	mixins: kff.EventsMixin,
 	statics: {
-		bindingRegex: /(?:([.a-zA-Z0-9*-]+))((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g,
+		bindingRegex: /(?:([.a-zA-Z0-9*-]+))(?:\(([.a-zA-Z0-9*,\s-]+)*\))?((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g,
 
 		operatorsRegex: /:([a-zA-Z0-9]+)(?:\(([^()]*)\))?/g,
 
@@ -1281,13 +1281,14 @@ kff.View = kff.createClass(
 	 */
 	initBinding: function()
 	{
-		var model, attr, result, result2, modelPathArray, i, ret;
+		var model, attr, result, result2, modelPathArray, i, ret, modelArgs;
 		var dataBindAttr = this.$element[0].getAttribute(kff.DATA_BIND_ATTR);
 		var modelName, isCollectionBinder;
 
 		var bindingRegex = kff.View.bindingRegex;
 		var leadingPeriodRegex = kff.View.leadingPeriodRegex;
 		var trailingPeriodRegex = kff.View.trailingPeriodRegex;
+		var commaSeparateRegex = kff.View.commaSeparateRegex;
 
 		bindingRegex.lastIndex = 0;
 
@@ -1296,6 +1297,19 @@ kff.View = kff.createClass(
 		while((result = bindingRegex.exec(dataBindAttr)) !== null)
 		{
 			modelPathArray = result[1].replace(leadingPeriodRegex, '*.').replace(trailingPeriodRegex, '.*').split('.');
+
+			modelArgs = result[2];
+
+			if(modelArgs)
+			{
+				modelArgs = modelArgs.split(commaSeparateRegex);
+				for(var k = 0, kl = modelArgs.length; k < kl; k++)
+				{
+					modelArgs[k] = modelArgs[k].split('.');
+				}
+			}
+
+			console.log(modelArgs)
 
 			model = this.getModel(modelPathArray);
 			ret = null;
@@ -1344,6 +1358,7 @@ kff.View = kff.createClass(
 						model: model,
 						modelName: modelName,
 						modelPathArray: modelPathArray,
+						modelArgs: modelArgs,
 						formatters: ret.formatters,
 						parsers: ret.parsers,
 						setter: (ret.setters && ret.setters.length > 0) ? ret.setters[0] : null,
@@ -1419,7 +1434,7 @@ kff.View = kff.createClass(
 		};
 
 		i = 0;
-		while((result2 = operatorsRegex.exec(result[2])) !== null)
+		while((result2 = operatorsRegex.exec(result[3])) !== null)
 		{
 			if(parseBinderName && i === 0)
 			{

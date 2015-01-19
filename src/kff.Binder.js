@@ -106,13 +106,24 @@ kff.Binder = kff.createClass(
 			else if(typeof this.options.attr === 'string')
 			{
 				if(typeof this.model.get === 'function') modelValue = this.model.get(this.options.attr);
-				else modelValue = this.model[this.options.attr];
+				else
+				{
+					modelValue = this.model[this.options.attr];
+					if(typeof modelValue === 'function')
+					{
+						modelValue = this.callModelAsFunction(modelValue, this.options.modelArgs);
+					}
+				}
 			}
 			else modelValue = null;
 		}
 		else if(typeof this.model === 'string' || typeof this.model === 'number' || typeof this.model === 'boolean')
 		{
 			modelValue = this.model;
+		}
+		else if(typeof this.model === 'function')
+		{
+			modelValue = this.callModelAsFunction(this.model, this.options.modelArgs);
 		}
 		if(modelValue !== 'undefined')
 		{
@@ -428,5 +439,18 @@ kff.Binder = kff.createClass(
 		var n = value - 0;
 		if(n == value) return n;
 		return value;
+	},
+
+	callModelAsFunction: function(model, modelArgs)
+	{
+		var args = [];
+		if(modelArgs instanceof Array)
+		{
+			for(i = 0, l = modelArgs.length; i < l; i++)
+			{
+				args[i] = this.view.getModel(modelArgs[i]);
+			}
+		}
+		return model.apply(null, args);
 	}
 });
