@@ -23,29 +23,6 @@ kff.DATA_RENDERED_ATTR = 'data-kff-rendered';
  */
 kff.DATA_BIND_ATTR = 'data-kff-bind';
 
-/**
- * Data-attribute name used for event triggers
- * @constant
- */
-kff.DATA_TRIGGER_ATTR = 'data-kff-trigger';
-
-/**
- * Data-attribute name used for collection filtering
- * @constant
- */
-kff.DATA_FILTER_ATTR = 'data-kff-filter';
-
-/**
- * Data-attribute name used for collection sorting
- * @constant
- */
-kff.DATA_SORT_ATTR = 'data-kff-sort';
-
-/**
- * Data-attribute name used forcollection count
- * @constant
- */
-kff.DATA_COUNT_ATTR = 'data-kff-count';
 
 kff.debug = false;
 
@@ -173,10 +150,6 @@ kff.createClass = function(meta, properties)
 	for(var i = 0, l = meta.mixins.length; i < l; i++) kff.mixins(properties, meta.mixins[i]);
 
 	// Static properties of constructor
-	if(meta.staticProperties)
-	{
-		kff.mixins(constructor, meta.staticProperties);
-	}
 
 	if(meta.statics)
 	{
@@ -227,11 +200,8 @@ kff.bindFn = function(obj, fnName, args)
 	if(fnName in obj._boundFns) return obj._boundFns[fnName];
 	else
 	{
-		obj._boundFns[fnName] = function()
-		{
-			if(args) return obj[fnName].apply(obj, args.concat(Array.prototype.slice.call(arguments)));
-			else return obj[fnName].apply(obj, arguments);
-		};
+		if(args) obj._boundFns[fnName] = Function.prototype.bind.apply(obj[fnName], [obj].concat(args));
+		else obj._boundFns[fnName] = obj[fnName].bind(obj);
 	}
 	return obj._boundFns[fnName];
 };
