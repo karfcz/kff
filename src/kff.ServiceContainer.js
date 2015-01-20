@@ -4,8 +4,6 @@ kff.ServiceContainer = kff.createClass(
 	statics:
 	{
 		CONFIG_CONSTRUCTOR: 'construct',
-		singleParamRegex: /^%[^%]+%$/g,
-		multipleParamsRegex: /%([^%]+)%/g,
 		serviceNameRegex: /^[^\s#]*/
 	}
 },
@@ -197,8 +195,6 @@ kff.ServiceContainer = kff.createClass(
 	 * String parameters refers to parameters defined in config.parameters section
 	 * If parameter is a string, it could have these special chars:
 	 * '@serviceName' - resolves to instance of service
-	 * '%parameterName%' - resolves to reference to parameter parameterName
-	 * '%someParameter% some %otherParameter% some more string' - resolves to string with 'inner parameters' resolved to strings as well
 	 *
 	 * @param {string|Array|Object} params Parameters to be resolved
 	 * @returns {mixed} Resolved parameter value
@@ -222,25 +218,6 @@ kff.ServiceContainer = kff.createClass(
 				params = params.slice(1);
 				if(params.length === 0) ret = this;
 				else ret = this.getService(params);
-			}
-			else if(this.cachedParams[params] !== undefined) ret = this.cachedParams[params];
-			else
-			{
-				if(params.search(kff.ServiceContainer.singleParamRegex) !== -1)
-				{
-					ret = config.parameters[params.slice(1, -1)];
-				}
-				else
-				{
-					ret = params.replace('%%', 'escpersign');
-					ret = ret.replace(kff.ServiceContainer.multipleParamsRegex, function(match, p1)
-					{
-						if(config.parameters[p1]) return config.parameters[p1];
-						else return '';
-					});
-					ret = ret.replace('escpersign', '%');
-				}
-				this.cachedParams[params] = ret;
 			}
 		}
 		else if(params instanceof Array)
@@ -281,24 +258,6 @@ kff.ServiceContainer = kff.createClass(
 			{
 				this.config.services[service] = services[service];
 				this.services[service] = undefined;
-			}
-		}
-	},
-
-	/**
-	 * Registers a new parameters configuration
-	 *
-	 * @param  {Object} parameters Parameters configuration object
-	 * @param  {Boolean} overwrite If parameter already exists, overwrite it with new config
-	 */
-	registerParameters: function(parameters, overwrite)
-	{
-		var parameter;
-		for(parameter in parameters)
-		{
-			if(!this.config.parameters.hasOwnProperty(parameter) || overwrite)
-			{
-				this.config.parameters[parameter] = parameters[parameter];
 			}
 		}
 	},
