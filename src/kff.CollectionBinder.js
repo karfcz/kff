@@ -8,17 +8,17 @@ kff.CollectionBinder = kff.createClass(
 	constructor: function(options)
 	{
 		this.collection = options.collection || null;
-		console.log('coll', this.collection, options)
 		this.collectionPathArray = options.collectionPathArray;
+		this.collectionArgs = options.collectionArgs;
 		this.view = options.view;
 		this.nobind = options.nobind;
 		this.$elementTemplate = null;
-		this.collectionCounter = null;
 		this.boundViews = null;
 		this.anchor = null;
 		this.viewTemplate = null;
+		this.filter = options.filter;
+		this.sort = options.sort;
 	},
-
 
 	/**
 	 * Renders "bound" views.
@@ -47,7 +47,7 @@ kff.CollectionBinder = kff.createClass(
 
 		this.initCollectionFilter();
 		this.initCollectionSorter();
-		this.initCollectionCounter();
+		// this.initCollectionCounter();
 
 		this.boundViewOptions = opt ? JSON.parse(opt) : {};
 		this.boundViewOptions.parentView = this.view;
@@ -114,27 +114,17 @@ kff.CollectionBinder = kff.createClass(
 	refreshBoundViews: function(event)
 	{
 		this.refreshBoundViewsAll();
-		if(this.collectionCounter) this.collectionCounter.model.set(this.collectionCounter.attr, this.boundViews ? this.boundViews.length : 0);
 	},
 
-	/**
-	 * Accepts or rejects an item of filtered collection binding
-	 *
-	 * @private
-	 * @param  {object} item  Item to filter
-	 * @return {boolean}      True if the item matches filter, false otherwise
-	 */
-	filterCollectionItem: function(item)
+	rebindCollection: function()
 	{
-		if(this.collectionFilter)
+		this.collection = this.view.getModel(this.collectionPathArray);
+
+		if(typeof this.collection === 'function')
 		{
-			var collectionFilter = this.collectionFilter;
-			var filterModel = this.collectionFilter.model || null;
-			var filterFnName = this.collectionFilter.fn;
-			var currentFilterModel = filterModel || item;
-			return !!currentFilterModel[filterFnName](item);
+			this.collection = kff.Binder.prototype.callModelAsFunction.call(this, this.collection, this.collectionArgs);
 		}
-		return true;
+		if(!(this.collection instanceof Array)) this.collection = [];
 	},
 
 	/**
@@ -148,6 +138,8 @@ kff.CollectionBinder = kff.createClass(
 		var docFragment = null;
 		var lastView, lastChild, parentNode, item;
 
+		this.rebindCollection();
+
 		if(this.boundViews === null) this.boundViews = [];
 
 		if(this.collectionFilter || this.collectionSorter)
@@ -156,21 +148,15 @@ kff.CollectionBinder = kff.createClass(
 			{
 				this.filteredCollection = [];
 				collectionFilter = this.collectionFilter;
-				filterModel = this.collectionFilter.model || null;
-				filterFnName = this.collectionFilter.fn;
 
-				// if(this.collection instanceof Array)
-				// {
-					a = this.collection;
-					for(i = 0, l = a.length; i < l; i++)
-					{
-						item = a[i];
-						var currentFilterModel = filterModel || item;
-						var render = !!currentFilterModel[filterFnName](item);
+				a = this.collection;
+				for(i = 0, l = a.length; i < l; i++)
+				{
+					item = a[i];
+					var render = !!collectionFilter(item);
 
-						if(render) this.filteredCollection.push(item);
-					}
-				// }
+					if(render) this.filteredCollection.push(item);
+				}
 			}
 			else
 			{
@@ -179,8 +165,7 @@ kff.CollectionBinder = kff.createClass(
 
 			if(this.collectionSorter)
 			{
-				var sorterFn = this.collectionSorter.model.f(this.collectionSorter.fn);
-				this.filteredCollection.sort(sorterFn);
+				this.filteredCollection.sort(this.collectionSorter);
 			}
 		}
 		else
@@ -227,7 +212,7 @@ kff.CollectionBinder = kff.createClass(
 				boundView = this.boundViews[i];
 				item = boundView.models['*'];
 				if(typeof(item) !== 'object') newIndex = -1;
-				else newIndex = this.filteredCollection.indexOf(item);
+				else newIndex = kff.arrayIndexOf(this.filteredCollection, item);
 				pos = boundView;
 				if(newIndex !== -1)
 				{
@@ -334,25 +319,10 @@ kff.CollectionBinder = kff.createClass(
 	 */
 	initCollectionFilter: function()
 	{
-		var filterName = this.view.$element[0].getAttribute(kff.DATA_FILTER_ATTR);
-
-		if(filterName)
+		if(this.filter)
 		{
-			this.collectionFilter =
-			{
-				model: null,
-				fn: null
-			};
-			filterName = filterName.replace(/^\./, '').split('.');
-			if(filterName.length === 1)
-			{
-				this.collectionFilter.fn = filterName[0];
-			}
-			else
-			{
-				this.collectionFilter.fn =  filterName.pop();
-				this.collectionFilter.model =  this.view.getModel([].concat(filterName));
-			}
+			this.collectionFilter = this.view.getModel(this.filter);
+			if(typeof this.collectionFilter !== 'function') this.collectionFilter = null;
 		}
 	},
 
@@ -363,54 +333,11 @@ kff.CollectionBinder = kff.createClass(
 	 */
 	initCollectionSorter: function()
 	{
-		var sorterName = this.view.$element[0].getAttribute(kff.DATA_SORT_ATTR);
-
-		if(sorterName)
+		if(this.sort)
 		{
-			this.collectionSorter =
-			{
-				model: null,
-				fn: null
-			};
-			sorterName = sorterName.replace(/^\./, '').split('.');
-			if(sorterName.length === 1)
-			{
-				this.collectionSorter.fn = sorterName[0];
-			}
-			else
-			{
-				this.collectionSorter.fn =  sorterName.pop();
-				this.collectionSorter.model =  this.view.getModel([].concat(sorterName));
-			}
+			this.collectionSorter = this.view.getModel(this.sort);
+			if(typeof this.collectionSorter !== 'function') this.collectionSorter = null;
 		}
-		else this.collectionSorter = null;
-	},
-
-	/**
-	 * Inits counting of collection
-	 *
-	 * @private
-	 */
-	initCollectionCounter: function()
-	{
-		var counterName = this.view.$element[0].getAttribute(kff.DATA_COUNT_ATTR);
-
-		if(counterName)
-		{
-			this.collectionCounter =
-			{
-				model: null,
-				attr: null
-			};
-			counterName = counterName.replace(/^\./, '').split('.');
-			if(counterName.length >= 2)
-			{
-				this.collectionCounter.attr = counterName.pop();
-				this.collectionCounter.model =  this.view.getModel(counterName);
-			}
-			else this.collectionCounter = null;
-		}
-		else this.collectionCounter = null;
 	},
 
 	/**
@@ -457,7 +384,7 @@ kff.CollectionBinder = kff.createClass(
 	 * Creates a new bound view for item in collection
 	 *
 	 * @private
-	 * @param  {kff.Model} item Item for data-binding
+	 * @param  {Object} item Item for data-binding
 	 * @param  {number} i 		Binding index
 	 * @return {kff.View} 		created view
 	 */

@@ -1,11 +1,11 @@
 
 kff.ModelView = kff.createClass({
-	extend: kff.BindingView
+	extend: kff.View
 },
 {
 	constructor: function(options)
 	{
-		kff.BindingView.call(this, options);
-		this.models['*'] = new kff.Model();
+		kff.View.call(this, options);
+		this.models['*'] = {};
 	}
 });

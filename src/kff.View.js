@@ -3,7 +3,7 @@ kff.View = kff.createClass(
 {
 	mixins: kff.EventsMixin,
 	statics: {
-		bindingRegex: /(?:([.a-zA-Z0-9*-]+))(?:\((@?[.a-zA-Z0-9*,\s-]+)*\))?((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g,
+		bindingRegex: /(?:([.a-zA-Z0-9*-]+))(?:\(([@.a-zA-Z0-9*,\s-]+)*\))?((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g,
 
 		operatorsRegex: /:([a-zA-Z0-9]+)(?:\(([^()]*)\))?/g,
 
@@ -1051,7 +1051,9 @@ kff.View = kff.createClass(
 				for(var k = 0, kl = modelArgs.length; k < kl; k++)
 				{
 					if(modelArgs[k].charAt(0) === '@')
+					{
 						modelArgs[k] = modelArgs[k].slice(1).split('.');
+					}
 				}
 			}
 
@@ -1123,7 +1125,9 @@ kff.View = kff.createClass(
 						view: this,
 						collection: model,
 						collectionPathArray: modelPathArray,
-						nobind: ret.nobind
+						collectionArgs: modelArgs,
+						filter: (ret.filter && ret.filter.length > 0) ? ret.filter[0] : null,
+						sort: (ret.sort && ret.sort.length > 0) ? ret.sort[0] : null
 					});
 					if(ret.itemAliases && ret.itemAliases.length > 0)
 					{
@@ -1163,7 +1167,9 @@ kff.View = kff.createClass(
 			fill: false,
 			watchModelPath: false,
 			nopreventdef: false,
-			itemAliases: []
+			itemAliases: [],
+			filter: [],
+			sort: []
 		};
 
 		i = 0;
@@ -1216,6 +1222,12 @@ kff.View = kff.createClass(
 					case 'dispatch':
 						ret.dispatch = [];
 						this.parseSetters(modifierParams, ret.dispatch);
+						break;
+					case 'filter':
+						this.parseSetters(modifierParams, ret.filter);
+						break;
+					case 'sort':
+						this.parseSetters(modifierParams, ret.sort);
 						break;
 					case 'fill':
 						ret.fill = true;

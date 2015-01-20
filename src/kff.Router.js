@@ -31,30 +31,6 @@ kff.Router = kff.createClass(
 			params = [];
 			if(this.routes[i].match(path, params))
 			{
-				// if(this.params instanceof kff.Model)
-				// {
-				// 	var attrs = {};
-				// 	var unset = [];
-				// 	for(var key in params)
-				// 	{
-				// 		if(isNaN(parseFloat(key)) && params.hasOwnProperty(key))
-				// 		{
-				// 			attrs[key] = params[key];
-				// 		}
-				// 	}
-				// 	this.params.each(function(key, val)
-				// 	{
-				// 		if(!(key in attrs))
-				// 		{
-				// 			unset.push(key);
-				// 		}
-				// 	});
-
-				// 	attrs.unnamed = params.slice();
-
-				// 	this.params.unset(unset);
-				// 	this.params.set(attrs);
-				// }
 				return { target: this.routes[i].getTarget(), params: params };
 			}
 		}

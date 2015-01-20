@@ -182,62 +182,33 @@ kff.Binder = kff.createClass(
 
 		this.currentValue = value;
 
-		if(true)
+		var action = 'set';
+		var params = [];
+		if(this.dispatch.length > 0)
 		{
-			var action = 'set';
-			var params = [];
-			if(this.dispatch.length > 0)
+			action = this.dispatch[0];
+			for(i = 1, l = this.dispatch.length; i < l; i++)
 			{
-				action = this.dispatch[0];
-				for(i = 1, l = this.dispatch.length; i < l; i++)
+				if(this.dispatch[i].charAt(0) === '@') params.push(this.view.getModel(this.dispatch[i].slice(1)));
+				else
 				{
-					if(this.dispatch[i].charAt(0) === '@') params.push(this.view.getModel(this.dispatch[i].slice(1)));
-					else
-					{
-						if(this.options.parsers.length === 0) params.push(this.convertValueType(this.dispatch[i]));
-						else params.push(this.parse(this.dispatch[i]));
-					}
+					if(this.options.parsers.length === 0) params.push(this.convertValueType(this.dispatch[i]));
+					else params.push(this.parse(this.dispatch[i]));
 				}
-
 			}
 
-			var rootModelPathArray = this.view.getBoundModelPathArray(this.options.modelPathArray);
-			var rootModel = this.view.models[rootModelPathArray.shift()];
-			if(this.options.attr) rootModelPathArray.push(this.options.attr);
-			this.view.dispatchEvent(action, {
-				model: rootModel,
-				keyPath: rootModelPathArray,
-				value: value,
-				domEvent: event,
-				params: params
-			});
 		}
-		// else if(typeof this.model === 'object' && this.model !== null)
-		// {
-		// 	if(this.setter && typeof this.model[this.setter.fn] === 'function')
-		// 	{
-		// 		if(this.setter.args.length > 0)
-		// 		{
-		// 			var args = [];
-		// 			for(i = 0, l = this.setter.args.length; i < l; i++)
-		// 			{
-		// 				if(this.setter.args[i] === '@val') args[i] = this.currentValue;
-		// 				else if(this.setter.args[i] === '@attr') args[i] = this.options.attr;
-		// 				else args[i] = this.view.getModel(this.setter.args[i]);
-		// 			}
-		// 			this.model[this.setter.fn].apply(this.model, args);
-		// 		}
-		// 		else if(this.options.attr === null)
-		// 		{
-		// 			this.model[this.setter.fn](this.currentValue);
-		// 		}
-		// 		else
-		// 		{
-		// 			this.model[this.setter.fn](this.options.attr, this.currentValue);
-		// 		}
-		// 	}
-		// 	else if(typeof this.model.set === 'function') this.model.set(this.options.attr, this.currentValue);
-		// }
+
+		var rootModelPathArray = this.view.getBoundModelPathArray(this.options.modelPathArray);
+		var rootModel = this.view.models[rootModelPathArray.shift()];
+		if(this.options.attr) rootModelPathArray.push(this.options.attr);
+		this.view.dispatchEvent(action, {
+			model: rootModel,
+			keyPath: rootModelPathArray,
+			value: value,
+			domEvent: event,
+			params: params
+		});
 	},
 
 	/**
@@ -383,7 +354,7 @@ kff.Binder = kff.createClass(
 			for(i = 0, l = modelArgs.length; i < l; i++)
 			{
 				if(modelArgs[i] instanceof Array) args[i] = this.view.getModel(modelArgs[i]);
-				else args[i] = this.convertValueType(modelArgs[i]);
+				else args[i] = kff.Binder.prototype.convertValueType(modelArgs[i]);
 			}
 		}
 		return model.apply(null, args);
