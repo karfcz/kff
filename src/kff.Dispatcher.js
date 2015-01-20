@@ -43,17 +43,8 @@ kff.Dispatcher = kff.createClass({
 		{
 			for(var action in actions)
 			{
-				if(!(actions[action] instanceof Array)) callbacks = [actions[action]];
-				else callbacks = actions[action];
-
-				if(!(action in this.actions)) this.actions[action] = [];
-
-				this.actions[action] = this.actions[action].concat(callbacks);
-
-				for(var i = 0; i < callbacks.length; i++)
-				{
-					this.on(action, this.createCallback(callbacks[i]));
-				}
+				this.actions[action] = actions[action];
+				this.on(action, this.createCallback(actions[action]));
 			}
 		}
 	},
