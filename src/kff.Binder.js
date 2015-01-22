@@ -184,7 +184,7 @@ kff.Binder = kff.createClass(
 
 		var action = 'set';
 		var params = [];
-		if(this.dispatch.length > 0)
+		if(this.dispatch && this.dispatch.length > 0)
 		{
 			action = this.dispatch[0];
 			for(i = 1, l = this.dispatch.length; i < l; i++)
