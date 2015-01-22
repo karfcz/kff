@@ -19,7 +19,14 @@ kff.Dispatcher = kff.createClass({
 			return function(event)
 			{
 				var nextEvent = fn.call(null, event);
-				if(nextEvent) dispatcher.trigger(nextEvent.action, nextEvent);
+				if(nextEvent instanceof kff.Events)
+				{
+					nextEvent.on('dispatch', function(event)
+					{
+						dispatcher.trigger(event.action, event);
+					});
+				}
+				else if(nextEvent) dispatcher.trigger(nextEvent.action, nextEvent);
 			};
 		}
 		else
