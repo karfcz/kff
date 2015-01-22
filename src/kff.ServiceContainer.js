@@ -219,6 +219,10 @@ kff.ServiceContainer = kff.createClass(
 				if(params.length === 0) ret = this;
 				else ret = this.getService(params);
 			}
+			else
+			{
+				ret = params;
+			}
 		}
 		else if(params instanceof Array)
 		{
