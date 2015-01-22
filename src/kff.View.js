@@ -948,7 +948,7 @@ kff.View = kff.createClass(
 			{
 				if(selector !== 'self')
 				{
-					saveRegion(regions, this.cachedRegions, this.$docElement[0].querySelectorAll(selector), selector);
+					saveRegion(regions, this.cachedRegions, env.document.querySelectorAll(selector), selector);
 				}
 
 			}
@@ -985,7 +985,7 @@ kff.View = kff.createClass(
 			{
 				if(selector !== 'self')
 				{
-					unsaveRegion(regions, this.cachedRegions, this.$docElement[0].querySelectorAll(selector), selector);
+					unsaveRegion(regions, this.cachedRegions, this.env.document.querySelectorAll(selector), selector);
 				}
 			}
 		}
