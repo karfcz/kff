@@ -387,7 +387,7 @@ kff.require = function(serviceName)
 			return kff.evalObjectPath(serviceName.slice(4), kff);
 		}
 	}
-	return kff.evalObjectPath(serviceName);
+	return null;
 };
 
 /**
