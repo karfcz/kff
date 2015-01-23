@@ -16,9 +16,6 @@ describe('kff.View', function()
 			options.events = [
 				['click', 'click']
 			];
-			options.modelEvents = [
-				['testModel', 'change', 'modelChange']
-			];
 			kff.View.apply(this, arguments);
 		},
 
@@ -154,45 +151,6 @@ describe('kff.View', function()
 			view.destroyAll();
 			$div.triggerHandler('mouseover');
 			$div.triggerHandler('click');
-		});
-
-	});
-
-	describe('#delegateModelEvents', function()
-	{
-		it('should bind an model change event to a method', function(done)
-		{
-			var testModel = new kff.Model({ a: null });
-			view = new TestView({
-				element: $div,
-				modelChangeDone: done,
-				models: {
-					testModel: testModel
-				}
-			});
-			view.init();
-			testModel.set('a', 42);
-		});
-
-	});
-
-	describe('#undelegateModelEvents', function()
-	{
-		it('should unbind an model change event to a method', function()
-		{
-			var testModel = new kff.Model({ a: null });
-			view = new TestView({
-				element: $div,
-				modelChangeDone: function(){
-					throw 'Error';
-				},
-				models: {
-					testModel: testModel
-				}
-			});
-			view.init();
-			view.destroyAll();
-			testModel.set('a', 42);
 		});
 
 	});

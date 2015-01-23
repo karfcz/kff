@@ -6,36 +6,34 @@ describe('kff.TextBinder', function()
 	it('should bind text binder', function()
 	{
 		var $div = $('<div data-kff-bind="myModel.name:text"></div>');
-		var view = new kff.BindingView(
+		var view = new kff.View(
 		{
 			element: $div,
 			models: {
-				myModel: new kff.Model({
+				myModel: {
 					name: 'Karel'
-				})
+				}
 			}
 		});
 		view.init();
-		setTimeout(function()
-		{
-			expect($div.text()).to.equal('Karel');
-			view.getModel('myModel').set('name', 'Petr');
-			expect($div.text()).to.equal('Petr');
-		}, 0);
+		expect($div.text()).to.equal('Karel');
+		view.getModel('myModel').name = 'Petr';
+		view.refreshAll();
+		expect($div.text()).to.equal('Petr');
 	});
 
 	it('should bind text binder without specified attribute', function()
 	{
 		var $div = $('<div data-kff-bind="myModel:text:get(getName)"></div>');
-		var myModel = new kff.Model({
+		var myModel = {
 			name: 'Karel'
-		});
+		};
 		myModel.getName = function()
 		{
-			return this.get('name')	;
+			return this.name;
 		};
 
-		var view = new kff.BindingView(
+		var view = new kff.View(
 		{
 			element: $div,
 			models: {
@@ -43,12 +41,10 @@ describe('kff.TextBinder', function()
 			}
 		});
 		view.init();
-		setTimeout(function()
-		{
-			expect($div.text()).to.equal('Karel');
-			view.getModel('myModel').set('name', 'Petr');
-			expect($div.text()).to.equal('Petr');
-		}, 0);
+		expect($div.text()).to.equal('Karel');
+		view.getModel('myModel').name = 'Petr';
+		view.refreshAll();
+		expect($div.text()).to.equal('Petr');
 	});
 
 });

@@ -10,19 +10,12 @@ describe('kff.ServiceContainer', function()
 	var Service6 = {};
 
 	var config = {
-		parameters:
-		{
-			foo: 'foo',
-			bar: 'bar',
-			numeric: 42.05,
-			obj: { o1: 1, o2: 2 }
-		},
 		services:
 		{
 			'service1':
 			{
 				'construct': Service1,
-			    'args': ['%foo%', 'haf']
+			    'args': ['foo', 'haf']
 			},
 			'Service7 #1':
 			{
@@ -30,13 +23,13 @@ describe('kff.ServiceContainer', function()
 			'service2':
 			{
 				'construct': Service2,
-			    'args': ['@service1', '%foo% is not a %bar%'],
+			    'args': ['@service1', 'foo is not a bar'],
 			    'shared': true
 			},
 			'service3':
 			{
 				'construct': Service1,
-			    'args': ['%foo%', '%obj%']
+			    'args': ['foo', { o1: 1, o2: 2 }]
 			},
 			'service4':
 			{
@@ -68,31 +61,17 @@ describe('kff.ServiceContainer', function()
 			expect(container.resolveParameters('This is a plain string')).to.equal('This is a plain string');
 		});
 
-		it('should interpolate string with two parameters', function()
-		{
-			expect(container.resolveParameters('%foo% is not a %bar%')).to.equal('foo is not a bar');
-		});
 
 		it('should interpolate string with referece to a service', function()
 		{
 			expect(container.resolveParameters('@service1') instanceof Service1).to.be.true;
 		});
 
-		it('should interpolate object with refereces to parameters and services', function()
+		it('should interpolate array with referece to a service', function()
 		{
-			var a = container.resolveParameters({ x: '@service1', y: { z: '%foo% is not a %bar%' }});
-			expect(a).to.have.keys('x', 'y');
-			expect(a.x instanceof Service1).to.be.true;
-			expect(a.y).to.have.property('z', 'foo is not a bar');
-
-		});
-
-		it('should interpolate array with refereces to parameters and services', function()
-		{
-			var a = container.resolveParameters([ '@service1', { z: '%foo% is not a %bar%' }]);
+			var a = container.resolveParameters([ '@service1' ]);
 
 			expect(a[0] instanceof Service1).to.be.true;
-			expect(a[1]).to.have.property('z', 'foo is not a bar');
 		});
 
 		it('should interpolate referece to container itself', function()
@@ -100,32 +79,6 @@ describe('kff.ServiceContainer', function()
 			var a = container.resolveParameters({ x: '@' });
 			expect(a).to.have.property('x');
 			expect(a.x).to.equal(container);
-		});
-
-		it('should interpolate parameter with single % character', function()
-		{
-			var a = container.resolveParameters('%foo% is not a %bar?');
-			expect(a).to.equal('foo is not a %bar?');
-		});
-
-		it('should interpolate parameter with escaped %% character', function()
-		{
-			var a = container.resolveParameters('The %foo% is not a %%bar but %foo%?');
-			expect(a).to.equal('The foo is not a %bar but foo?');
-		});
-
-		it('should return cached interpolated parameter', function()
-		{
-			var a = container.resolveParameters('The %foo% is not a %%bar but %foo%?');
-			expect(a).to.equal('The foo is not a %bar but foo?');
-			a = container.resolveParameters('The %foo% is not a %%bar but %foo%?');
-			expect(a).to.equal('The foo is not a %bar but foo?');
-		});
-
-		it('should interpolate single numeric parameter', function()
-		{
-			var a = container.resolveParameters('%numeric%');
-			expect(a).to.equal(42.05);
 		});
 
 		it('should interpolate string to a service factory', function()

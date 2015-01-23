@@ -1,6 +1,6 @@
 if(typeof require === 'function') var kff = require('../build/kff.js');
 
-describe('kff.BindingView', function()
+describe('kff.View', function()
 {
 	var env = {
 		window: window,
@@ -9,13 +9,13 @@ describe('kff.BindingView', function()
 
 	it('should bind a simple collection', function()
 	{
-		var collection = new kff.Collection();
-		collection.append(new kff.Model());
-		collection.append(new kff.Model());
+		var collection = [];
+		collection.push({});
+		collection.push({});
 		var $div1 = $('<div/>');
-		var $div2 = $('<div data-kff-bind="collection"/>');
+		var $div2 = $('<div data-kff-bind="collection:each"/>');
 		$div1.append($div2);
-		var view = new kff.BindingView(
+		var view = new kff.View(
 		{
 			env: env,
 			element: $div1,
@@ -35,15 +35,15 @@ describe('kff.BindingView', function()
 
 	it('should bind a collection with text binder on the same element', function()
 	{
-		var collection = new kff.Collection();
-		var model1 = new kff.Model({ name: 'foo' });
-		var model2 = new kff.Model({ name: 'bar' });
-		collection.append(model1);
-		collection.append(model2);
+		var collection = [];
+		var model1 = { name: 'foo' };
+		var model2 = { name: 'bar' };
+		collection.push(model1);
+		collection.push(model2);
 		var $div1 = $('<div/>');
-		var $div2 = $('<div data-kff-bind="collection .name:text"/>');
+		var $div2 = $('<div data-kff-bind="collection:each .name:text"/>');
 		$div1.append($div2);
-		var view = new kff.BindingView(
+		var view = new kff.View(
 		{
 			env: env,
 			element: $div1,
@@ -59,7 +59,7 @@ describe('kff.BindingView', function()
 			expect($div1.find('div').eq(0).text()).to.equal('foo');
 			expect($div1.find('div').eq(1).text()).to.equal('bar');
 
-			collection.remove(model1);
+			collection.splice(0, 1);
 
 			expect($div1.find('div').length).to.equal(1);
 			expect($div1.find('div').eq(0).text()).to.equal('bar');
@@ -69,18 +69,18 @@ describe('kff.BindingView', function()
 
 	it('should remove element from collection binding', function()
 	{
-		var collection = new kff.Collection();
-		var model1 = new kff.Model();
-		var model2 = new kff.Model();
-		var model3 = new kff.Model();
-		collection.append(model1);
-		collection.append(model2);
-		collection.append(model3);
+		var collection = [];
+		var model1 = {};
+		var model2 = {};
+		var model3 = {};
+		collection.push(model1);
+		collection.push(model2);
+		collection.push(model3);
 
 		var $div1 = $('<div/>');
-		var $div2 = $('<div data-kff-bind="collection"/>');
+		var $div2 = $('<div data-kff-bind="collection:each"/>');
 		$div1.append($div2);
-		var view = new kff.BindingView(
+		var view = new kff.View(
 		{
 			env: env,
 			element: $div1,
@@ -91,19 +91,20 @@ describe('kff.BindingView', function()
 		view.init();
 
 		expect($div1.find('div').length).to.equal(3);
-		collection.remove(model2);
+		collection.splice(1, 1);
+		view.refreshAll();
 		expect($div1.find('div').length).to.equal(2);
 	});
 
-	it('should bind a collection count pseudoattribute', function()
+	it('should bind a collection length property', function()
 	{
-		var collection = new kff.Collection();
-		var model1 = new kff.Model({ name: 'foo' });
-		var model2 = new kff.Model({ name: 'bar' });
-		collection.append(model1);
-		collection.append(model2);
-		var $div = $('<div data-kff-bind="collection.count:text"/>');
-		var view = new kff.BindingView(
+		var collection = [];
+		var model1 = { name: 'foo' };
+		var model2 = { name: 'bar' };
+		collection.push(model1);
+		collection.push(model2);
+		var $div = $('<div data-kff-bind="collection.length:text"/>');
+		var view = new kff.View(
 		{
 			env: env,
 			element: $div,
@@ -115,73 +116,74 @@ describe('kff.BindingView', function()
 
 		setTimeout(function(){
 			expect($div.text()).to.equal('2');
-			collection.remove(model1);
+			collection.splice(0, 1);
+			view.refreshAll();
 			expect($div.text()).to.equal('1');
 		}, 0);
 
 	});
 
 
-	it('should rebind a :watch binding when model path change', function(done)
-	{
-		var intel = new kff.Model({
-			name: 'intel'
-		});
-		var amd = new kff.Model({
-			name: 'amd'
-		});
-		var motherboard = new kff.Model({
-			processor: intel
-		});
-		var computer = new kff.Model({
-			motherboard: motherboard
-		});
+	// it('should rebind a :watch binding when model path change', function(done)
+	// {
+	// 	var intel = new kff.Model({
+	// 		name: 'intel'
+	// 	});
+	// 	var amd = new kff.Model({
+	// 		name: 'amd'
+	// 	});
+	// 	var motherboard = new kff.Model({
+	// 		processor: intel
+	// 	});
+	// 	var computer = new kff.Model({
+	// 		motherboard: motherboard
+	// 	});
 
-		var $div = $('<div data-kff-bind="computer.motherboard.processor.name:text:watch"/>');
-		var view = new kff.BindingView(
-		{
-			env: env,
-			element: $div,
-			models: {
-				computer: computer
-			}
-		});
-		view.init();
+	// 	var $div = $('<div data-kff-bind="computer.motherboard.processor.name:text:watch"/>');
+	// 	var view = new kff.View(
+	// 	{
+	// 		env: env,
+	// 		element: $div,
+	// 		models: {
+	// 			computer: computer
+	// 		}
+	// 	});
+	// 	view.init();
 
-		setTimeout(function()
-		{
-			expect($div.text()).to.equal('intel');
+	// 	setTimeout(function()
+	// 	{
+	// 		expect($div.text()).to.equal('intel');
 
-			motherboard.set({ processor: amd });
-			setTimeout(function()
-			{
-				expect($div.text()).to.equal('amd');
-				done();
-			}, 0);
+	// 		motherboard.set({ processor: amd });
+	// 		setTimeout(function()
+	// 		{
+	// 			expect($div.text()).to.equal('amd');
+	// 			done();
+	// 		}, 0);
 
-		}, 0);
+	// 	}, 0);
 
-	});
+	// });
 
 	it('should render filtered collection', function()
 	{
-		var collection = new kff.Collection();
-		var model1 = new kff.Model();
-		var model2 = new kff.Model();
-		var model3 = new kff.Model();
-		var filterModel = new kff.Model();
+		var collection = [];
+		var model1 = {};
+		var model2 = {};
+		var model3 = {};
+		var filterModel = {};
 		filterModel.filter = function(item)
 		{
 			return item === model1;
 		};
-		collection.append(model1);
-		collection.append(model2);
-		collection.append(model3);
+		collection.push(model1);
+		collection.push(model2);
+		collection.push(model3);
 
 		var $div1 = $('<div/>');
-		var $div2 = $('<div data-kff-bind="collection" data-kff-filter="filterModel.filter"/>');
+		var $div2 = $('<div data-kff-bind="collection:each:filter(filterModel.filter)" />');
 		$div1.append($div2);
-		var view = new kff.BindingView(
+		var view = new kff.View(
 		{
 			env: env,
 			element: $div1,
@@ -197,23 +199,23 @@ describe('kff.BindingView', function()
 
 	it('should render sorted collection', function()
 	{
-		var collection = new kff.Collection();
-		var model1 = new kff.Model({ a: 2 });
-		var model2 = new kff.Model({ a: 1 });
-		var model3 = new kff.Model({ a: 3 });
-		var sortModel = new kff.Model();
+		var collection = [];
+		var model1 = { a: 2 };
+		var model2 = { a: 1 };
+		var model3 = { a: 3 };
+		var sortModel = {};
 		sortModel.sort = function(a, b)
 		{
-			return a.get('a') - b.get('a');
+			return a.a - b.a;
 		};
-		collection.append(model1);
-		collection.append(model2);
-		collection.append(model3);
+		collection.push(model1);
+		collection.push(model2);
+		collection.push(model3);
 
 		var $div1 = $('<div/>');
-		var $div2 = $('<div data-kff-bind="collection .a:text" data-kff-sort="sortModel.sort"/>');
+		var $div2 = $('<div data-kff-bind="collection:each:sort(sortModel.sort) .a:text" />');
 		$div1.append($div2);
-		var view = new kff.BindingView(
+		var view = new kff.View(
 		{
 			env: env,
 			element: $div1,
@@ -230,28 +232,28 @@ describe('kff.BindingView', function()
 
 	it('should render sorted and filtered collection', function()
 	{
-		var collection = new kff.Collection();
-		var model1 = new kff.Model({ a: 2 });
-		var model2 = new kff.Model({ a: 1 });
-		var model3 = new kff.Model({ a: 3 });
-		var sortModel = new kff.Model();
+		var collection = [];
+		var model1 = { a: 2 };
+		var model2 = { a: 1 };
+		var model3 = { a: 3 };
+		var sortModel = {};
 		sortModel.sort = function(a, b)
 		{
-			return a.get('a') - b.get('a');
+			return a.a - b.a;
 		};
 		sortModel.filter = function(a)
 		{
-			return a.get('a') < 3;
+			return a.a < 3;
 		};
 
-		collection.append(model1);
-		collection.append(model2);
-		collection.append(model3);
+		collection.push(model1);
+		collection.push(model2);
+		collection.push(model3);
 
 		var $div1 = $('<div/>');
-		var $div2 = $('<div data-kff-bind="collection .a:text" data-kff-sort="sortModel.sort" data-kff-filter="sortModel.filter"/>');
+		var $div2 = $('<div data-kff-bind="collection:each:filter(sortModel.filter):sort(sortModel.sort) .a:text" />');
 		$div1.append($div2);
-		var view = new kff.BindingView(
+		var view = new kff.View(
 		{
 			env: env,
 			element: $div1,

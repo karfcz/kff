@@ -238,10 +238,5 @@ describe('kff.isPlainObject', function()
 		expect(kff.isPlainObject(new Array())).to.be.false;
 	});
 
-	it('should return false for a Model object', function()
-	{
-		expect(kff.isPlainObject(new kff.Model())).to.be.false;
-	});
-
 });
 
