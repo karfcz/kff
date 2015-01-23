@@ -200,8 +200,11 @@ kff.bindFn = function(obj, fnName, args)
 	if(fnName in obj._boundFns) return obj._boundFns[fnName];
 	else
 	{
-		if(args) obj._boundFns[fnName] = Function.prototype.bind.apply(obj[fnName], [obj].concat(args));
-		else obj._boundFns[fnName] = obj[fnName].bind(obj);
+		obj._boundFns[fnName] = function()
+		{
+			if(args) return obj[fnName].apply(obj, args.concat(Array.prototype.slice.call(arguments)));
+			else return obj[fnName].apply(obj, arguments);
+		};
 	}
 	return obj._boundFns[fnName];
 };
