@@ -16,7 +16,7 @@ kff.ServiceContainer = kff.createClass(
 	 */
 	constructor: function(config, loader)
 	{
-		this.config = config || { parameters: {}, services: {} };
+		this.config = config || { parameters: {}, services: {}, modules: null };
 		this.services = {};
 		this.cachedParams = {};
 		if(loader) this.loadService = loader;
@@ -273,6 +273,7 @@ kff.ServiceContainer = kff.createClass(
 	 */
 	loadService: function(serviceName)
 	{
+		var module;
 		if(typeof serviceName === 'string')
 		{
 			var match = serviceName.match(kff.ServiceContainer.serviceNameRegex);
@@ -281,6 +282,17 @@ kff.ServiceContainer = kff.createClass(
 				serviceName = match[0];
 			}
 		}
+
+		if(this.config.modules)
+		{
+			module = kff.evalObjectPath(serviceName, this.config.modules);
+			if(module) return module;
+		}
+
+		module = kff.require(serviceName);
+
+		if(module) return module;
+
 		return kff.evalObjectPath(serviceName);
 	},
 

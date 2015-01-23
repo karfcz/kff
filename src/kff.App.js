@@ -19,7 +19,8 @@ kff.App = kff.createClass(
 		models = options.models || {};
 		helpers = options.helpers || {};
 		element = options.element || null;
-		require = options.require || kff.require;
+		require = options.require || null;
+		var modules = options.modules || null;
 		this.env = options.env || { document: document, window: window };
 		this.dispatcher = null;
 
@@ -48,7 +49,8 @@ kff.App = kff.createClass(
 					}],
 					shared: true
 				}
-			}
+			},
+			modules: modules
 		};
 
 		if(this.options.dispatcher)
