@@ -244,7 +244,7 @@ kff.FrontController = kff.createClass(
 
 	findSharedView: function(c1, c2)
 	{
-		var i,
+		var i, l,
 			c1a = this.getPrecedingViews(c1),
 			c2a = this.getPrecedingViews(c2),
 			c = null;
