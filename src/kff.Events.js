@@ -9,6 +9,8 @@ kff.Events = kff.createClass(
 	{
 		this.subscribers = {};
 		this.oneSubscribers = {};
+		this.allSubscribers = [];
+		this.oneAllSubscribers = [];
 	},
 
 	/**
@@ -19,7 +21,11 @@ kff.Events = kff.createClass(
 	 */
 	on: function(eventType, fn)
 	{
-		if(typeof eventType === 'string')
+		if(arguments.length === 1)
+		{
+			return this.onAll(eventType);
+		}
+		else if(typeof eventType === 'string')
 		{
 			if(!this.subscribers[eventType]) this.subscribers[eventType] = [];
 			if(kff.arrayIndexOf(this.subscribers[eventType], fn) === -1)	this.subscribers[eventType].push(fn);
@@ -35,6 +41,16 @@ kff.Events = kff.createClass(
 				}
 			}
 		}
+	},
+
+	/**
+	 * Binds event handler.
+	 *
+	 * @param {function} fn Event handler
+	 */
+	onAll: function(fn)
+	{
+		if(kff.arrayIndexOf(this.allSubscribers, fn) === -1) this.allSubscribers.push(fn);
 	},
 
 	/**
@@ -59,6 +75,10 @@ kff.Events = kff.createClass(
 	off: function(eventType, fn)
 	{
 		var i, l;
+		if(arguments.length === 1)
+		{
+			return this.offAll(eventType);
+		}
 		if(typeof eventType === 'string')
 		{
 			if(this.subscribers[eventType] instanceof Array)
@@ -77,6 +97,17 @@ kff.Events = kff.createClass(
 	},
 
 	/**
+	 * Unbinds event handler.
+	 *
+	 * @param {function} fn Event handler
+	 */
+	offAll: function(fn)
+	{
+		var i = kff.arrayIndexOf(this.allSubscribers, fn);
+		if(i !== -1) this.allSubscribers.splice(i, 1);
+	},
+
+	/**
 	 * Triggers an event.
 	 *
 	 * @param {string|Array} eventType Event name(s)
@@ -85,6 +116,7 @@ kff.Events = kff.createClass(
 	trigger: function(eventType, eventData)
 	{
 		var i, l;
+
 		if(typeof eventType === 'string')
 		{
 			if(this.subscribers[eventType] instanceof Array)

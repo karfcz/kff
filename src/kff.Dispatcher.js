@@ -1,10 +1,15 @@
-kff.Dispatcher = kff.createClass({
-	mixins: kff.EventsMixin
-},
+function filterByEventName(name)
+{
+	return function(o){ return o.name === name; };
+}
+
+kff.Dispatcher = kff.createClass(
 {
 	constructor: function(actions)
 	{
-		this.actions = {};
+		this.eventStream = new kff.EventStream();
+		this.actionStreams = {};
+		// this.actions = {};
 		this.registerActions(actions);
 	},
 
@@ -12,21 +17,19 @@ kff.Dispatcher = kff.createClass({
 	{
 		var dispatcher = this;
 		if(typeof fn !== 'function') {
-			throw new Error('Dispatcher action is not a function');
+			throw new Error('Dispatcher action "' + fn + '" is not a function');
 		}
 		if(fn.length <= 1)
 		{
 			return function(event)
 			{
+
 				var nextEvent = fn.call(null, event);
-				if(nextEvent instanceof kff.Events)
+				if(nextEvent instanceof kff.EventStream)
 				{
-					nextEvent.on('dispatch', function(event)
-					{
-						dispatcher.trigger(event.action, event);
-					});
+					nextEvent.on(dispatcher.f('trigger'));
 				}
-				else if(nextEvent) dispatcher.trigger(nextEvent.action, nextEvent);
+				else if(nextEvent) dispatcher.trigger(nextEvent);
 			};
 		}
 		else
@@ -36,7 +39,7 @@ kff.Dispatcher = kff.createClass({
 				var done = function(err, nextEvent)
 				{
 					if(err) return;
-					if(nextEvent) dispatcher.trigger(nextEvent.action, nextEvent);
+					if(nextEvent) dispatcher.trigger(nextEvent);
 				};
 				fn.call(null, event, done);
 			};
@@ -50,14 +53,30 @@ kff.Dispatcher = kff.createClass({
 		{
 			for(var action in actions)
 			{
-				this.actions[action] = actions[action];
-				this.on(action, this.createCallback(actions[action]));
+				this.actionStreams[action] = this.eventStream.filter(filterByEventName(action)).on(this.createCallback(actions[action]));
 			}
 		}
 	},
 
+	trigger: function(event)
+	{
+		this.eventStream.trigger(event);
+	},
+
+	on: function(name, fn)
+	{
+		if(!(name in this.actionStreams)) this.actionStreams[name] = this.eventStream.filter(filterByEventName(name));
+		this.actionStreams[name].on(this.createCallback(fn));
+	},
+
+	off: function(name, fn)
+	{
+		// if(name in this.actionStreams) this.actionStreams[action].on(this.createCallback(fn));
+	},
+
+
 	hasAction: function(action)
 	{
-		return action in this.actions;
+		return action in this.actionStreams;
 	}
 });
