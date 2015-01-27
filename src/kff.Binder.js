@@ -200,13 +200,13 @@ kff.Binder = kff.createClass(
 		}
 
 		var rootModelPathArray = this.view.getBoundModelPathArray(this.options.modelPathArray);
-		var stores = this.view.models[rootModelPathArray.shift()];
-		var storeName = rootModelPathArray.shift();
+		var model = this.view.models[rootModelPathArray.shift()];
 		if(this.options.attr) rootModelPathArray.push(this.options.attr);
+		var prop = rootModelPathArray.shift();
 		this.view.dispatchEvent({
 			name: action,
-			stores: stores,
-			storeName: storeName,
+			model: model,
+			prop: prop,
 			keypath: rootModelPathArray,
 			value: value,
 			domEvent: event,
