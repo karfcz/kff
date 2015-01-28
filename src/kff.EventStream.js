@@ -1,5 +1,9 @@
 
-kff.EventStream = kff.createClass(
+kff.EventStream = kff.createClass({
+	statics: {
+		END: {}
+	}
+},
 /** @lends kff.EventStream.prototype */
 {
 	/**
@@ -79,6 +83,8 @@ kff.EventStream = kff.createClass(
 			this.off(this.oneSubscribers[i]);
 		}
 
+		if(eventData === kff.EventStream.END) this.offAll();
+
 		return this;
 	},
 
@@ -112,12 +118,13 @@ kff.EventStream = kff.createClass(
 		es.on(mes.f('trigger'));
 
 		return mes;
+	},
+
+	end: function()
+	{
+		this.trigger(kff.EventStream.END);
 	}
 
 
 });
-
-
-
-
 
