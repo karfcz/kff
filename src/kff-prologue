@@ -1,10 +1,9 @@
-(function(scope)
+(function()
 {
-	var kff;
+	var kff = {};
 
-	if(typeof exports !== 'undefined') kff = exports;
+	if(typeof module !== 'undefined' && typeof module.exports !== 'undefined') module.exports = kff;
 	/**
 	 * @namespace kff KFFnamespace
 	 */
-	else kff = 'kff' in scope ? scope.kff : (scope.kff = {}) ;
-	kff.widgets = {};
+	else if(typeof window !== 'undefined') window.kff = kff;

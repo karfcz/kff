@@ -21,6 +21,12 @@ kff.curry = function(fn, arity)
 	}
 };
 
+// kff.curry = function(fn)
+// {
+// 	var args = Array.prototype.slice.call(arguments, 1);
+// 	return fn.bind.apply(fn, [this].concat(args);
+// };
+
 kff.compose = function()
 {
 	var fns = arguments;
@@ -132,4 +138,37 @@ kff.factoryService = function(fn)
 	if(arguments.length > 1) fn2.service.args = Array.prototype.slice.call(arguments, 1);
 	return fn2;
 };
+
+
+/**
+ * Cursors
+ */
+
+// kff.Cursor = kff.createClass(
+// {
+// 	constructor: function(keyPath, parent)
+// 	{
+// 		this.parent = parent;
+// 		this.keyPath = keyPath;
+// 	}
+// });
+
+// kff.createCursor = kff.curry(function(keyPath, parent)
+// {
+// 	return new kff.Cursor(keyPath, parent);
+// });
+
+// kff.getCursorValue = function(cursor)
+// {
+// 	var parent = cursor.parent;
+// 	if(parent instanceof kff.Cursor) parent = kff.getCursorValue(parent);
+// 	return kff.evalObjectPath(cursor.keyPath || [], parent);
+// };
+
+// kff.setCursorValue = function(value, cursor)
+// {
+// 	var parent = cursor.parent;
+// 	if(parent instanceof kff.Cursor) parent = kff.getCursorValue(parent);
+// 	return kff.evalObjectPath(cursor.keyPath || [], parent);
+// };
 
