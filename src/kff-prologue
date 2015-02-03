@@ -1,9 +1,15 @@
 (function()
 {
 	var kff = {};
+	var scope = null;
 
 	if(typeof module !== 'undefined' && typeof module.exports !== 'undefined') module.exports = kff;
 	/**
 	 * @namespace kff KFFnamespace
 	 */
-	else if(typeof window !== 'undefined') window.kff = kff;
+	else if(typeof window !== 'undefined')
+	{
+		window.kff = kff;
+		scope = window;
+	}
+
