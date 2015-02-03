@@ -144,31 +144,51 @@ kff.factoryService = function(fn)
  * Cursors
  */
 
-// kff.Cursor = kff.createClass(
-// {
-// 	constructor: function(keyPath, parent)
-// 	{
-// 		this.parent = parent;
-// 		this.keyPath = keyPath;
-// 	}
-// });
+kff.Cursor = kff.createClass(
+{
+	constructor: function(keyPath, root)
+	{
+		this.root = root;
+		this.keyPath = keyPath;
+	},
 
-// kff.createCursor = kff.curry(function(keyPath, parent)
-// {
-// 	return new kff.Cursor(keyPath, parent);
-// });
+	refine: function(keyPath)
+	{
+		return new kff.Cursor(this.keyPath.concat(keyPath), this.root);
+	},
 
-// kff.getCursorValue = function(cursor)
-// {
-// 	var parent = cursor.parent;
-// 	if(parent instanceof kff.Cursor) parent = kff.getCursorValue(parent);
-// 	return kff.evalObjectPath(cursor.keyPath || [], parent);
-// };
+	get: function(key)
+	{
+		return kff.evalObjectPath(this.keyPath, this.root);
+	},
 
-// kff.setCursorValue = function(value, cursor)
-// {
-// 	var parent = cursor.parent;
-// 	if(parent instanceof kff.Cursor) parent = kff.getCursorValue(parent);
-// 	return kff.evalObjectPath(cursor.keyPath || [], parent);
-// };
+	// getIn: function(keyPath)
+	// {
+	// 	return kff.evalObjectPath(this.keyPath.concat(keyPath), this.root);
+	// },
+
+	set: function(value)
+	{
+		if(this.keyPath.length < 1) return;
+		var prop = this.keyPath[0];
+		var keyPath = this.keyPath.slice(1);
+		this.root[prop] = kff.imset(keyPath, value, this.root[prop]);
+	},
+
+	// setIn: function(value, keyPath)
+	// {
+	// 	this.refine(keyPath).set(value);
+	// },
+
+	update: function(fn)
+	{
+		if(this.keyPath.length < 1) return;
+		var prop = this.keyPath[0];
+		var keyPath = this.keyPath.slice(1);
+		this.root[prop] = kff.imset(keyPath, fn, this.root[prop]);
+	}
+
+});
+
+
 
