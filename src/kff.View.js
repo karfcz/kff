@@ -1,19 +1,24 @@
 
+(function()
+{
+
+var bindingRegex = /(?:([.a-zA-Z0-9*-]+))(?:\(([@.a-zA-Z0-9*,\s-]+)*\))?((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g;
+
+var operatorsRegex = /:([a-zA-Z0-9]+)(?:\(([^()]*)\))?/g;
+
+var commaSeparateRegex = /\s*,\s*/;
+
+var modifierSeparateRegex = /([^{},\s]+)|({[a-zA-Z0-9,\[\]_\-\.\s@*]+})/g;
+
+var leadingPeriodRegex = /^\./;
+
+var trailingPeriodRegex = /\.$/;
+
+
 kff.View = kff.createClass(
 {
 	mixins: kff.EventsMixin,
 	statics: {
-		bindingRegex: /(?:([.a-zA-Z0-9*-]+))(?:\(([@.a-zA-Z0-9*,\s-]+)*\))?((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g,
-
-		operatorsRegex: /:([a-zA-Z0-9]+)(?:\(([^()]*)\))?/g,
-
-		commaSeparateRegex: /\s*,\s*/,
-
-		modifierSeparateRegex: /([^{},\s]+)|({[a-zA-Z0-9,\[\]_\-\.\s@*]+})/g,
-
-		leadingPeriodRegex: /^\./,
-
-		trailingPeriodRegex: /\.$/,
 
 		/**
 		 * Object hash that holds references to binder classes under short key names
@@ -1034,12 +1039,7 @@ kff.View = kff.createClass(
 	{
 		var model, attr, result, result2, modelPathArray, i, ret, modelArgs;
 		var dataBindAttr = this.$element[0].getAttribute(kff.DATA_BIND_ATTR);
-		var modelName, isCollectionBinder;
-
-		var bindingRegex = kff.View.bindingRegex;
-		var leadingPeriodRegex = kff.View.leadingPeriodRegex;
-		var trailingPeriodRegex = kff.View.trailingPeriodRegex;
-		var commaSeparateRegex = kff.View.commaSeparateRegex;
+		var modelName;
 
 		bindingRegex.lastIndex = 0;
 
@@ -1062,58 +1062,14 @@ kff.View = kff.createClass(
 					}
 				}
 			}
-			ret = null;
 
 			var keyPath = modelPathArray;
 			if(keyPath.length > 1 && keyPath[keyPath.length - 1] === '*') keyPath.pop();
 
+			ret = this.parseBindingRegexp(result, true);
 
-			isCollectionBinder = false;
-
-			if(true)
+			if(ret.binderName === 'each')
 			{
-				ret = this.parseBindingRegexp(result, true);
-
-				if(ret.binderName === 'each')
-				{
-					isCollectionBinder = true;
-				}
-				else
-				{
-					if(!ret.binderName || !(ret.binderName in kff.View.binders)) break;
-
-					var indexed = false;
-
-					for(var j = ret.formatters.length - 1; j >= 0; j--)
-					{
-						if(ret.formatters[j].fn.indexed === true) indexed = true;
-					}
-
-					var modelBinder = new kff.View.binders[ret.binderName]({
-						view: this,
-						$element: this.$element,
-						params: ret.binderParams,
-						keyPath: keyPath,
-						modelArgs: modelArgs,
-						formatters: ret.formatters,
-						parsers: ret.parsers,
-						dispatch: ret.dispatch,
-						eventNames: ret.eventNames,
-						eventFilters: ret.eventFilters,
-						fill: ret.fill,
-						nopreventdef: ret.nopreventdef,
-						indexed: indexed
-					});
-
-					this.modelBindersMap.add(modelBinder);
-				}
-			}
-
-			if(isCollectionBinder)
-			{
-				if(!ret) ret = this.parseBindingRegexp(result, false);
-				else ret.nobind = true;
-
 				if(!this.options.isBoundView)
 				{
 					this.collectionBinder = new kff.CollectionBinder({
@@ -1129,6 +1085,35 @@ kff.View = kff.createClass(
 					}
 				}
 			}
+			else
+			{
+				if(!ret.binderName || !(ret.binderName in kff.View.binders)) break;
+
+				var indexed = false;
+
+				for(var j = ret.formatters.length - 1; j >= 0; j--)
+				{
+					if(ret.formatters[j].fn.indexed === true) indexed = true;
+				}
+
+				var modelBinder = new kff.View.binders[ret.binderName]({
+					view: this,
+					$element: this.$element,
+					params: ret.binderParams,
+					keyPath: keyPath,
+					modelArgs: modelArgs,
+					formatters: ret.formatters,
+					parsers: ret.parsers,
+					dispatch: ret.dispatch,
+					eventNames: ret.eventNames,
+					eventFilters: ret.eventFilters,
+					fill: ret.fill,
+					nopreventdef: ret.nopreventdef,
+					indexed: indexed
+				});
+
+				this.modelBindersMap.add(modelBinder);
+			}
 		}
 	},
 
@@ -1143,9 +1128,7 @@ kff.View = kff.createClass(
 	parseBindingRegexp: function(result, parseBinderName)
 	{
 		var result2, i, modifierName, modifierParams;
-		var modifierSeparateRegex = kff.View.modifierSeparateRegex;
-		var commaSeparateRegex = kff.View.commaSeparateRegex;
-		var operatorsRegex = kff.View.operatorsRegex;
+
 		operatorsRegex.lastIndex = 0;
 
 		var ret = {
@@ -1335,3 +1318,4 @@ kff.View = kff.createClass(
 	}
 
 });
+})()
