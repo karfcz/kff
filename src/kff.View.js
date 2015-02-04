@@ -234,7 +234,7 @@ kff.View = kff.createClass(
 		if(typeof this.refresh === 'function') this.refresh();
 		if(this.collectionBinder)
 		{
-			this.collectionBinder.collection = this.getModel(this.collectionBinder.collectionPathArray);
+			// this.collectionBinder.collection = this.getModel(this.collectionBinder.collectionPathArray);
 			this.collectionBinder.refreshBoundViews();
 			this.collectionBinder.refreshAll();
 		}
@@ -396,26 +396,32 @@ kff.View = kff.createClass(
 	 * @param {string} modelPath Key path of model in the form of "modelName.attribute.nextAttribute etc.".
 	 * @return {mixed} A model instance or attribute value or null if not found.
 	 */
-	getModel: function(modelPath)
+	// getModel: function(keyPath)
+	// {
+	// 	if(typeof keyPath === 'string') keyPath = keyPath.split('.');
+
+	// 	var rootCursorName = keyPath[0];
+	// 	var keyPath = keyPath.slice(1);
+	// 	var rootCursor = this.models[rootCursorName];
+	// 	if(!(rootCursor instanceof kff.Cursor)) rootCursor = new kff.Cursor(keyPath, rootCursor);
+
+	// 	var cursor = rootCursor.refine(keyPath);
+
+	// 	return cursor;
+	// },
+
+	getCursor: function(keyPath)
 	{
-		var modelName, model;
-		if(typeof modelPath === 'string') modelPath = modelPath.split('.');
+		if(typeof keyPath === 'string') keyPath = keyPath.split('.');
 
-		modelName = modelPath[0];
-		modelPath = modelPath.slice(1);
-		model = this.models[modelName];
+		var rootCursorName = keyPath[0];
+		var keyPath = keyPath.slice(1);
+		var rootCursor = this.models[rootCursorName];
+		if(!(rootCursor instanceof kff.Cursor)) rootCursor = new kff.Cursor(keyPath, rootCursor);
 
-		if(modelPath.length > 0)
-		{
-			if(model)
-			{
-				if(typeof model.mget === 'function') return model.mget(modelPath);
-				else return kff.evalObjectPath(modelPath, model);
-			}
-			else return null;
-		}
-		else return model;
-		return null;
+		var cursor = rootCursor.refine(keyPath);
+
+		return cursor;
 	},
 
 	/**
@@ -845,7 +851,7 @@ kff.View = kff.createClass(
 
 		if(this.collectionBinder)
 		{
-			this.collectionBinder.collection = this.getModel(this.collectionBinder.collectionPathArray);
+			// this.collectionBinder.collection = this.getModel(this.collectionBinder.collectionPathArray);
 			this.collectionBinder.view = this;
 		}
 
@@ -1056,9 +1062,11 @@ kff.View = kff.createClass(
 					}
 				}
 			}
-
-			model = this.getModel(modelPathArray);
 			ret = null;
+
+			var keyPath = modelPathArray;
+			if(keyPath.length > 1 && keyPath[keyPath.length - 1] === '*') keyPath.pop();
+
 
 			isCollectionBinder = false;
 
@@ -1074,14 +1082,6 @@ kff.View = kff.createClass(
 				{
 					if(!ret.binderName || !(ret.binderName in kff.View.binders)) break;
 
-					if(modelPathArray.length > 1) attr = modelPathArray.pop();
-					else attr = null;
-
-					if(attr === '*') attr = null;
-
-					modelName = modelPathArray.length > 0 ? modelPathArray[0] : null;
-					model = this.getModel(modelPathArray);
-
 					var indexed = false;
 
 					for(var j = ret.formatters.length - 1; j >= 0; j--)
@@ -1093,15 +1093,10 @@ kff.View = kff.createClass(
 						view: this,
 						$element: this.$element,
 						params: ret.binderParams,
-						attr: attr,
-						model: model,
-						modelName: modelName,
-						modelPathArray: modelPathArray,
+						keyPath: keyPath,
 						modelArgs: modelArgs,
 						formatters: ret.formatters,
 						parsers: ret.parsers,
-						setter: (ret.setters && ret.setters.length > 0) ? ret.setters[0] : null,
-						getter: (ret.getters && ret.getters.length > 0) ? ret.getters[0] : null,
 						dispatch: ret.dispatch,
 						eventNames: ret.eventNames,
 						eventFilters: ret.eventFilters,
@@ -1123,8 +1118,7 @@ kff.View = kff.createClass(
 				{
 					this.collectionBinder = new kff.CollectionBinder({
 						view: this,
-						collection: model,
-						collectionPathArray: modelPathArray,
+						keyPath: keyPath,
 						collectionArgs: modelArgs,
 						filter: (ret.filter && ret.filter.length > 0) ? ret.filter[0] : null,
 						sort: (ret.sort && ret.sort.length > 0) ? ret.sort[0] : null
@@ -1209,12 +1203,6 @@ kff.View = kff.createClass(
 						break;
 					case 'as':
 						this.parseSetters(modifierParams, ret.itemAliases);
-						break;
-					case 'set':
-						this.parseGetters(modifierParams, ret.setters);
-						break;
-					case 'get':
-						this.parseGetters(modifierParams, ret.getters);
 						break;
 					case 'evf':
 						this.parseHelpers(modifierParams, ret.eventFilters);
@@ -1344,38 +1332,6 @@ kff.View = kff.createClass(
 	refreshOwnBinders: function(force)
 	{
 		if(this.modelBindersMap) this.modelBindersMap.refreshBinders(force);
-	},
-
-	getBoundModelPathArray: function(modelPathArray)
-	{
-		var rootModelPathArray = [];
-		var modelName = modelPathArray[0];
-		var view = this;
-		var collectionBinder;
-
-		while(view)
-		{
-			if(view.models.hasOwnProperty(modelName))
-			{
-				rootModelPathArray = modelPathArray.concat(rootModelPathArray);
-				if(view.options.isBoundView)
-				{
-					if(modelName === '*' || modelName === view.itemAlias)
-					{
-						collectionBinder =  view.parentView.collectionBinder;
-						rootModelPathArray[0] = collectionBinder.getCollectionIndex(view.models[modelName]);
-
-						modelPathArray = collectionBinder.collectionPathArray;
-						modelName = modelPathArray[0];
-						view = view.parentView;
-					}
-				}
-			}
-			view = view.parentView;
-		}
-
-		return rootModelPathArray;
 	}
-
 
 });

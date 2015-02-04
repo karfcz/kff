@@ -7,8 +7,8 @@ kff.CollectionBinder = kff.createClass(
 	 */
 	constructor: function(options)
 	{
-		this.collection = options.collection || null;
-		this.collectionPathArray = options.collectionPathArray;
+		this.collection = null;
+		this.keyPath = options.keyPath;
 		this.collectionArgs = options.collectionArgs;
 		this.view = options.view;
 		this.nobind = options.nobind;
@@ -118,7 +118,8 @@ kff.CollectionBinder = kff.createClass(
 
 	rebindCollection: function()
 	{
-		this.collection = this.view.getModel(this.collectionPathArray);
+		this.cursor = this.view.getCursor(this.keyPath);
+		this.collection = this.cursor.get();
 
 		if(typeof this.collection === 'function')
 		{
@@ -210,7 +211,7 @@ kff.CollectionBinder = kff.createClass(
 			for(i = 0, l = this.boundViews.length; i < l; i++)
 			{
 				boundView = this.boundViews[i];
-				item = boundView.models['*'];
+				item = boundView.models['*'].get();
 				if(typeof(item) !== 'object') newIndex = -1;
 				else newIndex = kff.arrayIndexOf(this.filteredCollection, item);
 				pos = boundView;
@@ -234,7 +235,7 @@ kff.CollectionBinder = kff.createClass(
 					if(pos)
 					{
 						boundView = pos;
-						boundView.models['*'] = item;
+						boundView.models['*'] = this.cursor.refine([i]);;
 						if(this.view.itemAlias) boundView.models[this.view.itemAlias] = item;
 						boundView.setBindingIndex(i);
 						boundView.refreshAll();
@@ -321,7 +322,7 @@ kff.CollectionBinder = kff.createClass(
 	{
 		if(this.filter)
 		{
-			this.collectionFilter = this.view.getModel(this.filter);
+			this.collectionFilter = this.view.getCursor(this.filter).get();
 			if(typeof this.collectionFilter !== 'function') this.collectionFilter = null;
 		}
 	},
@@ -335,7 +336,7 @@ kff.CollectionBinder = kff.createClass(
 	{
 		if(this.sort)
 		{
-			this.collectionSorter = this.view.getModel(this.sort);
+			this.collectionSorter = this.view.getCursor(this.sort).get();
 			if(typeof this.collectionSorter !== 'function') this.collectionSorter = null;
 		}
 	},
@@ -411,7 +412,7 @@ kff.CollectionBinder = kff.createClass(
 			{
 				this.boundViews.splice(i, 0, boundView);
 			}
-			boundView.models['*'] = item;
+			boundView.models['*'] = this.cursor.refine([i]);
 			if(this.view.itemAlias) boundView.models[this.view.itemAlias] = item;
 
 			boundView.setBindingIndex(i);
@@ -437,7 +438,7 @@ kff.CollectionBinder = kff.createClass(
 				this.boundViews.splice(i, 0, boundView);
 			}
 
-			boundView.models['*'] = item;
+			boundView.models['*'] = this.cursor.refine([i]);
 			if(this.view.itemAlias) boundView.models[this.view.itemAlias] = item;
 
 			boundView.setBindingIndex(i);

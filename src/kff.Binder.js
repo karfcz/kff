@@ -12,12 +12,13 @@ kff.Binder = kff.createClass(
 
 		this.view = options.view;
 		this.$element = options.$element;
-		this.model = options.model;
-		this.setter = options.setter;
-		this.getter = options.getter;
+		this.cursor = null;
+		this.keyPath = options.keyPath;
+		// this.setter = options.setter;
+		// this.getter = options.getter;
 		this.dispatch = options.dispatch;
 		this.currentValue = null;
-		this.bindingIndex = null;
+		// this.bindingIndex = null;
 		this.value = null;
 	},
 
@@ -30,6 +31,7 @@ kff.Binder = kff.createClass(
 		{
 			if(this.$element && this.options.events !== null) this.delegateEvents(this.options.events);
 		}
+		this.rebindModel();
 		if(this.options.fill) this.fill();
 	},
 
@@ -62,48 +64,13 @@ kff.Binder = kff.createClass(
 	{
 		var modelValue, formattedValue;
 
-		if(typeof this.model === 'object' && this.model !== null)
+		modelValue = this.cursor.get();
+
+		if(typeof modelValue === 'function')
 		{
-			if(this.getter && typeof this.model[this.getter.fn] === 'function')
-			{
-				if(this.getter.args.length > 0)
-				{
-					var args = [];
-					for(var i = 0, l = this.getter.args.length; i < l; i++)
-					{
-						if(this.getter.args[i] === '@attr') args[i] = this.options.attr;
-						else args[i] = this.view.getModel(this.getter.args[i]);
-					}
-					modelValue = this.model[this.getter.fn].apply(this.model, args);
-				}
-				else
-				{
-					modelValue = this.model[this.getter.fn](this.options.attr);
-				}
-			}
-			else if(event) modelValue = event.changed[this.options.attr];
-			else if(typeof this.options.attr === 'string')
-			{
-				if(typeof this.model.get === 'function') modelValue = this.model.get(this.options.attr);
-				else
-				{
-					modelValue = this.model[this.options.attr];
-					if(typeof modelValue === 'function')
-					{
-						modelValue = this.callModelAsFunction(modelValue, this.options.modelArgs);
-					}
-				}
-			}
-			else modelValue = null;
+			modelValue = this.callModelAsFunction(modelValue, this.options.modelArgs);
 		}
-		else if(typeof this.model === 'string' || typeof this.model === 'number' || typeof this.model === 'boolean')
-		{
-			modelValue = this.model;
-		}
-		else if(typeof this.model === 'function')
-		{
-			modelValue = this.callModelAsFunction(this.model, this.options.modelArgs);
-		}
+
 		if(modelValue !== 'undefined')
 		{
 			formattedValue = this.format(modelValue);
@@ -189,25 +156,18 @@ kff.Binder = kff.createClass(
 			action = this.dispatch[0];
 			for(i = 1, l = this.dispatch.length; i < l; i++)
 			{
-				if(this.dispatch[i].charAt(0) === '@') params.push(this.view.getModel(this.dispatch[i].slice(1)));
+				if(this.dispatch[i].charAt(0) === '@') params.push(this.view.getCursor(this.dispatch[i].slice(1)));
 				else
 				{
 					if(this.options.parsers.length === 0) params.push(this.convertValueType(this.dispatch[i]));
 					else params.push(this.parse(this.dispatch[i]));
 				}
 			}
-
 		}
 
-		var rootModelPathArray = this.view.getBoundModelPathArray(this.options.modelPathArray);
-		var model = this.view.models[rootModelPathArray.shift()];
-		if(this.options.attr) rootModelPathArray.push(this.options.attr);
-		var prop = rootModelPathArray.shift();
 		this.view.dispatchEvent({
 			name: action,
-			model: model,
-			prop: prop,
-			keypath: rootModelPathArray,
+			cursor: this.cursor,
 			value: value,
 			domEvent: event,
 			params: params
@@ -296,7 +256,7 @@ kff.Binder = kff.createClass(
 	 */
 	rebindModel: function()
 	{
-		this.model = this.view.getModel(this.options.modelPathArray);
+		this.cursor = this.view.getCursor(this.keyPath);
 	},
 
 	/**
@@ -356,7 +316,7 @@ kff.Binder = kff.createClass(
 		{
 			for(i = 0, l = modelArgs.length; i < l; i++)
 			{
-				if(modelArgs[i] instanceof Array) args[i] = this.view.getModel(modelArgs[i]);
+				if(modelArgs[i] instanceof Array) args[i] = this.view.getCursor(modelArgs[i]);
 				else args[i] = kff.Binder.prototype.convertValueType(modelArgs[i]);
 			}
 		}

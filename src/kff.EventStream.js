@@ -128,3 +128,76 @@ kff.EventStream = kff.createClass({
 
 });
 
+
+
+
+
+
+
+// kff.es = {};
+
+// kff.es.createStream = function()
+// {
+// 	return {
+// 		subscribers: [],
+// 		oneSubscribers: []
+// 	};
+// };
+
+// kff.es.on = function(fn, stream)
+// {
+// 	var newStream = {
+// 		subscribers: null,
+// 		oneSubscribers: null
+// 	};
+
+// 	if(kff.arrayIndexOf(stream.subscribers, fn) === -1) {
+// 		newStream.subscribers = stream.subscribers.concat(fn);
+// 	}
+
+// 	return newStream;
+// };
+
+
+// 	on: function(fn)
+// 	{
+// 		if(kff.arrayIndexOf(this.subscribers, fn) === -1) this.subscribers.push(fn);
+// 		return this;
+// 	},
+
+// 	*
+// 	 * Binds event handler that will be executed only once.
+// 	 *
+// 	 * @param {string|Array} eventType Event name(s)
+// 	 * @param {function} fn Event handler
+
+// 	one: function(eventType, fn)
+// 	{
+// 		this.oneSubscribers.push(fn);
+// 		return this.on(fn);
+// 	},
+
+// 	/**
+// 	 * Unbinds event handler.
+// 	 *
+// 	 * @param {string|Array} eventType Event name(s)
+// 	 * @param {function} fn Event handler
+// 	 */
+// 	off: function(fn)
+// 	{
+// 		var i = kff.arrayIndexOf(this.subscribers, fn);
+// 		if(i !== -1) this.subscribers.splice(i, 1);
+
+// 		i = kff.arrayIndexOf(this.oneSubscribers, fn);
+// 		if(i !== -1) this.oneSubscribers.splice(i, 1);
+
+// 		return this;
+// 	},
+
+// 	offAll: function()
+// 	{
+// 		this.subscribers = [];
+// 		this.oneSubscribers = [];
+// 		return this;
+// 	},
+

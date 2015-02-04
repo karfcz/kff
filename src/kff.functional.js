@@ -149,7 +149,7 @@ kff.Cursor = kff.createClass(
 	constructor: function(keyPath, root)
 	{
 		this.root = root;
-		this.keyPath = keyPath;
+		this.keyPath = keyPath || [];
 	},
 
 	refine: function(keyPath)
@@ -157,7 +157,7 @@ kff.Cursor = kff.createClass(
 		return new kff.Cursor(this.keyPath.concat(keyPath), this.root);
 	},
 
-	get: function(key)
+	get: function()
 	{
 		return kff.evalObjectPath(this.keyPath, this.root);
 	},
@@ -186,7 +186,16 @@ kff.Cursor = kff.createClass(
 		var prop = this.keyPath[0];
 		var keyPath = this.keyPath.slice(1);
 		this.root[prop] = kff.imset(keyPath, fn, this.root[prop]);
-	}
+	},
+
+	remove: function()
+	{
+		if(this.keyPath.length < 1) return;
+		var prop = this.keyPath[0];
+		var keyPath = this.keyPath.slice(1);
+		this.root[prop] = kff.imremove(keyPath, this.root[prop]);
+	},
+
 
 });
 
