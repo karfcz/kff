@@ -11,7 +11,6 @@ kff.CollectionBinder = kff.createClass(
 		this.keyPath = options.keyPath;
 		this.collectionArgs = options.collectionArgs;
 		this.view = options.view;
-		this.nobind = options.nobind;
 		this.$elementTemplate = null;
 		this.boundViews = null;
 		this.anchor = null;
