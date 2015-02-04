@@ -188,8 +188,8 @@ describe('kff.View', function()
 			env: env,
 			element: $div1,
 			models: {
-				collection: collection,
-				filterModel: filterModel
+				collection: new kff.Cursor(null, collection),
+				filterModel: new kff.Cursor(null, filterModel)
 			}
 		});
 		view.init();
@@ -220,8 +220,8 @@ describe('kff.View', function()
 			env: env,
 			element: $div1,
 			models: {
-				collection: collection,
-				sortModel: sortModel
+				collection: new kff.Cursor(null, collection),
+				sortModel: new kff.Cursor(null, sortModel)
 			}
 		});
 		view.init();
@@ -258,8 +258,8 @@ describe('kff.View', function()
 			env: env,
 			element: $div1,
 			models: {
-				collection: collection,
-				sortModel: sortModel
+				collection: new kff.Cursor(null, collection),
+				sortModel: new kff.Cursor(null, sortModel)
 			}
 		});
 		view.init();
