@@ -4,6 +4,7 @@ module.exports = function(grunt) {
 		// './src/kff.polyfills.js',
 		'./src/kff.base.js',
 		'./src/kff.functional.js',
+		'./src/kff.Cursor.js',
 		'./src/kff.Dom.js',
 		'./src/kff.EventStream.js',
 		'./src/kff.Events.js',
