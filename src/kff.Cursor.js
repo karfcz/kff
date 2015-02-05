@@ -1,7 +1,7 @@
 
 kff.Cursor = kff.createClass(
 {
-	constructor: function(keyPath, root)
+	constructor: function(root, keyPath)
 	{
 		this.root = root;
 		this.keyPath = keyPath || [];
@@ -9,7 +9,7 @@ kff.Cursor = kff.createClass(
 
 	refine: function(keyPath)
 	{
-		return new kff.Cursor(this.keyPath.concat(keyPath), this.root);
+		return new kff.Cursor(this.root, this.keyPath.concat(keyPath));
 	},
 
 	get: function()

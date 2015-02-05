@@ -401,7 +401,7 @@ kff.View = kff.createClass(
 		var rootCursorName = keyPath[0];
 		var keyPath = keyPath.slice(1);
 		var rootCursor = this.models[rootCursorName];
-		if(!(rootCursor instanceof kff.Cursor)) rootCursor = new kff.Cursor(keyPath, rootCursor);
+		if(!(rootCursor instanceof kff.Cursor)) rootCursor = new kff.Cursor(rootCursor, keyPath);
 
 		var cursor = rootCursor.refine(keyPath);
 
