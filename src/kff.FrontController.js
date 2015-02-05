@@ -61,12 +61,10 @@ kff.FrontController = kff.createClass(
 
 		for(i = 0; i < destroyQueue.length; i++)
 		{
-			if(destroyQueue[i + 1]) destroyQueue[i].instance.on('destroy', kff.bindFn(destroyQueue[i + 1].instance, 'destroyAll'));
-			else destroyQueue[i].instance.on('destroy', kff.bindFn(this, 'destroyDone'));
+			destroyQueue[i].instance.destroyAll();
 		}
 
-		if(destroyQueue[0]) destroyQueue[0].instance.destroyAll();
-		else this.destroyDone();
+		this.destroyDone();
 	},
 
 	/**
@@ -149,13 +147,7 @@ kff.FrontController = kff.createClass(
 	 */
 	pushView: function(view)
 	{
-		var lastView = this.getLastView();
 		this.viewsQueue.push(view);
-		if(lastView)
-		{
-			lastView.instance.on('render', kff.bindFn(view.instance, 'init'));
-			lastView.instance.on('setState', kff.bindFn(view.instance, 'setState'));
-		}
 	},
 
 	/**
@@ -166,15 +158,8 @@ kff.FrontController = kff.createClass(
 	{
 		if(this.viewsQueue.length === 0) return;
 
-		var removedView = this.viewsQueue.pop(),
-			lastView = this.getLastView();
+		var removedView = this.viewsQueue.pop();
 
-		removedView.instance.off('render', kff.bindFn(this, 'cascadeState'));
-		if(lastView)
-		{
-			lastView.instance.off('render', kff.bindFn(removedView.instance, 'init'));
-			lastView.instance.off('setState', kff.bindFn(removedView.instance, 'setState'));
-		}
 		return removedView;
 	},
 
@@ -200,12 +185,10 @@ kff.FrontController = kff.createClass(
 
 		for(i = 0; i < destroyQueue.length; i++)
 		{
-			if(destroyQueue[i + 1]) destroyQueue[i].instance.on('destroy', kff.bindFn(destroyQueue[i + 1].instance, 'destroyAll'));
-			else destroyQueue[i].instance.on('destroy', kff.bindFn(this, 'startInit'));
+			destroyQueue[i].instance.destroyAll();
 		}
 
-		if(destroyQueue[0]) destroyQueue[0].instance.destroyAll();
-		else this.startInit();
+		this.startInit();
 
 		if(this.dispatcher)
 		{
@@ -237,9 +220,11 @@ kff.FrontController = kff.createClass(
 		}
 
 		this.newViewName = null;
-		if(this.getLastView()) this.getLastView().instance.on('render', kff.bindFn(this, 'cascadeState'));
-		if(this.viewsQueue[from]) this.viewsQueue[from].instance.init();
-		else this.cascadeState();
+
+		for(i = from; i < this.viewsQueue.length; i++)
+		{
+			this.viewsQueue[i].instance.init();
+		}
 	},
 
 	findSharedView: function(c1, c2)
