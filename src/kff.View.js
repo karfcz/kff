@@ -199,9 +199,7 @@ kff.View = kff.createClass(
 		{
 			if(this.modelBindersMap) this.modelBindersMap.initBinders();
 
-			var ret;
-
-			if(this.run !== kff.noop) ret = this.run();
+			if(this.run !== kff.noop) this.run();
 			this.runSubviews();
 
 			this.delegateEvents();
@@ -213,10 +211,7 @@ kff.View = kff.createClass(
 			this.$element[0].setAttribute(kff.DATA_RENDERED_ATTR, true);
 
 			this.refreshOwnBinders(true);
-
-			return ret;
 		}
-
 	},
 
 	requestRefreshAll: function()
@@ -271,13 +266,12 @@ kff.View = kff.createClass(
 		this.bindingIndex = null;
 		this.itemAlias = null;
 
-		var ret;
 		this.$element[0].removeAttribute(kff.DATA_RENDERED_ATTR);
 		this.undelegateEvents();
 		this.destroySubviews();
 		if(this.dispatcher) this.dispatcher.off('refresh', this.f('refreshAll'));
 
-		if(this.destroy !== kff.noop) ret = this.destroy();
+		if(this.destroy !== kff.noop) this.destroy();
 		if(typeof this.afterDestroy === 'function') this.afterDestroy();
 
 		this.subviewsStruct = null;
@@ -285,8 +279,6 @@ kff.View = kff.createClass(
 		this.subviews = null;
 
 		this.clearRegions(this.options.regions);
-
-		return ret;
 	},
 
 	/**
@@ -402,20 +394,6 @@ kff.View = kff.createClass(
 	 * @param {string} modelPath Key path of model in the form of "modelName.attribute.nextAttribute etc.".
 	 * @return {mixed} A model instance or attribute value or null if not found.
 	 */
-	// getModel: function(keyPath)
-	// {
-	// 	if(typeof keyPath === 'string') keyPath = keyPath.split('.');
-
-	// 	var rootCursorName = keyPath[0];
-	// 	var keyPath = keyPath.slice(1);
-	// 	var rootCursor = this.models[rootCursorName];
-	// 	if(!(rootCursor instanceof kff.Cursor)) rootCursor = new kff.Cursor(keyPath, rootCursor);
-
-	// 	var cursor = rootCursor.refine(keyPath);
-
-	// 	return cursor;
-	// },
-
 	getCursor: function(keyPath)
 	{
 		if(typeof keyPath === 'string') keyPath = keyPath.split('.');
