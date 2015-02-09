@@ -53,6 +53,9 @@ kff.Dispatcher = kff.createClass(
 		{
 			for(var action in actions)
 			{
+				if(typeof actions[action] !== 'function') {
+					throw new Error('Dispatcher action "' + action + '" is not a function');
+				}
 				this.actionStreams[action] = this.eventStream.filter(filterByEventName(action)).on(this.createCallback(actions[action]));
 			}
 		}

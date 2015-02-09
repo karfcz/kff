@@ -72,6 +72,12 @@ kff.EventStream = kff.createClass({
 	trigger: function(eventData)
 	{
 		var i, l;
+
+		if(eventData === kff.EventStream.END)
+		{
+			return this.offAll();
+		}
+
 		for(i = 0, l = this.subscribers.length; i < l; i++)
 		{
 			if(typeof this.subscribers[i] === 'function') this.subscribers[i].call(null, eventData);
@@ -83,7 +89,6 @@ kff.EventStream = kff.createClass({
 			this.off(this.oneSubscribers[i]);
 		}
 
-		if(eventData === kff.EventStream.END) this.offAll();
 
 		return this;
 	},

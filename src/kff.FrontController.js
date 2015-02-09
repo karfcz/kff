@@ -192,7 +192,8 @@ kff.FrontController = kff.createClass(
 
 		if(this.dispatcher)
 		{
-			this.dispatcher.trigger('route', {
+			this.dispatcher.trigger({
+				name: 'route',
 				state: state
 			});
 		}

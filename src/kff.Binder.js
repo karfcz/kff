@@ -188,10 +188,10 @@ kff.Binder = kff.createClass(
 			if(value instanceof Array)
 			{
 				value2 = [];
-				for(j = 0, k = value.length; j < k; j++) value2[j] = this.options.formatters[i].fn.apply(this, [value[j]].concat(this.options.formatters[i].args));
+				for(j = 0, k = value.length; j < k; j++) value2[j] = this.options.formatters[i].fn.apply(this, kff.arrayConcat([value[j]], this.options.formatters[i].args));
 				value = value2;
 			}
-			else value = this.options.formatters[i].fn.apply(this, [value].concat(this.options.formatters[i].args));
+			else value = this.options.formatters[i].fn.apply(this, kff.arrayConcat([value], this.options.formatters[i].args));
 		}
 		return value;
 	},
@@ -210,10 +210,10 @@ kff.Binder = kff.createClass(
 			if(value instanceof Array)
 			{
 				value2 = [];
-				for(j = 0, k = value.length; j < k; j++) value2[j] = this.options.parsers[i].fn.apply(this, [value[j]].concat(this.options.parsers[i].args));
+				for(j = 0, k = value.length; j < k; j++) value2[j] = this.options.parsers[i].fn.apply(this, kff.arrayConcat([value[j]], this.options.parsers[i].args));
 				value = value2;
 			}
-			else value = this.options.parsers[i].fn.apply(this, [value].concat(this.options.parsers[i].args));
+			else value = this.options.parsers[i].fn.apply(this, kff.arrayConcat([value], this.options.parsers[i].args));
 		}
 		return value;
 	},

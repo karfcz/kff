@@ -301,7 +301,7 @@ kff.View = kff.createClass(
 			if(this.explicitSubviewsStruct !== null)
 			{
 				if(this.subviewsStruct === null) this.subviewsStruct = [];
-				subviewsStruct = this.subviewsStruct.concat(this.explicitSubviewsStruct);
+				subviewsStruct = kff.arrayConcat(this.subviewsStruct, this.explicitSubviewsStruct);
 			}
 			else if(this.subviewsStruct !== null) subviewsStruct = this.subviewsStruct.slice();
 
