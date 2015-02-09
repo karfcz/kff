@@ -7,7 +7,7 @@ describe('kff.Cursor', function()
 	it('should create a simple cursor from an object', function()
 	{
 		var o = { a: 42 };
-		var cursor = new kff.Cursor(['a'], o);
+		var cursor = new kff.Cursor(o, ['a']);
 		expect(cursor.get()).to.equal(42);
 	});
 
@@ -19,8 +19,8 @@ describe('kff.Cursor', function()
 				c: 42
 			}
 		};
-		var cursorA = new kff.Cursor(['a'], o);
-		var cursorBC = new kff.Cursor(['b', 'c'], o);
+		var cursorA = new kff.Cursor(o, ['a']);
+		var cursorBC = new kff.Cursor(o, ['b', 'c']);
 		expect(cursorA.get()).to.equal(5);
 		expect(cursorBC.get()).to.equal(42);
 	});
@@ -33,7 +33,7 @@ describe('kff.Cursor', function()
 				c: [0, 42, 0]
 			}
 		};
-		var cursor = new kff.Cursor(['b', 'c', 1], o);
+		var cursor = new kff.Cursor(o, ['b', 'c', 1]);
 		expect(cursor.get()).to.equal(42);
 	});
 
@@ -45,7 +45,7 @@ describe('kff.Cursor', function()
 				c: 42
 			}
 		};
-		var cursorBC = new kff.Cursor(['b', 'c'], o);
+		var cursorBC = new kff.Cursor(o, ['b', 'c']);
 		var b = o.b;
 		cursorBC.set(43);
 		expect(cursorBC.get()).to.equal(43);
@@ -63,7 +63,7 @@ describe('kff.Cursor', function()
 		};
 
 		var inc = function(val){ return val + 1; };
-		var cursorBC = new kff.Cursor(['b', 'c'], o);
+		var cursorBC = new kff.Cursor(o, ['b', 'c']);
 		var b = o.b;
 		cursorBC.update(inc);
 		expect(cursorBC.get()).to.equal(43);
@@ -81,7 +81,7 @@ describe('kff.Cursor', function()
 		};
 
 		var inc = function(val){ return val + 1; };
-		var cursor = new kff.Cursor(['b', 'c', 1], o);
+		var cursor = new kff.Cursor(o, ['b', 'c', 1]);
 		var b = o.b;
 		cursor.update(inc);
 		expect(cursor.get()).to.equal(43);
@@ -102,7 +102,7 @@ describe('kff.Cursor', function()
 		};
 
 		var inc = function(val){ return val + 1; };
-		var cursor1 = new kff.Cursor(['b'], o);
+		var cursor1 = new kff.Cursor(o, ['b']);
 		var cursor2 = cursor1.refine(['c']);
 		expect(cursor2.get()).to.equal(42);
 	});

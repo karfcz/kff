@@ -53,7 +53,7 @@ describe('kff.View', function()
 		it('should return cursor for model associated with the view', function()
 		{
 			var myModel = { prop: 42 };
-			view = new TestView({element: $div, models: { myModel: new kff.Cursor(null, myModel) } });
+			view = new TestView({element: $div, models: { myModel: new kff.Cursor(myModel) } });
 			expect(view.getCursor(['myModel', 'prop']).get()).to.equal(42);
 		});
 

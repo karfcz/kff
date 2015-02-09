@@ -13,7 +13,7 @@ describe('kff.TextBinder', function()
 		{
 			element: $div,
 			models: {
-				myModel: new kff.Cursor(null, myModel)
+				myModel: new kff.Cursor(myModel)
 			}
 		});
 		view.init();
@@ -34,7 +34,7 @@ describe('kff.TextBinder', function()
 		{
 			element: $div,
 			models: {
-				myModel: new kff.Cursor(null, myModel)
+				myModel: new kff.Cursor(myModel)
 			}
 		});
 		view.init();
