@@ -81,19 +81,20 @@ kff.mixins = function(obj, properties)
 	while(i < l)
 	{
 		props = arguments[i];
-		for(key in props)
+
+		var keys = Object.keys(props);
+
+		for(var j = 0, k = keys.length; j < k; j++)
 		{
-			if(props.hasOwnProperty(key))
+			key = keys[j];
+			prop = props[key];
+			if(deep && kff.isPlainObject(prop))
 			{
-				prop = props[key];
-				if(deep && kff.isPlainObject(prop))
-				{
-					objProp = obj[key];
-					if(typeof objProp !== 'object' || objProp === null) objProp = {};
-					kff.mixins(objProp, prop, deep);
-				}
-				else obj[key] = prop;
+				objProp = obj[key];
+				if(typeof objProp !== 'object' || objProp === null) objProp = {};
+				kff.mixins(objProp, prop, deep);
 			}
+			else obj[key] = prop;
 		}
 		i++;
 	}
