@@ -660,7 +660,7 @@ kff.View = kff.createClass(
 		var res, view = this;
 		while(view)
 		{
-			if(view.dispatcher !== null && view.dispatcher.hasAction(event.name))
+			if(view.dispatcher !== null && view.dispatcher.hasAction(event.type))
 			{
 				view.dispatcher.trigger(event);
 				break;

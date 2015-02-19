@@ -166,7 +166,7 @@ kff.Binder = kff.createClass(
 		}
 
 		this.view.dispatchEvent({
-			name: action,
+			type: action,
 			cursor: this.cursor,
 			value: value,
 			domEvent: event,

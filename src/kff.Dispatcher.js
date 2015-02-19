@@ -1,6 +1,6 @@
-function filterByEventName(name)
+function filterByEventType(type)
 {
-	return function(o){ return o.name === name; };
+	return function(o){ return o.type === type; };
 }
 
 kff.Dispatcher = kff.createClass(
@@ -9,7 +9,6 @@ kff.Dispatcher = kff.createClass(
 	{
 		this.eventStream = new kff.EventStream();
 		this.actionStreams = {};
-		// this.actions = {};
 		this.registerActions(actions);
 	},
 
@@ -56,7 +55,7 @@ kff.Dispatcher = kff.createClass(
 				if(typeof actions[action] !== 'function') {
 					throw new Error('Dispatcher action "' + action + '" is not a function');
 				}
-				this.actionStreams[action] = this.eventStream.filter(filterByEventName(action)).on(this.createCallback(actions[action]));
+				this.actionStreams[action] = this.eventStream.filter(filterByEventType(action)).on(this.createCallback(actions[action]));
 			}
 		}
 	},
@@ -66,15 +65,15 @@ kff.Dispatcher = kff.createClass(
 		this.eventStream.trigger(event);
 	},
 
-	on: function(name, fn)
+	on: function(type, fn)
 	{
-		if(!(name in this.actionStreams)) this.actionStreams[name] = this.eventStream.filter(filterByEventName(name));
-		this.actionStreams[name].on(this.createCallback(fn));
+		if(!(type in this.actionStreams)) this.actionStreams[type] = this.eventStream.filter(filterByEventType(type));
+		this.actionStreams[type].on(this.createCallback(fn));
 	},
 
-	off: function(name, fn)
+	off: function(type, fn)
 	{
-		// if(name in this.actionStreams) this.actionStreams[action].on(this.createCallback(fn));
+		// if(type in this.actionStreams) this.actionStreams[action].on(this.createCallback(fn));
 	},
 
 
