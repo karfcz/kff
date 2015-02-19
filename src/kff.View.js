@@ -204,7 +204,11 @@ kff.View = kff.createClass(
 
 			this.delegateEvents();
 
-			if(this.dispatcher) this.dispatcher.on('refresh', this.f('refreshAll'));
+			if(this.dispatcher)
+			{
+				this.dispatcher.on('refresh', this.f('refreshAll'));
+				this.dispatcher.on('refreshFromRoot', this.f('refreshFromRoot'));
+			}
 
 			if(typeof this.afterRender === 'function') this.afterRender();
 
@@ -252,6 +256,23 @@ kff.View = kff.createClass(
 	},
 
 	/**
+	 * Refreshes all views from root
+	 */
+	refreshFromRoot: function()
+	{
+		var view = this;
+		while(view.parentView)
+		{
+			view = view.parentView;
+		}
+
+		if(view.dispatcher !== null)
+		{
+			view.dispatcher.trigger({ type: 'refresh' });
+		}
+	},
+
+	/**
 	 * Destroys the view (destroys all subviews and unbinds previously bound DOM events.
 	 * It will be called automatically. Should not be called directly.
 	 */
@@ -269,7 +290,11 @@ kff.View = kff.createClass(
 		this.$element[0].removeAttribute(kff.DATA_RENDERED_ATTR);
 		this.undelegateEvents();
 		this.destroySubviews();
-		if(this.dispatcher) this.dispatcher.off('refresh', this.f('refreshAll'));
+		if(this.dispatcher)
+		{
+			this.dispatcher.off('refresh', this.f('refreshAll'));
+			this.dispatcher.off('refreshFromRoot', this.f('refreshFromRoot'));
+		}
 
 		if(this.destroy !== kff.noop) this.destroy();
 		if(typeof this.afterDestroy === 'function') this.afterDestroy();
