@@ -28,7 +28,6 @@ kff.Cursor = kff.createClass(
 	{
 		if(typeof keyPath === 'string') keyPath = keyPath.split('.');
 		return new kff.Cursor(this.root, kff.arrayConcat(this.keyPath, keyPath));
-		// return new kff.Cursor(this.root, this.keyPath.concat(keyPath));
 	},
 
 	get: function()
@@ -66,11 +65,6 @@ kff.Cursor = kff.createClass(
 	{
 		this.refine(path).set(value);
 	},
-
-	// setIn: function(value, keyPath)
-	// {
-	// 	this.refine(keyPath).set(value);
-	// },
 
 	update: function(fn)
 	{

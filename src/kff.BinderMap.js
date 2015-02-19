@@ -52,7 +52,6 @@ kff.BinderMap = kff.createClass(
 			b = this.binders[i];
 			b.view = view;
 			b.$element = view.$element;
-			// b.model = view.getModel(b.options.modelPathArray);
 			b.model = null;
 			b.value = null;
 		}

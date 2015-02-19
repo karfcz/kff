@@ -14,11 +14,8 @@ kff.Binder = kff.createClass(
 		this.$element = options.$element;
 		this.cursor = null;
 		this.keyPath = options.keyPath;
-		// this.setter = options.setter;
-		// this.getter = options.getter;
 		this.dispatch = options.dispatch;
 		this.currentValue = null;
-		// this.bindingIndex = null;
 		this.value = null;
 	},
 

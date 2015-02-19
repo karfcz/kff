@@ -1,2 +1,0 @@
-
-kff.BindingView = kff.View;

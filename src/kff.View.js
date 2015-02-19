@@ -239,7 +239,6 @@ kff.View = kff.createClass(
 		if(typeof this.refresh === 'function') this.refresh();
 		if(this.collectionBinder)
 		{
-			// this.collectionBinder.collection = this.getModel(this.collectionBinder.collectionPathArray);
 			this.collectionBinder.refreshBoundViews();
 			this.collectionBinder.refreshAll();
 		}
@@ -1323,3 +1322,5 @@ kff.View = kff.createClass(
 
 });
 })()
+
+kff.BindingView = kff.View;
