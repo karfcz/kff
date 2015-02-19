@@ -6,6 +6,6 @@ kff.ModelView = kff.createClass({
 	constructor: function(options)
 	{
 		kff.View.call(this, options);
-		this.models['*'] = new kff.Cursor({});
+		this.scope['*'] = new kff.Cursor({});
 	}
 });

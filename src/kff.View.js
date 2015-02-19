@@ -82,10 +82,10 @@ kff.View = kff.createClass(
 
 		if(options.models)
 		{
-			this.models = options.models;
+			this.scope = options.models;
 			options.models = null;
 		}
-		else this.models = {};
+		else this.scope = {};
 
 		if(options.helpers)
 		{
@@ -400,7 +400,7 @@ kff.View = kff.createClass(
 
 		var rootCursorName = keyPath[0];
 		var keyPath = keyPath.slice(1);
-		var rootCursor = this.models[rootCursorName];
+		var rootCursor = this.scope[rootCursorName];
 		if(!(rootCursor instanceof kff.Cursor)) rootCursor = new kff.Cursor(rootCursor, keyPath);
 
 		var cursor = rootCursor.refine(keyPath);
@@ -677,7 +677,7 @@ kff.View = kff.createClass(
 	getBindingIndex: function(modelName)
 	{
 		modelName = modelName || '*';
-		if(this.bindingIndex !== null && this.models.hasOwnProperty(modelName)) return this.bindingIndex;
+		if(this.bindingIndex !== null && this.scope.hasOwnProperty(modelName)) return this.bindingIndex;
 		if(this.parentView instanceof kff.View) return this.parentView.getBindingIndex(modelName);
 		return null;
 	},
@@ -763,9 +763,9 @@ kff.View = kff.createClass(
 
 		this.parentView = parentView;
 
-		oldModels = this.models || null;
+		oldModels = this.scope || null;
 
-		this.models = kff.createObject(parentView.models);
+		this.scope = kff.createObject(parentView.scope);
 
 		if(oldModels)
 		{
@@ -773,7 +773,7 @@ kff.View = kff.createClass(
 			for(i = 0, l = keys.length; i < l; i++)
 			{
 				key = keys[i];
-				this.models[key] = oldModels[key];
+				this.scope[key] = oldModels[key];
 
 			}
 		}

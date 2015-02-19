@@ -210,7 +210,7 @@ kff.CollectionBinder = kff.createClass(
 			for(i = 0, l = this.boundViews.length; i < l; i++)
 			{
 				boundView = this.boundViews[i];
-				item = boundView.models['*'].get();
+				item = boundView.scope['*'].get();
 				if(typeof(item) !== 'object') newIndex = -1;
 				else newIndex = kff.arrayIndexOf(this.filteredCollection, item);
 				pos = boundView;
@@ -236,13 +236,13 @@ kff.CollectionBinder = kff.createClass(
 						boundView = pos;
 						if(this.filteredCollection === this.collection)
 						{
-							boundView.models['*'] = this.cursor.refine([i]);
+							boundView.scope['*'] = this.cursor.refine([i]);
 						}
 						else
 						{
-							boundView.models['*'] = this.cursor.refine([this.collection.indexOf(item)]);
+							boundView.scope['*'] = this.cursor.refine([this.collection.indexOf(item)]);
 						}
-						if(this.view.itemAlias) boundView.models[this.view.itemAlias] = item;
+						if(this.view.itemAlias) boundView.scope[this.view.itemAlias] = item;
 						boundView.setBindingIndex(i);
 						boundView.refreshAll();
 						if(i >= lastViewIndex) lastView = boundView;
@@ -416,15 +416,15 @@ kff.CollectionBinder = kff.createClass(
 
 			if(this.filteredCollection === this.collection)
 			{
-				boundView.models['*'] = this.cursor.refine([i]);
+				boundView.scope['*'] = this.cursor.refine([i]);
 			}
 			else
 			{
-				boundView.models['*'] = this.cursor.refine([this.collection.indexOf(item)]);
+				boundView.scope['*'] = this.cursor.refine([this.collection.indexOf(item)]);
 			}
 
 
-			if(this.view.itemAlias) boundView.models[this.view.itemAlias] = item;
+			if(this.view.itemAlias) boundView.scope[this.view.itemAlias] = item;
 
 			boundView.setBindingIndex(i);
 
@@ -444,14 +444,14 @@ kff.CollectionBinder = kff.createClass(
 
 			if(this.filteredCollection === this.collection)
 			{
-				boundView.models['*'] = this.cursor.refine([i]);
+				boundView.scope['*'] = this.cursor.refine([i]);
 			}
 			else
 			{
-				boundView.models['*'] = this.cursor.refine([this.collection.indexOf(item)]);
+				boundView.scope['*'] = this.cursor.refine([this.collection.indexOf(item)]);
 			}
 
-			if(this.view.itemAlias) boundView.models[this.view.itemAlias] = item;
+			if(this.view.itemAlias) boundView.scope[this.view.itemAlias] = item;
 
 			boundView.setBindingIndex(i);
 			boundView.rebindElement($element[0]);
