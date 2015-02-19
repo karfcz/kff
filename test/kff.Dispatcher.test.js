@@ -12,7 +12,7 @@ describe('kff.Dispatcher', function()
 				}
 		});
 
-		dispatcher.trigger({ name: 'test' });
+		dispatcher.trigger({ type: 'test' });
 
 
 
