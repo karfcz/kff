@@ -122,6 +122,12 @@ kff.View = kff.createClass(
 		}
 		else this.dispatcher = null;
 
+		if(options.actions && this.dispatcher)
+		{
+			this.actions = options.actions;
+		}
+		else this.actions = null;
+
 		if(options.env)
 		{
 			this.env = options.env;
@@ -203,6 +209,12 @@ kff.View = kff.createClass(
 			this.runSubviews();
 
 			this.delegateEvents();
+
+			if(this.actions)
+			{
+				if(!this.dispatcher) this.dispatcher = new kff.Dispatcher();
+				this.dispatcher.registerActions(this.actions);
+			}
 
 			if(this.dispatcher)
 			{
