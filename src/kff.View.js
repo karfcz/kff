@@ -769,12 +769,12 @@ kff.View = kff.createClass(
 
 		if(oldModels)
 		{
-			for(key in oldModels)
+			var keys = Object.keys(oldModels);
+			for(i = 0, l = keys.length; i < l; i++)
 			{
-				if(oldModels.hasOwnProperty(key))
-				{
-					this.models[key] = oldModels[key];
-				}
+				key = keys[i];
+				this.models[key] = oldModels[key];
+
 			}
 		}
 
@@ -784,12 +784,12 @@ kff.View = kff.createClass(
 
 		if(oldHelpers)
 		{
-			for(key in oldHelpers)
+			var keys = Object.keys(oldHelpers);
+			for(i = 0, l = keys.length; i < l; i++)
 			{
-				if(oldHelpers.hasOwnProperty(key))
-				{
-					this.helpers[key] = oldHelpers[key];
-				}
+				key = keys[i];
+				this.helpers[key] = oldHelpers[key];
+
 			}
 		}
 
