@@ -26,6 +26,7 @@ kff.Cursor = kff.createClass(
 
 	refine: function(keyPath)
 	{
+		if(typeof keyPath === 'string') keyPath = keyPath.split('.');
 		return new kff.Cursor(this.root, kff.arrayConcat(this.keyPath, keyPath));
 		// return new kff.Cursor(this.root, this.keyPath.concat(keyPath));
 	},
@@ -35,17 +36,35 @@ kff.Cursor = kff.createClass(
 		return kff.evalObjectPath(this.keyPath, this.root);
 	},
 
-	// getIn: function(keyPath)
-	// {
-	// 	return kff.evalObjectPath(this.keyPath.concat(keyPath), this.root);
-	// },
+	getIn: function(keyPath)
+	{
+		return kff.evalObjectPath(this.keyPath.concat(keyPath), this.root);
+	},
 
 	set: function(value)
 	{
-		if(this.keyPath.length < 1) return;
-		var prop = this.keyPath[0];
-		var keyPath = this.keyPath.slice(1);
-		this.root[prop] = kff.imset(keyPath, value, this.root[prop]);
+		var prop;
+		if(this.keyPath.length === 0)
+		{
+			if(typeof value === 'object' && value !== null)
+			{
+				for(prop in value)
+				{
+					this.root[prop] = kff.imset([], value[prop], this.root[prop]);
+				}
+			}
+		}
+		else
+		{
+			prop = this.keyPath[0];
+			var keyPath = this.keyPath.slice(1);
+			this.root[prop] = kff.imset(keyPath, value, this.root[prop]);
+		}
+	},
+
+	setIn: function(path, value)
+	{
+		this.refine(path).set(value);
 	},
 
 	// setIn: function(value, keyPath)
