@@ -31,7 +31,7 @@ kff.Binder = kff.createClass(
 		{
 			if(this.$element && this.options.events !== null) this.delegateEvents(this.options.events);
 		}
-		this.rebindModel();
+		this.rebindCursor();
 		if(this.options.fill) this.fill();
 	},
 
@@ -254,7 +254,7 @@ kff.Binder = kff.createClass(
 	 *
 	 * @private
 	 */
-	rebindModel: function()
+	rebindCursor: function()
 	{
 		this.cursor = this.view.getCursor(this.keyPath);
 	},

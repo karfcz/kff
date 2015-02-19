@@ -87,9 +87,9 @@ kff.BinderMap = kff.createClass(
 	/**
 	 * Rebinds models of all binders
 	 */
-	rebindModels: function()
+	rebindCursors: function()
 	{
-		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].rebindModel();
+		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].rebindCursor();
 	},
 
 	/**

@@ -241,7 +241,7 @@ kff.View = kff.createClass(
 		}
 		else
 		{
-			this.rebindModels();
+			this.rebindCursors();
 			this.refreshOwnBinders();
 			if(this.subviews !== null)
 			{
@@ -1281,9 +1281,9 @@ kff.View = kff.createClass(
 	 *
 	 * @private
 	 */
-	rebindModels: function()
+	rebindCursors: function()
 	{
-		if(this.modelBindersMap) this.modelBindersMap.rebindModels();
+		if(this.modelBindersMap) this.modelBindersMap.rebindCursors();
 	},
 
 	/**
