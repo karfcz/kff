@@ -77,6 +77,7 @@ kff.View = kff.createClass(
 		this.viewFactory = null;
 		this.cachedRegions = null;
 		this.pendingRefresh = false;
+		this.subviewsOptions = null;
 
 		this.initEvents();
 
@@ -555,7 +556,33 @@ kff.View = kff.createClass(
 	 */
 	createView: function(viewName, options)
 	{
+		var optionsOverload;
 		options.parentView = this;
+
+		if(this.subviewsOptions)
+		{
+			optionsOverload = this.subviewsOptions[viewName];
+			if(typeof optionsOverload === 'string')
+			{
+				viewName = optionsOverload;
+				optionsOverload = this.subviewsOptions[viewName];
+			}
+			if(typeof optionsOverload === 'object' && optionsOverload !== null)
+			{
+				for(var key in optionsOverload)
+				{
+					if(key === 'models' || key === 'actions' || key === 'helpers')
+					{
+						if(!options.hasOwnProperty(key)) options[key] = optionsOverload[key];
+						else kff.mixins(options[key], optionsOverload[key]);
+					}
+					else
+					{
+						options[key] = optionsOverload[key];
+					}
+				}
+			}
+		}
 		var subView = this.viewFactory.createView(viewName, options);
 		if(subView instanceof kff.View)
 		{
@@ -587,6 +614,11 @@ kff.View = kff.createClass(
 			$element: $(element),
 			options: options || {}
 		});
+	},
+
+	setSubviewsOptions: function(subviewsOptions)
+	{
+		this.subviewsOptions = subviewsOptions;
 	},
 
 	/**

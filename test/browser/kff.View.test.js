@@ -157,6 +157,55 @@ describe('kff.View', function()
 	});
 
 
+	describe('#setSubviewsOptions', function()
+	{
+		it('should overload model using setSubviewsOptions method', function()
+		{
+			var testModel = {};
+			var testModel2 = null;
+			var View1 = kff.createClass({ extend: kff.PageView },
+			{
+				constructor: function(options)
+				{
+					kff.PageView.apply(this, arguments);
+					this.setSubviewsOptions({
+						View2: {
+							models: {
+								testModel: testModel
+							}
+						}
+					});
+				},
+
+				render: function()
+				{
+					this.$element[0].innerHTML = '<div data-kff-view="View2">';
+				}
+
+			});
+
+			var View2 = kff.createClass({ extend: kff.View }, {
+				constructor: function(options)
+				{
+					kff.View.apply(this, arguments);
+					testModel2 = this.scope.testModel;
+				}
+			});
+
+			var app = new kff.App({
+				defaultView: 'View1',
+				modules: {
+					View1: View1,
+					View2: View2
+				}
+			});
+
+			app.init();
+			expect(testModel2).to.equal(testModel);
+		});
+	});
+
+
 	describe('#renderSubviews', function()
 	{
 		var TestView2 = kff.createClass({
