@@ -80,6 +80,12 @@ kff.Cursor = kff.createClass(
 		var prop = this.keyPath[0];
 		var keyPath = this.keyPath.slice(1);
 		this.root[prop] = kff.imremove(keyPath, this.root[prop]);
+	},
+
+	equalsTo: function(cursor)
+	{
+		if(!cursor || cursor.root !== this.root) return false;
+		return kff.compareArrays(this.keyPath, cursor.keyPath);
 	}
 
 });
