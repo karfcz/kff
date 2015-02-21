@@ -91,7 +91,7 @@ kff.mixins = function(obj, properties)
 			if(deep && kff.isPlainObject(prop))
 			{
 				objProp = obj[key];
-				if(typeof objProp !== 'object' || objProp === null) objProp = {};
+				if(typeof objProp !== 'object' || objProp === null) obj[key] = objProp = {};
 				kff.mixins(objProp, prop, deep);
 			}
 			else obj[key] = prop;

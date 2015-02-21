@@ -31,6 +31,18 @@ describe('kff.mixins', function()
 		expect(b).to.equal(ret);
 	});
 
+	it('should deep mixin object property that does not exist in original object', function()
+	{
+		var a = {  };
+		var b = { prop2: { prop3: 'prop3' } };
+
+		kff.mixins(a, b, true);
+
+		expect(a).to.have.property('prop2');
+		expect(a.prop2).to.have.property('prop3');
+		expect(b.prop2.prop3).to.equal('prop3');
+	});
+
 	it('should mixin properties from multiple objects', function()
 	{
 		var a = { prop1: 'prop1' };
