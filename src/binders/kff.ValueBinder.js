@@ -31,7 +31,7 @@ kff.ValueBinder = kff.createClass(
 		{
 			this.getValue = this.getArrayValue;
 			this.setValue = this.setArrayValue;
-			this.compareValues = this.compareArrayValues;
+			this.compareValues = kff.compareArrays;
 		}
 		if(this.options.eventFilters && this.options.eventFilters[0])
 		{
