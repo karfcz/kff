@@ -88,13 +88,6 @@ kff.View = kff.createClass(
 		}
 		else this.scope = {};
 
-		if(options.helpers)
-		{
-			this.helpers = options.helpers;
-			options.helpers = null;
-		}
-		else this.helpers = {};
-
 		if(options.parentView)
 		{
 			this.setParentView(options.parentView);
@@ -834,7 +827,7 @@ kff.View = kff.createClass(
 
 	setParentView: function(parentView)
 	{
-		var oldModels, oldHelpers, key, i, l;
+		var oldModels, key, i, l;
 
 		this.parentView = parentView;
 
@@ -870,21 +863,6 @@ kff.View = kff.createClass(
 			}
 		}
 
-
-		oldHelpers = this.helpers || null;
-
-		this.helpers = kff.createObject(parentView.helpers);
-
-		if(oldHelpers)
-		{
-			var keys = Object.keys(oldHelpers);
-			for(i = 0, l = keys.length; i < l; i++)
-			{
-				key = keys[i];
-				this.helpers[key] = oldHelpers[key];
-			}
-		}
-
 		if(this.subviews !== null)
 		{
 			for(i = 0, l = this.subviews.length; i < l; i++)
@@ -912,8 +890,6 @@ kff.View = kff.createClass(
 
 		this.$element = $(element);
 
-
-
 		this.rebindSubViews(element, {
 			subviewIndex: 0,
 			subviewsStructIndex: 0,
@@ -927,7 +903,6 @@ kff.View = kff.createClass(
 
 		if(this.collectionBinder)
 		{
-			// this.collectionBinder.collection = this.getModel(this.collectionBinder.collectionPathArray);
 			this.collectionBinder.view = this;
 		}
 
@@ -936,9 +911,10 @@ kff.View = kff.createClass(
 	rebindSubViews: function(el, ids)
 	{
 		var node, doSubviews;
-		if(this.subviewsStruct !== null)
+		var subviews = this.subviews, subviewsStruct = this.subviewsStruct;
+		if(subviewsStruct !== null)
 		{
-			if(this.subviews === null) this.subviews = [];
+			if(subviews === null) this.subviews = subviews = [];
 			if(el.hasChildNodes())
 			{
 				node = el.firstChild;
@@ -947,14 +923,14 @@ kff.View = kff.createClass(
 				{
 					if(node.nodeType === 1)
 					{
-						if(this.subviewsStruct[ids.subviewIndex])
+						if(subviewsStruct[ids.subviewIndex])
 						{
-							ids.subviewsStructIndex = this.subviewsStruct[ids.subviewIndex].index;
+							ids.subviewsStructIndex = subviewsStruct[ids.subviewIndex].index;
 							if(ids.index === ids.subviewsStructIndex)
 							{
-								if(this.subviews[ids.subviewIndex])
+								if(subviews[ids.subviewIndex])
 								{
-									this.subviews[ids.subviewIndex].rebindElement(node);
+									subviews[ids.subviewIndex].rebindElement(node);
 								}
 								ids.subviewIndex++;
 								doSubviews = false;
@@ -1307,7 +1283,7 @@ kff.View = kff.createClass(
 			{
 				modifierArgs = [];
 			}
-			if(this.helpers[modifierParam]) modifiers.push({ fn: this.helpers[modifierParam], args: modifierArgs });
+			if(this.scope[modifierParam]) modifiers.push({ fn: this.scope[modifierParam], args: modifierArgs });
 			else if(kff.View.helpers[modifierParam]) modifiers.push({ fn: kff.View.helpers[modifierParam], args: modifierArgs });
 		}
 	},
