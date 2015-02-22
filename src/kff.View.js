@@ -77,7 +77,7 @@ kff.View = kff.createClass(
 		this.viewFactory = null;
 		this.cachedRegions = null;
 		this.pendingRefresh = false;
-		this.subviewsOptions = null;
+		this.subviewsScope = null;
 
 		this.initEvents();
 
@@ -556,31 +556,19 @@ kff.View = kff.createClass(
 	 */
 	createView: function(viewName, options)
 	{
-		var optionsOverload;
+		var subviewScope;
 		options.parentView = this;
 
-		if(this.subviewsOptions)
+		if(this.subviewsScope)
 		{
-			optionsOverload = this.subviewsOptions[viewName];
-			if(typeof optionsOverload === 'string')
+			subviewScope = this.subviewsScope[viewName];
+
+			if(typeof subviewScope === 'object' && subviewScope !== null)
 			{
-				viewName = optionsOverload;
-				optionsOverload = this.subviewsOptions[viewName];
-			}
-			if(typeof optionsOverload === 'object' && optionsOverload !== null)
-			{
-				for(var key in optionsOverload)
-				{
-					if(key === 'models' || key === 'actions' || key === 'helpers')
-					{
-						if(!options.hasOwnProperty(key)) options[key] = optionsOverload[key];
-						else kff.mixins(options[key], optionsOverload[key]);
-					}
-					else
-					{
-						options[key] = optionsOverload[key];
-					}
-				}
+				var defaultViewOptions = this.viewFactory.getDefaultViewOptions(viewName);
+				if(defaultViewOptions) options = kff.mixins(defaultViewOptions, options);
+				if(options.models) kff.mixins(options.models, subviewScope);
+				else options.models = subviewScope;
 			}
 		}
 		var subView = this.viewFactory.createView(viewName, options);
@@ -616,9 +604,28 @@ kff.View = kff.createClass(
 		});
 	},
 
-	setSubviewsOptions: function(subviewsOptions)
+	setSubviewsScope: function(subviewsScope)
 	{
-		this.subviewsOptions = subviewsOptions;
+		if(subviewsScope)
+		{
+			if(this.parentView === null)
+			{
+				this.subviewsScope = subviewsScope;
+			}
+			else if(this.subviewsScope)
+			{
+				var keys = Object.keys(subviewsScope);
+				for(var i = 0, l = keys.length; i < l; i++)
+				{
+					key = keys[i];
+					this.subviewsScope[key] = subviewsScope[key];
+				}
+			}
+			else
+			{
+				this.subviewsScope = subviewsScope;
+			}
+		}
 	},
 
 	/**
@@ -846,6 +853,24 @@ kff.View = kff.createClass(
 			}
 		}
 
+		var oldSubviewsScope = this.subviewsScope || null;
+
+		if(parentView.subviewsScope)
+		{
+			this.subviewsScope = kff.createObject(parentView.subviewsScope);
+
+			if(oldSubviewsScope)
+			{
+				var keys = Object.keys(oldSubviewsScope);
+				for(i = 0, l = keys.length; i < l; i++)
+				{
+					key = keys[i];
+					this.subviewsScope[key] = oldSubviewsScope[key];
+				}
+			}
+		}
+
+
 		oldHelpers = this.helpers || null;
 
 		this.helpers = kff.createObject(parentView.helpers);
@@ -857,7 +882,6 @@ kff.View = kff.createClass(
 			{
 				key = keys[i];
 				this.helpers[key] = oldHelpers[key];
-
 			}
 		}
 

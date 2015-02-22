@@ -168,11 +168,9 @@ describe('kff.View', function()
 				constructor: function(options)
 				{
 					kff.PageView.apply(this, arguments);
-					this.setSubviewsOptions({
+					this.setSubviewsScope({
 						View2: {
-							models: {
-								testModel: testModel
-							}
+							testModel: testModel
 						}
 					});
 				},

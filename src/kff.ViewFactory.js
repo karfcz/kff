@@ -54,6 +54,13 @@ kff.ViewFactory = kff.createClass(
 		return view;
 	},
 
+	getDefaultViewOptions: function(viewName)
+	{
+		var viewConfig = this.serviceContainer.getServiceConfigAnnotation(viewName);
+		if(typeof viewConfig === 'object' && viewConfig !== null && viewConfig.args instanceof Array) return this.serviceContainer.resolveParameters(viewConfig.args[0]);
+		else return null;
+	},
+
 	/**
 	 * Returns constructor function of the view. Used only as fallback in the
 	 * getPrecedingView method.
