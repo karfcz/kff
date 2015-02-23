@@ -632,42 +632,34 @@ kff.View = kff.createClass(
 	 */
 	findViewElements: function(el)
 	{
-		var node, viewName, rendered, onAttr, optAttr, index = 0, subviewsStruct = null;
+		var node = el, viewName = null, rendered, onAttr, optAttr, index = 0, subviewsStruct = null;
 
-		if(el.hasChildNodes())
+		while((node = this.nextNode(el, node, viewName === null)) !== null)
 		{
-			node = el.firstChild;
-			while(node !== null)
-			{
-				viewName = null;
-				if(node.nodeType === 1)
-				{
-					rendered = node.getAttribute(kff.DATA_RENDERED_ATTR);
+			viewName = null;
+			rendered = node.getAttribute(kff.DATA_RENDERED_ATTR);
 
-					if(!rendered)
-					{
-						viewName = node.getAttribute(kff.DATA_VIEW_ATTR);
-						if(!viewName && node.getAttribute(kff.DATA_BIND_ATTR))
-						{
-							viewName = 'kff.View';
-							node.setAttribute(kff.DATA_VIEW_ATTR, viewName);
-						}
-						if(viewName)
-						{
-							optAttr = node.getAttribute(kff.DATA_OPTIONS_ATTR);
-							if(subviewsStruct === null) subviewsStruct = [];
-							subviewsStruct.push({
-								viewName: viewName,
-								index: index,
-								$element: $(node),
-								options: optAttr ? JSON.parse(optAttr) : {}
-							});
-						}
-					}
-					index++;
+			if(!rendered)
+			{
+				viewName = node.getAttribute(kff.DATA_VIEW_ATTR);
+				if(!viewName && node.getAttribute(kff.DATA_BIND_ATTR))
+				{
+					viewName = 'kff.View';
+					node.setAttribute(kff.DATA_VIEW_ATTR, viewName);
 				}
-				node = this.nextNode(el, node, viewName === null);
+				if(viewName)
+				{
+					optAttr = node.getAttribute(kff.DATA_OPTIONS_ATTR);
+					if(subviewsStruct === null) subviewsStruct = [];
+					subviewsStruct.push({
+						viewName: viewName,
+						index: index,
+						$element: $(node),
+						options: optAttr ? JSON.parse(optAttr) : {}
+					});
+				}
 			}
+			index++;
 		}
 		return subviewsStruct;
 	},
@@ -910,61 +902,55 @@ kff.View = kff.createClass(
 
 	rebindSubViews: function(el, ids)
 	{
-		var node, doSubviews;
+		var node = el, doSubviews = true;
 		var subviews = this.subviews, subviewsStruct = this.subviewsStruct;
 		if(subviewsStruct !== null)
 		{
 			if(subviews === null) this.subviews = subviews = [];
-			if(el.hasChildNodes())
-			{
-				node = el.firstChild;
 
-				while(node !== null)
+			while((node = this.nextNode(el, node, doSubviews)) !== null)
+			{
+				if(subviewsStruct[ids.subviewIndex])
 				{
-					if(node.nodeType === 1)
+					ids.subviewsStructIndex = subviewsStruct[ids.subviewIndex].index;
+					if(ids.index === ids.subviewsStructIndex)
 					{
-						if(subviewsStruct[ids.subviewIndex])
+						if(subviews[ids.subviewIndex])
 						{
-							ids.subviewsStructIndex = subviewsStruct[ids.subviewIndex].index;
-							if(ids.index === ids.subviewsStructIndex)
-							{
-								if(subviews[ids.subviewIndex])
-								{
-									subviews[ids.subviewIndex].rebindElement(node);
-								}
-								ids.subviewIndex++;
-								doSubviews = false;
-							}
-							else doSubviews = true;
+							subviews[ids.subviewIndex].rebindElement(node);
 						}
-						ids.index++;
+						ids.subviewIndex++;
+						doSubviews = false;
 					}
-					node = this.nextNode(el, node, doSubviews);
+					else doSubviews = true;
 				}
+				ids.index++;
 			}
 		}
 	},
 
 	nextNode: function(root, node, deep)
 	{
-		var parentNode, nextSibling;
-		if(deep && node.hasChildNodes())
-		{
-			node = node.firstChild;
-		}
-		else
-		{
-			parentNode = node.parentNode;
-			nextSibling = node.nextSibling;
-			while(node !== root && nextSibling === null && parentNode !== null)
+		var parentNode, nextSibling, tempNode;
+		do {
+			if(deep && (tempNode = node.firstChild))
 			{
-				node = parentNode;
+				node = tempNode;
+			}
+			else
+			{
 				parentNode = node.parentNode;
 				nextSibling = node.nextSibling;
+				while(node !== root && nextSibling === null && parentNode !== null)
+				{
+					node = parentNode;
+					parentNode = node.parentNode;
+					nextSibling = node.nextSibling;
+				}
+				if(node && node !== root) node = nextSibling;
+				else node = null;
 			}
-			if(node && node !== root) node = nextSibling;
-			else node = null;
-		}
+		} while (node && node.nodeType !== 1);
 		return node;
 	},
 
