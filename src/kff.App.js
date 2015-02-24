@@ -14,9 +14,9 @@ kff.App = kff.createClass(
 	 */
 	constructor: function(options)
 	{
-		var models, element, require, middlewares, dispatcher;
+		var scope, element, require, middlewares, dispatcher;
 		this.options = options = options || {};
-		models = options.models || {};
+		scope = options.scope || {};
 		element = options.element || null;
 		require = options.require || null;
 		var modules = options.modules || null;
@@ -33,7 +33,7 @@ kff.App = kff.createClass(
 				'kff.PageView': {
 					args: [{
 						element: element,
-						models: models
+						scope: scope
 					}]
 				},
 				'kff.FrontController': {

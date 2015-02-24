@@ -59,7 +59,7 @@ kff.View = kff.createClass(
 	 * @constructs
 	 * @param {Object} options Options object
 	 * @param {DOM Element|jQuery} options.element A DOM element that will be a root element of the view
-	 * @param {Array} options.models Array of model instances to be used by the view
+	 * @param {Array} options.scope Array of model instances to be used by the view
 	 */
 	constructor: function(options)
 	{
@@ -81,10 +81,10 @@ kff.View = kff.createClass(
 
 		this.initEvents();
 
-		if(options.models)
+		if(options.scope)
 		{
-			this.scope = options.models;
-			options.models = null;
+			this.scope = options.scope;
+			options.scope = null;
 		}
 		else this.scope = {};
 
@@ -567,8 +567,8 @@ kff.View = kff.createClass(
 			{
 				var defaultViewOptions = this.viewFactory.getDefaultViewOptions(viewName);
 				if(defaultViewOptions) options = kff.mixins(defaultViewOptions, options);
-				if(options.models) kff.mixins(options.models, subviewScope);
-				else options.models = subviewScope;
+				if(options.scope) kff.mixins(options.scope, subviewScope);
+				else options.scope = subviewScope;
 			}
 		}
 		var subView = this.viewFactory.createView(viewName, options);
@@ -828,21 +828,21 @@ kff.View = kff.createClass(
 
 	setParentView: function(parentView)
 	{
-		var oldModels, key, i, l;
+		var oldScope, key, i, l;
 
 		this.parentView = parentView;
 
-		oldModels = this.scope || null;
+		oldScope = this.scope || null;
 
 		this.scope = kff.createObject(parentView.scope);
 
-		if(oldModels)
+		if(oldScope)
 		{
-			var keys = Object.keys(oldModels);
+			var keys = Object.keys(oldScope);
 			for(i = 0, l = keys.length; i < l; i++)
 			{
 				key = keys[i];
-				this.scope[key] = oldModels[key];
+				this.scope[key] = oldScope[key];
 
 			}
 		}
@@ -1342,7 +1342,7 @@ kff.View = kff.createClass(
 	},
 
 	/**
-	 * Rebinds models of all binders that belong to this view
+	 * Rebinds cursors of all binders that belong to this view
 	 *
 	 * @private
 	 */
