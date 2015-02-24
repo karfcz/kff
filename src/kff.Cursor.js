@@ -37,7 +37,7 @@ kff.Cursor = kff.createClass(
 
 	getIn: function(keyPath)
 	{
-		return kff.evalObjectPath(kff.arrayConcat(this.keyPath, keyPath), this.root);
+		return kff.evalObjectPath(this.keyPath.concat(keyPath), this.root);
 	},
 
 	set: function(value)
