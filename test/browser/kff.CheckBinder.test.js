@@ -8,7 +8,7 @@
 // 		var view = new kff.BindingView(
 // 		{
 // 			element: $input,
-// 			models: {
+// 			scope: {
 // 				myModel: {
 // 					checked: true
 // 				}

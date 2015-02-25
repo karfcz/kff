@@ -19,7 +19,7 @@ describe('kff.View', function()
 		{
 			env: env,
 			element: $div1,
-			models: {
+			scope: {
 				collection: collection
 			}
 		});
@@ -47,7 +47,7 @@ describe('kff.View', function()
 		{
 			env: env,
 			element: $div1,
-			models: {
+			scope: {
 				collection: collection
 			}
 		});
@@ -84,7 +84,7 @@ describe('kff.View', function()
 		{
 			env: env,
 			element: $div1,
-			models: {
+			scope: {
 				collection: collection
 			}
 		});
@@ -108,7 +108,7 @@ describe('kff.View', function()
 		{
 			env: env,
 			element: $div,
-			models: {
+			scope: {
 				collection: collection
 			}
 		});
@@ -144,7 +144,7 @@ describe('kff.View', function()
 	// 	{
 	// 		env: env,
 	// 		element: $div,
-	// 		models: {
+	// 		scope: {
 	// 			computer: computer
 	// 		}
 	// 	});
@@ -187,7 +187,7 @@ describe('kff.View', function()
 		{
 			env: env,
 			element: $div1,
-			models: {
+			scope: {
 				collection: new kff.Cursor(collection),
 				filterModel: new kff.Cursor(filterModel)
 			}
@@ -219,7 +219,7 @@ describe('kff.View', function()
 		{
 			env: env,
 			element: $div1,
-			models: {
+			scope: {
 				collection: new kff.Cursor(collection),
 				sortModel: new kff.Cursor(sortModel)
 			}
@@ -257,7 +257,7 @@ describe('kff.View', function()
 		{
 			env: env,
 			element: $div1,
-			models: {
+			scope: {
 				collection: new kff.Cursor(collection),
 				sortModel: new kff.Cursor(sortModel)
 			}

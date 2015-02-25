@@ -8,7 +8,7 @@ if(typeof require === 'function') var kff = require('../build/kff.js');
 // 		var view = new kff.View(
 // 		{
 // 			element: $div,
-// 			models: {
+// 			scope: {
 // 				myModel: {
 // 					name: 'Karel'
 // 				}

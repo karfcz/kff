@@ -8,7 +8,7 @@
 // 		var view = new kff.BindingView(
 // 		{
 // 			element: $div,
-// 			models: {
+// 			scope: {
 // 				myModel: new kff.Model({
 // 					name: 'Karel'
 // 				})
