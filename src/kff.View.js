@@ -127,12 +127,6 @@ kff.View = kff.createClass(
 			this.env = options.env;
 		}
 
-		if(options.bindAttr)
-		{
-			this.bindAttr = options.bindAttr;
-		}
-		else this.bindAttr = null;
-
 		this.options = options;
 
 	},
@@ -349,7 +343,6 @@ kff.View = kff.createClass(
 					options = subviewsStruct[i].options;
 					options.element = subviewsStruct[i].$element[0];
 					options.env = this.env;
-					options.bindAttr = subviewsStruct[i].bindAttr;
 					subView = this.createView(subviewsStruct[i].viewName, options);
 					if(subView instanceof kff.View)
 					{
@@ -639,7 +632,7 @@ kff.View = kff.createClass(
 	 */
 	findViewElements: function(el)
 	{
-		var node = el, viewName = null, rendered, onAttr, optAttr, index = 0, subviewsStruct = null, bindAttr;
+		var node = el, viewName = null, rendered, onAttr, optAttr, index = 0, subviewsStruct = null;
 
 		while((node = this.nextNode(el, node, viewName === null)) !== null)
 		{
@@ -649,8 +642,7 @@ kff.View = kff.createClass(
 			if(!rendered)
 			{
 				viewName = node.getAttribute(kff.DATA_VIEW_ATTR);
-				bindAttr = node.getAttribute(kff.DATA_BIND_ATTR);
-				if(!viewName && bindAttr)
+				if(!viewName && node.getAttribute(kff.DATA_BIND_ATTR))
 				{
 					viewName = 'kff.View';
 					node.setAttribute(kff.DATA_VIEW_ATTR, viewName);
@@ -663,8 +655,7 @@ kff.View = kff.createClass(
 						viewName: viewName,
 						index: index,
 						$element: $(node),
-						options: optAttr ? JSON.parse(optAttr) : {},
-						bindAttr: bindAttr
+						options: optAttr ? JSON.parse(optAttr) : {}
 					});
 				}
 			}
@@ -1080,10 +1071,8 @@ kff.View = kff.createClass(
 	initBinding: function()
 	{
 		var model, attr, result, result2, modelPathArray, i, ret, modelArgs;
-		var dataBindAttr = this.bindAttr;
+		var dataBindAttr = this.$element[0].getAttribute(kff.DATA_BIND_ATTR);
 		var modelName;
-
-		if(!dataBindAttr) return;
 
 		bindingRegex.lastIndex = 0;
 
