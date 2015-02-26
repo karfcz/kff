@@ -242,7 +242,7 @@ kff.CollectionBinder = kff.createClass(
 						{
 							boundView.scope['*'] = this.cursor.refine([this.collection.indexOf(item)]);
 						}
-						if(this.view.itemAlias) boundView.scope[this.view.itemAlias] = item;
+						if(this.view.itemAlias) boundView.scope[this.view.itemAlias] = boundView.scope['*'];
 						boundView.setBindingIndex(i);
 						boundView.refreshAll();
 						if(i >= lastViewIndex) lastView = boundView;
@@ -424,7 +424,8 @@ kff.CollectionBinder = kff.createClass(
 			}
 
 
-			if(this.view.itemAlias) boundView.scope[this.view.itemAlias] = item;
+			if(this.view.itemAlias) boundView.scope[this.view.itemAlias] = boundView.scope['*'];
+
 
 			boundView.setBindingIndex(i);
 
@@ -451,7 +452,7 @@ kff.CollectionBinder = kff.createClass(
 				boundView.scope['*'] = this.cursor.refine([this.collection.indexOf(item)]);
 			}
 
-			if(this.view.itemAlias) boundView.scope[this.view.itemAlias] = item;
+			if(this.view.itemAlias) boundView.scope[this.view.itemAlias] = boundView.scope['*'];
 
 			boundView.setBindingIndex(i);
 			boundView.rebindElement($element[0]);
