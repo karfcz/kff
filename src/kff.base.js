@@ -277,9 +277,9 @@ kff.isPlainObject = function(obj)
  *
  * @param  {function}  fn Callback function
  */
-kff.setZeroTimeout = function(fn)
+kff.setImmediate = function(fn)
 {
-	var callbacks = [], messageName = 'kff-zerotimeoutmsg';
+	var callbacks = [], messageName = 'kff-setimmediate-msg';
 
 	var handleMessage = function(event)
 	{
@@ -292,7 +292,7 @@ kff.setZeroTimeout = function(fn)
 
 	if('postMessage' in window && 'addEventListener' in window && !('attachEvent' in window))
 	{
-		kff.setZeroTimeout = function(fn)
+		kff.setImmediate = function(fn)
 		{
 			callbacks.push(fn);
 			window.postMessage(messageName, '*');
@@ -301,13 +301,13 @@ kff.setZeroTimeout = function(fn)
 	}
 	else
 	{
-		kff.setZeroTimeout = function(fn)
+		kff.setImmediate = function(fn)
 		{
 			setTimeout(fn, 0);
 		};
 	}
 
-	kff.setZeroTimeout(fn);
+	kff.setImmediate(fn);
 };
 
 
