@@ -268,4 +268,54 @@ describe('kff.View', function()
 		expect($div1.text()).to.equal('12');
 	});
 
+	it('should render collection with default item alias', function()
+	{
+		var collection = [
+			{ a: 1 },
+			{ a: 2 }
+		];
+
+		var $div1 = $('<div/>');
+		var $div2 = $('<div data-kff-bind="collection:each"/>');
+		var $div3 = $('<div data-kff-bind="_item.a:text"/>');
+		$div1.append($div2);
+		$div2.append($div3);
+		var view = new kff.View(
+		{
+			env: env,
+			element: $div1,
+			scope: {
+				collection: new kff.Cursor(collection),
+			}
+		});
+		view.init();
+
+		expect($div1.text()).to.equal('12');
+	});
+
+	it('should render collection with custom item alias', function()
+	{
+		var collection = [
+			{ a: 1 },
+			{ a: 2 }
+		];
+
+		var $div1 = $('<div/>');
+		var $div2 = $('<div data-kff-bind="collection:each:as(it)"/>');
+		var $div3 = $('<div data-kff-bind="it.a:text"/>');
+		$div1.append($div2);
+		$div2.append($div3);
+		var view = new kff.View(
+		{
+			env: env,
+			element: $div1,
+			scope: {
+				collection: new kff.Cursor(collection),
+			}
+		});
+		view.init();
+
+		expect($div1.text()).to.equal('12');
+	});
+
 });

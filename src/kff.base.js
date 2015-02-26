@@ -23,6 +23,7 @@ kff.DATA_RENDERED_ATTR = 'data-kff-rendered';
  */
 kff.DATA_BIND_ATTR = 'data-kff-bind';
 
+kff.defaultItemAlias = '_item';
 
 kff.debug = false;
 

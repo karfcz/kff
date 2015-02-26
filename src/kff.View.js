@@ -2,7 +2,7 @@
 (function()
 {
 
-var bindingRegex = /(?:([.a-zA-Z0-9*-]+))(?:\(([@.a-zA-Z0-9*,\s-]+)*\))?((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g;
+var bindingRegex = /(?:([_.a-zA-Z0-9*-]+))(?:\(([@.a-zA-Z0-9*,\s-]+)*\))?((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g;
 
 var operatorsRegex = /:([a-zA-Z0-9]+)(?:\(([^()]*)\))?/g;
 
@@ -770,7 +770,6 @@ kff.View = kff.createClass(
 		var clonedView = new this.constructor(options);
 		clonedView.viewFactory = this.viewFactory;
 
-
 		if(this.subviews !== null)
 		{
 			l = this.subviews.length;
@@ -795,7 +794,6 @@ kff.View = kff.createClass(
 			clonedView.cachedRegions = this.cachedRegions;
 			clonedView.cloneCachedRegions();
 		}
-
 
 		if(this.collectionBinder)
 		{
@@ -834,7 +832,6 @@ kff.View = kff.createClass(
 			{
 				key = keys[i];
 				this.scope[key] = oldScope[key];
-
 			}
 		}
 
@@ -1116,6 +1113,7 @@ kff.View = kff.createClass(
 					{
 						this.itemAlias = ret.itemAliases[0];
 					}
+					else this.itemAlias = kff.defaultItemAlias;
 				}
 			}
 			else
