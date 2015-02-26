@@ -42,7 +42,7 @@ kff.ValueBinder = kff.createClass(
 
 	inputChange: function(event)
 	{
-		kff.setZeroTimeout(this.f(function()
+		kff.setImmediate(this.f(function()
 		{
 			this.updateModel(this.getValue(), event);
 		}));
@@ -55,7 +55,7 @@ kff.ValueBinder = kff.createClass(
 
 		if(this.$element[0].nodeName === 'SELECT')
 		{
-			kff.setZeroTimeout(this.f(function()
+			kff.setImmediate(this.f(function()
 			{
 				this.setValue(val);
 			}));
