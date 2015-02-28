@@ -52,10 +52,10 @@ kff.Dispatcher = kff.createClass(
 		{
 			for(var action in actions)
 			{
-				if(typeof actions[action] !== 'function') {
-					throw new Error('Dispatcher action "' + action + '" is not a function');
+				if(typeof actions[action] === 'function') {
+					this.actionStreams[action] = this.eventStream.filter(filterByEventType(action)).on(this.createCallback(actions[action]));
 				}
-				this.actionStreams[action] = this.eventStream.filter(filterByEventType(action)).on(this.createCallback(actions[action]));
+				else if(kff.debug) kff.log('Dispatcher action "' + action + '" is not a function');
 			}
 		}
 	},
