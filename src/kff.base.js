@@ -73,12 +73,24 @@ kff.extend = function(child, parent)
  */
 kff.mixins = function(obj, properties)
 {
-	var i = 1, l = arguments.length, key, props, prop, objProp, deep = false;
-	if(l > 2 && arguments[l-1] === true)
+	var i = 1, l = arguments.length, key, props;
+
+	while(i < l)
 	{
-		deep = true;
-		l--;
+		props = arguments[i];
+		var keys = Object.keys(props);
+		for(var j = 0, k = keys.length; j < k; j++)
+		{
+			obj[keys[j]] = props[keys[j]];
+		}
+		i++;
 	}
+	return obj;
+};
+
+kff.deepMixins = function(obj, properties)
+{
+	var i = 1, l = arguments.length, key, props, prop, objProp;
 	while(i < l)
 	{
 		props = arguments[i];
@@ -89,11 +101,11 @@ kff.mixins = function(obj, properties)
 		{
 			key = keys[j];
 			prop = props[key];
-			if(deep && kff.isPlainObject(prop))
+			if(kff.isPlainObject(prop))
 			{
 				objProp = obj[key];
 				if(typeof objProp !== 'object' || objProp === null) obj[key] = objProp = {};
-				kff.mixins(objProp, prop, deep);
+				kff.deepMixins(objProp, prop);
 			}
 			else obj[key] = prop;
 		}

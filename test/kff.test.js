@@ -36,7 +36,7 @@ describe('kff.mixins', function()
 		var a = {  };
 		var b = { prop2: { prop3: 'prop3' } };
 
-		kff.mixins(a, b, true);
+		kff.deepMixins(a, b);
 
 		expect(a).to.have.property('prop2');
 		expect(a.prop2).to.have.property('prop3');
@@ -65,7 +65,7 @@ describe('kff.mixins', function()
 		var b = { prop2: 'prop2', prop3: { prop4: 'prop4b', prop5: 'prop5b' } };
 		var ret;
 
-		ret = kff.mixins(a, b, true);
+		ret = kff.deepMixins(a, b);
 
 		expect(a).to.have.property('prop1');
 		expect(a).to.have.property('prop2');
@@ -82,7 +82,7 @@ describe('kff.mixins', function()
 		var b = { prop1: { prop2: 'prop2', prop3: 'prop3' } };
 		var ret;
 
-		ret = kff.mixins(a, b, true);
+		ret = kff.deepMixins(a, b);
 
 		expect(a).to.have.property('prop1');
 		expect(a.prop1.prop2).to.equal('prop2');
@@ -95,7 +95,7 @@ describe('kff.mixins', function()
 		var b = { prop1: { prop2: null, prop3: 'prop3' } };
 		var ret;
 
-		ret = kff.mixins(a, b, true);
+		ret = kff.deepMixins(a, b);
 
 		expect(a).to.have.property('prop1');
 		expect(a.prop1.prop2).to.be.null;
