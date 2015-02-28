@@ -293,6 +293,8 @@ kff.ServiceContainer = kff.createClass(
 
 		if(module) return module;
 
+		if(kff.debug) kff.log('Cannot load service module ' + serviceName);
+
 		return kff.evalObjectPath(serviceName);
 	},
 
