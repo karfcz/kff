@@ -800,6 +800,7 @@ kff.View = kff.createClass(
 			clonedView.collectionBinder = new kff.CollectionBinder(
 			{
 				view: clonedView,
+				keyPath: this.collectionBinder.keyPath,
 				collection: null,
 				collectionPathArray: this.collectionBinder.collectionPathArray
 			});
