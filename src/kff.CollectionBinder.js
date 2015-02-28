@@ -184,19 +184,19 @@ kff.CollectionBinder = kff.createClass(
 				if(this.anchor.parentNode)
 				{
 					parentNode = this.anchor.parentNode;
-				}
-				for(i = 0; i < l; i++)
-				{
-					boundView = this.createBoundView(a[i]);
-					el = boundView.$element[0];
-					parentNode.insertBefore(el, lastChild.nextSibling);
-					boundView.setBindingIndex(i);
-					lastChild = el;
-				}
+					for(i = 0; i < l; i++)
+					{
+						boundView = this.createBoundView(a[i]);
+						el = boundView.$element[0];
+						parentNode.insertBefore(el, lastChild.nextSibling);
+						boundView.setBindingIndex(i);
+						lastChild = el;
+					}
 
-				for(i = 0; i < l; i++)
-				{
-					this.boundViews[i].runAll();
+					for(i = 0; i < l; i++)
+					{
+						this.boundViews[i].runAll();
+					}
 				}
 			}
 		}
