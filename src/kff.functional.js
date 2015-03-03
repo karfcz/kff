@@ -1,5 +1,4 @@
 
-
 kff.curry = function(fn, arity)
 {
 	var __slice = Array.prototype.slice;
@@ -21,11 +20,6 @@ kff.curry = function(fn, arity)
 	}
 };
 
-// kff.curry = function(fn)
-// {
-// 	var args = Array.prototype.slice.call(arguments, 1);
-// 	return fn.bind.apply(fn, [this].concat(args);
-// };
 
 kff.compose = function()
 {
