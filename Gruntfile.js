@@ -50,6 +50,40 @@ module.exports = function(grunt) {
 
 		pkg: grunt.file.readJSON('package.json'),
 
+		browserify: {
+			options: {},
+			// dev: {
+			// 	files: {
+			// 		'./build/kff.js': './main.js'
+			// 	},
+			// 	options: {
+			// 		browserifyOptions: {
+			// 			builtins: false,
+			// 			debug: true,
+			// 			fullPaths: false
+			// 		},
+			// 		watch: false,
+			// 		keepAlive: false
+			// 	}
+			// },
+			prod: {
+				files: {
+					'./build/kff.js': './src/main.js'
+				},
+				options: {
+					browserifyOptions: {
+						builtins: false,
+						debug: true,
+						fullPaths: false,
+						standalone: 'kff'
+					},
+					plugin: [[ "browserify-derequire" ]],
+					watch: false,
+					keepAlive: false
+				}
+			},
+		},
+
 		concat: {
 			kff: {
 				options: {
@@ -95,6 +129,7 @@ module.exports = function(grunt) {
 		}
 	});
 
+	grunt.loadNpmTasks('grunt-browserify');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
@@ -102,7 +137,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-shell');
 	grunt.loadNpmTasks('grunt-karma');
 
-	grunt.registerTask('build', ['concat', 'uglify']);
+	grunt.registerTask('build', ['browserify', 'uglify']);
 	grunt.registerTask('docs', ['shell:docs']);
 	grunt.registerTask('test', ['build', 'karma']);
 	grunt.registerTask('default', ['build']);
