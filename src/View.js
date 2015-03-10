@@ -562,7 +562,7 @@ var View = createClass(
 	 */
 	createView: function(viewName, options)
 	{
-		var subviewScope;
+		var subviewScope, subview;
 		options.parentView = this;
 
 		if(this.subviewsScope)
@@ -577,7 +577,8 @@ var View = createClass(
 				else options.scope = subviewScope;
 			}
 		}
-		var subView = this.viewFactory.createView(viewName, options);
+		if(viewName === 'View') subView = new View(options);
+		else subView = this.viewFactory.createView(viewName, options);
 		if(subView instanceof View)
 		{
 			subView.viewFactory = this.viewFactory;
@@ -657,7 +658,7 @@ var View = createClass(
 				viewName = node.getAttribute(settings.DATA_VIEW_ATTR);
 				if(!viewName && node.getAttribute(settings.DATA_BIND_ATTR))
 				{
-					viewName = View;
+					viewName = 'View';
 					node.setAttribute(settings.DATA_VIEW_ATTR, viewName);
 				}
 				if(viewName)
