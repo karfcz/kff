@@ -25,11 +25,10 @@ module.exports = {
 	imset: require('./functions/imset'),
 	imremove: require('./functions/imremove'),
 	compareArrays: require('./functions/compareArrays'),
-	arrayIndexOf: require('./functions/arrayIndexOf'),
 	arrayConcat: require('./functions/arrayConcat'),
-	noop: require('./functions/noop'),
 	functionService: require('./functions/functionService'),
 	factoryService: require('./functions/factoryService'),
+	noop: require('./functions/noop'),
 
 
 	App: require('./App'),
