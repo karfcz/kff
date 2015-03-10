@@ -69,7 +69,7 @@ var createInsertBinder = function(negate, force){
 			}
 			if(!this.isInserted && this.anchor)
 			{
-				parentNode = this.anchor.parentNode;
+				var parentNode = this.anchor.parentNode;
 
 				if(parentNode)
 				{
@@ -147,8 +147,8 @@ var createInsertBinder = function(negate, force){
 };
 
 // InsertBinder = createInsertBinder(false, false);
-IfBinder = createInsertBinder(false, true);
-IfNotBinder = createInsertBinder(true, true);
+var IfBinder = createInsertBinder(false, true);
+var IfNotBinder = createInsertBinder(true, true);
 
 // BindingView.registerBinder('insert', InsertBinder);
 View.registerBinder('if', IfBinder);
