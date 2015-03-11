@@ -87,7 +87,7 @@ module.exports = function(grunt) {
 		concat: {
 			kff: {
 				options: {
-					banner: grunt.file.read('./src/kff-banner.js')
+					banner: grunt.file.read('./src/banner.js')
 				},
 				src: allJsFiles,
 				dest: './build/kff.js'
@@ -96,7 +96,7 @@ module.exports = function(grunt) {
 		uglify: {
 			options: {
 				mangle: true,
-				banner: grunt.file.read('./src/kff-banner.js'),
+				banner: grunt.file.read('./src/banner.js'),
 				report: 'gzip'
 			},
 			kff: {

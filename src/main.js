@@ -7,7 +7,9 @@ module.exports = {
 	// modules = {},
 
 
+	arrayConcat: require('./functions/arrayConcat'),
 	arrayIndexOf: require('./functions/arrayIndexOf'),
+	compareArrays: require('./functions/compareArrays'),
 	bindFn: require('./functions/bindFn'),
 	// compareArrays: require('./functions/compareArrays'),
 	createClass: require('./functions/createClass'),
@@ -24,8 +26,6 @@ module.exports = {
 	imclone: require('./functions/imclone'),
 	imset: require('./functions/imset'),
 	imremove: require('./functions/imremove'),
-	compareArrays: require('./functions/compareArrays'),
-	arrayConcat: require('./functions/arrayConcat'),
 	functionService: require('./functions/functionService'),
 	factoryService: require('./functions/factoryService'),
 	noop: require('./functions/noop'),
