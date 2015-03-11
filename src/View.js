@@ -577,7 +577,8 @@ var View = createClass(
 				else options.scope = subviewScope;
 			}
 		}
-		var subView = this.viewFactory.createView(viewName, options);
+		if(viewName === 'View') subView = new View(options);
+		else subView = this.viewFactory.createView(viewName, options);
 		if(subView instanceof View)
 		{
 			subView.viewFactory = this.viewFactory;
