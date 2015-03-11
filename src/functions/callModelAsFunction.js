@@ -6,7 +6,7 @@ function callModelAsFunction(view, model, modelArgs)
 	var args = [];
 	if(modelArgs instanceof Array)
 	{
-		for(i = 0, l = modelArgs.length; i < l; i++)
+		for(var i = 0, l = modelArgs.length; i < l; i++)
 		{
 			if(modelArgs[i] instanceof Array) args[i] = view.getCursor(modelArgs[i]);
 			else args[i] = convertValueType(modelArgs[i]);
