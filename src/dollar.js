@@ -10,23 +10,21 @@ var settings = require('./settings');
  * @param  {DOMElement} element Single DOM element
  * @return {object}             JQuery object or Dom wrapper object
  */
-var $ = function(element)
+var $;
+
+if(settings.useJquery && typeof window === 'object' && window.jQuery)
 {
-	if(settings.useJquery && typeof window === 'object' && window.jQuery)
+	$ = window.jQuery;
+}
+else
+{
+	$ = function(element)
 	{
-		$ = window.jQuery;
-	}
-	else
-	{
-		$ = function(element)
-		{
-			var el;
-			if(element instanceof Dom) el = new Dom(element[0]);
-			else el =  new Dom(element);
-			return el;
-		};
-	}
-	return $(element);
-};
+		var el;
+		if(element instanceof Dom) el = new Dom(element[0]);
+		else el =  new Dom(element);
+		return el;
+	};
+}
 
 module.exports = $;
