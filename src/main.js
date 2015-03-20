@@ -45,7 +45,7 @@ module.exports = {
 	Binder: require('./Binder'),
 	CollectionBinder: require('./CollectionBinder'),
 	ModelView: require('./ModelView'),
-	ViewFactory: require('./ViewFactory'),
+	// ViewFactory: require('./ViewFactory'),
 	Route: require('./Route'),
 	Router: require('./Router'),
 	HashStateHandler: require('./HashStateHandler'),

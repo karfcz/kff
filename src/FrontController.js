@@ -1,12 +1,13 @@
 
 var createClass = require('./functions/createClass');
 
-var ViewFactory = require('./ViewFactory');
+// var ViewFactory = require('./ViewFactory');
+var ServiceContainer = require('./ServiceContainer');
 
 var FrontController = createClass(
 {
 	args: [{
-		viewFactory: '@ViewFactory',
+		serviceContainer: '@',
 		defaultView: 'PageView',
 		stateHandler: '@HashStateHandler',
 		element: null
@@ -24,8 +25,9 @@ var FrontController = createClass(
 		this.options = options;
 		this.views = null;
 		this.viewsQueue = [];
-		this.viewFactory = options.viewFactory;
+		this.serviceContainer = options.serviceContainer;
 		this.defaultView = options.defaultView;
+		this.precedingViews = options.precedingViews || {};
 		this.router = options.router || null;
 		this.rootElement = options.element || null;
 		this.stateHandler = options.stateHandler || null;
@@ -39,7 +41,7 @@ var FrontController = createClass(
 	 */
 	init: function()
 	{
-		if(!this.viewFactory) this.viewFactory = new ViewFactory();
+		if(!this.serviceContainer) this.serviceContainer = new ServiceContainer();
 		if(this.router && this.stateHandler)
 		{
 			this.stateHandler.on('popstate', this.f('setState'));
@@ -79,7 +81,7 @@ var FrontController = createClass(
 			this.stateHandler.off('popstate', this.f('setState'));
 			this.stateHandler.destroy();
 		}
-		if(this.viewFactory) this.viewFactory = null;
+		// if(this.viewFactory) this.viewFactory = null;
 	},
 
 	/**
@@ -208,13 +210,14 @@ var FrontController = createClass(
 		if(this.rootElement) options = { element: this.rootElement };
 		if(this.dispatcher) options.dispatcher = this.dispatcher;
 		options.env = this.env;
+		options.serviceContainer = this.serviceContainer;
 
 		for(i = 0, l = precedingViewNames.length; i < l; i++)
 		{
 			if(i >= this.viewsQueue.length)
 			{
-				view = this.viewFactory.createView(precedingViewNames[i], options);
-				view.setViewFactory(this.viewFactory);
+				view = this.serviceContainer.createService(precedingViewNames[i], [options]);
+				// view.setViewFactory(this.viewFactory);
 				this.pushView({ name: precedingViewNames[i], instance: view });
 			}
 			else from = i + 1;
@@ -249,21 +252,39 @@ var FrontController = createClass(
 
 		while(c)
 		{
-			c = this.viewFactory.getPrecedingView(c);
+			c = this.getPrecedingView(c);
 			if(c) a.unshift(c);
 		}
 		return a;
 	},
 
-	getViewFactory: function()
+	/**
+	 * Returns a name of the preceding page view.
+	 *
+	 * @param  {String} viewName Name of the view
+	 * @return {String}          Name of the preceding view
+	 */
+	getPrecedingView: function(viewName)
 	{
-		return this.viewFactory;
+		var viewCtor;
+		if(typeof viewName === 'string' && this.precedingViews[viewName] !== undefined) return this.precedingViews[viewName];
+		else
+		{
+			viewCtor = this.serviceContainer.getServiceConstructor(viewName);
+			if(viewCtor && viewCtor.precedingView) return viewCtor.precedingView;
+		}
+		return null;
 	},
 
-	setViewFactory: function(viewFactory)
-	{
-		this.viewFactory = viewFactory;
-	},
+	// getViewFactory: function()
+	// {
+	// 	return this.viewFactory;
+	// },
+
+	// setViewFactory: function(viewFactory)
+	// {
+	// 	this.viewFactory = viewFactory;
+	// },
 
 	getRouter: function()
 	{

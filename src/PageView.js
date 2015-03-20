@@ -11,7 +11,7 @@ var PageView = createClass(
 	{
 		precedingView: null,
 		args: [{
-			viewFactory: '@ViewFactory'
+			serviceContainer: '@'
 		}]
 	}
 },

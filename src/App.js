@@ -41,7 +41,7 @@ var App = createClass(
 				},
 				'FrontController': {
 					args: [{
-						viewFactory: '@ViewFactory',
+						serviceContainer: '@',
 						defaultView: 'PageView',
 						stateHandler: '@HashStateHandler',
 						middlewares: middlewares,
@@ -80,7 +80,7 @@ var App = createClass(
 	{
 		var frontControllerOptions = { element: this.options.element };
 		var frontController = this.frontController = this.serviceContainer.getService('FrontController', [frontControllerOptions]);
-		if(!frontController.getViewFactory()) frontController.setViewFactory(this.serviceContainer.getService('ViewFactory'));
+		// if(!frontController.getViewFactory()) frontController.setViewFactory(this.serviceContainer.getService('ViewFactory'));
 		if(this.options.router)
 		{
 			var routerOptions = {

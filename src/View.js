@@ -2,6 +2,7 @@
 var settings = require('./settings');
 var createClass = require('./functions/createClass');
 var mixins = require('./functions/mixins');
+var immerge = require('./functions/immerge');
 var evalObjectPath = require('./functions/evalObjectPath');
 var noop = require('./functions/noop');
 var arrayConcat = require('./functions/arrayConcat');
@@ -9,7 +10,7 @@ var isPlainObject = require('./functions/isPlainObject');
 var $ = require('./dollar');
 
 var EventsMixin = require('./EventsMixin');
-var ViewFactory = require('./ViewFactory');
+var ServiceContainer = require('./ServiceContainer');
 var Dispatcher = require('./Dispatcher');
 var Cursor = require('./Cursor');
 var CollectionBinder = require('./CollectionBinder');
@@ -87,10 +88,10 @@ var View = createClass(
 		this.subviewsStruct = null;
 		this.explicitSubviewsStruct = null;
 		this.subviews = null;
-		this.viewFactory = null;
+		this.serviceContainer = null;
 		this.cachedRegions = null;
 		this.pendingRefresh = false;
-		this.subviewsScope = null;
+		this.subviewsArgs = null;
 
 		this.initEvents();
 
@@ -118,9 +119,9 @@ var View = createClass(
 			options.element = null;
 		}
 
-		if(options.viewFactory)
+		if(options.serviceContainer)
 		{
-			this.viewFactory = options.viewFactory;
+			this.serviceContainer = options.serviceContainer;
 		}
 
 		if(options.dispatcher)
@@ -190,7 +191,7 @@ var View = createClass(
 		if(!this.modelBindersMap) this.initBinding();
 		if(!this.collectionBinder)
 		{
-			if(!this.viewFactory) this.viewFactory = new ViewFactory();
+			if(!this.serviceContainer) this.serviceContainer = new ServiceContainer();
 			this.explicitSubviewsStruct = null;
 			this.renderRegions(this.options.regions);
 			if(this.render !== noop) this.render();
@@ -562,26 +563,30 @@ var View = createClass(
 	 */
 	createView: function(viewName, options)
 	{
-		var subviewScope;
+		var subView, args;
+
+		if(this.subviewsArgs && this.subviewsArgs[viewName] instanceof Array)
+		{
+			args = this.subviewsArgs[viewName];
+
+			if(typeof args[0] === 'object' && args[0] !== null) options = immerge(options, args[0]);
+
+			// if(typeof subviewScope === 'object' && subviewScope !== null)
+			// {
+			// 	var defaultViewOptions = this.viewFactory.getDefaultViewOptions(viewName);
+			// 	if(defaultViewOptions) options = mixins(defaultViewOptions, options);
+			// 	if(options.scope) mixins(options.scope, subviewScope);
+			// 	else options.scope = subviewScope;
+			// }
+		}
+
 		options.parentView = this;
 
-		if(this.subviewsScope)
-		{
-			subviewScope = this.subviewsScope[viewName];
-
-			if(typeof subviewScope === 'object' && subviewScope !== null)
-			{
-				var defaultViewOptions = this.viewFactory.getDefaultViewOptions(viewName);
-				if(defaultViewOptions) options = mixins(defaultViewOptions, options);
-				if(options.scope) mixins(options.scope, subviewScope);
-				else options.scope = subviewScope;
-			}
-		}
 		if(viewName === 'View') subView = new View(options);
-		else subView = this.viewFactory.createView(viewName, options);
+		else subView = this.serviceContainer.getService(viewName, [options]);
 		if(subView instanceof View)
 		{
-			subView.viewFactory = this.viewFactory;
+			subView.serviceContainer = this.serviceContainer;
 			if(this.subviews === null) this.subviews = [];
 			this.subviews.push(subView);
 		}
@@ -611,26 +616,26 @@ var View = createClass(
 		});
 	},
 
-	setSubviewsScope: function(subviewsScope)
+	setSubviewsArgs: function(subviewsArgs)
 	{
-		if(subviewsScope)
+		if(subviewsArgs)
 		{
 			if(this.parentView === null)
 			{
-				this.subviewsScope = subviewsScope;
+				this.subviewsArgs = subviewsArgs;
 			}
-			else if(this.subviewsScope)
+			else if(this.subviewsArgs)
 			{
-				var keys = Object.keys(subviewsScope);
+				var keys = Object.keys(subviewsArgs);
 				for(var i = 0, l = keys.length; i < l; i++)
 				{
 					key = keys[i];
-					this.subviewsScope[key] = subviewsScope[key];
+					this.subviewsArgs[key] = subviewsArgs[key];
 				}
 			}
 			else
 			{
-				this.subviewsScope = subviewsScope;
+				this.subviewsArgs = subviewsArgs;
 			}
 		}
 	},
@@ -782,7 +787,7 @@ var View = createClass(
 		options.env = this.env;
 
 		var clonedView = new this.constructor(options);
-		clonedView.viewFactory = this.viewFactory;
+		clonedView.serviceContainer = this.serviceContainer;
 
 		if(this.subviews !== null)
 		{
@@ -850,22 +855,10 @@ var View = createClass(
 			}
 		}
 
-		var oldSubviewsScope = this.subviewsScope || null;
-
-		if(parentView.subviewsScope)
-		{
-			this.subviewsScope = Object.create(parentView.subviewsScope);
-
-			if(oldSubviewsScope)
-			{
-				var keys = Object.keys(oldSubviewsScope);
-				for(i = 0, l = keys.length; i < l; i++)
-				{
-					key = keys[i];
-					this.subviewsScope[key] = oldSubviewsScope[key];
-				}
-			}
-		}
+		// if(parentView.serviceContainer !== this.serviceContainer)
+		// {
+		// 	this.serviceContainer.setParent(parentView.serviceContainer);
+		// }
 
 		if(this.subviews !== null)
 		{
@@ -876,10 +869,10 @@ var View = createClass(
 		}
 	},
 
-	setViewFactory: function(viewFactory)
-	{
-		this.viewFactory = viewFactory;
-	},
+	// setViewFactory: function(viewFactory)
+	// {
+	// 	this.viewFactory = viewFactory;
+	// },
 
 
 	/**
