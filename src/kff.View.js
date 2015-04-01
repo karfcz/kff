@@ -1310,8 +1310,6 @@ kff.View = kff.createClass(
 				}
 			}
 
-			console.log(modelArgs)
-
 			model = this.getModel(modelPathArray);
 			ret = null;
 

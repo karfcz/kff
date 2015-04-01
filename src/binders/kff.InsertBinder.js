@@ -61,7 +61,7 @@ var createInsertBinder = function(negate, force){
 				this.view.runSubviews = this.runSubviews;
 				this.view.destroySubviews = this.destroySubviews;
 			}
-			if(!this.isInserted)
+			if(!this.isInserted && this.anchor)
 			{
 				parentNode = this.anchor.parentNode;
 
