@@ -18,7 +18,7 @@ function immerge(source, target)
 		var clone = source.slice();
 		for(var i = 0, l = Math.max(source.length, target.length); i < l; i++)
 		{
-			clone[i] = immerge(clone[i], target[i]);
+			if(i in target) clone[i] = immerge(clone[i], target[i]);
 		}
 		return clone;
 	}
