@@ -7,13 +7,9 @@ var View = require('./View');
 var PageView = createClass(
 {
 	extend: View,
-	statics:
-	{
-		precedingView: null,
-		args: [{
-			serviceContainer: '@'
-		}]
-	}
+	args: [{
+		serviceContainer: '@'
+	}]
 },
 /** @lends PageView.prototype */
 {
