@@ -102,6 +102,11 @@ var View = createClass(
 		}
 		else this.scope = {};
 
+		if(options.serviceContainer)
+		{
+			this.serviceContainer = options.serviceContainer;
+		}
+
 		if(options.parentView)
 		{
 			this.setParentView(options.parentView);
@@ -119,10 +124,6 @@ var View = createClass(
 			options.element = null;
 		}
 
-		if(options.serviceContainer)
-		{
-			this.serviceContainer = options.serviceContainer;
-		}
 
 		if(options.dispatcher)
 		{
@@ -568,16 +569,7 @@ var View = createClass(
 		if(this.subviewsArgs && this.subviewsArgs[viewName] instanceof Array)
 		{
 			args = this.subviewsArgs[viewName];
-
 			if(typeof args[0] === 'object' && args[0] !== null) options = immerge(options, args[0]);
-
-			// if(typeof subviewScope === 'object' && subviewScope !== null)
-			// {
-			// 	var defaultViewOptions = this.viewFactory.getDefaultViewOptions(viewName);
-			// 	if(defaultViewOptions) options = mixins(defaultViewOptions, options);
-			// 	if(options.scope) mixins(options.scope, subviewScope);
-			// 	else options.scope = subviewScope;
-			// }
 		}
 
 		options.parentView = this;
@@ -586,7 +578,6 @@ var View = createClass(
 		else subView = this.serviceContainer.getService(viewName, [options]);
 		if(subView instanceof View)
 		{
-			subView.serviceContainer = this.serviceContainer;
 			if(this.subviews === null) this.subviews = [];
 			this.subviews.push(subView);
 		}
@@ -855,10 +846,17 @@ var View = createClass(
 			}
 		}
 
-		// if(parentView.serviceContainer !== this.serviceContainer)
-		// {
-		// 	this.serviceContainer.setParent(parentView.serviceContainer);
-		// }
+		if(parentView.serviceContainer !== this.serviceContainer)
+		{
+			if(this.serviceContainer)
+			{
+				this.serviceContainer.setParent(parentView.serviceContainer);
+			}
+			else
+			{
+				this.serviceContainer = parentView.serviceContainer;
+			}
+		}
 
 		if(this.subviews !== null)
 		{

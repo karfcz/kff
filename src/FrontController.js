@@ -216,7 +216,7 @@ var FrontController = createClass(
 		{
 			if(i >= this.viewsQueue.length)
 			{
-				view = this.serviceContainer.createService(precedingViewNames[i], [options]);
+				view = this.serviceContainer.getService(precedingViewNames[i], [options]);
 				// view.setViewFactory(this.viewFactory);
 				this.pushView({ name: precedingViewNames[i], instance: view });
 			}
@@ -268,11 +268,6 @@ var FrontController = createClass(
 	{
 		var viewCtor;
 		if(typeof viewName === 'string' && this.precedingViews[viewName] !== undefined) return this.precedingViews[viewName];
-		else
-		{
-			viewCtor = this.serviceContainer.getServiceConstructor(viewName);
-			if(viewCtor && viewCtor.precedingView) return viewCtor.precedingView;
-		}
 		return null;
 	},
 

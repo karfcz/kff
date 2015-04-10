@@ -5,6 +5,8 @@ var isPlainObject = require('./functions/isPlainObject');
 var evalObjectPath = require('./functions/evalObjectPath');
 var mixins = require('./functions/mixins');
 var log = require('./functions/log');
+var immerge = require('./functions/immerge');
+var Service = require('./Service');
 
 var ServiceContainer = createClass(
 {
@@ -23,9 +25,10 @@ var ServiceContainer = createClass(
 	 */
 	constructor: function(config, loader)
 	{
-		this.config = config || { parameters: {}, services: {}, modules: null };
-		this.services = {};
-		this.cachedParams = {};
+		this.config = { services: config && config.services ? config.services : [] };
+		if(!(this.config.services instanceof Array)) this.config.services = [this.config.services];
+		this.sharedInstances = {};
+		this.parent = undefined;
 		if(loader) this.loadService = loader;
 	},
 
@@ -37,38 +40,20 @@ var ServiceContainer = createClass(
 	 */
 	getService: function(serviceName, argsExtend)
 	{
-		var serviceConfig;
-		if(!this.config.services[serviceName])
-		{
-			serviceConfig = this.getServiceConfigAnnotation(serviceName);
-			if(serviceConfig) this.config.services[serviceName] = serviceConfig;
-			else throw new Error('Service ' + serviceName + ' not defined');
-		}
-		if(this.config.services[serviceName].shared)
-		{
-			if(typeof this.services[serviceName] === 'undefined') this.services[serviceName] = this.createService(serviceName, argsExtend);
-			return this.services[serviceName];
-		}
-		return this.createService(serviceName, argsExtend);
-	},
+		var serviceWrapper = this.loadService(serviceName);
 
-	/**
-	 * Checks if given serviceName exists in container declaration
-	 * @param {string} serviceName Service name
-	 * @returns {boolean} True if service exists, false otherwise
-	 */
-	hasService: function(serviceName)
-	{
-		if(this.config.services.hasOwnProperty(serviceName)) return true;
-		else {
-			var serviceConfig = this.getServiceConfigAnnotation(serviceName);
-			if(serviceConfig)
-			{
-				this.config.services[serviceName] = serviceConfig;
-				return true;
-			}
+
+
+		if(!serviceWrapper || !serviceWrapper.module)
+		{
+			throw new Error('Service ' + serviceName + ' not defined');
 		}
-		return false;
+		if(serviceWrapper.config.shared)
+		{
+			if(typeof this.sharedInstances[serviceName] === 'undefined') this.sharedInstances[serviceName] = this.createService(serviceName, serviceWrapper, argsExtend);
+			return this.sharedInstances[serviceName];
+		}
+		return this.createService(serviceName, serviceWrapper, argsExtend);
 	},
 
 	/**
@@ -82,13 +67,13 @@ var ServiceContainer = createClass(
 	 * @param {Array} argsExtend Array to overload default arguments array (optional)
 	 * @returns {Object} Instance of service
 	 */
-	createService: function(serviceName, argsExtend)
+	createService: function(serviceName, serviceWrapper, argsExtend)
 	{
 		var serviceConfig, Ctor, Temp, service, ret, i, l, args, argsExtended, calls;
 
-		serviceConfig = this.config.services[serviceName];
+		serviceConfig = serviceWrapper.config;
 
-		Ctor = this.getServiceConstructor(serviceName);
+		Ctor = serviceWrapper.module;
 
 		if(typeof Ctor !== 'function' || serviceConfig.type === 'function') return Ctor;
 
@@ -134,61 +119,6 @@ var ServiceContainer = createClass(
 			}
 		}
 		return service;
-	},
-
-	/**
-	 * Returns constructor function for given service name.
-	 * @param {string} serviceName Service name
-	 * @returns {function} Constructor function for service
-	 */
-	getServiceConstructor: function(serviceName)
-	{
-		var serviceConfig, ctor, construct = ServiceContainer.CONFIG_CONSTRUCTOR, type, name, serviceObject;
-		serviceConfig = this.config.services[serviceName];
-		if(!serviceConfig)
-		{
-			serviceConfig = this.getServiceConfigAnnotation(serviceName);
-			if(!serviceConfig) return null;
-			else this.config.services[serviceName] = serviceConfig;
-		}
-
-		if(serviceConfig.construct) construct = serviceConfig.construct;
-		else construct = serviceName;
-
-		if(!serviceConfig.hasOwnProperty('serviceObject'))
-		{
-			if(typeof construct === 'string')
-			{
-				serviceConfig['serviceObject'] = this.loadService(construct);
-			}
-			else serviceConfig['serviceObject'] = construct;
-			if(!serviceConfig['serviceObject']) return null;
-		}
-
-		return serviceConfig['serviceObject'];
-	},
-
-	/**
-	 * Returns configuration object of a service from its constructor (function).
-	 * @param  {string} serviceName Name of service
-	 * @return {object}             Service configuration object
-	 */
-	getServiceConfigAnnotation: function(serviceName)
-	{
-		var serviceConfig = {};
-		var ctor = this.loadService(serviceName);
-		if(typeof ctor === 'function')
-		{
-			if('service' in ctor && isPlainObject(ctor.service)) serviceConfig = ctor.service;
-			serviceConfig.serviceObject = ctor;
-			return serviceConfig;
-		}
-		else if(ctor)
-		{
-			serviceConfig.serviceObject = ctor;
-			return serviceConfig;
-		}
-		return null;
 	},
 
 	/**
@@ -262,15 +192,94 @@ var ServiceContainer = createClass(
 	 */
 	registerServices: function(services, overwrite)
 	{
-		var service;
-		for(service in services)
+		if(services instanceof Array)
 		{
-			if(!this.config.services.hasOwnProperty(service) || overwrite)
+			if(overwrite) this.config.services = services.concat(this.config.services);
+			else this.config.services = this.config.services.concat(services);
+		}
+		else
+		{
+			if(overwrite) this.config.services.unshift(services);
+			else this.config.services.push(services);
+		}
+	},
+
+	/**
+	 * Returns a service (constructor, function or another type of service)
+	 * @param  {string}   serviceName Name of service
+	 * @return {mixed}                Service constructor or factory or any other type of service
+	 */
+	loadOwnService: function(serviceName)
+	{
+		var module, services, config, config2, construct;
+		var sameNameModules = [];
+
+		var normalizedServiceName = this.normalizeServiceName(serviceName);
+		var container = this;
+		var j = 0;
+
+		while(container)
+		{
+			services = container.config.services;
+			if(services instanceof Array)
 			{
-				this.config.services[service] = services[service];
-				this.services[service] = undefined;
+				for(var i = 0, l = services.length; i < l; i++)
+				{
+					module = services[i][normalizedServiceName];
+					if(module) sameNameModules.push(module);
+				}
+			}
+			else if(typeof services === 'object' || services !== null)
+			{
+				module = services[normalizedServiceName];
+				sameNameModules.push(module);
+			}
+			container = container.parent;
+		}
+
+		module = sameNameModules.shift();
+
+		j = 0;
+
+		while(module instanceof Service || (isPlainObject(module) && 'construct' in module))
+		{
+			if(module instanceof Service) config2 = module.config;
+			else config2 = module;
+
+			// config = immerge(config, config2);
+			config = config2;
+
+			construct = config.construct || serviceName;
+
+			if(typeof construct === 'string')
+			{
+				if(construct === serviceName)
+				{
+					module = sameNameModules.shift();
+				}
+				else
+				{
+					module = this.loadOwnService(construct);
+					if(module !== null) module = module.module;
+				}
+			}
+			else module = construct;
+		}
+
+		if(config && module.service)
+		{
+			config = immerge(module.service, config);
+		}
+
+		if(module && (typeof module === 'object' || typeof module === 'function'))
+		{
+			return {
+				module: module,
+				config: config || module.service || {}
 			}
 		}
+
+		return null;
 	},
 
 	/**
@@ -280,7 +289,26 @@ var ServiceContainer = createClass(
 	 */
 	loadService: function(serviceName)
 	{
-		var module, modules = this.config.modules;
+		var module = this.loadOwnService(serviceName);
+		if(module) return module;
+
+		if(settings.debug) log('Cannot load service module ' + serviceName);
+
+		return null;
+	},
+
+	hasOwnService: function(serviceName)
+	{
+		return !!this.loadOwnService(serviceName);
+	},
+
+	hasService: function(serviceName)
+	{
+		return !!this.loadService(serviceName);
+	},
+
+	normalizeServiceName: function(serviceName)
+	{
 		if(typeof serviceName === 'string')
 		{
 			var match = serviceName.match(ServiceContainer.serviceNameRegex);
@@ -289,30 +317,9 @@ var ServiceContainer = createClass(
 				serviceName = match[0];
 			}
 		}
-
-		if(modules)
-		{
-			if(modules instanceof Array)
-			{
-				for(var i = 0, l = modules.length; i < l; i++)
-				{
-					module = evalObjectPath(serviceName, modules[i]);
-					if(module) return module;
-				}
-			}
-			else if(typeof modules === 'object' || modules !== null)
-			{
-				module = evalObjectPath(serviceName, this.config.modules);
-				if(module) return module;
-			}
-		}
-
-		if(module) return module;
-
-		if(settings.debug) log('Cannot load service module ' + serviceName);
-
-		return evalObjectPath(serviceName);
+		return serviceName;
 	},
+
 
 	/**
 	 * Creates a factory function for a service
@@ -326,6 +333,11 @@ var ServiceContainer = createClass(
 		{
 			return container.getService(serviceName);
 		};
+	},
+
+	setParent: function(parent)
+	{
+		this.parent = parent;
 	}
 
 });

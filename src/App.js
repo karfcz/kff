@@ -1,6 +1,12 @@
 
 var createClass = require('./functions/createClass');
 var ServiceContainer = require('./ServiceContainer');
+var Service = require('./Service');
+var HashStateHandler = require('./HashStateHandler');
+var PageView = require('./PageView');
+var FrontController = require('./FrontController');
+var Dispatcher = require('./Dispatcher');
+var Router = require('./Router');
 
 var App = createClass(
 /** @lends App.prototype */
@@ -29,43 +35,64 @@ var App = createClass(
 		if(this.options.middlewares instanceof Array) middlewares = this.options.middlewares;
 		else middlewares = [];
 
-		// Dependency injection container configuration:
-		var config = {
-			parameters: {},
-			services: {
-				'PageView': {
-					args: [{
-						element: element,
-						scope: scope
-					}]
-				},
-				'FrontController': {
-					args: [{
-						serviceContainer: '@',
-						defaultView: 'PageView',
-						stateHandler: '@HashStateHandler',
-						middlewares: middlewares,
-						element: null,
-						env: this.env
-					}],
-					shared: true
-				}
-			},
-			modules: modules
-		};
+		var AppDispatcher;
 
+		// Dependency injection container configuration:
 		if(this.options.dispatcher)
 		{
-			config.services['Dispatcher'] = {
+			AppDispatcher = new Service({
+				construct: Dispatcher,
 				args: [this.options.dispatcher.actions || {}]
-			};
-
-			config.services['FrontController'].args[0].dispatcher = '@Dispatcher';
+			});
 		}
 
-		this.serviceContainer = new ServiceContainer(config, require);
-		if('parameters' in options) this.serviceContainer.registerParameters(options.parameters, true);
-		if('services' in options) this.serviceContainer.registerServices(options.services, true);
+		var AppHashStateHandler = new Service({
+			construct: HashStateHandler,
+			shared: true
+		});
+
+		var AppPageView = new Service({
+			construct: PageView,
+			args: [{
+				serviceContainer: '@',
+				element: element,
+				scope: scope,
+				env: this.env
+			}]
+		});
+
+		var AppRouter = new Service({
+			construct: Router
+		});
+
+		var AppFrontController = new Service({
+			construct: FrontController,
+			args: [{
+				serviceContainer: '@',
+				defaultView: 'AppPageView',
+				stateHandler: '@AppHashStateHandler',
+				dispatcher: AppDispatcher ? '@AppDispatcher' : undefined,
+				middlewares: middlewares,
+				element: null,
+				env: this.env
+			}],
+			shared: true
+		});
+
+		this.serviceContainer = new ServiceContainer();
+
+		this.serviceContainer.registerServices(options.services);
+
+
+		this.serviceContainer.registerServices({
+			AppPageView: AppPageView,
+			AppFrontController: AppFrontController,
+			AppDispatcher: AppDispatcher,
+			AppHashStateHandler: AppHashStateHandler,
+			AppRouter: AppRouter
+		});
+
+		if('services' in options) this.serviceContainer.registerServices(options.services);
 
 		return this;
 	},
@@ -79,8 +106,7 @@ var App = createClass(
 	init: function()
 	{
 		var frontControllerOptions = { element: this.options.element };
-		var frontController = this.frontController = this.serviceContainer.getService('FrontController', [frontControllerOptions]);
-		// if(!frontController.getViewFactory()) frontController.setViewFactory(this.serviceContainer.getService('ViewFactory'));
+		var frontController = this.frontController = this.serviceContainer.getService('AppFrontController', [frontControllerOptions]);
 		if(this.options.router)
 		{
 			var routerOptions = {
@@ -90,7 +116,7 @@ var App = createClass(
 
 			if(this.options.router.params) routerOptions.params = this.serviceContainer.resolveParameters(this.options.router.params);
 
-			var router = this.serviceContainer.getService('Router', [routerOptions]);
+			var router = this.serviceContainer.getService('AppRouter', [routerOptions]);
 			frontController.setRouter(router);
 		}
 		if(this.options.stateHandler)
