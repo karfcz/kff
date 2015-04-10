@@ -67,21 +67,6 @@ var ViewFactory = createClass(
 	},
 
 	/**
-	 * Returns constructor function of the view. Used only as fallback in the
-	 * getPrecedingView method.
-	 *
-	 * @private
-	 * @param  {[type]} viewName [description]
-	 * @return {[type]}          [description]
-	 */
-	getServiceConstructor: function(viewName)
-	{
-		if(typeof viewName === 'function') return viewName;
-		if(this.serviceContainer && this.serviceContainer.hasService(viewName)) return this.serviceContainer.getServiceConstructor(viewName);
-		else return evalObjectPath(viewName);
-	},
-
-	/**
 	 * Returns a name of the preceding page view.
 	 *
 	 * @param  {String} viewName Name of the view
