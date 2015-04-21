@@ -27,6 +27,7 @@ var Cursor = createClass(
 
 	getIn: function(keyPath)
 	{
+		if(typeof keyPath === 'string') keyPath = keyPath.split('.');
 		return evalObjectPath(this.keyPath.concat(keyPath), this.root);
 	},
 
