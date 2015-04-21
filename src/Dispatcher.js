@@ -2,6 +2,7 @@
 var settings = require('./settings');
 
 var createClass = require('./functions/createClass');
+var log = require('./functions/log');
 
 var EventStream = require('./EventStream');
 
@@ -31,7 +32,18 @@ var Dispatcher = createClass(
 			{
 
 				var nextEvent = fn.call(null, event);
-				if(nextEvent instanceof EventStream)
+				if(nextEvent instanceof Array)
+				{
+					for(var j = 0; j < nextEvent.length; j++)
+					{
+						if(nextEvent[j] instanceof EventStream)
+						{
+							nextEvent[j].on(dispatcher.f('trigger'));
+						}
+						else if(nextEvent[j]) dispatcher.trigger(nextEvent[j]);
+					}
+				}
+				else if(nextEvent instanceof EventStream)
 				{
 					nextEvent.on(dispatcher.f('trigger'));
 				}
