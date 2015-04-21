@@ -22,7 +22,7 @@ function evalObjectPath(path, obj)
 	for(i = 0, l = path.length; i < l; i++)
 	{
 		part = path[i];
-		if(obj[part] === undefined) return null;
+		if(typeof obj !== 'object' || obj === null || obj[part] === undefined) return null;
 		else obj = obj[part];
 	}
 	return obj;
