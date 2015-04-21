@@ -40,9 +40,8 @@ var ServiceContainer = createClass(
 	 */
 	getService: function(serviceName, argsExtend)
 	{
+		if(serviceName === '__esModule') return;
 		var serviceWrapper = this.loadService(serviceName);
-
-
 
 		if(!serviceWrapper || !serviceWrapper.module)
 		{
