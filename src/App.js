@@ -42,7 +42,8 @@ var App = createClass(
 		{
 			AppDispatcher = new Service({
 				construct: Dispatcher,
-				args: [this.options.dispatcher.actions || {}]
+				args: [this.options.dispatcher.actions || {}],
+				shared: true
 			});
 		}
 
@@ -62,7 +63,8 @@ var App = createClass(
 		});
 
 		var AppRouter = new Service({
-			construct: Router
+			construct: Router,
+			shared: true
 		});
 
 		var AppFrontController = new Service({
