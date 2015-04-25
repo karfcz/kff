@@ -96,6 +96,17 @@ var EventStream = createClass({
 		return this;
 	},
 
+	triggerLater: function(delay, eventData)
+	{
+		var that = this;
+		setTimeout(function()
+		{
+			that.trigger(eventData);
+		}, delay);
+		return this;
+	},
+
+
 	map: function(fn)
 	{
 		var mes = new EventStream();
@@ -103,6 +114,32 @@ var EventStream = createClass({
 		this.on(function(event){
 			mes.trigger(fn.call(null, event));
 		});
+
+		return mes;
+	},
+
+	flatMap: function(fn)
+	{
+		var mes = new EventStream();
+
+		var observe = function(event)
+		{
+			var res = fn.call(null, event);
+
+			if(res instanceof EventStream)
+			{
+				res.on(function(event2)
+				{
+					mes.trigger(event2);
+				});
+			}
+			else
+			{
+				mes.trigger(res);
+			}
+		};
+
+		this.on(observe);
 
 		return mes;
 	},
