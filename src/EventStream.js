@@ -96,9 +96,10 @@ var EventStream = createClass({
 		return this;
 	},
 
-	triggerLater: function(delay, eventData)
+	triggerLater: function(eventData, delay)
 	{
 		var that = this;
+		if(delay === undefined) delay = 0;
 		setTimeout(function()
 		{
 			that.trigger(eventData);
