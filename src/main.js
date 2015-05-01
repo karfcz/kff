@@ -4,14 +4,10 @@
 module.exports = {
 
 	settings: require('./settings'),
-	// modules = {},
-
-
 	arrayConcat: require('./functions/arrayConcat'),
 	arrayIndexOf: require('./functions/arrayIndexOf'),
 	compareArrays: require('./functions/compareArrays'),
 	bindFn: require('./functions/bindFn'),
-	// compareArrays: require('./functions/compareArrays'),
 	createClass: require('./functions/createClass'),
 	deepMixins: require('./functions/deepMixins'),
 	// evalObjectPath: require('./functions/evalObjectPath'),
@@ -26,10 +22,10 @@ module.exports = {
 	imclone: require('./functions/imclone'),
 	imset: require('./functions/imset'),
 	imremove: require('./functions/imremove'),
+	immerge: require('./functions/immerge'),
 	functionService: require('./functions/functionService'),
 	factoryService: require('./functions/factoryService'),
 	noop: require('./functions/noop'),
-
 
 	App: require('./App'),
 	Cursor: require('./Cursor'),
@@ -42,18 +38,15 @@ module.exports = {
 	View: require('./View'),
 	PageView: require('./PageView'),
 	BinderMap: require('./BinderMap'),
-	// BindingView: require('./BindingView.helpers'),
 	Binder: require('./Binder'),
 	CollectionBinder: require('./CollectionBinder'),
 	ModelView: require('./ModelView'),
-	// ViewFactory: require('./ViewFactory'),
 	Route: require('./Route'),
 	Router: require('./Router'),
 	HashStateHandler: require('./HashStateHandler'),
 	FrontController: require('./FrontController'),
 	Dispatcher: require('./Dispatcher'),
 	'$': require('./dollar'),
-
 
 	EventBinder: require('./binders/EventBinder'),
 	AttrBinder: require('./binders/AttrBinder'),
