@@ -275,7 +275,7 @@ var ServiceContainer = createClass(
 			return {
 				module: module,
 				config: config || module.service || {}
-			}
+			};
 		}
 
 		return null;

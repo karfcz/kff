@@ -29,7 +29,7 @@ function imset(keypath, value, obj)
 	}
 
 	return root;
-};
+}
 
 module.exports = imset;
 

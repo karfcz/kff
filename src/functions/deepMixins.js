@@ -1,5 +1,6 @@
 
-var isPlainObject = require('./isPlainObject')
+var isPlainObject = require('./isPlainObject');
+
 /**
  * Mixins (using a shallow copy) properties from one object to another.
  * Function accepts multiple arguments with multiple extending objects.
@@ -34,6 +35,6 @@ function deepMixins(obj, properties)
 		i++;
 	}
 	return obj;
-};
+}
 
 module.exports = deepMixins;

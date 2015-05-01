@@ -1,5 +1,5 @@
 
-var curry = function(fn, arity)
+function curry(fn, arity)
 {
 	var __slice = Array.prototype.slice;
 	arity = arity || fn.length;
@@ -13,11 +13,11 @@ var curry = function(fn, arity)
 			var updatedArgsSoFar = argsSoFar.concat(__slice.call(arguments, 0));
 
 			if (updatedArgsSoFar.length >= arity) {
-				return fn.apply(this, updatedArgsSoFar)
+				return fn.apply(this, updatedArgsSoFar);
 			}
-			else return given(updatedArgsSoFar)
-		}
+			else return given(updatedArgsSoFar);
+		};
 	}
-};
+}
 
 module.exports = curry;

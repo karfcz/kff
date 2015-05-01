@@ -15,6 +15,6 @@ function arrayIndexOf(array, item)
 		if(array[i] === item) return i;
 	}
 	return -1;
-};
+}
 
 module.exports = arrayIndexOf;

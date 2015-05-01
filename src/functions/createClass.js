@@ -101,6 +101,6 @@ function createClass(meta, properties)
 	constructor.prototype.constructor = constructor;
 
 	return constructor;
-};
+}
 
 module.exports = createClass;

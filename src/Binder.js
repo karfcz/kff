@@ -267,7 +267,7 @@ var Binder = createClass(
 		return function(event)
 		{
 			return eventFilter.fn.apply(this, [originalTriggerEvent, event].concat(eventFilter.args));
-		}
+		};
 	}
 
 });

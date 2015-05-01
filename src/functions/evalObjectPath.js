@@ -26,6 +26,6 @@ function evalObjectPath(path, obj)
 		else obj = obj[part];
 	}
 	return obj;
-};
+}
 
 module.exports = evalObjectPath;

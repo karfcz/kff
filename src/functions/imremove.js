@@ -3,11 +3,12 @@ var imclone = require('./imclone');
 
 function imremove(keypath, obj)
 {
+	var root;
 	if(typeof keypath === 'string') keypath = keypath.split('.');
 
 	if(keypath)
 	{
-		var root = imclone(obj);
+		root = imclone(obj);
 		var prev = root;
 
 		for(var i = 0, l = keypath.length; i < l - 1; i++)
@@ -25,6 +26,6 @@ function imremove(keypath, obj)
 	}
 
 	return root;
-};
+}
 
 module.exports = imremove;

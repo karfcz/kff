@@ -2,6 +2,6 @@
 /**
  * Empty placeholder function
  */
-function noop(){};
+function noop(){}
 
 module.exports = noop;

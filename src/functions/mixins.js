@@ -24,6 +24,6 @@ function mixins(obj, properties)
 		i++;
 	}
 	return obj;
-};
+}
 
 module.exports = mixins;

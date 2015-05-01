@@ -11,7 +11,7 @@ function arrayConcat(a1, a2)
 	while(i < l3)
 	{
 		a3[i] = a2[i - l1];
-		i++
+		i++;
 	}
 	return a3;
 }

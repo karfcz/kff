@@ -3,9 +3,10 @@ var imclone = require('./imclone');
 
 function immerge(source, target)
 {
+	var clone;
 	if(typeof target === 'object' && target !== null && typeof source === 'object' && source !== null)
 	{
-		var clone = imclone(source);
+		clone = imclone(source);
 		for(var key in target)
 		{
 			if(key in clone) clone[key] = immerge(clone[key], target[key]);
@@ -15,7 +16,7 @@ function immerge(source, target)
 	}
 	else if(source instanceof Array && target instanceof Array)
 	{
-		var clone = source.slice();
+		clone = source.slice();
 		for(var i = 0, l = Math.max(source.length, target.length); i < l; i++)
 		{
 			if(i in target) clone[i] = immerge(clone[i], target[i]);
@@ -26,6 +27,6 @@ function immerge(source, target)
 	{
 		return target;
 	}
-};
+}
 
 module.exports = immerge;

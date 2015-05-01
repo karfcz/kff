@@ -450,7 +450,7 @@ var View = createClass(
 		if(typeof keyPath === 'string') keyPath = keyPath.split('.');
 
 		var rootCursorName = keyPath[0];
-		var keyPath = keyPath.slice(1);
+		keyPath = keyPath.slice(1);
 		var rootCursor = this.scope[rootCursorName];
 		if(!(rootCursor instanceof Cursor)) rootCursor = new Cursor(rootCursor, keyPath);
 
@@ -1012,20 +1012,20 @@ var View = createClass(
 	{
 		var selector, i, l, nodes, node, fragment;
 
-		var unsaveRegion = function(regions, cachedRegions, nodes, selector)
+		var unsaveRegion = function(regions, cachedRegions, nodes, sel)
 		{
 			var node, fragment;
 			for(var i = nodes.length - 1; i >= 0; i--)
 			{
 				node = nodes[i];
 				node.innerHTML = '';
-				if(cachedRegions[selector])
+				if(cachedRegions[sel])
 				{
-					fragment = cachedRegions[selector][i];
+					fragment = cachedRegions[sel][i];
 					if(fragment)
 					{
 						node.appendChild(fragment);
-						cachedRegions[selector][i] = null;
+						cachedRegions[sel][i] = null;
 					}
 				}
 			}
@@ -1034,7 +1034,7 @@ var View = createClass(
 		if(isPlainObject(regions))
 		{
 			if('self' in regions) unsaveRegion(regions, this.cachedRegions, [this.$element[0]], 'self');
-			for(var selector in regions)
+			for(selector in regions)
 			{
 				if(selector !== 'self')
 				{
