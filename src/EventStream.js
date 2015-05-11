@@ -16,6 +16,7 @@ var EventStream = createClass({
 	{
 		this.subscribers = [];
 		this.oneSubscribers = [];
+		this.endSubscribers = [];
 	},
 
 	/**
@@ -27,6 +28,12 @@ var EventStream = createClass({
 	on: function(fn)
 	{
 		if(arrayIndexOf(this.subscribers, fn) === -1) this.subscribers.push(fn);
+		return this;
+	},
+
+	onEnd: function(fn)
+	{
+		if(arrayIndexOf(this.endSubscribers, fn) === -1) this.endSubscribers.push(fn);
 		return this;
 	},
 
@@ -56,6 +63,9 @@ var EventStream = createClass({
 		i = arrayIndexOf(this.oneSubscribers, fn);
 		if(i !== -1) this.oneSubscribers.splice(i, 1);
 
+		i = arrayIndexOf(this.endSubscribers, fn);
+		if(i !== -1) this.endSubscribers.splice(i, 1);
+
 		return this;
 	},
 
@@ -63,6 +73,7 @@ var EventStream = createClass({
 	{
 		this.subscribers = [];
 		this.oneSubscribers = [];
+		this.endSubscribers = [];
 		return this;
 	},
 
@@ -78,6 +89,10 @@ var EventStream = createClass({
 
 		if(eventData === EventStream.END)
 		{
+			for(i = 0, l = this.endSubscribers.length; i < l; i++)
+			{
+				if(typeof this.endSubscribers[i] === 'function') this.endSubscribers[i].call(null);
+			}
 			return this.offAll();
 		}
 
@@ -118,6 +133,60 @@ var EventStream = createClass({
 
 		return mes;
 	},
+
+	reduce: function(fn, initialValue)
+	{
+		var es = new EventStream();
+		var value;
+
+		if(typeof fn !== 'function')
+		{
+			throw new TypeError( fn + ' is not a function' );
+		}
+
+		if(arguments.length >= 2)
+		{
+			value = arguments[1];
+		}
+
+		this.on(function(event){
+			value = fn.call(null, value, event);
+		});
+
+		this.onEnd(function(){
+			es.trigger(value).end();
+		});
+
+		return es;
+	},
+
+	// reduce: function(fn, initialValue)
+	// {
+	// 	var array = this.array;
+	// 	var l = array.length, value, i = 0;
+
+	// 	if(typeof fn !== 'function')
+	// 	{
+	// 		throw new TypeError( fn + ' is not a function' );
+	// 	}
+
+	// 	if(arguments.length >= 2)
+	// 	{
+	// 		value = arguments[1];
+	// 	}
+	// 	else
+	// 	{
+	// 		if(l === 0) throw new TypeError('Reduce of empty collection with no initial value');
+	// 	  	value = array[i++];
+	// 	}
+
+	// 	for(; i < l; i++)
+	// 	{
+	// 		value = fn(value, array[i], i, this);
+	// 	}
+	// 	return value;
+	// },
+
 
 	flatMap: function(fn)
 	{
