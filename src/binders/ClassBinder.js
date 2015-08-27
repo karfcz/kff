@@ -93,6 +93,3 @@ export var ClassNotBinder = createClassBinder(true);
 
 View.registerBinder('class', ClassBinder);
 View.registerBinder('classnot', ClassNotBinder);
-
-// export ClassBinder;
-// export ClassNotBinder;
