@@ -1,8 +1,8 @@
 
-var createClass = require('./functions/createClass');
+import createClass from './functions/createClass';
 
-var View = require('./View');
-var Cursor = require('./Cursor');
+import View from './View';
+import Cursor from './Cursor';
 
 var ModelView = createClass({
 	extend: View
@@ -15,4 +15,4 @@ var ModelView = createClass({
 	}
 });
 
-module.exports = ModelView;
+export default ModelView;

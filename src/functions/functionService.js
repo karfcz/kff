@@ -9,4 +9,4 @@ function functionService(fn)
 	return fn2;
 }
 
-module.exports = functionService;
+export default functionService;

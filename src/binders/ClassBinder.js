@@ -1,8 +1,8 @@
 
-var createClass = require('../functions/createClass');
-var convertValueType = require('../functions/convertValueType');
-var Binder = require('../Binder');
-var View = require('../View');
+import createClass from '../functions/createClass';
+import convertValueType from '../functions/convertValueType';
+import Binder from '../Binder';
+import View from '../View';
 
 var createClassBinder = function(negate)
 {
@@ -88,13 +88,11 @@ var createClassBinder = function(negate)
 
 };
 
-var ClassBinder = createClassBinder(false);
-var ClassNotBinder = createClassBinder(true);
+export var ClassBinder = createClassBinder(false);
+export var ClassNotBinder = createClassBinder(true);
 
 View.registerBinder('class', ClassBinder);
 View.registerBinder('classnot', ClassNotBinder);
 
-module.exports = {
-	ClassBinder: ClassBinder,
-	ClassNotBinder: ClassNotBinder
-};
+// export ClassBinder;
+// export ClassNotBinder;

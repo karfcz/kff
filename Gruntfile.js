@@ -7,7 +7,11 @@ module.exports = function(grunt)
 		pkg: grunt.file.readJSON('package.json'),
 
 		browserify: {
-			options: {},
+			options: {
+				transform: [
+					['babelify', {}]
+				]
+			},
 			dev: {
 				files: {
 					'./build/kff.js': './src/main.js'

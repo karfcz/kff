@@ -1,6 +1,6 @@
 
-var Dom = require('./Dom');
-var settings = require('./settings');
+import Dom from './Dom';
+import settings from './settings';
 
 /**
  * Wrapper for DOM element.
@@ -27,4 +27,4 @@ else
 	};
 }
 
-module.exports = $;
+export default $;

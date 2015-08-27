@@ -1,7 +1,7 @@
 
-var mixins = require('./mixins');
-var extend = require('./extend');
-var bindFn = require('./bindFn');
+import mixins from './mixins';
+import extend from './extend';
+import bindFn from './bindFn';
 
 var classMixin = {
 	f: function(fnName, args)
@@ -103,4 +103,4 @@ function createClass(meta, properties)
 	return constructor;
 }
 
-module.exports = createClass;
+export default createClass;

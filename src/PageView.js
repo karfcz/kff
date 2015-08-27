@@ -1,8 +1,8 @@
 
-var createClass = require('./functions/createClass');
-var $ = require('./dollar');
+import createClass from './functions/createClass';
+import $ from './dollar';
 
-var View = require('./View');
+import View from './View';
 
 var PageView = createClass(
 {
@@ -50,4 +50,4 @@ var PageView = createClass(
 
 });
 
-module.exports = PageView;
+export default PageView;

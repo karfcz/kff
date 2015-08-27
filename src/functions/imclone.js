@@ -14,4 +14,4 @@ function imclone(obj)
 	return obj;
 }
 
-module.exports = imclone;
+export default imclone;

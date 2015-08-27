@@ -1,7 +1,7 @@
 
-var createClass = require('../functions/createClass');
-var EventBinder = require('./EventBinder');
-var View = require('../View');
+import createClass from '../functions/createClass';
+import EventBinder from './EventBinder';
+import View from '../View';
 
 var DoubleClickBinder = createClass(
 {
@@ -27,4 +27,4 @@ var DoubleClickBinder = createClass(
 
 View.registerBinder('dblclick', DoubleClickBinder);
 
-module.exports = DoubleClickBinder;
+export default DoubleClickBinder;

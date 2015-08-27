@@ -1,7 +1,7 @@
 
-var createClass = require('./functions/createClass');
+import createClass from './functions/createClass';
 
-var EventsMixin = require('./EventsMixin');
+import EventsMixin from './EventsMixin';
 
 var HashStateHandler = createClass(
 {
@@ -44,4 +44,4 @@ var HashStateHandler = createClass(
 	}
 });
 
-module.exports = HashStateHandler;
+export default HashStateHandler;

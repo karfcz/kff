@@ -10,4 +10,4 @@ function factoryService(fn)
 	return fn2;
 }
 
-module.exports = factoryService;
+export default factoryService;

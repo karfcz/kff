@@ -1,7 +1,7 @@
 
-var createClass = require('../functions/createClass');
-var EventBinder = require('./EventBinder');
-var View = require('../View');
+import createClass from '../functions/createClass';
+import EventBinder from './EventBinder';
+import View from '../View';
 
 var FocusBinder = createClass(
 {
@@ -27,4 +27,4 @@ var FocusBinder = createClass(
 
 View.registerBinder('focus', FocusBinder);
 
-module.exports = FocusBinder;
+export default FocusBinder;

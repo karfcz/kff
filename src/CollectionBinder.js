@@ -1,10 +1,10 @@
 
-var settings = require('./settings');
+import settings from './settings';
 
-var createClass = require('./functions/createClass');
-var arrayIndexOf = require('./functions/arrayIndexOf');
-var callModelAsFunction = require('./functions/callModelAsFunction');
-var $ = require('./dollar');
+import createClass from './functions/createClass';
+import arrayIndexOf from './functions/arrayIndexOf';
+import callModelAsFunction from './functions/callModelAsFunction';
+import $ from './dollar';
 
 var CollectionBinder = createClass(
 /** @lends Binder.prototype */
@@ -500,4 +500,4 @@ var CollectionBinder = createClass(
 	}
 });
 
-module.exports = CollectionBinder;
+export default CollectionBinder;

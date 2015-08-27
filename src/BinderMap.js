@@ -1,5 +1,5 @@
 
-var createClass = require('./functions/createClass');
+import createClass from './functions/createClass';
 
 var BinderMap = createClass(
 /** @lends BinderMap.prototype */
@@ -109,4 +109,4 @@ var BinderMap = createClass(
 
 });
 
-module.exports = BinderMap;
+export default BinderMap;

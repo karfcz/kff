@@ -21,4 +21,4 @@ function convertValueType(value)
 	return value;
 }
 
-module.exports = convertValueType;
+export default convertValueType;

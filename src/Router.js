@@ -1,6 +1,6 @@
 
-var createClass = require('./functions/createClass');
-var Route = require('./Route');
+import createClass from './functions/createClass';
+import Route from './Route';
 
 var Router = createClass(
 /** @lends Router.prototype */
@@ -42,4 +42,4 @@ var Router = createClass(
 
 });
 
-module.exports = Router;
+export default Router;

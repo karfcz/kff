@@ -1,10 +1,10 @@
 
-var createClass = require('./functions/createClass');
-var evalObjectPath = require('./functions/evalObjectPath');
-var compareArrays = require('./functions/compareArrays');
-var arrayConcat = require('./functions/arrayConcat');
-var imset = require('./functions/imset');
-var imremove = require('./functions/imremove');
+import createClass from './functions/createClass';
+import evalObjectPath from './functions/evalObjectPath';
+import compareArrays from './functions/compareArrays';
+import arrayConcat from './functions/arrayConcat';
+import imset from './functions/imset';
+import imremove from './functions/imremove';
 
 var Cursor = createClass(
 {
@@ -81,4 +81,4 @@ var Cursor = createClass(
 
 });
 
-module.exports = Cursor;
+export default Cursor;

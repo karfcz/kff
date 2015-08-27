@@ -1,7 +1,7 @@
 
-var createClass = require('../functions/createClass');
-var Binder = require('../Binder');
-var View = require('../View');
+import createClass from '../functions/createClass';
+import Binder from '../Binder';
+import View from '../View';
 
 var HtmlBinder = createClass(
 {
@@ -32,4 +32,4 @@ var HtmlBinder = createClass(
 
 View.registerBinder('html', HtmlBinder);
 
-module.exports = HtmlBinder;
+export default HtmlBinder;

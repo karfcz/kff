@@ -1,5 +1,5 @@
 
-var imclone = require('./imclone');
+import imclone from './imclone';
 
 function immerge(source, target)
 {
@@ -29,4 +29,4 @@ function immerge(source, target)
 	}
 }
 
-module.exports = immerge;
+export default immerge;

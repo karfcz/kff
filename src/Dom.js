@@ -1,6 +1,6 @@
 
-var createClass = require('./functions/createClass');
-var arrayIndexOf = require('./functions/arrayIndexOf');
+import createClass from './functions/createClass';
+import arrayIndexOf from './functions/arrayIndexOf';
 
 if(typeof document === 'object' && document !== null)
 {
@@ -152,4 +152,4 @@ var Dom = createClass(
 	}
 });
 
-module.exports = Dom;
+export default Dom;

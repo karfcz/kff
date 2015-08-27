@@ -1,6 +1,6 @@
 
-var createClass = require('./functions/createClass');
-var arrayIndexOf = require('./functions/arrayIndexOf');
+import createClass from './functions/createClass';
+import arrayIndexOf from './functions/arrayIndexOf';
 
 var Events = createClass(
 /** @lends Events.prototype */
@@ -150,4 +150,4 @@ var Events = createClass(
 	}
 });
 
-module.exports = Events;
+export default Events;

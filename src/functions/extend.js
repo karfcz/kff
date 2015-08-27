@@ -14,4 +14,4 @@ function extend(child, parent)
 	child.prototype.constructor = child;
 }
 
-module.exports = extend;
+export default extend;

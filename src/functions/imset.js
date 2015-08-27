@@ -1,5 +1,5 @@
 
-var imclone = require('./imclone');
+import imclone from './imclone';
 
 function imset(keypath, value, obj)
 {
@@ -31,5 +31,5 @@ function imset(keypath, value, obj)
 	return root;
 }
 
-module.exports = imset;
+export default imset;
 

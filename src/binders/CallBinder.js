@@ -1,7 +1,7 @@
 
-// var createClass = require('../functions/createClass');
-// var EventBinder = require('./EventBinder');
-// var View = require('../View');
+// import createClass from '../functions/createClass';
+// import EventBinder from './EventBinder';
+// import View from '../View';
 
 // var CallBinder = kff.createClass(
 // {
@@ -43,4 +43,4 @@
 
 // kff.BindingView.registerBinder('call', kff.CallBinder);
 
-// module.exports = BlurBinder;
+// export default BlurBinder;

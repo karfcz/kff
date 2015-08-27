@@ -20,4 +20,4 @@ function curry(fn, arity)
 	}
 }
 
-module.exports = curry;
+export default curry;

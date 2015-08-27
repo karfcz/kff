@@ -1,5 +1,5 @@
 
-var convertValueType = require('./convertValueType');
+import convertValueType from './convertValueType';
 
 function callModelAsFunction(view, model, modelArgs)
 {
@@ -15,4 +15,4 @@ function callModelAsFunction(view, model, modelArgs)
 	return model.apply(null, args);
 }
 
-module.exports = callModelAsFunction;
+export default callModelAsFunction;

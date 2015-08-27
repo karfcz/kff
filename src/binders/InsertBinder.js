@@ -1,9 +1,9 @@
 
-var createClass = require('../functions/createClass');
-var convertValueType = require('../functions/convertValueType');
-var noop = require('../functions/noop');
-var Binder = require('../Binder');
-var View = require('../View');
+import createClass from '../functions/createClass';
+import convertValueType from '../functions/convertValueType';
+import noop from '../functions/noop';
+import Binder from '../Binder';
+import View from '../View';
 
 var createInsertBinder = function(negate, force){
 
@@ -147,15 +147,9 @@ var createInsertBinder = function(negate, force){
 };
 
 // InsertBinder = createInsertBinder(false, false);
-var IfBinder = createInsertBinder(false, true);
-var IfNotBinder = createInsertBinder(true, true);
+export var IfBinder = createInsertBinder(false, true);
+export var IfNotBinder = createInsertBinder(true, true);
 
 // BindingView.registerBinder('insert', InsertBinder);
 View.registerBinder('if', IfBinder);
 View.registerBinder('ifnot', IfNotBinder);
-
-module.exports = {
-	IfBinder: IfBinder,
-	IfNotBinder: IfNotBinder
-};
-

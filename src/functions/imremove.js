@@ -1,5 +1,5 @@
 
-var imclone = require('./imclone');
+import imclone from './imclone';
 
 function imremove(keypath, obj)
 {
@@ -28,4 +28,4 @@ function imremove(keypath, obj)
 	return root;
 }
 
-module.exports = imremove;
+export default imremove;

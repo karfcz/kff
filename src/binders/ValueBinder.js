@@ -1,10 +1,10 @@
 
-var createClass = require('../functions/createClass');
-var arrayIndexOf = require('../functions/arrayIndexOf');
-var compareArrays = require('../functions/compareArrays');
-var setImmediate = require('../functions/setImmediate');
-var Binder = require('../Binder');
-var View = require('../View');
+import createClass from '../functions/createClass';
+import arrayIndexOf from '../functions/arrayIndexOf';
+import compareArrays from '../functions/compareArrays';
+import setImmediate from '../functions/setImmediate';
+import Binder from '../Binder';
+import View from '../View';
 
 var ValueBinder = createClass(
 {
@@ -125,4 +125,4 @@ var ValueBinder = createClass(
 
 View.registerBinder('val', ValueBinder);
 
-module.exports = ValueBinder;
+export default ValueBinder;

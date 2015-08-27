@@ -16,4 +16,4 @@ function arrayConcat(a1, a2)
 	return a3;
 }
 
-module.exports = arrayConcat;
+export default arrayConcat;

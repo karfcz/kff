@@ -1,8 +1,6 @@
 
-var createClass = require('./functions/createClass');
-
-// var ViewFactory = require('./ViewFactory');
-var ServiceContainer = require('./ServiceContainer');
+import createClass from './functions/createClass';
+import ServiceContainer from './ServiceContainer';
 
 var FrontController = createClass(
 {
@@ -307,4 +305,4 @@ var FrontController = createClass(
 	}
 });
 
-module.exports = FrontController;
+export default FrontController;

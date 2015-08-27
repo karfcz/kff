@@ -1,5 +1,5 @@
 
-var isPlainObject = require('./isPlainObject');
+import isPlainObject from './isPlainObject';
 
 /**
  * Mixins (using a shallow copy) properties from one object to another.
@@ -37,4 +37,4 @@ function deepMixins(obj, properties)
 	return obj;
 }
 
-module.exports = deepMixins;
+export default deepMixins;
