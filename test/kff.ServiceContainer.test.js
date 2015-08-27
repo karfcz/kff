@@ -17,9 +17,6 @@ describe('kff.ServiceContainer', function()
 				'construct': Service1,
 			    'args': ['foo', 'haf']
 			},
-			'Service7 #1':
-			{
-			},
 			'service2':
 			{
 				'construct': Service2,
@@ -44,6 +41,8 @@ describe('kff.ServiceContainer', function()
 			'Service6': {
 				'construct': Service6,
 			},
+			'Service7': Service7,
+			'Service7 #1': Service7,
 			'Service8': {
 				'construct': Service1,
 				'args': ['@@Service2', null],
@@ -116,17 +115,17 @@ describe('kff.ServiceContainer', function()
 	{
 		it('should create service of type Service1', function()
 		{
-			expect(container.createService('service1') instanceof Service1).to.be.true;
+			expect(container.getService('service1') instanceof Service1).to.be.true;
 		});
 
 		it('should create service of type Service1 that have property a === foo', function()
 		{
-			expect(container.createService('service1')).to.have.property('a', 'foo');
+			expect(container.getService('service1')).to.have.property('a', 'foo');
 		});
 
 		it('should create service with overloaded arguments', function()
 		{
-			var service3 = container.createService('service3', [undefined, { o2: 3 }]);
+			var service3 = container.getService('service3', [undefined, { o2: 3 }]);
 			expect(service3).to.have.property('a', 'foo');
 			expect(service3).to.have.property('b');
 			expect(service3.b).to.have.property('o1', 1);
@@ -135,27 +134,27 @@ describe('kff.ServiceContainer', function()
 
 		it('should create function service of type Service4', function()
 		{
-			expect(container.createService('service4') === Service4).to.be.true;
+			expect(container.getService('service4') === Service4).to.be.true;
 		});
 
 		it('should create factory service of type Service4', function()
 		{
-			expect(container.createService('service4b')).to.equal('s4');
+			expect(container.getService('service4b')).to.equal('s4');
 		});
 
 		it('should create object service Service6', function()
 		{
-			expect(container.createService('Service6')).to.equal(Service6);
+			expect(container.getService('Service6')).to.equal(Service6);
 		});
 
 		it('should create object service Service7', function()
 		{
-			expect(container.createService('Service7')).to.equal(Service7);
+			expect(container.getService('Service7')).to.equal(Service7);
 		});
 
 		it('should create object service with space', function()
 		{
-			expect(container.createService('Service7 #1')).to.equal(Service7);
+			expect(container.getService('Service7 #1')).to.equal(Service7);
 		});
 
 	});
