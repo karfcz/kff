@@ -66,7 +66,7 @@ describe('kff.View', function()
 			view = new TestView({element: $div});
 			view.init();
 			expect($div.html()).to.equal(testString);
-			expect($div.attr(kff.DATA_RENDERED_ATTR)).to.equal('true');
+			expect($div.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
 		});
 
 	});
@@ -78,10 +78,10 @@ describe('kff.View', function()
 			view = new TestView({element: $div});
 			view.init();
 			expect($div.html()).to.equal(testString);
-			expect($div.attr(kff.DATA_RENDERED_ATTR)).to.equal('true');
+			expect($div.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
 			view.destroyAll();
 			expect($div.html()).to.equal('');
-			expect($div.attr(kff.DATA_RENDERED_ATTR)).to.be.undefined;
+			expect($div.attr(kff.settings.DATA_RENDERED_ATTR)).to.be.undefined;
 		});
 
 
@@ -157,51 +157,51 @@ describe('kff.View', function()
 	});
 
 
-	describe('#setSubviewsOptions', function()
-	{
-		it('should overload model using setSubviewsOptions method', function()
-		{
-			var testModel = {};
-			var testModel2 = null;
-			var View1 = kff.createClass({ extend: kff.PageView },
-			{
-				constructor: function(options)
-				{
-					kff.PageView.apply(this, arguments);
-					this.setSubviewsScope({
-						View2: {
-							testModel: testModel
-						}
-					});
-				},
+	// describe('#setSubviewsOptions', function()
+	// {
+	// 	it('should overload model using setSubviewsOptions method', function()
+	// 	{
+	// 		var testModel = {};
+	// 		var testModel2 = null;
+	// 		var View1 = kff.createClass({ extend: kff.PageView },
+	// 		{
+	// 			constructor: function(options)
+	// 			{
+	// 				kff.PageView.apply(this, arguments);
+	// 				this.setSubviewsScope({
+	// 					View2: {
+	// 						testModel: testModel
+	// 					}
+	// 				});
+	// 			},
 
-				render: function()
-				{
-					this.$element[0].innerHTML = '<div data-kff-view="View2">';
-				}
+	// 			render: function()
+	// 			{
+	// 				this.$element[0].innerHTML = '<div data-kff-view="View2">';
+	// 			}
 
-			});
+	// 		});
 
-			var View2 = kff.createClass({ extend: kff.View }, {
-				constructor: function(options)
-				{
-					kff.View.apply(this, arguments);
-					testModel2 = this.scope.testModel;
-				}
-			});
+	// 		var View2 = kff.createClass({ extend: kff.View }, {
+	// 			constructor: function(options)
+	// 			{
+	// 				kff.View.apply(this, arguments);
+	// 				testModel2 = this.scope.testModel;
+	// 			}
+	// 		});
 
-			var app = new kff.App({
-				defaultView: 'View1',
-				modules: {
-					View1: View1,
-					View2: View2
-				}
-			});
+	// 		var app = new kff.App({
+	// 			defaultView: 'View1',
+	// 			services: {
+	// 				View1: View1,
+	// 				View2: View2
+	// 			}
+	// 		});
 
-			app.init();
-			expect(testModel2).to.equal(testModel);
-		});
-	});
+	// 		app.init();
+	// 		expect(testModel2).to.equal(testModel);
+	// 	});
+	// });
 
 
 	describe('#renderSubviews', function()
@@ -237,18 +237,11 @@ describe('kff.View', function()
 
 			var config = {
 				services: {
-					'viewFactory': {
-						construct: kff.ViewFactory,
-						args: [{
-							serviceContainer: '@'
-						}],
-						shared: true
-					},
 					'testViewA': {
 						construct: TestView2,
 						args: [{
 							element: $mainDiv,
-							viewFactory: '@viewFactory'
+							serviceContainer: '@'
 						}]
 					},
 					'testViewB': {
@@ -261,13 +254,13 @@ describe('kff.View', function()
 			var view1 = container.getService('testViewA');
 			view1.init();
 
-			expect($mainDiv.attr(kff.DATA_RENDERED_ATTR)).to.equal('true');
-			expect($innerDiv.attr(kff.DATA_RENDERED_ATTR)).to.equal('true');
+			expect($mainDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
+			expect($innerDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
 
 			view1.destroyAll();
 
-			expect($mainDiv.attr(kff.DATA_RENDERED_ATTR)).to.be.undefined;
-			expect($innerDiv.attr(kff.DATA_RENDERED_ATTR)).to.be.undefined;
+			expect($mainDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.be.undefined;
+			expect($innerDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.be.undefined;
 		});
 
 
@@ -282,18 +275,11 @@ describe('kff.View', function()
 
 			var config = {
 				services: {
-					'viewFactory': {
-						construct: kff.ViewFactory,
-						args: [{
-							serviceContainer: '@'
-						}],
-						shared: true
-					},
 					'testViewA': {
 						construct: TestView2,
 						args: [{
 							element: $mainDiv,
-							viewFactory: '@viewFactory'
+							serviceContainer: '@'
 						}]
 					},
 					'testViewB': {
@@ -309,8 +295,8 @@ describe('kff.View', function()
 			var view1 = container.getService('testViewA');
 			view1.init();
 
-			expect($mainDiv.attr(kff.DATA_RENDERED_ATTR)).to.equal('true');
-			expect($innerDiv.attr(kff.DATA_RENDERED_ATTR)).to.equal('true');
+			expect($mainDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
+			expect($innerDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
 
 			$innerDiv.triggerHandler('click');
 		});
