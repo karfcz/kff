@@ -17,4 +17,4 @@ function arrayIndexOf(array, item)
 	return -1;
 }
 
-export default arrayIndexOf;
+module.exports = arrayIndexOf;

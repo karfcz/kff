@@ -12,4 +12,4 @@ function compose()
 	};
 }
 
-export default compose;
+module.exports = compose;

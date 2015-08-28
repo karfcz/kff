@@ -1,5 +1,5 @@
 
-import createClass from './functions/createClass';
+var createClass = require('./functions/createClass');
 
 var Service = createClass(
 {},
@@ -11,4 +11,4 @@ var Service = createClass(
 	}
 });
 
-export default Service;
+module.exports = Service;

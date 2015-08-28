@@ -1,65 +1,70 @@
 
-export {default as settings} from './settings';
-export {default as arrayConcat} from './functions/arrayConcat';
-export {default as arrayIndexOf} from './functions/arrayIndexOf';
-export {default as compareArrays} from './functions/compareArrays';
-export {default as bindFn} from './functions/bindFn';
-export {default as createClass} from './functions/createClass';
-export {default as deepMixins} from './functions/deepMixins';
-// export {default as evalObjectPath} from './functions/evalObjectPath';
-export {default as extend} from './functions/extend';
-export {default as isPlainObject} from './functions/isPlainObject';
-export {default as log} from './functions/log';
-export {default as mixins} from './functions/mixins';
-export {default as setImmediate} from './functions/setImmediate';
-export {default as curry} from './functions/curry';
-export {default as compose} from './functions/compose';
-export {default as map} from './functions/map';
-export {default as imclone} from './functions/imclone';
-export {default as imset} from './functions/imset';
-export {default as imremove} from './functions/imremove';
-export {default as immerge} from './functions/immerge';
-export {default as functionService} from './functions/functionService';
-export {default as factoryService} from './functions/factoryService';
-export {default as noop} from './functions/noop';
 
-export {default as App} from './App';
-export {default as Cursor} from './Cursor';
-export {default as Dom} from './Dom';
-export {default as EventStream} from './EventStream';
-export {default as Events} from './Events';
-export {default as EventsMixin} from './EventsMixin';
-export {default as Service} from './Service';
-export {default as ServiceContainer} from './ServiceContainer';
-export {default as View} from './View';
-export {default as PageView} from './PageView';
-export {default as BinderMap} from './BinderMap';
-export {default as Binder} from './Binder';
-export {default as CollectionBinder} from './CollectionBinder';
-export {default as ModelView} from './ModelView';
-export {default as Route} from './Route';
-export {default as Router} from './Router';
-export {default as HashStateHandler} from './HashStateHandler';
-export {default as FrontController} from './FrontController';
-export {default as Dispatcher} from './Dispatcher';
-export {default as $} from './dollar';
 
-export {default as EventBinder} from './binders/EventBinder';
-export {default as AttrBinder} from './binders/AttrBinder';
-export {default as CheckBinder} from './binders/CheckBinder';
-export {default as DisabledBinder} from './binders/DisabledBinder';
-export {ClassBinder} from './binders/ClassBinder';
-export {ClassNotBinder} from './binders/ClassBinder';
-export {default as StyleBinder} from './binders/StyleBinder';
-export {default as ClickBinder} from './binders/ClickBinder';
-export {default as DoubleClickBinder} from './binders/DoubleClickBinder';
-export {default as FocusBinder} from './binders/FocusBinder';
-export {default as BlurBinder} from './binders/BlurBinder';
-export {default as FocusBlurBinder} from './binders/FocusBlurBinder';
-export {default as HtmlBinder} from './binders/HtmlBinder';
-export {default as RadioBinder} from './binders/RadioBinder';
-export {default as TextBinder} from './binders/TextBinder';
-export {default as ValueBinder} from './binders/ValueBinder';
-export {IfBinder} from './binders/InsertBinder';
-export {IfNotBinder} from './binders/InsertBinder';
+module.exports = {
+
+	settings: require('./settings'),
+	arrayConcat: require('./functions/arrayConcat'),
+	arrayIndexOf: require('./functions/arrayIndexOf'),
+	compareArrays: require('./functions/compareArrays'),
+	bindFn: require('./functions/bindFn'),
+	createClass: require('./functions/createClass'),
+	deepMixins: require('./functions/deepMixins'),
+	// evalObjectPath: require('./functions/evalObjectPath'),
+	extend: require('./functions/extend'),
+	isPlainObject: require('./functions/isPlainObject'),
+	log: require('./functions/log'),
+	mixins: require('./functions/mixins'),
+	setImmediate: require('./functions/setImmediate'),
+	curry: require('./functions/curry'),
+	compose: require('./functions/compose'),
+	map: require('./functions/map'),
+	imclone: require('./functions/imclone'),
+	imset: require('./functions/imset'),
+	imremove: require('./functions/imremove'),
+	immerge: require('./functions/immerge'),
+	functionService: require('./functions/functionService'),
+	factoryService: require('./functions/factoryService'),
+	noop: require('./functions/noop'),
+
+	App: require('./App'),
+	Cursor: require('./Cursor'),
+	Dom: require('./Dom'),
+	EventStream: require('./EventStream'),
+	Events: require('./Events'),
+	EventsMixin: require('./EventsMixin'),
+	Service: require('./Service'),
+	ServiceContainer: require('./ServiceContainer'),
+	View: require('./View'),
+	PageView: require('./PageView'),
+	BinderMap: require('./BinderMap'),
+	Binder: require('./Binder'),
+	CollectionBinder: require('./CollectionBinder'),
+	ModelView: require('./ModelView'),
+	Route: require('./Route'),
+	Router: require('./Router'),
+	HashStateHandler: require('./HashStateHandler'),
+	FrontController: require('./FrontController'),
+	Dispatcher: require('./Dispatcher'),
+	'$': require('./dollar'),
+
+	EventBinder: require('./binders/EventBinder'),
+	AttrBinder: require('./binders/AttrBinder'),
+	CheckBinder: require('./binders/CheckBinder'),
+	DisabledBinder: require('./binders/DisabledBinder'),
+	ClassBinder: require('./binders/ClassBinder').ClassBinder,
+	ClassNotBinder: require('./binders/ClassBinder').ClassNotBinder,
+	StyleBinder: require('./binders/StyleBinder'),
+	ClickBinder: require('./binders/ClickBinder'),
+	DoubleClickBinder: require('./binders/DoubleClickBinder'),
+	FocusBinder: require('./binders/FocusBinder'),
+	BlurBinder: require('./binders/BlurBinder'),
+	FocusBlurBinder: require('./binders/FocusBlurBinder'),
+	HtmlBinder: require('./binders/HtmlBinder'),
+	RadioBinder: require('./binders/RadioBinder'),
+	TextBinder: require('./binders/TextBinder'),
+	ValueBinder: require('./binders/ValueBinder'),
+	IfBinder: require('./binders/InsertBinder').IfBinder,
+	IfNotBinder: require('./binders/InsertBinder').IfNotBinder
+};
 

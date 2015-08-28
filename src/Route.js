@@ -1,5 +1,5 @@
 
-import createClass from './functions/createClass';
+var createClass = require('./functions/createClass');
 
 /*
  *  Parts of Route code from https://github.com/visionmedia/page.js
@@ -93,4 +93,4 @@ var Route = createClass(
 	}
 });
 
-export default Route;
+module.exports = Route;

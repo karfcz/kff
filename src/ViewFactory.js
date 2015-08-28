@@ -1,8 +1,8 @@
 
-import createClass from './functions/createClass';
-import mixins from './functions/mixins';
-import evalObjectPath from './functions/evalObjectPath';
-import log from './functions/log';
+var createClass = require('./functions/createClass');
+var mixins = require('./functions/mixins');
+var evalObjectPath = require('./functions/evalObjectPath');
+var log = require('./functions/log');
 
 var ViewFactory = createClass(
 {
@@ -86,4 +86,4 @@ var ViewFactory = createClass(
 
 });
 
-export default ViewFactory;
+module.exports = ViewFactory;

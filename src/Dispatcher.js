@@ -1,10 +1,10 @@
 
-import settings from './settings';
+var settings = require('./settings');
 
-import createClass from './functions/createClass';
-import log from './functions/log';
+var createClass = require('./functions/createClass');
+var log = require('./functions/log');
 
-import EventStream from './EventStream';
+var EventStream = require('./EventStream');
 
 function filterByEventType(type)
 {
@@ -102,4 +102,4 @@ var Dispatcher = createClass(
 	}
 });
 
-export default Dispatcher;
+module.exports = Dispatcher;

@@ -1,21 +1,20 @@
 
+var settings = require('./settings');
+var createClass = require('./functions/createClass');
+var mixins = require('./functions/mixins');
+var immerge = require('./functions/immerge');
+var evalObjectPath = require('./functions/evalObjectPath');
+var noop = require('./functions/noop');
+var arrayConcat = require('./functions/arrayConcat');
+var isPlainObject = require('./functions/isPlainObject');
+var $ = require('./dollar');
 
-import settings from './settings';
-import createClass from './functions/createClass';
-import mixins from './functions/mixins';
-import immerge from './functions/immerge';
-import evalObjectPath from './functions/evalObjectPath';
-import noop from './functions/noop';
-import arrayConcat from './functions/arrayConcat';
-import isPlainObject from './functions/isPlainObject';
-import $ from './dollar';
-
-import EventsMixin from './EventsMixin';
-import ServiceContainer from './ServiceContainer';
-import Dispatcher from './Dispatcher';
-import Cursor from './Cursor';
-import CollectionBinder from './CollectionBinder';
-import BinderMap from './BinderMap';
+var EventsMixin = require('./EventsMixin');
+var ServiceContainer = require('./ServiceContainer');
+var Dispatcher = require('./Dispatcher');
+var Cursor = require('./Cursor');
+var CollectionBinder = require('./CollectionBinder');
+var BinderMap = require('./BinderMap');
 
 var bindingRegex = /(?:([_.a-zA-Z0-9*-]+))(?:\(([@.a-zA-Z0-9*,\s-]+)*\))?((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g;
 
@@ -1421,5 +1420,5 @@ View.registerHelper('string', function(v)
 	return v.toString();
 });
 
-export default View;
+module.exports = View;
 

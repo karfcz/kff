@@ -21,4 +21,4 @@ function compareArrays(value1, value2)
 	else return false;
 }
 
-export default compareArrays;
+module.exports = compareArrays;

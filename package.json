@@ -7,7 +7,6 @@
     "email": "karf@karf.cz"
   },
   "devDependencies": {
-    "babelify": "^6.2.0",
     "browserify-derequire": "^0.9.4",
     "chai": "~1.9.1",
     "grunt": "^0.4.5",

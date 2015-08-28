@@ -1,11 +1,11 @@
 
-import createClass from './functions/createClass';
-import arrayConcat from './functions/arrayConcat';
-import noop from './functions/noop';
-import View from './View';
+var createClass = require('./functions/createClass');
+var arrayConcat = require('./functions/arrayConcat');
+var noop = require('./functions/noop');
+var View = require('./View');
 
-import convertValueType from './functions/convertValueType';
-import callModelAsFunction from './functions/callModelAsFunction';
+var convertValueType = require('./functions/convertValueType');
+var callModelAsFunction = require('./functions/callModelAsFunction');
 
 var Binder = createClass(
 /** @lends Binder.prototype */
@@ -272,4 +272,4 @@ var Binder = createClass(
 
 });
 
-export default Binder;
+module.exports = Binder;

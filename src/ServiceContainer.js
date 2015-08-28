@@ -1,12 +1,12 @@
 
-import settings from './settings';
-import createClass from './functions/createClass';
-import isPlainObject from './functions/isPlainObject';
-import evalObjectPath from './functions/evalObjectPath';
-import mixins from './functions/mixins';
-import log from './functions/log';
-import immerge from './functions/immerge';
-import Service from './Service';
+var settings = require('./settings');
+var createClass = require('./functions/createClass');
+var isPlainObject = require('./functions/isPlainObject');
+var evalObjectPath = require('./functions/evalObjectPath');
+var mixins = require('./functions/mixins');
+var log = require('./functions/log');
+var immerge = require('./functions/immerge');
+var Service = require('./Service');
 
 var ServiceContainer = createClass(
 {
@@ -341,4 +341,4 @@ var ServiceContainer = createClass(
 
 });
 
-export default ServiceContainer;
+module.exports = ServiceContainer;

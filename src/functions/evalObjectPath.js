@@ -28,4 +28,4 @@ function evalObjectPath(path, obj)
 	return obj;
 }
 
-export default evalObjectPath;
+module.exports = evalObjectPath;

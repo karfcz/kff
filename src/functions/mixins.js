@@ -26,4 +26,4 @@ function mixins(obj, properties)
 	return obj;
 }
 
-export default mixins;
+module.exports = mixins;

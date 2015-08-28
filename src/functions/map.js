@@ -1,9 +1,9 @@
 
-import curry from './curry';
+var curry = require('./curry');
 
 var map = curry(function(fn, obj)
 {
 	return obj.map(fn);
 });
 
-export default map;
+module.exports = map;

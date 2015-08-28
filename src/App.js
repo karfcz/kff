@@ -1,12 +1,12 @@
 
-import createClass from './functions/createClass';
-import ServiceContainer from './ServiceContainer';
-import Service from './Service';
-import HashStateHandler from './HashStateHandler';
-import PageView from './PageView';
-import FrontController from './FrontController';
-import Dispatcher from './Dispatcher';
-import Router from './Router';
+var createClass = require('./functions/createClass');
+var ServiceContainer = require('./ServiceContainer');
+var Service = require('./Service');
+var HashStateHandler = require('./HashStateHandler');
+var PageView = require('./PageView');
+var FrontController = require('./FrontController');
+var Dispatcher = require('./Dispatcher');
+var Router = require('./Router');
 
 var App = createClass(
 /** @lends App.prototype */
@@ -153,4 +153,4 @@ var App = createClass(
 });
 
 
-export default App;
+module.exports = App;

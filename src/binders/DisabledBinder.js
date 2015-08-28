@@ -1,7 +1,7 @@
 
-import createClass from '../functions/createClass';
-import Binder from '../Binder';
-import View from '../View';
+var createClass = require('../functions/createClass');
+var Binder = require('../Binder');
+var View = require('../View');
 
 var DisabledBinder = createClass(
 {
@@ -36,4 +36,4 @@ var DisabledBinder = createClass(
 
 View.registerBinder('disabled', DisabledBinder);
 
-export default DisabledBinder;
+module.exports = DisabledBinder;

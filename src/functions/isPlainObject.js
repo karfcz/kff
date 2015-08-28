@@ -12,4 +12,4 @@ function isPlainObject(obj)
 	return obj !== null && typeof obj === 'object' && obj.constructor === Object;
 }
 
-export default isPlainObject;
+module.exports = isPlainObject;

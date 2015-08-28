@@ -1,7 +1,7 @@
 
-import createClass from '../functions/createClass';
-import Binder from '../Binder';
-import View from '../View';
+var createClass = require('../functions/createClass');
+var Binder = require('../Binder');
+var View = require('../View');
 
 var TextBinder = createClass(
 {
@@ -45,4 +45,4 @@ if(typeof document === 'object' && document !== null)
 
 View.registerBinder('text', TextBinder);
 
-export default TextBinder;
+module.exports = TextBinder;

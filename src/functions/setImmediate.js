@@ -38,4 +38,4 @@ else
 	};
 }
 
-export default setImmediate;
+module.exports = setImmediate;

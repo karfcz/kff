@@ -26,4 +26,4 @@ function bindFn(obj, fnName, args)
 	return obj._boundFns[fnName];
 }
 
-export default bindFn;
+module.exports = bindFn;

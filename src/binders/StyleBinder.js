@@ -1,7 +1,7 @@
 
-import createClass from '../functions/createClass';
-import Binder from '../Binder';
-import View from '../View';
+var createClass = require('../functions/createClass');
+var Binder = require('../Binder');
+var View = require('../View');
 
 var StyleBinder = createClass(
 {
@@ -50,4 +50,4 @@ var StyleBinder = createClass(
 
 View.registerBinder('style', StyleBinder);
 
-export default StyleBinder;
+module.exports = StyleBinder;

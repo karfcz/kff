@@ -1,5 +1,5 @@
 
-import Events from './Events';
+var Events = require('./Events');
 
 var EventsMixin =
 {
@@ -33,4 +33,4 @@ var EventsMixin =
 	}
 };
 
-export default EventsMixin;
+module.exports = EventsMixin;
