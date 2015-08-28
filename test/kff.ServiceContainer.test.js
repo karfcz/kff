@@ -14,40 +14,39 @@ describe('kff.ServiceContainer', function()
 		{
 			'service1':
 			{
-				'construct': Service1,
-			    'args': ['foo', 'haf']
+				construct: Service1,
+				type: 'class',
+			    args: ['foo', 'haf']
 			},
 			'service2':
 			{
-				'construct': Service2,
-			    'args': ['@service1', 'foo is not a bar'],
-			    'shared': true
+				construct: Service2,
+				type: 'class',
+			    args: ['@service1', 'foo is not a bar'],
+			    shared: true
 			},
 			'service3':
 			{
-				'construct': Service1,
-			    'args': ['foo', { o1: 1, o2: 2 }]
+				construct: Service1,
+				type: 'class',
+			    args: ['foo', { o1: 1, o2: 2 }]
 			},
 			'service4':
 			{
-				'construct': Service4,
-			    'type': 'function'
+				construct: Service4,
+			    type: 'function'
 			},
 			'service4b':
 			{
-				'construct': Service4,
-			    'type': 'factory'
+				construct: Service4,
+			    type: 'factory'
 			},
 			'Service6': {
-				'construct': Service6,
+				construct: Service6,
+				type: 'class',
 			},
 			'Service7': Service7,
-			'Service7 #1': Service7,
-			'Service8': {
-				'construct': Service1,
-				'args': ['@@Service2', null],
-				'shared': true
-			}
+			'Service7 #1': Service7
 		}
 	};
 
@@ -205,9 +204,10 @@ describe('kff.ServiceContainer', function()
 		{
 			container.registerServices({
 				'service5': {
-					'construct': function() {
+					construct: function() {
 						this.a = 'service 5';
-					}
+					},
+					type: 'class'
 				}
 			});
 

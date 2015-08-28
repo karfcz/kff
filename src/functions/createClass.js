@@ -82,17 +82,19 @@ function createClass(meta, properties)
 		constructor.service = meta.service;
 	}
 
+	if(!('service' in constructor)) constructor.service = {};
+
 	if(meta.args)
 	{
-		if(!('service' in constructor)) constructor.service = {};
 		constructor.service.args = meta.args;
 	}
 
 	if(meta.shared)
 	{
-		if(!('service' in constructor)) constructor.service = {};
 		constructor.service.shared = meta.shared;
 	}
+
+	constructor.service.type = 'class';
 
 	// Add properties to prototype
 	mixins(constructor.prototype, properties);

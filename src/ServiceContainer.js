@@ -74,7 +74,10 @@ var ServiceContainer = createClass(
 
 		Ctor = serviceWrapper.module;
 
-		if(typeof Ctor !== 'function' || serviceConfig.type === 'function') return Ctor;
+		if(typeof Ctor !== 'function' || (serviceConfig.type !== 'class' && serviceConfig.type !== 'factory'))
+		{
+			return Ctor;
+		}
 
 		if(serviceConfig.type !== 'factory')
 		{
