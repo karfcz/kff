@@ -1,30 +1,43 @@
-// if(typeof require === 'function') var kff = require('../build/kff.js');
+if(typeof require === 'function') var kff = require('../build/kff.js');
 
-// describe('kff.CheckBinder', function()
-// {
-// 	it('should bind check binder', function()
-// 	{
-// 		var $input = $('<input type="checkbox" data-kff-bind="myModel.checked:check"/>');
-// 		var view = new kff.BindingView(
-// 		{
-// 			element: $input,
-// 			scope: {
-// 				myModel: {
-// 					checked: true
-// 				}
-// 			}
-// 		});
-// 		view.init();
+describe('kff.CheckBinder', function()
+{
+	it('should bind check binder', function()
+	{
+		var myModel = new kff.Cursor({
+			checked: true
+		});
 
-// 		expect($input.is(':checked')).to.equal(true);
-// 		view.getModel('myModel').checked = false;
-// 		view.refresh();
+		var dispatcher = new kff.Dispatcher({
+			set: function(event)
+			{
+				event.cursor.set(event.value);
+				return {
+					type: 'refresh'
+				};
+			}
+		});
 
-// 		expect($input.is(':checked')).to.equal(false);
-// 		$input.prop('checked', true).triggerHandler('click');
-// 		view.refresh();
+		var $input = $('<input type="checkbox" data-kff-bind="myModel.checked:check"/>');
+		var view = new kff.View(
+		{
+			element: $input,
+			scope: {
+				myModel: myModel
+			},
+			dispatcher: dispatcher
+		});
+		view.renderAll();
+		view.runAll();
 
-// 		expect(view.getModel('myModel').checked).to.equal(true);
-// 	});
+		expect($input.is(':checked')).to.equal(true);
+		myModel.setIn('checked', false);
+		view.refreshAll();
 
-// });
+		expect($input.is(':checked')).to.equal(false);
+		$input.prop('checked', true).triggerHandler('click');
+
+		expect(myModel.getIn('checked')).to.equal(true);
+	});
+
+});
