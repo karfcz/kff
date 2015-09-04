@@ -16,7 +16,8 @@ describe('kff.TextBinder', function()
 				myModel: new kff.Cursor(myModel)
 			}
 		});
-		view.init();
+		view.renderAll();
+		view.runAll();
 		expect($div.text()).to.equal('Karel');
 		myModel.name = 'Petr';
 		view.refreshAll();
@@ -37,7 +38,8 @@ describe('kff.TextBinder', function()
 				myModel: new kff.Cursor(myModel)
 			}
 		});
-		view.init();
+		view.renderAll();
+		view.runAll();
 		expect($div.text()).to.equal('foo');
 	});
 

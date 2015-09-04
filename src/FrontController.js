@@ -227,7 +227,8 @@ var FrontController = createClass(
 
 		for(i = from; i < this.viewsQueue.length; i++)
 		{
-			this.viewsQueue[i].instance.init();
+			this.viewsQueue[i].instance.renderAll();
+			this.viewsQueue[i].instance.runAll();
 		}
 	},
 

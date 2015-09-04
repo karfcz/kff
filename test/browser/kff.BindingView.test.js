@@ -23,7 +23,8 @@ describe('kff.View', function()
 				collection: collection
 			}
 		});
-		view.init();
+		view.renderAll();
+		view.runAll();
 
 		setTimeout(function(){
 
@@ -51,7 +52,8 @@ describe('kff.View', function()
 				collection: collection
 			}
 		});
-		view.init();
+		view.renderAll();
+		view.runAll();
 
 		setTimeout(function(){
 
@@ -88,7 +90,8 @@ describe('kff.View', function()
 				collection: collection
 			}
 		});
-		view.init();
+		view.renderAll();
+		view.runAll();
 
 		expect($div1.find('div').length).to.equal(3);
 		collection.splice(1, 1);
@@ -112,7 +115,8 @@ describe('kff.View', function()
 				collection: collection
 			}
 		});
-		view.init();
+		view.renderAll();
+		view.runAll();
 
 		setTimeout(function(){
 			expect($div.text()).to.equal('2');
@@ -148,7 +152,8 @@ describe('kff.View', function()
 	// 			computer: computer
 	// 		}
 	// 	});
-	// 	view.init();
+	// 	view.renderAll();
+	// 	view.runAll();
 
 	// 	setTimeout(function()
 	// 	{
@@ -192,7 +197,8 @@ describe('kff.View', function()
 				filterModel: new kff.Cursor(filterModel)
 			}
 		});
-		view.init();
+		view.renderAll();
+		view.runAll();
 
 		expect($div1.find('div').length).to.equal(1);
 	});
@@ -224,7 +230,8 @@ describe('kff.View', function()
 				sortModel: new kff.Cursor(sortModel)
 			}
 		});
-		view.init();
+		view.renderAll();
+		view.runAll();
 
 		expect($div1.find('div').length).to.equal(3);
 		expect($div1.text()).to.equal('123');
@@ -262,7 +269,8 @@ describe('kff.View', function()
 				sortModel: new kff.Cursor(sortModel)
 			}
 		});
-		view.init();
+		view.renderAll();
+		view.runAll();
 
 		expect($div1.find('div').length).to.equal(2);
 		expect($div1.text()).to.equal('12');
@@ -288,7 +296,8 @@ describe('kff.View', function()
 				collection: new kff.Cursor(collection),
 			}
 		});
-		view.init();
+		view.renderAll();
+		view.runAll();
 
 		expect($div1.text()).to.equal('12');
 	});
@@ -313,7 +322,8 @@ describe('kff.View', function()
 				collection: new kff.Cursor(collection),
 			}
 		});
-		view.init();
+		view.renderAll();
+		view.runAll();
 
 		expect($div1.text()).to.equal('12');
 	});

@@ -64,7 +64,8 @@ describe('kff.View', function()
 		it('should render the view', function()
 		{
 			view = new TestView({element: $div});
-			view.init();
+			view.renderAll();
+			view.runAll();
 			expect($div.html()).to.equal(testString);
 			expect($div.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
 		});
@@ -76,7 +77,8 @@ describe('kff.View', function()
 		it('should destroy the view', function()
 		{
 			view = new TestView({element: $div});
-			view.init();
+			view.renderAll();
+			view.runAll();
 			expect($div.html()).to.equal(testString);
 			expect($div.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
 			view.destroyAll();
@@ -92,7 +94,8 @@ describe('kff.View', function()
 		it('should delegate a click event to a method', function(done)
 		{
 			view = new TestView({element: $div, done: done});
-			view.init();
+			view.renderAll();
+			view.runAll();
 			$div.triggerHandler('click');
 		});
 
@@ -100,7 +103,8 @@ describe('kff.View', function()
 		{
 			view = new TestView({element: $div, done: done});
 			view.addEvents([['mouseover', 'click']]);
-			view.init();
+			view.renderAll();
+			view.runAll();
 			$div.triggerHandler('mouseover');
 		});
 
@@ -112,7 +116,8 @@ describe('kff.View', function()
 				if(i === 2) done();
 			}});
 			view.addEvents([['mouseover', 'click']]);
-			view.init();
+			view.renderAll();
+			view.runAll();
 			$div.triggerHandler('mouseover');
 			$div.triggerHandler('click');
 		});
@@ -125,7 +130,8 @@ describe('kff.View', function()
 			view = new TestView({element: $div, done: function(){
 				throw 'Error';
 			}});
-			view.init();
+			view.renderAll();
+			view.runAll();
 			view.destroyAll();
 			$div.triggerHandler('click');
 		});
@@ -136,7 +142,8 @@ describe('kff.View', function()
 				throw 'Error';
 			}});
 			view.addEvents([['mouseover', 'click']]);
-			view.init();
+			view.renderAll();
+			view.runAll();
 			view.destroyAll();
 			$div.triggerHandler('mouseover');
 		});
@@ -148,7 +155,8 @@ describe('kff.View', function()
 				throw 'Error';
 			}});
 			view.addEvents([['mouseover', 'click']]);
-			view.init();
+			view.renderAll();
+			view.runAll();
 			view.destroyAll();
 			$div.triggerHandler('mouseover');
 			$div.triggerHandler('click');
@@ -252,7 +260,8 @@ describe('kff.View', function()
 
 			var container = new kff.ServiceContainer(config);
 			var view1 = container.getService('testViewA');
-			view1.init();
+			view1.renderAll();
+			view1.runAll();
 
 			expect($mainDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
 			expect($innerDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
@@ -293,7 +302,8 @@ describe('kff.View', function()
 
 			var container = new kff.ServiceContainer(config);
 			var view1 = container.getService('testViewA');
-			view1.init();
+			view1.renderAll();
+			view1.runAll();
 
 			expect($mainDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
 			expect($innerDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');

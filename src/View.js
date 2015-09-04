@@ -171,19 +171,6 @@ var View = createClass(
 	destroy: noop,
 
 	/**
-	 * Initializes the view. Calls the render method. Should not be overloaded
-	 * by subclasses.
-	 *
-	 * @private
-	 * @param
-	 */
-	init: function()
-	{
-		this.renderAll();
-		this.runAll();
-	},
-
-	/**
 	 * Renders the view. It will be called automatically. Should not be called
 	 * directly.
 	 */
