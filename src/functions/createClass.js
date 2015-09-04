@@ -89,6 +89,11 @@ function createClass(meta, properties)
 		constructor.service.args = meta.args;
 	}
 
+	if(meta.calls)
+	{
+		constructor.service.calls = meta.calls;
+	}
+
 	if(meta.shared)
 	{
 		constructor.service.shared = meta.shared;

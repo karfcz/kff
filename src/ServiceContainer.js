@@ -115,9 +115,16 @@ var ServiceContainer = createClass(
 		calls = serviceConfig.calls;
 		if(calls instanceof Array)
 		{
-			for(i = 0, l = calls.length; i < l; i++)
+			if(typeof calls[0] === 'string')
 			{
-				service[calls[i].method].apply(service, this.resolveParameters(calls[i].args));
+				service[calls[0]].apply(service, this.resolveParameters(calls.slice(1)));
+			}
+			else
+			{
+				for(i = 0, l = calls.length; i < l; i++)
+				{
+					service[calls[i][0]].apply(service, this.resolveParameters(calls[i].slice(1)));
+				}
 			}
 		}
 		return service;
