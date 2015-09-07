@@ -13,10 +13,6 @@ describe('kff.Dispatcher', function()
 		});
 
 		dispatcher.trigger({ type: 'test' });
-
-
-
 	});
-
 
 });

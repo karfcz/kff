@@ -1,33 +1,54 @@
-// if(typeof require === 'function') var kff = require('../build/kff.js');
+if(typeof require === 'function') var kff = require('../build/kff.js');
 
-// describe('kff.BindingView', function()
-// {
-// 	it('should bind input binder', function(done)
-// 	{
-// 		var $input = $('<input data-kff-bind="myModel.name:val"/>');
-// 		var view = new kff.BindingView(
-// 		{
-// 			element: $input,
-// 			scope: {
-// 				myModel: new kff.Model({
-// 					name: 'Karel'
-// 				})
-// 			}
-// 		});
-// 		view.init();
-// 		setTimeout(function()
-// 		{
-// 			expect($input.val()).to.equal('Karel');
-// 			view.getModel('myModel').set('name', 'Petr');
-// 			expect($input.val()).to.equal('Petr');
-// 			$input.val('Honza').trigger('change');
-// 			setTimeout(function()
-// 			{
-// 				expect(view.getModel('myModel').get('name')).to.equal('Honza');
-// 				done();
-// 			}, 0);
-// 		}, 0);
-// 	});
+describe('kff.BindingView', function()
+{
+	it('should bind input binder', function(done)
+	{
+		var myModel = new kff.Cursor({
+			name: 'Karel'
+		});
+
+		var dispatcher = new kff.Dispatcher({
+			set: function(event)
+			{
+				event.cursor.set(event.value);
+				return {
+					type: 'refresh'
+				};
+			}
+		});
+
+		var $input = $('<input data-kff-bind="myModel.name:val"/>');
+		var view = new kff.View(
+		{
+			element: $input,
+			scope: {
+				myModel: myModel
+			},
+			dispatcher: dispatcher
+		});
+		view.renderAll();
+		view.runAll();
+
+		setTimeout(function()
+		{
+			expect($input.val()).to.equal('Karel');
+
+			myModel.setIn('name', 'Petr');
+
+			view.refreshAll();
+
+			expect($input.val()).to.equal('Petr');
+
+			$input.val('Honza').trigger('change');
+
+			setTimeout(function()
+			{
+				expect(myModel.getIn('name')).to.equal('Honza');
+				done();
+			}, 0);
+		}, 0);
+	});
 
 
-// });
+});

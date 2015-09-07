@@ -7,7 +7,7 @@ describe('kff.View', function()
 		document: document
 	};
 
-	it('should bind a simple collection', function()
+	it('should bind a simple collection', function(done)
 	{
 		var collection = [];
 		collection.push({});
@@ -29,12 +29,13 @@ describe('kff.View', function()
 		setTimeout(function(){
 
 			expect($div1.find('div').length).to.equal(2);
+			done();
 
 		}, 0);
 
 	});
 
-	it('should bind a collection with text binder on the same element', function()
+	it('should bind a collection with text binder on the same element', function(done)
 	{
 		var collection = [];
 		var model1 = { name: 'foo' };
@@ -49,7 +50,7 @@ describe('kff.View', function()
 			env: env,
 			element: $div1,
 			scope: {
-				collection: collection
+				collection: new kff.Cursor(collection)
 			}
 		});
 		view.renderAll();
@@ -63,8 +64,12 @@ describe('kff.View', function()
 
 			collection.splice(0, 1);
 
+			view.refreshAll();
+
 			expect($div1.find('div').length).to.equal(1);
 			expect($div1.find('div').eq(0).text()).to.equal('bar');
+
+			done();
 		}, 0);
 
 	});
@@ -87,7 +92,7 @@ describe('kff.View', function()
 			env: env,
 			element: $div1,
 			scope: {
-				collection: collection
+				collection: new kff.Cursor(collection)
 			}
 		});
 		view.renderAll();
@@ -112,7 +117,7 @@ describe('kff.View', function()
 			env: env,
 			element: $div,
 			scope: {
-				collection: collection
+				collection: new kff.Cursor(collection)
 			}
 		});
 		view.renderAll();
@@ -126,49 +131,6 @@ describe('kff.View', function()
 		}, 0);
 
 	});
-
-
-	// it('should rebind a :watch binding when model path change', function(done)
-	// {
-	// 	var intel = new kff.Model({
-	// 		name: 'intel'
-	// 	});
-	// 	var amd = new kff.Model({
-	// 		name: 'amd'
-	// 	});
-	// 	var motherboard = new kff.Model({
-	// 		processor: intel
-	// 	});
-	// 	var computer = new kff.Model({
-	// 		motherboard: motherboard
-	// 	});
-
-	// 	var $div = $('<div data-kff-bind="computer.motherboard.processor.name:text:watch"/>');
-	// 	var view = new kff.View(
-	// 	{
-	// 		env: env,
-	// 		element: $div,
-	// 		scope: {
-	// 			computer: computer
-	// 		}
-	// 	});
-	// 	view.renderAll();
-	// 	view.runAll();
-
-	// 	setTimeout(function()
-	// 	{
-	// 		expect($div.text()).to.equal('intel');
-
-	// 		motherboard.set({ processor: amd });
-	// 		setTimeout(function()
-	// 		{
-	// 			expect($div.text()).to.equal('amd');
-	// 			done();
-	// 		}, 0);
-
-	// 	}, 0);
-
-	// });
 
 	it('should render filtered collection', function()
 	{

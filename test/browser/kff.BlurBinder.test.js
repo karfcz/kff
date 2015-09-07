@@ -1,31 +1,39 @@
 if(typeof require === 'function') var kff = require('../build/kff.js');
 
-// describe('kff.BlurBinder', function()
-// {
-// 	it('should bind blur binder', function(done)
-// 	{
-// 		var $div = $('<div data-kff-bind="myModel.name:blur(Petr)"/>');
-// 		var view = new kff.View(
-// 		{
-// 			element: $div,
-// 			scope: {
-// 				myModel: {
-// 					name: 'Karel'
-// 				}
-// 			}
-// 		});
-// 		view.init();
+describe('kff.BlurBinder', function()
+{
+	it('should bind blur binder', function()
+	{
+		var myModel = new kff.Cursor({
+			name: 'Karel'
+		});
 
-// 		expect(view.getModel('myModel').name).to.equal('Karel');
+		var dispatcher = new kff.Dispatcher({
+			set: function(event)
+			{
+				event.cursor.set(event.value);
+				return {
+					type: 'refresh'
+				};
+			}
+		});
 
-// 		$div.trigger('blur');
-// 		setTimeout(function()
-// 		{
-// 			view.refresh();
-// 			expect(view.getModel('myModel').name).to.equal('Petr');
-// 			done();
-// 		}, 0);
-// 	});
+		var $div = $('<div data-kff-bind="myModel.name:blur(Petr)"/>');
+		var view = new kff.View(
+		{
+			element: $div,
+			scope: {
+				myModel: myModel
+			},
+			dispatcher: dispatcher
+		});
+		view.renderAll();
+		view.runAll();
 
+		expect(myModel.getIn('name')).to.equal('Karel');
 
-// });
+		$div.trigger('blur');
+
+		expect(myModel.getIn('name')).to.equal('Petr');
+	});
+});
