@@ -4,6 +4,8 @@ var settings = require('./settings');
 var createClass = require('./functions/createClass');
 var arrayIndexOf = require('./functions/arrayIndexOf');
 var callModelAsFunction = require('./functions/callModelAsFunction');
+var insertBefore = require('./functions/nodeMan').insertBefore;
+var removeChild = require('./functions/nodeMan').removeChild;
 var $ = require('./dollar');
 
 var CollectionBinder = createClass(
@@ -24,6 +26,7 @@ var CollectionBinder = createClass(
 		this.viewTemplate = null;
 		this.filter = options.filter;
 		this.sort = options.sort;
+		// this.animate = options.animate;
 	},
 
 	/**
@@ -144,6 +147,12 @@ var CollectionBinder = createClass(
 		var collectionFilter, filterModel, filterFnName, boundView, i, l, newIndex, el, a;
 		var docFragment = null;
 		var lastView, lastChild, parentNode, item;
+		var nodeInsert = insertBefore;
+
+		if(this.animate)
+		{
+			nodeInsert = this.view.scope[this.animate]['insert'];
+		}
 
 		this.rebindCollection();
 
@@ -195,7 +204,10 @@ var CollectionBinder = createClass(
 					{
 						boundView = this.createBoundView(a[i]);
 						el = boundView.$element[0];
-						parentNode.insertBefore(el, lastChild.nextSibling);
+
+						nodeInsert(parentNode, lastChild.nextSibling, el);
+
+						// parentNode.insertBefore(el, lastChild.nextSibling);
 						boundView.setBindingIndex(i);
 						lastChild = el;
 					}
@@ -282,7 +294,8 @@ var CollectionBinder = createClass(
 				el = positions[i].$element[0];
 				if(el !== lastChild && lastChild.parentNode && lastChild.parentNode.nodeType === 1)
 				{
-					lastChild.parentNode.insertBefore(el, lastChild.nextSibling);
+					nodeInsert(parentNode, lastChild.nextSibling, el);
+					// lastChild.parentNode.insertBefore(el, lastChild.nextSibling);
 					lastChild = el;
 				}
 
@@ -292,7 +305,8 @@ var CollectionBinder = createClass(
 
 					if(el !== lastChild && el.nextSibling !== lastChild && lastChild.parentNode && lastChild.parentNode.nodeType === 1)
 					{
-						lastChild.parentNode.insertBefore(el, lastChild);
+						nodeInsert(parentNode, lastChild, el);
+						// lastChild.parentNode.insertBefore(el, lastChild);
 					}
 
 					lastChild = el;
@@ -314,7 +328,8 @@ var CollectionBinder = createClass(
 
 					if(el !== lastChild.nextSibling)
 					{
-						parentNode.insertBefore(el, lastChild.nextSibling);
+						nodeInsert(parentNode, lastChild.nextSibling, el);
+						// parentNode.insertBefore(el, lastChild.nextSibling);
 					}
 					newBoundViews[i] = positions[i];
 					newBoundViews[i].setBindingIndex(i);
@@ -367,7 +382,8 @@ var CollectionBinder = createClass(
 		{
 			this.boundViews.splice(renderIndex, 1);
 
-			boundView.$element[0].parentNode.removeChild(boundView.$element[0]);
+			removeChild(boundView.$element[0].parentNode, boundView.$element[0]);
+			// boundView.$element[0].parentNode.removeChild(boundView.$element[0]);
 			boundView.destroyAll();
 
 			this.reindexBoundviews(renderIndex);

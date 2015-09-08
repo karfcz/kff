@@ -4,6 +4,8 @@ var convertValueType = require('../functions/convertValueType');
 var noop = require('../functions/noop');
 var Binder = require('../Binder');
 var View = require('../View');
+var insertBefore = require('../functions/nodeMan').insertBefore;
+var removeChild = require('../functions/nodeMan').removeChild;
 
 var createInsertBinder = function(negate, force){
 
@@ -85,7 +87,21 @@ var createInsertBinder = function(negate, force){
 		refresh: function()
 		{
 			var parentNode;
-			if(!this.anchor) this.anchor = this.view.env.document.createTextNode('');
+			if(!this.anchor)
+			{
+				this.anchor = this.view.env.document.createTextNode('');
+				this.$element[0].parentNode.insertBefore(this.anchor, this.$element[0]);
+			}
+
+			var nodeInsert = insertBefore;
+			var nodeRemove = removeChild;
+
+			if(this.animate)
+			{
+				nodeInsert = this.view.scope[this.animate]['insert'];
+				nodeRemove = this.view.scope[this.animate]['remove'];
+			}
+
 			if(this.matchValue())
 			{
 				if(!this.isInserted)
@@ -94,7 +110,8 @@ var createInsertBinder = function(negate, force){
 
 					if(parentNode)
 					{
-						parentNode.replaceChild(this.$element[0], this.anchor);
+						nodeInsert(parentNode, this.anchor, this.$element[0]);
+						// parentNode.replaceChild(this.$element[0], this.anchor);
 					}
 					this.isInserted = true;
 				}
@@ -120,11 +137,23 @@ var createInsertBinder = function(negate, force){
 
 					if(parentNode)
 					{
-						parentNode.replaceChild(this.anchor, this.$element[0]);
+						nodeRemove(parentNode, this.$element[0], this.f(function()
+						{
+							if(this.forceRerender && this.isRendered)
+							{
+								this.destroySubviews.call(this.view);
+								this.isRendered = false;
+								this.isRun = false;
+							}
+							this.isInserted = false;
+						}));
+						this.isInserted = false;
+
+						// parentNode.removeChild(this.$element[0]);
+						// parentNode.replaceChild(this.anchor, this.$element[0]);
 					}
-					this.isInserted = false;
 				}
-				if(this.forceRerender && this.isRendered)
+				else if(this.forceRerender && this.isRendered)
 				{
 					this.destroySubviews.call(this.view);
 					this.isRendered = false;

@@ -1106,7 +1106,8 @@ var View = createClass(
 						keyPath: keyPath,
 						collectionArgs: modelArgs,
 						filter: (ret.filter && ret.filter.length > 0) ? ret.filter[0] : null,
-						sort: (ret.sort && ret.sort.length > 0) ? ret.sort[0] : null
+						sort: (ret.sort && ret.sort.length > 0) ? ret.sort[0] : null,
+						animate: (ret.animate && ret.animate.length > 0) ? ret.animate[0] : null
 					});
 					if(ret.itemAliases && ret.itemAliases.length > 0)
 					{
@@ -1139,6 +1140,7 @@ var View = createClass(
 					eventFilters: ret.eventFilters,
 					fill: ret.fill,
 					nopreventdef: ret.nopreventdef,
+					animate: (ret.animate && ret.animate.length > 0) ? ret.animate[0] : null,
 					indexed: indexed
 				});
 
@@ -1174,6 +1176,7 @@ var View = createClass(
 			fill: false,
 			watchModelPath: false,
 			nopreventdef: false,
+			animate: [],
 			itemAliases: [],
 			filter: [],
 			sort: []
@@ -1229,6 +1232,9 @@ var View = createClass(
 						break;
 					case 'sort':
 						this.parseSetters(modifierParams, ret.sort);
+						break;
+					case 'animate':
+						this.parseSetters(modifierParams, ret.animate);
 						break;
 					case 'fill':
 						ret.fill = true;

@@ -25,6 +25,7 @@ var Binder = createClass(
 		this.dispatch = options.dispatch;
 		this.currentValue = null;
 		this.value = null;
+		this.animate = options.animate;
 	},
 
 	/**
