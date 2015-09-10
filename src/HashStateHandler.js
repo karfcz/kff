@@ -1,7 +1,7 @@
 
 var createClass = require('./functions/createClass');
-
 var EventsMixin = require('./EventsMixin');
+var $ = require('./dollar');
 
 var HashStateHandler = createClass(
 {
