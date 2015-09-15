@@ -140,12 +140,7 @@ var Binder = createClass(
 			action = this.dispatch[0];
 			for(i = 1, l = this.dispatch.length; i < l; i++)
 			{
-				if(this.dispatch[i].charAt(0) === '@') params.push(this.view.getCursor(this.dispatch[i].slice(1)));
-				else
-				{
-					if(this.options.parsers.length === 0) params.push(convertValueType(this.dispatch[i]));
-					else params.push(this.parse(this.dispatch[i]));
-				}
+				params.push(this.convertBindingValue(this.dispatch[i]));
 			}
 		}
 
@@ -156,6 +151,19 @@ var Binder = createClass(
 			domEvent: event,
 			params: params
 		});
+	},
+
+	convertBindingValue: function(value)
+	{
+		if(typeof value === 'string' && value.charAt(0) === '@')
+		{
+			return this.view.getCursor(value.slice(1));
+		}
+		else
+		{
+			if(this.options.parsers.length === 0) return convertValueType(value);
+			else return this.parse(value);
+		}
 	},
 
 	/**
