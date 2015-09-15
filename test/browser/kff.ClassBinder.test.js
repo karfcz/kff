@@ -8,24 +8,21 @@ describe('kff.ClassBinder', function()
 			name: 'Karel'
 		});
 
-		var $div = $('<div data-kff-bind="myModel.name:class(myClass, Petr)"/>');
+		var div = document.createElement('div');
+		div.setAttribute('data-kff-bind', 'myModel.name:class(myClass, Petr)');
 		var view = new kff.View(
 		{
-			element: $div,
+			element: div,
 			scope: {
 				myModel: myModel
 			}
 		});
 		view.renderAll();
 		view.runAll();
-
-		expect($div[0].classList.contains('myClass')).to.equal(false);
-
+		expect(div.classList.contains('myClass')).to.equal(false);
 		myModel.setIn('name', 'Petr');
-
 		view.refreshAll();
-
-		expect($div[0].classList.contains('myClass')).to.equal(true);
+		expect(div.classList.contains('myClass')).to.equal(true);
 	});
 
 	it('should set a class through class binder using dynamic scope value lookup', function()
@@ -35,24 +32,22 @@ describe('kff.ClassBinder', function()
 			value: 'Petr'
 		});
 
-		var $div = $('<div data-kff-bind="myModel.name:class(myClass, @myModel.value)"/>');
+		var div = document.createElement('div');
+		div.setAttribute('data-kff-bind', 'myModel.name:class(myClass, @myModel.value)');
+
 		var view = new kff.View(
 		{
-			element: $div,
+			element: div,
 			scope: {
 				myModel: myModel
 			}
 		});
 		view.renderAll();
 		view.runAll();
-
-		expect($div[0].classList.contains('myClass')).to.equal(false);
-
+		expect(div.classList.contains('myClass')).to.equal(false);
 		myModel.setIn('name', 'Petr');
-
 		view.refreshAll();
-
-		expect($div[0].classList.contains('myClass')).to.equal(true);
+		expect(div.classList.contains('myClass')).to.equal(true);
 	});
 
 	it('should set a class through classnot binder', function()
@@ -61,24 +56,22 @@ describe('kff.ClassBinder', function()
 			name: 'Karel'
 		});
 
-		var $div = $('<div data-kff-bind="myModel.name:classnot(myClass, Petr)"/>');
+		var div = document.createElement('div');
+		div.setAttribute('data-kff-bind', 'myModel.name:classnot(myClass, Petr)');
+
 		var view = new kff.View(
 		{
-			element: $div,
+			element: div,
 			scope: {
 				myModel: myModel
 			}
 		});
 		view.renderAll();
 		view.runAll();
-
-		expect($div[0].classList.contains('myClass')).to.equal(true);
-
+		expect(div.classList.contains('myClass')).to.equal(true);
 		myModel.setIn('name', 'Petr');
-
 		view.refreshAll();
-
-		expect($div[0].classList.contains('myClass')).to.equal(false);
+		expect(div.classList.contains('myClass')).to.equal(false);
 	});
 
 });
