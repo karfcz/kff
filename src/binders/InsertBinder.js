@@ -6,6 +6,7 @@ var Binder = require('../Binder');
 var View = require('../View');
 var insertBefore = require('../functions/nodeMan').insertBefore;
 var removeChild = require('../functions/nodeMan').removeChild;
+var Cursor = require('../Cursor');
 
 var createInsertBinder = function(negate, force){
 
@@ -25,18 +26,33 @@ var createInsertBinder = function(negate, force){
 		constructor: function(options)
 		{
 			Binder.call(this, options);
+			this.equalsTo = undefined;
+			this.valueCursor = undefined;
 		},
 
 		init: function()
 		{
 			this.equalsTo = true;
+			this.valueCursor = undefined;
 
 			if(this.options.params[0])
 			{
-				if(this.options.parsers.length === 0) this.equalsTo = convertValueType(this.options.params[0]);
-				else this.equalsTo = this.parse(this.options.params[0]);
+				this.equalsTo = this.convertBindingValue(this.options.params[0]);
+				if(this.equalsTo instanceof Cursor)
+				{
+					this.valueCursor = this.equalsTo;
+					this.equalsTo = this.valueCursor.get();
+				}
+				if(this.equalsTo == null) this.equalsTo = null;
 			}
-			else this.options.params[0] = this.equalsTo;
+
+
+			// if(this.options.params[0])
+			// {
+			// 	if(this.options.parsers.length === 0) this.equalsTo = convertValueType(this.options.params[0]);
+			// 	else this.equalsTo = this.parse(this.options.params[0]);
+			// }
+			// else this.options.params[0] = this.equalsTo;
 
 			this.negate = this.options.params[1] === 'ne' || negate;
 
@@ -166,8 +182,15 @@ var createInsertBinder = function(negate, force){
 		{
 			if(this.options.params.length > 0)
 			{
-				if(this.negate) return this.value !== this.equalsTo;
-				else return this.value === this.equalsTo;
+				if(this.valueCursor)
+				{
+					this.equalsTo = this.valueCursor.get();
+					if(this.equalsTo == null) this.equalsTo = null;
+				}
+				var value = this.value;
+				if(value == null) value = null;
+				if(this.negate) return value !== this.equalsTo;
+				else return value === this.equalsTo;
 			}
 			else return this.value;
 		}
