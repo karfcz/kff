@@ -3,6 +3,7 @@ var createClass = require('../functions/createClass');
 var convertValueType = require('../functions/convertValueType');
 var Binder = require('../Binder');
 var View = require('../View');
+var Cursor = require('../Cursor');
 
 var createClassBinder = function(negate)
 {
@@ -29,11 +30,16 @@ var createClassBinder = function(negate)
 		{
 			this.className = this.options.params[0] || null;
 			this.equalsTo = true;
+			this.valueCursor = undefined;
 
 			if(this.options.params[1])
 			{
-				if(this.options.parsers.length === 0) this.equalsTo = convertValueType(this.options.params[1]);
-				else this.equalsTo = this.parse(this.options.params[1]);
+				this.equalsTo = this.convertBindingValue(this.options.params[1]);
+				if(this.equalsTo instanceof Cursor)
+				{
+					this.valueCursor = this.equalsTo;
+					this.equalsTo = this.valueCursor.get();
+				}
 				if(this.equalsTo == null) this.equalsTo = null;
 			}
 
@@ -61,6 +67,11 @@ var createClassBinder = function(negate)
 		{
 			if(this.options.params.length > 1)
 			{
+				if(this.valueCursor)
+				{
+					this.equalsTo = this.valueCursor.get();
+					if(this.equalsTo == null) this.equalsTo = null;
+				}
 				var value = this.value;
 				if(value == null) value = null;
 				if(this.negate) return value !== this.equalsTo;
