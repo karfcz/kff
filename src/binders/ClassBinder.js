@@ -24,6 +24,10 @@ var createClassBinder = function(negate)
 		constructor: function(options)
 		{
 			Binder.call(this, options);
+
+			this.className = undefined;
+			this.equalsTo = undefined;
+			this.valueCursor = undefined;
 		},
 
 		init: function()
