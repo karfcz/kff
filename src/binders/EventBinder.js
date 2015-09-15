@@ -3,6 +3,7 @@ var createClass = require('../functions/createClass');
 var convertValueType = require('../functions/convertValueType');
 var Binder = require('../Binder');
 var View = require('../View');
+var Cursor = require('../Cursor');
 
 var EventBinder = createClass(
 {
@@ -27,16 +28,24 @@ var EventBinder = createClass(
 		];
 
 		Binder.call(this, options);
+
+		this.userValue = undefined;
+		this.valueCursor = undefined;
 	},
 
 	init: function()
 	{
 		this.userValue = null;
+		this.valueCursor = undefined;
 
 		if(this.options.params[0])
 		{
-			if(this.options.parsers.length === 0) this.userValue = convertValueType(this.options.params[0]);
-			else this.userValue = this.parse(this.options.params[0]);
+			this.userValue = this.convertBindingValue(this.options.params[0]);
+			if(this.userValue instanceof Cursor)
+			{
+				this.valueCursor = this.userValue;
+				this.userValue = this.valueCursor.get();
+			}
 		}
 
 		if(this.options.eventFilters && this.options.eventFilters[0])
@@ -49,6 +58,7 @@ var EventBinder = createClass(
 	triggerEvent: function(event)
 	{
 		if(!this.options.nopreventdef) event.preventDefault();
+		if(this.valueCursor) this.userValue = this.valueCursor.get();
 		this.updateModel(this.userValue, event);
 	},
 
