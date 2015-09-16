@@ -26,6 +26,7 @@ module.exports = {
 	functionService: require('./functions/functionService'),
 	factoryService: require('./functions/factoryService'),
 	noop: require('./functions/noop'),
+	afterRepaint: require('./functions/afterRepaint'),
 
 	App: require('./App'),
 	Cursor: require('./Cursor'),
