@@ -46,21 +46,9 @@ var createInsertBinder = function(negate, force){
 				if(this.equalsTo == null) this.equalsTo = null;
 			}
 
-
-			// if(this.options.params[0])
-			// {
-			// 	if(this.options.parsers.length === 0) this.equalsTo = convertValueType(this.options.params[0]);
-			// 	else this.equalsTo = this.parse(this.options.params[0]);
-			// }
-			// else this.options.params[0] = this.equalsTo;
-
-			this.negate = this.options.params[1] === 'ne' || negate;
-
-			this.forceRerender = force || this.options.params[2] === 'force' || this.options.params[1] === 'force';
-
 			this.isInserted = true;
 
-			if(this.forceRerender)
+			if(force)
 			{
 				this.isRun = false;
 				this.isRendered = true;
@@ -79,7 +67,7 @@ var createInsertBinder = function(negate, force){
 
 		destroy: function()
 		{
-			if(this.forceRerender)
+			if(force)
 			{
 				this.view.renderSubviews = this.renderSubviews;
 				this.view.runSubviews = this.runSubviews;
@@ -127,11 +115,10 @@ var createInsertBinder = function(negate, force){
 					if(parentNode)
 					{
 						nodeInsert(parentNode, this.anchor, this.$element[0]);
-						// parentNode.replaceChild(this.$element[0], this.anchor);
 					}
 					this.isInserted = true;
 				}
-				if(this.forceRerender)
+				if(force)
 				{
 					if(!this.isRendered)
 					{
@@ -155,7 +142,7 @@ var createInsertBinder = function(negate, force){
 					{
 						nodeRemove(parentNode, this.$element[0], this.f(function()
 						{
-							if(this.forceRerender && this.isRendered)
+							if(force && this.isRendered)
 							{
 								this.destroySubviews.call(this.view);
 								this.isRendered = false;
@@ -164,12 +151,9 @@ var createInsertBinder = function(negate, force){
 							this.isInserted = false;
 						}));
 						this.isInserted = false;
-
-						// parentNode.removeChild(this.$element[0]);
-						// parentNode.replaceChild(this.anchor, this.$element[0]);
 					}
 				}
-				else if(this.forceRerender && this.isRendered)
+				else if(force && this.isRendered)
 				{
 					this.destroySubviews.call(this.view);
 					this.isRendered = false;
@@ -189,7 +173,7 @@ var createInsertBinder = function(negate, force){
 				}
 				var value = this.value;
 				if(value == null) value = null;
-				if(this.negate) return value !== this.equalsTo;
+				if(negate) return value !== this.equalsTo;
 				else return value === this.equalsTo;
 			}
 			else return this.value;
@@ -198,11 +182,9 @@ var createInsertBinder = function(negate, force){
 
 };
 
-// InsertBinder = createInsertBinder(false, false);
 var IfBinder = createInsertBinder(false, true);
 var IfNotBinder = createInsertBinder(true, true);
 
-// BindingView.registerBinder('insert', InsertBinder);
 View.registerBinder('if', IfBinder);
 View.registerBinder('ifnot', IfNotBinder);
 
@@ -210,4 +192,3 @@ module.exports = {
 	IfBinder: IfBinder,
 	IfNotBinder: IfNotBinder
 };
-
