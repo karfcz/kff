@@ -11,6 +11,7 @@ var Cursor = createClass(
 	constructor: function(root, keyPath)
 	{
 		this.root = root;
+		if(typeof keyPath === 'string') keyPath = keyPath.split('.');
 		this.keyPath = keyPath || [];
 	},
 
