@@ -121,9 +121,9 @@ var View = createClass(
 		if(options.element)
 		{
 			this.$element = $(options.element);
+			this.element = this.$element[0];
 			options.element = null;
 		}
-
 
 		if(options.dispatcher)
 		{
@@ -143,7 +143,6 @@ var View = createClass(
 		}
 
 		this.options = options;
-
 	},
 
 
@@ -220,7 +219,7 @@ var View = createClass(
 
 			if(typeof this.afterRender === 'function') this.afterRender();
 
-			this.$element[0].setAttribute(settings.DATA_RENDERED_ATTR, true);
+			this.element.setAttribute(settings.DATA_RENDERED_ATTR, true);
 
 			this.refreshOwnBinders(true);
 		}
@@ -300,7 +299,7 @@ var View = createClass(
 		this.bindingIndex = null;
 		this.itemAlias = null;
 
-		this.$element[0].removeAttribute(settings.DATA_RENDERED_ATTR);
+		this.element.removeAttribute(settings.DATA_RENDERED_ATTR);
 		this.undelegateEvents();
 		this.destroySubviews();
 		if(this.dispatcher)
@@ -331,7 +330,7 @@ var View = createClass(
 	{
 		if(!this.collectionBinder)
 		{
-			var i, l, element = this.$element[0],
+			var i, l, element = this.element,
 				subView, options, opt, rendered, subviewsStruct = null;
 
 			if(element) this.subviewsStruct = this.findViewElements(element);
@@ -349,7 +348,7 @@ var View = createClass(
 				for(i = 0, l = subviewsStruct.length; i < l; i++)
 				{
 					options = subviewsStruct[i].options;
-					options.element = subviewsStruct[i].$element[0];
+					options.element = subviewsStruct[i].element;
 					options.env = this.env;
 					subView = this.createView(subviewsStruct[i].viewName, options);
 					if(subView instanceof View)
@@ -416,7 +415,7 @@ var View = createClass(
 	rerender: function(html)
 	{
 		this.destroyAll();
-		if(html !== undefined) this.$element[0].innerHTML = html;
+		if(html !== undefined) this.element.innerHTML = html;
 		this.renderAll();
 		this.runAll();
 	},
@@ -595,7 +594,7 @@ var View = createClass(
 		if(this.explicitSubviewsStruct === null) this.explicitSubviewsStruct = [];
 		this.explicitSubviewsStruct.push({
 			viewName: viewName,
-			$element: $(element),
+			element: element,
 			options: options || {}
 		});
 	},
@@ -657,7 +656,7 @@ var View = createClass(
 					subviewsStruct.push({
 						viewName: viewName,
 						index: index,
-						$element: $(node),
+						element: node,
 						options: optAttr ? JSON.parse(optAttr) : {}
 					});
 				}
@@ -877,6 +876,7 @@ var View = createClass(
 		var i, l;
 
 		this.$element = $(element);
+		this.element = this.$element[0];
 
 		this.rebindSubViews(element, {
 			subviewIndex: 0,
@@ -983,12 +983,12 @@ var View = createClass(
 		if(isPlainObject(regions))
 		{
 			if(!this.cachedRegions) this.cachedRegions = {};
-			if('self' in regions) saveRegion(regions, this.cachedRegions, [this.$element[0]], 'self');
+			if('self' in regions) saveRegion(regions, this.cachedRegions, [this.element], 'self');
 			for(selector in regions)
 			{
 				if(selector !== 'self')
 				{
-					saveRegion(regions, this.cachedRegions, this.$element[0].querySelectorAll(selector), selector);
+					saveRegion(regions, this.cachedRegions, this.element.querySelectorAll(selector), selector);
 				}
 
 			}
@@ -1020,12 +1020,12 @@ var View = createClass(
 
 		if(isPlainObject(regions))
 		{
-			if('self' in regions) unsaveRegion(regions, this.cachedRegions, [this.$element[0]], 'self');
+			if('self' in regions) unsaveRegion(regions, this.cachedRegions, [this.element], 'self');
 			for(selector in regions)
 			{
 				if(selector !== 'self')
 				{
-					unsaveRegion(regions, this.cachedRegions, this.$element[0].querySelectorAll(selector), selector);
+					unsaveRegion(regions, this.cachedRegions, this.element.querySelectorAll(selector), selector);
 				}
 			}
 		}
@@ -1067,7 +1067,7 @@ var View = createClass(
 	initBinding: function()
 	{
 		var model, attr, result, result2, modelPathArray, i, ret, modelArgs;
-		var dataBindAttr = this.$element[0].getAttribute(settings.DATA_BIND_ATTR);
+		var dataBindAttr = this.element.getAttribute(settings.DATA_BIND_ATTR);
 		var modelName;
 
 		bindingRegex.lastIndex = 0;
