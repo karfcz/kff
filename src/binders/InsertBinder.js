@@ -28,6 +28,8 @@ var createInsertBinder = function(negate, force){
 			Binder.call(this, options);
 			this.equalsTo = undefined;
 			this.valueCursor = undefined;
+			this.isInitialized = false;
+			this.isRendered = false;
 		},
 
 		init: function()
@@ -63,6 +65,8 @@ var createInsertBinder = function(negate, force){
 			}
 
 			Binder.prototype.init.call(this);
+
+			this.isInitialized = true;
 		},
 
 		destroy: function()
@@ -84,12 +88,15 @@ var createInsertBinder = function(negate, force){
 				this.isInserted = true;
 			}
 			this.anchor = null;
+			this.isInitialized = false;
+			this.isRendered = false;
 
 			Binder.prototype.destroy.call(this);
 		},
 
 		refresh: function()
 		{
+			if(!this.isInitialized) return;
 			var parentNode;
 			if(!this.anchor)
 			{
