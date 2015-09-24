@@ -71,6 +71,7 @@ var createInsertBinder = function(negate, force){
 
 		destroy: function()
 		{
+			if(!this.isInitialized) return;
 			if(force)
 			{
 				this.view.renderSubviews = this.renderSubviews;
