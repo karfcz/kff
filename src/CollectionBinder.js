@@ -303,7 +303,7 @@ var CollectionBinder = createClass(
 				el = positions[i].element;
 				if(el !== lastChild && lastChild.parentNode && lastChild.parentNode.nodeType === 1)
 				{
-					nodeInsert(parentNode, lastChild.nextSibling, el);
+					nodeInsert(lastChild.parentNode, lastChild.nextSibling, el);
 					// lastChild.parentNode.insertBefore(el, lastChild.nextSibling);
 					lastChild = el;
 				}
@@ -314,7 +314,7 @@ var CollectionBinder = createClass(
 
 					if(el !== lastChild && el.nextSibling !== lastChild && lastChild.parentNode && lastChild.parentNode.nodeType === 1)
 					{
-						nodeInsert(parentNode, lastChild, el);
+						nodeInsert(lastChild.parentNode, lastChild, el);
 						// lastChild.parentNode.insertBefore(el, lastChild);
 					}
 
