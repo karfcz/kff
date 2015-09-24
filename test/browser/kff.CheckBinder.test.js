@@ -21,7 +21,7 @@ describe('kff.CheckBinder', function()
 		var $input = $('<input type="checkbox" data-kff-bind="myModel.checked:check"/>');
 		var view = new kff.View(
 		{
-			element: $input,
+			element: $input[0],
 			scope: {
 				myModel: myModel
 			},
@@ -35,7 +35,9 @@ describe('kff.CheckBinder', function()
 		view.refreshAll();
 
 		expect($input.is(':checked')).to.equal(false);
-		$input.prop('checked', true).triggerHandler('click');
+
+		$input[0].dispatchEvent(new MouseEvent('click'));
+		// emitEvent($input[0], 'click');
 
 		expect(myModel.getIn('checked')).to.equal(true);
 	});

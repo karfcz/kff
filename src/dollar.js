@@ -1,5 +1,5 @@
 
-var Dom = require('./Dom');
+var Dom = require('./Dom').Dom;
 var settings = require('./settings');
 
 /**

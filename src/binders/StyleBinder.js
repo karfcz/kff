@@ -35,12 +35,12 @@ var StyleBinder = createClass(
 
 		if(this.styleProperty)
 		{
-			if(value === undefined) delete this.$element[0].style[this.styleProperty];
+			if(value === undefined) delete this.element.style[this.styleProperty];
 			else
 			{
 				if(this.styleUnit) value += this.styleUnit;
 				try {
-					this.$element[0].style[this.styleProperty] = value;
+					this.element.style[this.styleProperty] = value;
 				}
 				catch(e) {}
 			}

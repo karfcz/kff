@@ -19,7 +19,7 @@ var Binder = createClass(
 		this.options.events = options.events || null;
 
 		this.view = options.view;
-		this.$element = options.$element;
+		this.element = options.element;
 		this.cursor = null;
 		this.keyPath = options.keyPath;
 		this.dispatch = options.dispatch;
@@ -35,7 +35,7 @@ var Binder = createClass(
 	{
 		if(!this.options.nobind)
 		{
-			if(this.$element && this.options.events !== null) this.delegateEvents(this.options.events);
+			if(this.element && this.options.events !== null) this.delegateEvents(this.options.events);
 		}
 		this.rebindCursor();
 		if(this.options.fill) this.fill();
@@ -46,7 +46,7 @@ var Binder = createClass(
 	 */
 	destroy: function()
 	{
-		if(this.$element && this.options.events !== null) this.undelegateEvents(this.options.events);
+		if(this.element && this.options.events !== null) this.undelegateEvents(this.options.events);
 		this.currentValue = null;
 		this.value = null;
 	},

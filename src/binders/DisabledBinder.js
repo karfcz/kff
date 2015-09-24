@@ -24,12 +24,12 @@ var DisabledBinder = createClass(
 
 	refresh: function()
 	{
-		this.$element[0].disabled = !!this.value;
+		this.element.disabled = !!this.value;
 	},
 
 	fill: function()
 	{
-		if(!this.fillVal) this.fillVal = !!this.$element[0].disabled;
+		if(!this.fillVal) this.fillVal = !!this.element.disabled;
 		this.updateModel(this.fillVal);
 	}
 });

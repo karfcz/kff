@@ -8,6 +8,8 @@ var noop = require('./functions/noop');
 var arrayConcat = require('./functions/arrayConcat');
 var isPlainObject = require('./functions/isPlainObject');
 var $ = require('./dollar');
+var on = require('./Dom').on;
+var off = require('./Dom').off;
 
 var EventsMixin = require('./EventsMixin');
 var ServiceContainer = require('./ServiceContainer');
@@ -481,12 +483,12 @@ var View = createClass(
 	 * @param {Array} events Array of arrays of binding config
 	 * @param {jQuery} $element A jQuery object that holds the DOM element to bind. If not provided, the view element will be used.
 	 */
-	delegateEvents: function(events, $element)
+	delegateEvents: function(events, element)
 	{
 		var event, i, l, fn;
-		this.undelegateEvents(events, $element);
+		this.undelegateEvents(events, element);
 		events = events || this.domEvents;
-		$element = $element || this.$element;
+		element = element || this.element;
 		for(i = 0, l = events.length; i < l; i++)
 		{
 			event = events[i];
@@ -495,15 +497,14 @@ var View = createClass(
 				if(typeof event[2] === 'string') fn = this.f(event[2]);
 				else fn = event[2];
 
-				if(typeof event[1] === 'string') $element.on(event[0], event[1], fn);
+				if(typeof event[1] === 'string') on(this.handlers, element, event[0], event[1], fn);
 				else event[1].on(event[0], fn);
 			}
 			else if(event.length === 2)
 			{
 				if(typeof event[1] === 'string') fn = this.f(event[1]);
 				else fn = event[1];
-
-				$element.on(event[0], fn);
+				on(this.handlers, element, event[0], fn);
 			}
 		}
 	},
@@ -516,11 +517,13 @@ var View = createClass(
 	 * @param {jQuery} $element A jQuery object that holds the DOM element to
 	 * unbind. If not provided, the view element will be used.
 	 */
-	undelegateEvents: function(events, $element)
+	undelegateEvents: function(events, element)
 	{
 		var event, i, l, fn;
 		events = events || this.domEvents;
-		$element = $element || this.$element;
+		if(!this.handlers) this.handlers = {};
+
+		element = element || this.element;
 		for(i = 0, l = events.length; i < l; i++)
 		{
 			event = events[i];
@@ -529,7 +532,7 @@ var View = createClass(
 				if(typeof event[2] === 'string') fn = this.f(event[2]);
 				else fn = event[2];
 
-				if(typeof event[1] === 'string') $element.off(event[0], event[1], fn);
+				if(typeof event[1] === 'string') off(this.handlers, element, event[0], event[1], fn);
 				else event[1].off(event[0], fn);
 			}
 			else if(event.length === 2)
@@ -537,7 +540,7 @@ var View = createClass(
 				if(typeof event[1] === 'string') fn = this.f(event[1]);
 				else fn = event[1];
 
-				$element.off(event[0], fn);
+				off(this.handlers, element, event[0], fn);
 			}
 		}
 	},
@@ -1129,7 +1132,8 @@ var View = createClass(
 
 				var modelBinder = new View.binders[ret.binderName]({
 					view: this,
-					$element: this.$element,
+					element: this.element,
+					// $element: this.$element,
 					params: ret.binderParams,
 					keyPath: keyPath,
 					modelArgs: modelArgs,

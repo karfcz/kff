@@ -27,18 +27,18 @@ var FocusBlurBinder = createClass(
 
 	triggerEvent: function(event)
 	{
-		this.updateModel(this.view.env.document.activeElement === this.$element[0], event);
+		this.updateModel(this.view.env.document.activeElement === this.element, event);
 	},
 
 	refresh: function()
 	{
 		if(this.value)
 		{
-			if(this.view.env.document.activeElement !== this.$element[0]) this.$element[0].focus();
+			if(this.view.env.document.activeElement !== this.element) this.element.focus();
 		}
 		else
 		{
-			if(this.view.env.document.activeElement === this.$element[0]) this.$element[0].blur();
+			if(this.view.env.document.activeElement === this.element) this.element.blur();
 		}
 	}
 });

@@ -24,28 +24,28 @@ var RadioBinder = createClass(
 			[eventNames, 'inputChange']
 		];
 		Binder.call(this, options);
-		if(this.options.fill) this.fillVal = this.$element[0].checked;
+		if(this.options.fill) this.fillVal = this.element.checked;
 	},
 
 	inputChange: function(event)
 	{
-		if(this.$element[0].checked)
+		if(this.element.checked)
 		{
-			this.updateModel(this.$element[0].value, event);
+			this.updateModel(this.element.value, event);
 		}
 	},
 
 	refresh: function()
 	{
-		this.$element[0].checked = this.parse(this.$element[0].value) === this.currentValue;
+		this.element.checked = this.parse(this.element.value) === this.currentValue;
 	},
 
 	fill: function()
 	{
-		if(!this.fillVal) this.fillVal = this.$element[0].checked;
+		if(!this.fillVal) this.fillVal = this.element.checked;
 		if(this.fillVal)
 		{
-			this.updateModel(this.$element[0].value);
+			this.updateModel(this.element.value);
 		}
 	}
 

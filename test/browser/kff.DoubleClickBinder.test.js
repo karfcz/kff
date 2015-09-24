@@ -21,7 +21,7 @@ describe('kff.DoubleClickBinder', function()
 		var $div = $('<div data-kff-bind="myModel.name:dblclick(Petr)"/>');
 		var view = new kff.View(
 		{
-			element: $div,
+			element: $div[0],
 			scope: {
 				myModel: myModel
 			},
@@ -31,7 +31,9 @@ describe('kff.DoubleClickBinder', function()
 		view.runAll();
 
 		expect(myModel.getIn('name')).to.equal('Karel');
-		$div.trigger('dblclick');
+		// $div.trigger('dblclick');
+		$div[0].dispatchEvent(new MouseEvent('dblclick'));
+
 		expect(myModel.getIn('name')).to.equal('Petr');
 	});
 

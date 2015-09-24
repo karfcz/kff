@@ -25,22 +25,22 @@ var CheckBinder = createClass(
 			[eventNames, 'inputChange']
 		];
 		Binder.call(this, options);
-		if(this.options.fill) this.fillVal = this.$element[0].checked;
+		if(this.options.fill) this.fillVal = this.element.checked;
 	},
 
 	inputChange: function(event)
 	{
-		this.updateModel(this.$element[0].checked, event);
+		this.updateModel(this.element.checked, event);
 	},
 
 	refresh: function()
 	{
-		this.$element[0].checked = !!this.value;
+		this.element.checked = !!this.value;
 	},
 
 	fill: function()
 	{
-		if(!this.fillVal) this.fillVal = this.$element[0].checked;
+		if(!this.fillVal) this.fillVal = this.element.checked;
 		this.updateModel(this.fillVal);
 	}
 });

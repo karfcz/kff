@@ -20,7 +20,7 @@ var CollectionBinder = createClass(
 		this.keyPath = options.keyPath;
 		this.collectionArgs = options.collectionArgs;
 		this.view = options.view;
-		this.$elementTemplate = null;
+		this.elementTemplate = null;
 		this.boundViews = null;
 		this.anchor = null;
 		this.viewTemplate = null;
@@ -40,7 +40,7 @@ var CollectionBinder = createClass(
 	renderBoundViews: function()
 	{
 		this.anchor = this.view.env.document.createTextNode('');
-		var el = this.view.$element[0];
+		var el = this.view.element;
 
 		if(el.parentNode)
 		{
@@ -51,8 +51,8 @@ var CollectionBinder = createClass(
 		this.boundViews = [];
 
 		// Boundview options:
-		this.boundViewName = this.view.$element[0].getAttribute(settings.DATA_VIEW_ATTR);
-		var opt = this.view.$element[0].getAttribute(settings.DATA_OPTIONS_ATTR);
+		this.boundViewName = this.view.element.getAttribute(settings.DATA_VIEW_ATTR);
+		var opt = this.view.element.getAttribute(settings.DATA_OPTIONS_ATTR);
 
 		this.initCollectionFilter();
 		this.initCollectionSorter();
@@ -83,7 +83,8 @@ var CollectionBinder = createClass(
 			{
 				boundView = this.boundViews[i];
 				boundView.destroyAll();
-				boundView.$element.remove();
+				// boundView.$element.remove();
+				if(boundView.element && boundView.element.parentNode) boundView.element.parentNode.removeChild(boundView.element);
 			}
 			this.boundViews = null;
 		}
@@ -92,15 +93,20 @@ var CollectionBinder = createClass(
 		{
 			if(this.anchor.parentNode)
 			{
-				this.anchor.parentNode.insertBefore(this.view.$element[0], this.anchor.nextSibling);
+				this.anchor.parentNode.insertBefore(this.view.element, this.anchor.nextSibling);
 				this.anchor.parentNode.removeChild(this.anchor);
 			}
 			this.anchor = null;
 		}
-		if(this.$elementTemplate)
+		if(this.elementTemplate)
 		{
-			this.$elementTemplate.remove();
-			this.$elementTemplate = null;
+
+			// this.$elementTemplate.remove();
+			if(this.elementTemplate.parentNode)
+			{
+				this.elementTemplate.parentNode.removeChild(this.elementTemplate);
+			}
+			this.elementTemplate = null;
 		}
 		this.viewTemplate = null;
 		if(this.filteredCollection) this.filteredCollection = null;
@@ -203,7 +209,7 @@ var CollectionBinder = createClass(
 					for(i = 0; i < l; i++)
 					{
 						boundView = this.createBoundView(a[i]);
-						el = boundView.$element[0];
+						el = boundView.element;
 
 						nodeInsert(parentNode, lastChild.nextSibling, el);
 
@@ -280,7 +286,10 @@ var CollectionBinder = createClass(
 			for(i = 0, l = toRemoveViews.length; i < l; i++)
 			{
 				toRemoveViews[i].destroyAll();
-				toRemoveViews[i].$element.remove();
+				if(toRemoveViews[i].element && toRemoveViews[i].element.parentNode)
+				{
+					toRemoveViews[i].element.parentNode.removeChild(toRemoveViews[i].element);
+				}
 			}
 
 			var newBoundViews = new Array(positions.length);
@@ -288,10 +297,10 @@ var CollectionBinder = createClass(
 			if(lastView)
 			{
 				// Reordering elements from the last one:
-				lastChild = lastView.$element[0];
+				lastChild = lastView.element;
 				i = positions.length - 1;
 
-				el = positions[i].$element[0];
+				el = positions[i].element;
 				if(el !== lastChild && lastChild.parentNode && lastChild.parentNode.nodeType === 1)
 				{
 					nodeInsert(parentNode, lastChild.nextSibling, el);
@@ -301,7 +310,7 @@ var CollectionBinder = createClass(
 
 				for(; i >= 0; i--)
 				{
-					el = positions[i].$element[0];
+					el = positions[i].element;
 
 					if(el !== lastChild && el.nextSibling !== lastChild && lastChild.parentNode && lastChild.parentNode.nodeType === 1)
 					{
@@ -324,7 +333,7 @@ var CollectionBinder = createClass(
 				}
 				for(i = 0, l = positions.length; i < l; i++)
 				{
-					el = positions[i].$element[0];
+					el = positions[i].element;
 
 					if(el !== lastChild.nextSibling)
 					{
@@ -382,7 +391,7 @@ var CollectionBinder = createClass(
 		{
 			this.boundViews.splice(renderIndex, 1);
 
-			removeChild(boundView.$element[0].parentNode, boundView.$element[0]);
+			removeChild(boundView.element.parentNode, boundView.element);
 			// boundView.$element[0].parentNode.removeChild(boundView.$element[0]);
 			boundView.destroyAll();
 
@@ -420,13 +429,13 @@ var CollectionBinder = createClass(
 	 */
 	createBoundView: function(item)
 	{
-		var boundView, $element, i;
+		var boundView, element, i;
 
 		if(!this.viewTemplate)
 		{
-			$element = $(this.view.$element[0].cloneNode(true));
+			element = this.view.element.cloneNode(true);
 
-			this.boundViewOptions.element = $element[0];
+			this.boundViewOptions.element = element;
 
 			boundView = new this.view.constructor(this.boundViewOptions);
 
@@ -455,11 +464,11 @@ var CollectionBinder = createClass(
 			boundView.renderAll();
 
 			this.viewTemplate = boundView.clone();
-			this.$elementTemplate = $($element[0].cloneNode(true));
+			this.elementTemplate = element.cloneNode(true);
 		}
 		else
 		{
-			$element = $(this.$elementTemplate[0].cloneNode(true));
+			element = this.elementTemplate.cloneNode(true);
 			boundView = this.viewTemplate.clone();
 			boundView.setParentView(this.view);
 
@@ -478,10 +487,10 @@ var CollectionBinder = createClass(
 			if(this.view.itemAlias) boundView.scope[this.view.itemAlias] = boundView.scope['*'];
 
 			boundView.setBindingIndex(i);
-			boundView.rebindElement($element[0]);
+			boundView.rebindElement(element);
 		}
 
-		$element[0].setAttribute(settings.DATA_RENDERED_ATTR, true);
+		element.setAttribute(settings.DATA_RENDERED_ATTR, true);
 
 		boundView.itemAlias = this.view.itemAlias;
 		boundView.modelBindersMap.setView(boundView);

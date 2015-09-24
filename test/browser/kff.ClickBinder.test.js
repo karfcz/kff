@@ -21,7 +21,7 @@ describe('kff.ClickBinder', function()
 		var $div = $('<div data-kff-bind="myModel.name:click(Petr)"/>');
 		var view = new kff.View(
 		{
-			element: $div,
+			element: $div[0],
 			scope: {
 				myModel: myModel
 			},
@@ -32,7 +32,7 @@ describe('kff.ClickBinder', function()
 
 		expect(myModel.getIn('name')).to.equal('Karel');
 
-		$div.trigger('click');
+		emitEvent($div[0], 'click');
 
 		expect(myModel.getIn('name')).to.equal('Petr');
 	});
@@ -57,7 +57,7 @@ describe('kff.ClickBinder', function()
 		var $div = $('<div data-kff-bind="myModel.name:click(@myModel.value)"/>');
 		var view = new kff.View(
 		{
-			element: $div,
+			element: $div[0],
 			scope: {
 				myModel: myModel
 			},
@@ -70,7 +70,7 @@ describe('kff.ClickBinder', function()
 
 		myModel.setIn('value', 'Petr');
 
-		$div.trigger('click');
+		emitEvent($div[0], 'click');
 
 		expect(myModel.getIn('name')).to.equal('Petr');
 	});

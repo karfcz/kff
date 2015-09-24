@@ -79,7 +79,7 @@ var createInsertBinder = function(negate, force){
 
 				if(parentNode)
 				{
-					parentNode.replaceChild(this.$element[0], this.anchor);
+					parentNode.replaceChild(this.element, this.anchor);
 				}
 				this.isInserted = true;
 			}
@@ -94,7 +94,7 @@ var createInsertBinder = function(negate, force){
 			if(!this.anchor)
 			{
 				this.anchor = this.view.env.document.createTextNode('');
-				this.$element[0].parentNode.insertBefore(this.anchor, this.$element[0]);
+				this.element.parentNode.insertBefore(this.anchor, this.element);
 			}
 
 			var nodeInsert = insertBefore;
@@ -114,7 +114,7 @@ var createInsertBinder = function(negate, force){
 
 					if(parentNode)
 					{
-						nodeInsert(parentNode, this.anchor, this.$element[0]);
+						nodeInsert(parentNode, this.anchor, this.element);
 					}
 					this.isInserted = true;
 				}
@@ -136,11 +136,11 @@ var createInsertBinder = function(negate, force){
 			{
 				if(this.isInserted)
 				{
-					parentNode = this.$element[0].parentNode;
+					parentNode = this.element.parentNode;
 
 					if(parentNode)
 					{
-						nodeRemove(parentNode, this.$element[0], this.f(function()
+						nodeRemove(parentNode, this.element, this.f(function()
 						{
 							if(force && this.isRendered)
 							{

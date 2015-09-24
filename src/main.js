@@ -1,6 +1,4 @@
 
-
-
 module.exports = {
 
 	settings: require('./settings'),
@@ -27,10 +25,12 @@ module.exports = {
 	factoryService: require('./functions/factoryService'),
 	noop: require('./functions/noop'),
 	afterRepaint: require('./functions/afterRepaint'),
+	// on: require('./Dom').on,
+	// off: require('./Dom').off,
 
 	App: require('./App'),
 	Cursor: require('./Cursor'),
-	Dom: require('./Dom'),
+	Dom: require('./Dom').Dom,
 	EventStream: require('./EventStream'),
 	Events: require('./Events'),
 	EventsMixin: require('./EventsMixin'),

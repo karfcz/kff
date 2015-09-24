@@ -21,7 +21,7 @@ describe('kff.BlurBinder', function()
 		var $div = $('<div data-kff-bind="myModel.name:blur(Petr)"/>');
 		var view = new kff.View(
 		{
-			element: $div,
+			element: $div[0],
 			scope: {
 				myModel: myModel
 			},
@@ -32,7 +32,10 @@ describe('kff.BlurBinder', function()
 
 		expect(myModel.getIn('name')).to.equal('Karel');
 
-		$div.trigger('blur');
+		// $div.trigger('blur');
+		$div[0].dispatchEvent(new Event('blur'));
+		// $div[0].blur();
+		// emitEvent($div[0], 'blur');
 
 		expect(myModel.getIn('name')).to.equal('Petr');
 	});

@@ -11,7 +11,7 @@ describe('kff.TextBinder', function()
 		};
 		var view = new kff.View(
 		{
-			element: $div,
+			element: $div[0],
 			scope: {
 				myModel: new kff.Cursor(myModel)
 			}
@@ -33,7 +33,7 @@ describe('kff.TextBinder', function()
 
 		var view = new kff.View(
 		{
-			element: $div,
+			element: $div[0],
 			scope: {
 				myModel: new kff.Cursor(myModel)
 			}

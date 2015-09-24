@@ -53,7 +53,8 @@ var BinderMap = createClass(
 		{
 			b = this.binders[i];
 			b.view = view;
-			b.$element = view.$element;
+			// b.$element = view.$element;
+			b.element = view.element;
 			b.model = null;
 			b.value = null;
 		}

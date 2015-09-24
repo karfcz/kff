@@ -18,7 +18,7 @@ describe('kff.View', function()
 		var view = new kff.View(
 		{
 			env: env,
-			element: $div1,
+			element: $div1[0],
 			scope: {
 				collection: collection
 			}
@@ -48,7 +48,7 @@ describe('kff.View', function()
 		var view = new kff.View(
 		{
 			env: env,
-			element: $div1,
+			element: $div1[0],
 			scope: {
 				collection: new kff.Cursor(collection)
 			}
@@ -90,7 +90,7 @@ describe('kff.View', function()
 		var view = new kff.View(
 		{
 			env: env,
-			element: $div1,
+			element: $div1[0],
 			scope: {
 				collection: new kff.Cursor(collection)
 			}
@@ -153,7 +153,7 @@ describe('kff.View', function()
 		var view = new kff.View(
 		{
 			env: env,
-			element: $div1,
+			element: $div1[0],
 			scope: {
 				collection: new kff.Cursor(collection),
 				filterModel: new kff.Cursor(filterModel)
@@ -186,7 +186,7 @@ describe('kff.View', function()
 		var view = new kff.View(
 		{
 			env: env,
-			element: $div1,
+			element: $div1[0],
 			scope: {
 				collection: new kff.Cursor(collection),
 				sortModel: new kff.Cursor(sortModel)
@@ -225,7 +225,7 @@ describe('kff.View', function()
 		var view = new kff.View(
 		{
 			env: env,
-			element: $div1,
+			element: $div1[0],
 			scope: {
 				collection: new kff.Cursor(collection),
 				sortModel: new kff.Cursor(sortModel)
@@ -253,7 +253,7 @@ describe('kff.View', function()
 		var view = new kff.View(
 		{
 			env: env,
-			element: $div1,
+			element: $div1[0],
 			scope: {
 				collection: new kff.Cursor(collection),
 			}
@@ -279,7 +279,7 @@ describe('kff.View', function()
 		var view = new kff.View(
 		{
 			env: env,
-			element: $div1,
+			element: $div1[0],
 			scope: {
 				collection: new kff.Cursor(collection),
 			}

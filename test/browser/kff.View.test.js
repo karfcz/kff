@@ -44,7 +44,7 @@ describe('kff.View', function()
 	{
 		$div = $('<div/>');
 		view = new TestView({
-			element: $div
+			element: $div[0]
 		});
 	});
 
@@ -53,7 +53,7 @@ describe('kff.View', function()
 		it('should return cursor for model associated with the view', function()
 		{
 			var myModel = { prop: 42 };
-			view = new TestView({element: $div, scope: { myModel: new kff.Cursor(myModel) } });
+			view = new TestView({element: $div[0], scope: { myModel: new kff.Cursor(myModel) } });
 			expect(view.getCursor(['myModel', 'prop']).get()).to.equal(42);
 		});
 
@@ -63,7 +63,7 @@ describe('kff.View', function()
 	{
 		it('should render the view', function()
 		{
-			view = new TestView({element: $div});
+			view = new TestView({element: $div[0]});
 			view.renderAll();
 			view.runAll();
 			expect($div.html()).to.equal(testString);
@@ -76,7 +76,7 @@ describe('kff.View', function()
 	{
 		it('should destroy the view', function()
 		{
-			view = new TestView({element: $div});
+			view = new TestView({element: $div[0]});
 			view.renderAll();
 			view.runAll();
 			expect($div.html()).to.equal(testString);
@@ -85,41 +85,40 @@ describe('kff.View', function()
 			expect($div.html()).to.equal('');
 			expect($div.attr(kff.settings.DATA_RENDERED_ATTR)).to.be.undefined;
 		});
-
-
 	});
 
 	describe('#delegateEvents', function()
 	{
 		it('should delegate a click event to a method', function(done)
 		{
-			view = new TestView({element: $div, done: done});
+			view = new TestView({element: $div[0], done: done});
 			view.renderAll();
 			view.runAll();
-			$div.triggerHandler('click');
+			emitEvent($div[0], 'click');
 		});
 
 		it('should delegate an added event to a method', function(done)
 		{
-			view = new TestView({element: $div, done: done});
+			view = new TestView({element: $div[0], done: done});
 			view.addEvents([['mouseover', 'click']]);
 			view.renderAll();
 			view.runAll();
-			$div.triggerHandler('mouseover');
+			emitEvent($div[0], 'click');
+			emitEvent($div[0], 'mouseover');
 		});
 
 		it('should trigger both delegated events', function(done)
 		{
 			var i = 0;
-			view = new TestView({element: $div, done: function(){
+			view = new TestView({element: $div[0], done: function(){
 				i++;
 				if(i === 2) done();
 			}});
 			view.addEvents([['mouseover', 'click']]);
 			view.renderAll();
 			view.runAll();
-			$div.triggerHandler('mouseover');
-			$div.triggerHandler('click');
+			emitEvent($div[0], 'mouseover');
+			emitEvent($div[0], 'click');
 		});
 	});
 
@@ -127,39 +126,39 @@ describe('kff.View', function()
 	{
 		it('should undelegate a click event from a method', function()
 		{
-			view = new TestView({element: $div, done: function(){
+			view = new TestView({element: $div[0], done: function(){
 				throw 'Error';
 			}});
 			view.renderAll();
 			view.runAll();
 			view.destroyAll();
-			$div.triggerHandler('click');
+			emitEvent($div[0], 'click');
 		});
 
 		it('should undelegate an added event to a method', function()
 		{
-			view = new TestView({element: $div, done: function(){
+			view = new TestView({element: $div[0], done: function(){
 				throw 'Error';
 			}});
 			view.addEvents([['mouseover', 'click']]);
 			view.renderAll();
 			view.runAll();
 			view.destroyAll();
-			$div.triggerHandler('mouseover');
+			emitEvent($div[0], 'mouseover');
 		});
 
 		it('should not trigger both undelegated events', function()
 		{
 			var i = 0;
-			view = new TestView({element: $div, done: function(){
+			view = new TestView({element: $div[0], done: function(){
 				throw 'Error';
 			}});
 			view.addEvents([['mouseover', 'click']]);
 			view.renderAll();
 			view.runAll();
 			view.destroyAll();
-			$div.triggerHandler('mouseover');
-			$div.triggerHandler('click');
+			emitEvent($div[0], 'click');
+			emitEvent($div[0], 'mouseover');
 		});
 
 	});
@@ -260,7 +259,7 @@ describe('kff.View', function()
 			expect($mainDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
 			expect($innerDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
 
-			$innerDiv.triggerHandler('click');
+			emitEvent($innerDiv[0], 'click');
 		});
 	});
 

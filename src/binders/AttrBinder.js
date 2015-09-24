@@ -36,7 +36,7 @@ var AttrBinder = createClass(
 		if(val === null || val === undefined) val = '';
 		if(this.attribute)
 		{
-			this.$element[0].setAttribute(this.attribute, this.prefix + val + this.suffix);
+			this.element.setAttribute(this.attribute, this.prefix + val + this.suffix);
 		}
 	}
 });

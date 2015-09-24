@@ -26,7 +26,7 @@ var TextBinder = createClass(
 	{
 		var val = this.value;
 		if(val === null || val === undefined) val = '';
-		this.$element[0].textContent = val;
+		this.element.textContent = val;
 	}
 });
 
@@ -38,7 +38,7 @@ if(typeof document === 'object' && document !== null)
 		{
 			var val = this.value;
 			if(val === null || val === undefined) val = '';
-			this.$element[0].innerText = val;
+			this.element.innerText = val;
 		};
 	}
 }

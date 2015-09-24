@@ -21,7 +21,7 @@ describe('kff.BindingView', function()
 		var $input = $('<input data-kff-bind="myModel.name:val"/>');
 		var view = new kff.View(
 		{
-			element: $input,
+			element: $input[0],
 			scope: {
 				myModel: myModel
 			},
@@ -40,7 +40,9 @@ describe('kff.BindingView', function()
 
 			expect($input.val()).to.equal('Petr');
 
-			$input.val('Honza').trigger('change');
+			$input.val('Honza');
+
+			$input[0].dispatchEvent(new Event('change'));
 
 			setTimeout(function()
 			{

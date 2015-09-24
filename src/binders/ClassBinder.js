@@ -58,11 +58,11 @@ var createClassBinder = function(negate)
 			{
 				if(this.matchValue())
 				{
-					this.$element[0].classList.add(this.className);
+					this.element.classList.add(this.className);
 				}
 				else
 				{
-					this.$element[0].classList.remove(this.className);
+					this.element.classList.remove(this.className);
 				}
 			}
 		},

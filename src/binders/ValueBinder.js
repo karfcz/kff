@@ -33,7 +33,7 @@ var ValueBinder = createClass(
 
 	init: function()
 	{
-		this.multiple = this.$element[0].nodeName === 'SELECT' && this.$element[0].multiple;
+		this.multiple = this.element.nodeName === 'SELECT' && this.element.multiple;
 		if(this.multiple)
 		{
 			this.getValue = this.getArrayValue;
@@ -60,7 +60,7 @@ var ValueBinder = createClass(
 		var val = this.getFormattedValue();
 		if(val === null || val === undefined) val = '';
 
-		if(this.$element[0].nodeName === 'SELECT')
+		if(this.element.nodeName === 'SELECT')
 		{
 			setImmediate(this.f(function()
 			{
@@ -84,18 +84,18 @@ var ValueBinder = createClass(
 
 	getValue: function()
 	{
-		return this.$element[0].value;
+		return this.element.value;
 	},
 
 	setValue: function(val)
 	{
-		this.$element[0].value = val;
+		this.element.value = val;
 	},
 
 	getArrayValue: function()
 	{
 		var result = [];
-		var options = this.$element[0] && this.$element[0].options;
+		var options = this.element && this.element.options;
 		var option;
 
 		for(var i = 0, l = options.length; i < l; i++)
@@ -112,7 +112,7 @@ var ValueBinder = createClass(
 	setArrayValue: function(val)
 	{
 		if(!(val instanceof Array)) val = [val];
-		var options = this.$element[0] && this.$element[0].options;
+		var options = this.element && this.element.options;
 		var option;
 
 		for(var i = 0, l = options.length; i < l; i++)
