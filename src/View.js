@@ -94,6 +94,7 @@ var View = createClass(
 		this.cachedRegions = null;
 		this.pendingRefresh = false;
 		this.subviewsArgs = null;
+		this._isRunning = false;
 
 		this.initEvents();
 
@@ -225,6 +226,7 @@ var View = createClass(
 
 			this.refreshOwnBinders(true);
 		}
+		this._isRunning = true;
 	},
 
 	requestRefreshAll: function()
@@ -245,28 +247,31 @@ var View = createClass(
 	 */
 	refreshAll: function()
 	{
-		var shouldRefresh = true;
-		if(typeof this.shouldRefresh === 'function') shouldRefresh = this.shouldRefresh();
-		if(shouldRefresh)
+		if(this._isRunning)
 		{
-			if(typeof this.refresh === 'function') this.refresh();
-			if(this.collectionBinder)
+			var shouldRefresh = true;
+			if(typeof this.shouldRefresh === 'function') shouldRefresh = this.shouldRefresh();
+			if(shouldRefresh)
 			{
-				this.collectionBinder.refreshBoundViews();
-				// if(this.collectionBinder.refreshBoundViews() !== false) ;
-				this.collectionBinder.refreshAll();
-			}
-			else
-			{
-				this.rebindCursors();
-				this.refreshOwnBinders();
-				if(this.subviews !== null)
+				if(typeof this.refresh === 'function') this.refresh();
+				if(this.collectionBinder)
 				{
-					for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].refreshAll();
+					this.collectionBinder.refreshBoundViews();
+					// if(this.collectionBinder.refreshBoundViews() !== false) ;
+					this.collectionBinder.refreshAll();
+				}
+				else
+				{
+					this.rebindCursors();
+					this.refreshOwnBinders();
+					if(this.subviews !== null)
+					{
+						for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].refreshAll();
+					}
 				}
 			}
+			this.pendingRefresh = false;
 		}
-		this.pendingRefresh = false;
 	},
 
 	/**
@@ -316,6 +321,7 @@ var View = createClass(
 		this.subviewsStruct = null;
 		this.explicitSubviewsStruct = null;
 		this.subviews = null;
+		this._isRunning = false;
 
 		this.clearRegions(this.options.regions);
 	},
@@ -861,12 +867,6 @@ var View = createClass(
 			}
 		}
 	},
-
-	// setViewFactory: function(viewFactory)
-	// {
-	// 	this.viewFactory = viewFactory;
-	// },
-
 
 	/**
 	 * Rebinds the view to another DOM element
