@@ -23,13 +23,30 @@ var Cursor = createClass(
 
 	get: function()
 	{
-		return evalObjectPath(this.keyPath, this.root);
+		// return evalObjectPath(this.keyPath, this.root);
+		return this.getInPath(this.keyPath);
+
 	},
 
 	getIn: function(keyPath)
 	{
 		if(typeof keyPath === 'string') keyPath = keyPath.split('.');
-		return evalObjectPath(this.keyPath.concat(keyPath), this.root);
+		return this.getInPath(this.keyPath.concat(keyPath));
+	},
+
+	getInPath: function(path)
+	{
+		var part,
+			obj = this.root,
+			i, l;
+
+		for(i = 0, l = path.length; i < l; i++)
+		{
+			part = path[i];
+			if(typeof obj !== 'object' || obj === null || obj[part] === undefined) return null;
+			else obj = obj[part];
+		}
+		return obj;
 	},
 
 	set: function(value)
