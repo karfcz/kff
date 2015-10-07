@@ -1,6 +1,5 @@
 
 var createClass = require('./functions/createClass');
-var evalObjectPath = require('./functions/evalObjectPath');
 var compareArrays = require('./functions/compareArrays');
 var arrayConcat = require('./functions/arrayConcat');
 var imset = require('./functions/imset');
@@ -23,7 +22,6 @@ var Cursor = createClass(
 
 	get: function()
 	{
-		// return evalObjectPath(this.keyPath, this.root);
 		return this.getInPath(this.keyPath);
 
 	},
