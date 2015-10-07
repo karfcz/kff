@@ -53,6 +53,7 @@ module.exports = {
 	AttrBinder: require('./binders/AttrBinder'),
 	CheckBinder: require('./binders/CheckBinder'),
 	DisabledBinder: require('./binders/DisabledBinder'),
+	DisabledNotBinder: require('./binders/DisabledNotBinder'),
 	ClassBinder: require('./binders/ClassBinder').ClassBinder,
 	ClassNotBinder: require('./binders/ClassBinder').ClassNotBinder,
 	StyleBinder: require('./binders/StyleBinder'),
