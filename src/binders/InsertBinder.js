@@ -172,6 +172,8 @@ var createInsertBinder = function(negate, force){
 
 		matchValue: function()
 		{
+			var value = this.value;
+			if(value == null) value = null;
 			if(this.options.params.length > 0)
 			{
 				if(this.valueCursor)
@@ -179,12 +181,9 @@ var createInsertBinder = function(negate, force){
 					this.equalsTo = this.valueCursor.get();
 					if(this.equalsTo == null) this.equalsTo = null;
 				}
-				var value = this.value;
-				if(value == null) value = null;
-				if(negate) return value !== this.equalsTo;
-				else return value === this.equalsTo;
 			}
-			else return this.value;
+			if(negate) return value !== this.equalsTo;
+			else return value === this.equalsTo;
 		}
 	});
 
