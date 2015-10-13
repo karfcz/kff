@@ -69,6 +69,8 @@ var createClassBinder = function(negate)
 
 		matchValue: function()
 		{
+			var value = this.value;
+			if(value == null) value = null;
 			if(this.options.params.length > 1)
 			{
 				if(this.valueCursor)
@@ -76,12 +78,9 @@ var createClassBinder = function(negate)
 					this.equalsTo = this.valueCursor.get();
 					if(this.equalsTo == null) this.equalsTo = null;
 				}
-				var value = this.value;
-				if(value == null) value = null;
-				if(this.negate) return value !== this.equalsTo;
-				else return value === this.equalsTo;
 			}
-			else return this.value;
+			if(negate) return value !== this.equalsTo;
+			else return value === this.equalsTo;
 		}
 	});
 
