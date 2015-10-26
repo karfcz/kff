@@ -85,6 +85,7 @@ function on(handlers, element, type, selector, handler)
 		}
 		else
 		{
+			// now selector = handler
 			element.addEventListener(types[i], selector, false);
 		}
 	}
@@ -102,11 +103,12 @@ function off(handlers, element, type, selector)
 	var types = type.split(/\s+/);
 	for(var i = 0, l = types.length; i < l; i++)
 	{
-		if(arguments.length === 5)
+		if(typeof selector !== 'function')
 		{
 			if(handlers[selector])
 			{
 				element.removeEventListener(types[i], handlers[selector], false);
+				handlers[selector] = undefined;
 			}
 		}
 		else
@@ -139,7 +141,14 @@ var Dom = createClass(
 	on: function(type, selector, handler)
 	{
 		if(!this.handlers) this.handlers = {};
-		on(this.handlers, this['0'], type, selector, handler);
+		if(arguments.length === 3)
+		{
+			on(this.handlers, this['0'], type, selector, handler);
+		}
+		else if(arguments.length === 2)
+		{
+			on(this.handlers, this['0'], type, selector);
+		}
 	},
 
 	/**

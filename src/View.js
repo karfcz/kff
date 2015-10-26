@@ -538,7 +538,7 @@ var View = createClass(
 				if(typeof event[2] === 'string') fn = this.f(event[2]);
 				else fn = event[2];
 
-				if(typeof event[1] === 'string') off(this.handlers, element, event[0], event[1], fn);
+				if(typeof event[1] === 'string') off(this.handlers, element, event[0], event[1]);
 				else event[1].off(event[0], fn);
 			}
 			else if(event.length === 2)
