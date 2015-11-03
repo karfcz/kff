@@ -38,7 +38,7 @@ function delegatedEventHandler(el, selector, handler, event)
 {
 	var target = event.target;
 
-	while(target !== el)
+	while(target && target !== el)
 	{
 		if(matchesMethodName)
 		{
