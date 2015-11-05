@@ -26,7 +26,7 @@ var HtmlBinder = createClass(
 	{
 		var val = this.value;
 		if(val === null || val === undefined) val = '';
-		this.$element[0].innerHTML = val;
+		this.element.innerHTML = val;
 	}
 });
 
