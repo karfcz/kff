@@ -23,6 +23,7 @@ var Binder = createClass(
 		this.cursor = null;
 		this.keyPath = options.keyPath;
 		this.dispatch = options.dispatch;
+		this.dispatchNamedParams = options.dispatchNamedParams;
 		this.currentValue = null;
 		this.value = null;
 		this.animate = options.animate;
@@ -117,9 +118,9 @@ var Binder = createClass(
 	 * @param  {mixed} value    Raw unparsed value from the DOM
 	 * @param  {DOMEvent} event Original DOM event
 	 */
-	updateModel: function(value, event)
+	updateModel: function(value, domEvent)
 	{
-		var i, l;
+		var i, l, event;
 		this.value = value;
 		if(value instanceof Array)
 		{
@@ -135,22 +136,29 @@ var Binder = createClass(
 
 		var action = 'set';
 		var params = [];
+
+		event = {
+			type: 'set',
+			cursor: this.cursor,
+			value: value,
+			domEvent: domEvent,
+			params: params
+		};
+
 		if(this.dispatch && this.dispatch.length > 0)
 		{
-			action = this.dispatch[0];
+			event.type = this.dispatch[0];
 			for(i = 1, l = this.dispatch.length; i < l; i++)
 			{
 				params.push(this.convertBindingValue(this.dispatch[i]));
 			}
+			for(var p in this.dispatchNamedParams)
+			{
+				event[p] = this.convertBindingValue(this.dispatchNamedParams[p]);
+			}
 		}
 
-		this.view.dispatchEvent({
-			type: action,
-			cursor: this.cursor,
-			value: value,
-			domEvent: event,
-			params: params
-		});
+		this.view.dispatchEvent(event);
 	},
 
 	convertBindingValue: function(value)

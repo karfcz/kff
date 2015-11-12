@@ -30,6 +30,22 @@ var leadingPeriodRegex = /^\./;
 
 var trailingPeriodRegex = /\.$/;
 
+function parseNamedParams(params)
+{
+	var namedParams = {};
+	var param;
+	for(var j = params.length - 2; j >= 1; j -= 2)
+	{
+		param = params[j];
+		if(param[param.length - 1] === ':')
+		{
+			param = param.slice(0, -1);
+			namedParams[param] = params[j + 1];
+			params.splice(j, 2);
+		}
+	}
+	return namedParams;
+}
 
 var View = createClass(
 {
@@ -1140,6 +1156,7 @@ var View = createClass(
 					formatters: ret.formatters,
 					parsers: ret.parsers,
 					dispatch: ret.dispatch,
+					dispatchNamedParams: ret.dispatchNamedParams,
 					eventNames: ret.eventNames,
 					eventFilters: ret.eventFilters,
 					fill: ret.fill,
@@ -1177,6 +1194,7 @@ var View = createClass(
 			eventNames: [],
 			eventFilters: [],
 			dispatch: null,
+			dispatchNamedParams: null,
 			fill: false,
 			watchModelPath: false,
 			nopreventdef: false,
@@ -1230,6 +1248,7 @@ var View = createClass(
 					case 'dispatch':
 						ret.dispatch = [];
 						this.parseSetters(modifierParams, ret.dispatch);
+						ret.dispatchNamedParams = parseNamedParams(ret.dispatch);
 						break;
 					case 'filter':
 						this.parseSetters(modifierParams, ret.filter);
