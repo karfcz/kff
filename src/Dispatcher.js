@@ -74,7 +74,7 @@ var Dispatcher = createClass(
 				if(typeof actions[action] === 'function') {
 					this.actionStreams[action] = this.eventStream.filter(filterByEventType(action)).on(this.createCallback(actions[action]));
 				}
-				else if(settings.debug) log('Dispatcher action "' + action + '" is not a function');
+				else if(process.env.NODE_ENV !== 'production')  log('Dispatcher action "' + action + '" is not a function');
 			}
 		}
 	},

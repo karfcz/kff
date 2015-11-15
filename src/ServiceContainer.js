@@ -301,7 +301,7 @@ var ServiceContainer = createClass(
 		var module = this.loadOwnService(serviceName);
 		if(module) return module;
 
-		if(settings.debug) log('Cannot load service module ' + serviceName);
+		if(process.env.NODE_ENV !== 'production') log('Cannot load service module ' + serviceName);
 
 		return null;
 	},

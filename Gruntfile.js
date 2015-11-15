@@ -8,11 +8,16 @@ module.exports = function(grunt)
 
 		browserify: {
 			options: {},
-			dev: {
+			devwatch: {
 				files: {
 					'./build/kff.js': './src/main.js'
 				},
 				options: {
+					transform: [
+						['envify', {
+							NODE_ENV: 'development'
+						}]
+					],
 					browserifyOptions: {
 						builtins: false,
 						debug: true,
@@ -23,11 +28,36 @@ module.exports = function(grunt)
 					keepAlive: true
 				}
 			},
-			prod: {
+			dev: {
 				files: {
 					'./build/kff.js': './src/main.js'
 				},
 				options: {
+					transform: [
+						['envify', {
+							NODE_ENV: 'development'
+						}]
+					],
+					browserifyOptions: {
+						builtins: false,
+						debug: true,
+						fullPaths: false,
+						standalone: 'kff'
+					},
+					watch: false,
+					keepAlive: false
+				}
+			},
+			prod: {
+				files: {
+					'./build/kff.min.js': './src/main.js'
+				},
+				options: {
+					transform: [
+						['envify', {
+							NODE_ENV: 'production'
+						}]
+					],
 					browserifyOptions: {
 						builtins: false,
 						debug: false,
@@ -44,10 +74,11 @@ module.exports = function(grunt)
 		uglify: {
 			options: {
 				mangle: true,
+				dead_code: true,
 				banner: grunt.file.read('./src/banner.js')
 			},
 			kff: {
-				src: ['./build/kff.js'],
+				src: ['./build/kff.min.js'],
 				dest: './build/kff.min.js'
 			}
 		},
@@ -87,10 +118,10 @@ module.exports = function(grunt)
 	grunt.loadNpmTasks('grunt-shell');
 	grunt.loadNpmTasks('grunt-karma');
 
-	grunt.registerTask('build', ['browserify:prod', 'uglify']);
+	grunt.registerTask('build', ['browserify:dev', 'browserify:prod', 'uglify']);
 	grunt.registerTask('docs', ['shell:docs']);
 	grunt.registerTask('test', ['build', 'karma']);
 	grunt.registerTask('default', ['build']);
-	grunt.registerTask('w', ['browserify:dev']);
+	grunt.registerTask('w', ['browserify:devwatch']);
 
 };

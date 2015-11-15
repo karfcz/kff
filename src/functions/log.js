@@ -7,7 +7,7 @@ var settings = require('../settings');
  */
 function log(message)
 {
-	if(settings.debug === true && typeof console === 'object') console.log(message);
+	if(typeof console === 'object') console.log(message);
 }
 
 module.exports = log;
