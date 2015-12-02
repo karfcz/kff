@@ -13,10 +13,22 @@ function filterByEventType(type)
 
 var Dispatcher = createClass(
 {
-	constructor: function(actions)
+	constructor: function(actions, processors)
 	{
 		this.eventStream = new EventStream();
 		this.actionStreams = {};
+		this.processors = [processsArrayEvent, processsEventStreamEvent, processsActionEvent];
+		if(processors && Array.isArray(processors))
+		{
+			if(process.env.NODE_ENV !== 'production')
+			{
+				if(!Array.isArray(processors))
+				{
+					log('Second argument of Dispatcher must be an Array', processors);
+				}
+			}
+			this.processors = this.processors.concat(processors);
+		}
 		this.registerActions(actions);
 	},
 
@@ -30,24 +42,8 @@ var Dispatcher = createClass(
 		{
 			return function(event)
 			{
-
 				var nextEvent = fn.call(null, event);
-				if(nextEvent instanceof Array)
-				{
-					for(var j = 0; j < nextEvent.length; j++)
-					{
-						if(nextEvent[j] instanceof EventStream)
-						{
-							nextEvent[j].on(dispatcher.f('trigger'));
-						}
-						else if(nextEvent[j]) dispatcher.trigger(nextEvent[j]);
-					}
-				}
-				else if(nextEvent instanceof EventStream)
-				{
-					nextEvent.on(dispatcher.f('trigger'));
-				}
-				else if(nextEvent) dispatcher.trigger(nextEvent);
+				dispatcher.trigger(nextEvent);
 			};
 		}
 		else
@@ -81,7 +77,10 @@ var Dispatcher = createClass(
 
 	trigger: function(event)
 	{
-		this.eventStream.trigger(event);
+		for(var j = 0; j < this.processors.length; j++)
+		{
+			if(typeof this.processors[j] === 'function') this.processors[j](this, event);
+		}
 	},
 
 	on: function(type, fn)
@@ -103,3 +102,31 @@ var Dispatcher = createClass(
 });
 
 module.exports = Dispatcher;
+
+
+function processsArrayEvent(dispatcher, event)
+{
+	if(event instanceof Array)
+	{
+		for(var j = 0; j < event.length; j++)
+		{
+			dispatcher.trigger(event[j]);
+		}
+	}
+}
+
+function processsEventStreamEvent(dispatcher, event)
+{
+	if(event instanceof EventStream)
+	{
+		event.on(dispatcher.f('trigger'));
+	}
+}
+
+function processsActionEvent(dispatcher, event)
+{
+	if(event != null && typeof event === 'object' && 'type' in event)
+	{
+		dispatcher.eventStream.trigger(event);
+	}
+}
