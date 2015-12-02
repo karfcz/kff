@@ -160,34 +160,6 @@ var EventStream = createClass({
 		return es;
 	},
 
-	// reduce: function(fn, initialValue)
-	// {
-	// 	var array = this.array;
-	// 	var l = array.length, value, i = 0;
-
-	// 	if(typeof fn !== 'function')
-	// 	{
-	// 		throw new TypeError( fn + ' is not a function' );
-	// 	}
-
-	// 	if(arguments.length >= 2)
-	// 	{
-	// 		value = arguments[1];
-	// 	}
-	// 	else
-	// 	{
-	// 		if(l === 0) throw new TypeError('Reduce of empty collection with no initial value');
-	// 	  	value = array[i++];
-	// 	}
-
-	// 	for(; i < l; i++)
-	// 	{
-	// 		value = fn(value, array[i], i, this);
-	// 	}
-	// 	return value;
-	// },
-
-
 	flatMap: function(fn)
 	{
 		var mes = new EventStream();
@@ -238,9 +210,18 @@ var EventStream = createClass({
 	end: function()
 	{
 		this.trigger(EventStream.END);
+	},
+
+	endLater: function(delay)
+	{
+		var that = this;
+		if(delay === undefined) delay = 0;
+		setTimeout(function()
+		{
+			that.trigger(EventStream.END);
+		}, delay);
+		return this;
 	}
-
-
 });
 
 module.exports = EventStream;
