@@ -131,6 +131,10 @@ var EventStream = createClass({
 			mes.trigger(fn.call(null, event));
 		});
 
+		this.onEnd(function(){
+			mes.end();
+		});
+
 		return mes;
 	},
 
@@ -163,6 +167,7 @@ var EventStream = createClass({
 	flatMap: function(fn)
 	{
 		var mes = new EventStream();
+		var activeStreams = 0;
 
 		var observe = function(event)
 		{
@@ -170,9 +175,16 @@ var EventStream = createClass({
 
 			if(res instanceof EventStream)
 			{
+				activeStreams++;
 				res.on(function(event2)
 				{
 					mes.trigger(event2);
+				});
+
+				res.onEnd(function()
+				{
+					activeStreams--;
+					if(activeStreams === 0) mes.end();
 				});
 			}
 			else
@@ -182,6 +194,10 @@ var EventStream = createClass({
 		};
 
 		this.on(observe);
+		this.onEnd(function()
+		{
+			if(activeStreams === 0) mes.end();
+		});
 
 		return mes;
 	},
@@ -194,15 +210,29 @@ var EventStream = createClass({
 			if(fn.call(null, event)) fes.trigger(event);
 		});
 
+		this.onEnd(function(){
+			fes.end();
+		});
+
 		return fes;
 	},
 
 	merge: function(es)
 	{
 		var mes = new EventStream();
+		var endCount = 2;
+
+		function endHandler()
+		{
+			endCount--;
+			if(endCount === 0) mes.end();
+		}
 
 		this.on(mes.f('trigger'));
 		es.on(mes.f('trigger'));
+
+		this.onEnd(endHandler);
+		es.onEnd(endHandler);
 
 		return mes;
 	},
