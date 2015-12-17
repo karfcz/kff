@@ -97,20 +97,19 @@ var View = createClass(
 	{
 		options = options || {};
 
-		this.modelBindersMap = null;
-		this.collectionBinder = null;
-		this.collectionCountBinder = null;
-		this.bindingIndex = null;
-		this.itemAlias = null;
+		this._modelBindersMap = null;
+		this._collectionBinder = null;
+		this._bindingIndex = null;
+		this._itemAlias = null;
 
-		this.subviewsStruct = null;
-		this.explicitSubviewsStruct = null;
+		this._subviewsStruct = null;
+		this._explicitSubviewsStruct = null;
+		this._cachedRegions = null;
+		this._pendingRefresh = false;
+		this._subviewsArgs = null;
+		this._isRunning = false;
 		this.subviews = null;
 		this.serviceContainer = null;
-		this.cachedRegions = null;
-		this.pendingRefresh = false;
-		this.subviewsArgs = null;
-		this._isRunning = false;
 
 		this.initEvents();
 
@@ -194,11 +193,11 @@ var View = createClass(
 	 */
 	renderAll: function()
 	{
-		if(!this.modelBindersMap) this.initBinding();
-		if(!this.collectionBinder)
+		if(!this._modelBindersMap) this.initBinding();
+		if(!this._collectionBinder)
 		{
 			if(!this.serviceContainer) this.serviceContainer = new ServiceContainer();
-			this.explicitSubviewsStruct = null;
+			this._explicitSubviewsStruct = null;
 			this.renderRegions(this.options.regions);
 			if(this.render !== noop) this.render();
 			this.renderSubviews();
@@ -211,13 +210,13 @@ var View = createClass(
 	 */
 	runAll: function()
 	{
-		if(this.collectionBinder)
+		if(this._collectionBinder)
 		{
 			this.runSubviews();
 		}
 		else
 		{
-			if(this.modelBindersMap) this.modelBindersMap.initBinders();
+			if(this._modelBindersMap) this._modelBindersMap.initBinders();
 
 			if(this.run !== noop) this.run();
 			this.runSubviews();
@@ -249,9 +248,9 @@ var View = createClass(
 	{
 		if(this.env.window.requestAnimationFrame)
 		{
-			if(!this.pendingRefresh)
+			if(!this._pendingRefresh)
 			{
-				this.pendingRefresh = true;
+				this._pendingRefresh = true;
 				this.env.window.requestAnimationFrame(this.f('refreshAll'));
 			}
 		}
@@ -270,11 +269,11 @@ var View = createClass(
 			if(shouldRefresh)
 			{
 				if(typeof this.refresh === 'function') this.refresh();
-				if(this.collectionBinder)
+				if(this._collectionBinder)
 				{
-					this.collectionBinder.refreshBoundViews();
-					// if(this.collectionBinder.refreshBoundViews() !== false) ;
-					this.collectionBinder.refreshAll();
+					this._collectionBinder.refreshBoundViews();
+					// if(this._collectionBinder.refreshBoundViews() !== false) ;
+					this._collectionBinder.refreshAll();
 				}
 				else
 				{
@@ -286,7 +285,7 @@ var View = createClass(
 					}
 				}
 			}
-			this.pendingRefresh = false;
+			this._pendingRefresh = false;
 		}
 	},
 
@@ -315,12 +314,12 @@ var View = createClass(
 	{
 		this.destroyBinding();
 
-		if(this.collectionBinder) this.collectionBinder.destroyBoundViews();
+		if(this._collectionBinder) this._collectionBinder.destroyBoundViews();
 
-		this.modelBindersMap = null;
-		this.collectionBinder = null;
-		this.bindingIndex = null;
-		this.itemAlias = null;
+		this._modelBindersMap = null;
+		this._collectionBinder = null;
+		this._bindingIndex = null;
+		this._itemAlias = null;
 
 		this.element.removeAttribute(settings.DATA_RENDERED_ATTR);
 		this.undelegateEvents();
@@ -334,8 +333,8 @@ var View = createClass(
 		if(this.destroy !== noop) this.destroy();
 		if(typeof this.afterDestroy === 'function') this.afterDestroy();
 
-		this.subviewsStruct = null;
-		this.explicitSubviewsStruct = null;
+		this._subviewsStruct = null;
+		this._explicitSubviewsStruct = null;
 		this.subviews = null;
 		this._isRunning = false;
 
@@ -352,19 +351,19 @@ var View = createClass(
 	 */
 	renderSubviews: function()
 	{
-		if(!this.collectionBinder)
+		if(!this._collectionBinder)
 		{
 			var i, l, element = this.element,
 				subView, options, opt, rendered, subviewsStruct = null;
 
-			if(element) this.subviewsStruct = this.findViewElements(element);
+			if(element) this._subviewsStruct = this.findViewElements(element);
 
-			if(this.explicitSubviewsStruct !== null)
+			if(this._explicitSubviewsStruct !== null)
 			{
-				if(this.subviewsStruct === null) this.subviewsStruct = [];
-				subviewsStruct = arrayConcat(this.subviewsStruct, this.explicitSubviewsStruct);
+				if(this._subviewsStruct === null) this._subviewsStruct = [];
+				subviewsStruct = arrayConcat(this._subviewsStruct, this._explicitSubviewsStruct);
 			}
-			else if(this.subviewsStruct !== null) subviewsStruct = this.subviewsStruct.slice();
+			else if(this._subviewsStruct !== null) subviewsStruct = this._subviewsStruct.slice();
 
 			// Render subviews
 			if(subviewsStruct !== null)
@@ -389,9 +388,9 @@ var View = createClass(
 	 */
 	runSubviews: function()
 	{
-		if(this.collectionBinder)
+		if(this._collectionBinder)
 		{
-			this.collectionBinder.renderBoundViews();
+			this._collectionBinder.renderBoundViews();
 		}
 		else
 		{
@@ -410,9 +409,9 @@ var View = createClass(
 	 */
 	destroySubviews: function()
 	{
-		if(this.collectionBinder)
+		if(this._collectionBinder)
 		{
-			this.collectionBinder.destroyBoundViews();
+			this._collectionBinder.destroyBoundViews();
 		}
 		else
 		{
@@ -428,7 +427,7 @@ var View = createClass(
 				}
 			}
 			this.subviews = null;
-			this.subviewsStruct = null;
+			this._subviewsStruct = null;
 		}
 	},
 
@@ -583,9 +582,9 @@ var View = createClass(
 	{
 		var subView, args;
 
-		if(this.subviewsArgs && this.subviewsArgs[viewName] instanceof Array)
+		if(this._subviewsArgs && this._subviewsArgs[viewName] instanceof Array)
 		{
-			args = this.subviewsArgs[viewName];
+			args = this._subviewsArgs[viewName];
 			if(typeof args[0] === 'object' && args[0] !== null) options = immerge(options, args[0]);
 		}
 
@@ -616,8 +615,8 @@ var View = createClass(
 	 */
 	addSubview: function(element, viewName, options)
 	{
-		if(this.explicitSubviewsStruct === null) this.explicitSubviewsStruct = [];
-		this.explicitSubviewsStruct.push({
+		if(this._explicitSubviewsStruct === null) this._explicitSubviewsStruct = [];
+		this._explicitSubviewsStruct.push({
 			viewName: viewName,
 			element: element,
 			options: options || {}
@@ -630,20 +629,20 @@ var View = createClass(
 		{
 			if(this.parentView === null)
 			{
-				this.subviewsArgs = subviewsArgs;
+				this._subviewsArgs = subviewsArgs;
 			}
-			else if(this.subviewsArgs)
+			else if(this._subviewsArgs)
 			{
 				var keys = Object.keys(subviewsArgs);
 				for(var i = 0, l = keys.length; i < l; i++)
 				{
 					key = keys[i];
-					this.subviewsArgs[key] = subviewsArgs[key];
+					this._subviewsArgs[key] = subviewsArgs[key];
 				}
 			}
 			else
 			{
-				this.subviewsArgs = subviewsArgs;
+				this._subviewsArgs = subviewsArgs;
 			}
 		}
 	},
@@ -698,9 +697,9 @@ var View = createClass(
 	 */
 	refreshBinders: function(force)
 	{
-		if(this.collectionBinder)
+		if(this._collectionBinder)
 		{
-			this.collectionBinder.refreshBinders(force);
+			this._collectionBinder.refreshBinders(force);
 		}
 		else
 		{
@@ -720,15 +719,15 @@ var View = createClass(
 	 */
 	refreshIndexedBinders: function()
 	{
-		if(this.collectionBinder)
+		if(this._collectionBinder)
 		{
-			this.collectionBinder.refreshIndexedBinders();
+			this._collectionBinder.refreshIndexedBinders();
 		}
 		else
 		{
-			if(this.modelBindersMap)
+			if(this._modelBindersMap)
 			{
-				this.modelBindersMap.refreshIndexedBinders();
+				this._modelBindersMap.refreshIndexedBinders();
 			}
 			if(this.subviews !== null)
 			{
@@ -764,7 +763,7 @@ var View = createClass(
 	getBindingIndex: function(modelName)
 	{
 		modelName = modelName || '*';
-		if(this.bindingIndex !== null && this.scope.hasOwnProperty(modelName)) return this.bindingIndex;
+		if(this._bindingIndex !== null && this.scope.hasOwnProperty(modelName)) return this._bindingIndex;
 		if(this.parentView instanceof View) return this.parentView.getBindingIndex(modelName);
 		return null;
 	},
@@ -776,7 +775,7 @@ var View = createClass(
 	 */
 	setBindingIndex: function(index)
 	{
-		this.bindingIndex = index;
+		this._bindingIndex = index;
 	},
 
 
@@ -808,37 +807,37 @@ var View = createClass(
 			}
 		}
 
-		if(this.subviewsStruct !== null)
+		if(this._subviewsStruct !== null)
 		{
-			clonedView.subviewsStruct = this.subviewsStruct.slice();
+			clonedView._subviewsStruct = this._subviewsStruct.slice();
 		}
-		if(this.explicitSubviewsStruct !== null)
+		if(this._explicitSubviewsStruct !== null)
 		{
-			clonedView.explicitSubviewsStruct = this.explicitSubviewsStruct.slice();
+			clonedView._explicitSubviewsStruct = this._explicitSubviewsStruct.slice();
 		}
-		if(this.cachedRegions)
+		if(this._cachedRegions)
 		{
-			clonedView.cachedRegions = this.cachedRegions;
+			clonedView._cachedRegions = this._cachedRegions;
 			clonedView.cloneCachedRegions();
 		}
 
-		if(this.collectionBinder)
+		if(this._collectionBinder)
 		{
-			clonedView.collectionBinder = new CollectionBinder(
+			clonedView._collectionBinder = new CollectionBinder(
 			{
 				view: clonedView,
-				keyPath: this.collectionBinder.keyPath,
+				keyPath: this._collectionBinder.keyPath,
 				collection: null,
-				collectionPathArray: this.collectionBinder.collectionPathArray
+				collectionPathArray: this._collectionBinder.collectionPathArray
 			});
 		}
 
-		if(this.modelBindersMap)
+		if(this._modelBindersMap)
 		{
-			clonedView.modelBindersMap = this.modelBindersMap.clone();
-			clonedView.modelBindersMap.setView(clonedView);
+			clonedView._modelBindersMap = this._modelBindersMap.clone();
+			clonedView._modelBindersMap.setView(clonedView);
 		}
-		clonedView.itemAlias = this.itemAlias;
+		clonedView._itemAlias = this._itemAlias;
 
 		return clonedView;
 	},
@@ -903,14 +902,14 @@ var View = createClass(
 			index: 0
 		});
 
-		if(this.modelBindersMap)
+		if(this._modelBindersMap)
 		{
-			this.modelBindersMap.setView(this);
+			this._modelBindersMap.setView(this);
 		}
 
-		if(this.collectionBinder)
+		if(this._collectionBinder)
 		{
-			this.collectionBinder.view = this;
+			this._collectionBinder.view = this;
 		}
 
 	},
@@ -918,7 +917,7 @@ var View = createClass(
 	rebindSubViews: function(el, ids)
 	{
 		var node = el, doSubviews = true;
-		var subviews = this.subviews, subviewsStruct = this.subviewsStruct;
+		var subviews = this.subviews, subviewsStruct = this._subviewsStruct;
 		if(subviewsStruct !== null)
 		{
 			if(subviews === null) this.subviews = subviews = [];
@@ -1001,13 +1000,13 @@ var View = createClass(
 
 		if(isPlainObject(regions))
 		{
-			if(!this.cachedRegions) this.cachedRegions = {};
-			if('self' in regions) saveRegion(regions, this.cachedRegions, [this.element], 'self');
+			if(!this._cachedRegions) this._cachedRegions = {};
+			if('self' in regions) saveRegion(regions, this._cachedRegions, [this.element], 'self');
 			for(selector in regions)
 			{
 				if(selector !== 'self')
 				{
-					saveRegion(regions, this.cachedRegions, this.element.querySelectorAll(selector), selector);
+					saveRegion(regions, this._cachedRegions, this.element.querySelectorAll(selector), selector);
 				}
 
 			}
@@ -1039,12 +1038,12 @@ var View = createClass(
 
 		if(isPlainObject(regions))
 		{
-			if('self' in regions) unsaveRegion(regions, this.cachedRegions, [this.element], 'self');
+			if('self' in regions) unsaveRegion(regions, this._cachedRegions, [this.element], 'self');
 			for(selector in regions)
 			{
 				if(selector !== 'self')
 				{
-					unsaveRegion(regions, this.cachedRegions, this.element.querySelectorAll(selector), selector);
+					unsaveRegion(regions, this._cachedRegions, this.element.querySelectorAll(selector), selector);
 				}
 			}
 		}
@@ -1053,11 +1052,11 @@ var View = createClass(
 	cloneCachedRegions: function()
 	{
 		var selector, i, l, nodes, node, fragment;
-		if(this.cachedRegions)
+		if(this._cachedRegions)
 		{
-			for(selector in this.cachedRegions)
+			for(selector in this._cachedRegions)
 			{
-				fragments = this.cachedRegions[selector];
+				fragments = this._cachedRegions[selector];
 				for(i = 0, l = fragments.length; i < l; i++)
 				{
 					if(fragments[i].hasChildNodes())
@@ -1091,7 +1090,7 @@ var View = createClass(
 
 		bindingRegex.lastIndex = 0;
 
-		this.modelBindersMap = new BinderMap();
+		this._modelBindersMap = new BinderMap();
 
 		while((result = bindingRegex.exec(dataBindAttr)) !== null)
 		{
@@ -1120,7 +1119,7 @@ var View = createClass(
 			{
 				if(!this.options.isBoundView)
 				{
-					this.collectionBinder = new CollectionBinder({
+					this._collectionBinder = new CollectionBinder({
 						view: this,
 						keyPath: keyPath,
 						collectionArgs: modelArgs,
@@ -1130,9 +1129,9 @@ var View = createClass(
 					});
 					if(ret.itemAliases && ret.itemAliases.length > 0)
 					{
-						this.itemAlias = ret.itemAliases[0];
+						this._itemAlias = ret.itemAliases[0];
 					}
-					else this.itemAlias = settings.defaultItemAlias;
+					else this._itemAlias = settings.defaultItemAlias;
 				}
 			}
 			else
@@ -1165,7 +1164,7 @@ var View = createClass(
 					indexed: indexed
 				});
 
-				this.modelBindersMap.add(modelBinder);
+				this._modelBindersMap.add(modelBinder);
 			}
 		}
 	},
@@ -1349,10 +1348,10 @@ var View = createClass(
 	 */
 	destroyBinding: function()
 	{
-		if(this.modelBindersMap)
+		if(this._modelBindersMap)
 		{
-			this.modelBindersMap.destroyBinders();
-			this.modelBindersMap = null;
+			this._modelBindersMap.destroyBinders();
+			this._modelBindersMap = null;
 		}
 	},
 
@@ -1363,7 +1362,7 @@ var View = createClass(
 	 */
 	rebindCursors: function()
 	{
-		if(this.modelBindersMap) this.modelBindersMap.rebindCursors();
+		if(this._modelBindersMap) this._modelBindersMap.rebindCursors();
 	},
 
 	/**
@@ -1373,7 +1372,7 @@ var View = createClass(
 	 */
 	refreshOwnBinders: function(force)
 	{
-		if(this.modelBindersMap) this.modelBindersMap.refreshBinders(force);
+		if(this._modelBindersMap) this._modelBindersMap.refreshBinders(force);
 	}
 
 });

@@ -267,7 +267,7 @@ var CollectionBinder = createClass(
 						{
 							boundView.scope['*'] = this.cursor.refine([this.collection.indexOf(item)]);
 						}
-						if(this.view.itemAlias) boundView.scope[this.view.itemAlias] = boundView.scope['*'];
+						if(this.view._itemAlias) boundView.scope[this.view._itemAlias] = boundView.scope['*'];
 						boundView.setBindingIndex(i);
 						boundView.refreshAll();
 						if(i >= lastViewIndex) lastView = boundView;
@@ -439,8 +439,8 @@ var CollectionBinder = createClass(
 
 			boundView = new this.view.constructor(this.boundViewOptions);
 
-			boundView.collectionBinder = null;
-			boundView.modelBindersMap = this.view.modelBindersMap.clone();
+			boundView._collectionBinder = null;
+			boundView._modelBindersMap = this.view._modelBindersMap.clone();
 
 			this.boundViews.push(boundView);
 			i = this.boundViews.length - 1;
@@ -456,7 +456,7 @@ var CollectionBinder = createClass(
 			}
 
 
-			if(this.view.itemAlias) boundView.scope[this.view.itemAlias] = boundView.scope['*'];
+			if(this.view._itemAlias) boundView.scope[this.view._itemAlias] = boundView.scope['*'];
 
 
 			boundView.setBindingIndex(i);
@@ -484,7 +484,7 @@ var CollectionBinder = createClass(
 				boundView.scope['*'] = this.cursor.refine([this.collection.indexOf(item)]);
 			}
 
-			if(this.view.itemAlias) boundView.scope[this.view.itemAlias] = boundView.scope['*'];
+			if(this.view._itemAlias) boundView.scope[this.view._itemAlias] = boundView.scope['*'];
 
 			boundView.setBindingIndex(i);
 			boundView.rebindElement(element);
@@ -492,8 +492,8 @@ var CollectionBinder = createClass(
 
 		element.setAttribute(settings.DATA_RENDERED_ATTR, true);
 
-		boundView.itemAlias = this.view.itemAlias;
-		boundView.modelBindersMap.setView(boundView);
+		boundView._itemAlias = this.view._itemAlias;
+		boundView._modelBindersMap.setView(boundView);
 
 		return boundView;
 	},
