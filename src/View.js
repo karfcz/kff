@@ -10,6 +10,8 @@ var isPlainObject = require('./functions/isPlainObject');
 var $ = require('./dollar');
 var on = require('./Dom').on;
 var off = require('./Dom').off;
+var findViewElements = require('./functions/findViewElements');
+var nextNode = require('./functions/nextNode');
 
 var EventsMixin = require('./EventsMixin');
 var ServiceContainer = require('./ServiceContainer');
@@ -356,7 +358,7 @@ var View = createClass(
 			var i, l, element = this.element,
 				subView, options, opt, rendered, subviewsStruct = null;
 
-			if(element) this._subviewsStruct = this.findViewElements(element);
+			if(element) this._subviewsStruct = findViewElements(element);
 
 			if(this._explicitSubviewsStruct !== null)
 			{
@@ -647,48 +649,7 @@ var View = createClass(
 		}
 	},
 
-	/**
-	 * Finds possible subview elements inside an element
-	 *
-	 * @private
-	 * @param  {DOM Element} el Root element from which search starts
-	 * @param  {Array} viewNames Array that will be filled by found elements
-	 *                           (items will be objects { objPath: viewName, $element: jQuery wrapper })
-	 * @param  {string} filter  A jQuery selector for filtering elements (optional)
-	 */
-	findViewElements: function(el)
-	{
-		var node = el, viewName = null, rendered, onAttr, optAttr, index = 0, subviewsStruct = null;
 
-		while((node = this.nextNode(el, node, viewName === null)) !== null)
-		{
-			viewName = null;
-			rendered = node.getAttribute(settings.DATA_RENDERED_ATTR);
-
-			if(!rendered)
-			{
-				viewName = node.getAttribute(settings.DATA_VIEW_ATTR);
-				if(!viewName && node.getAttribute(settings.DATA_BIND_ATTR))
-				{
-					viewName = 'View';
-					node.setAttribute(settings.DATA_VIEW_ATTR, viewName);
-				}
-				if(viewName)
-				{
-					optAttr = node.getAttribute(settings.DATA_OPTIONS_ATTR);
-					if(subviewsStruct === null) subviewsStruct = [];
-					subviewsStruct.push({
-						viewName: viewName,
-						index: index,
-						element: node,
-						options: optAttr ? JSON.parse(optAttr) : {}
-					});
-				}
-			}
-			index++;
-		}
-		return subviewsStruct;
-	},
 
 	/**
 	 * Refreshes data-binders in all subviews.
@@ -922,7 +883,7 @@ var View = createClass(
 		{
 			if(subviews === null) this.subviews = subviews = [];
 
-			while((node = this.nextNode(el, node, doSubviews)) !== null)
+			while((node = nextNode(el, node, doSubviews)) !== null)
 			{
 				if(subviewsStruct[ids.subviewIndex])
 				{
@@ -941,31 +902,6 @@ var View = createClass(
 				ids.index++;
 			}
 		}
-	},
-
-	nextNode: function(root, node, deep)
-	{
-		var parentNode, nextSibling, tempNode;
-		do {
-			if(deep && (tempNode = node.firstChild))
-			{
-				node = tempNode;
-			}
-			else
-			{
-				parentNode = node.parentNode;
-				nextSibling = node.nextSibling;
-				while(node !== root && nextSibling === null && parentNode !== null)
-				{
-					node = parentNode;
-					parentNode = node.parentNode;
-					nextSibling = node.nextSibling;
-				}
-				if(node && node !== root) node = nextSibling;
-				else node = null;
-			}
-		} while (node && node.nodeType !== 1);
-		return node;
 	},
 
 	renderRegions: function(regions)
@@ -1376,6 +1312,7 @@ var View = createClass(
 	}
 
 });
+
 
 (function(){
 	var index = function(v, modelName)
