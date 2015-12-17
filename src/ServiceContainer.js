@@ -68,7 +68,7 @@ var ServiceContainer = createClass(
 	 */
 	createService: function(serviceName, serviceWrapper, argsExtend)
 	{
-		var serviceConfig, Ctor, Temp, service, ret, i, l, args, argsExtended, calls;
+		var serviceConfig, Ctor, Temp, service, i, l, args, argsExtended, calls;
 
 		serviceConfig = serviceWrapper.config;
 
@@ -77,13 +77,6 @@ var ServiceContainer = createClass(
 		if(typeof Ctor !== 'function' || (serviceConfig.type !== 'class' && serviceConfig.type !== 'factory'))
 		{
 			return Ctor;
-		}
-
-		if(serviceConfig.type !== 'factory')
-		{
-			Temp = function(){};
-			Temp.prototype = Ctor.prototype;
-			service = new Temp();
 		}
 
 		args = this.resolveParameters(serviceConfig.args || []);
@@ -108,8 +101,7 @@ var ServiceContainer = createClass(
 		}
 		else
 		{
-			ret = Ctor.apply(service, args);
-			if(Object(ret) === ret) service = ret;
+			service = new (Function.prototype.bind.apply(Ctor, [null].concat(args)))();
 		}
 
 		calls = serviceConfig.calls;
