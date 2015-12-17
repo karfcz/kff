@@ -23,11 +23,10 @@ var App = createClass(
 	 */
 	constructor: function(options)
 	{
-		var scope, element, require, middlewares, dispatcher;
+		var scope, element, middlewares, dispatcher;
 		this.options = options = options || {};
 		scope = options.scope || {};
 		element = options.element || null;
-		require = options.require || null;
 		var modules = options.modules || null;
 		this.env = options.env || { document: document, window: window };
 		this.dispatcher = null;
