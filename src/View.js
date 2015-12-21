@@ -13,7 +13,6 @@ var off = require('./Dom').off;
 var findViewElements = require('./functions/findViewElements');
 var nextNode = require('./functions/nextNode');
 
-var EventsMixin = require('./EventsMixin');
 var ServiceContainer = require('./ServiceContainer');
 var Dispatcher = require('./Dispatcher');
 var Cursor = require('./Cursor');
@@ -51,7 +50,6 @@ function parseNamedParams(params)
 
 var View = createClass(
 {
-	mixins: EventsMixin,
 	statics: {
 
 		/**
@@ -113,8 +111,6 @@ var View = createClass(
 		this.subviews = null;
 		this.serviceContainer = null;
 
-		this.initEvents();
-
 		if(options.scope)
 		{
 			this.scope = options.scope;
@@ -162,6 +158,12 @@ var View = createClass(
 			this.env = options.env;
 		}
 
+		if(options.regions)
+		{
+			this.regions = options.regions;
+		}
+		else this.regions = null;
+
 		this.options = options;
 	},
 
@@ -200,7 +202,7 @@ var View = createClass(
 		{
 			if(!this.serviceContainer) this.serviceContainer = new ServiceContainer();
 			this._explicitSubviewsStruct = null;
-			this.renderRegions(this.options.regions);
+			this.renderRegions(this.regions);
 			if(this.render !== noop) this.render();
 			this.renderSubviews();
 		}
@@ -340,7 +342,7 @@ var View = createClass(
 		this.subviews = null;
 		this._isRunning = false;
 
-		this.clearRegions(this.options.regions);
+		this.clearRegions(this.regions);
 	},
 
 	/**
