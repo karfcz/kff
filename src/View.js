@@ -651,7 +651,19 @@ var View = createClass(
 		}
 	},
 
-
+	setTemplate: function(region, template)
+	{
+		if(arguments.length === 1)
+		{
+			template = region;
+			region = 'self';
+		}
+		if(this.regions == null)
+		{
+			this.regions = {};
+		}
+		this.regions[region] = template;
+	},
 
 	/**
 	 * Refreshes data-binders in all subviews.
