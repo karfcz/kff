@@ -6,6 +6,7 @@ var evalObjectPath = require('./functions/evalObjectPath');
 var mixins = require('./functions/mixins');
 var log = require('./functions/log');
 var immerge = require('./functions/immerge');
+var factoryService = require('./functions/factoryService');
 var Service = require('./Service');
 
 var ServiceContainer = createClass(
@@ -25,8 +26,12 @@ var ServiceContainer = createClass(
 	 */
 	constructor: function(config, loader)
 	{
-		this.config = { services: config && config.services ? config.services : [] };
-		if(!(this.config.services instanceof Array)) this.config.services = [this.config.services];
+		this.config = { services: [] };
+		if(config)
+		{
+			if(config.services) this.registerServices(config.services);
+			if(config.factories) this.registerFactories(config.factories);
+		}
 		this.sharedInstances = {};
 		this.parent = undefined;
 		if(loader) this.loadService = loader;
@@ -42,6 +47,7 @@ var ServiceContainer = createClass(
 	{
 		if(serviceName === '__esModule') return;
 		var serviceWrapper = this.loadService(serviceName);
+
 
 		if(!serviceWrapper || !serviceWrapper.module)
 		{
@@ -74,10 +80,7 @@ var ServiceContainer = createClass(
 
 		Ctor = serviceWrapper.module;
 
-		if(typeof Ctor !== 'function' || (serviceConfig.type !== 'class' && serviceConfig.type !== 'factory'))
-		{
-			return Ctor;
-		}
+		if(typeof Ctor !== 'function' || serviceConfig.type === 'function') return Ctor;
 
 		args = this.resolveParameters(serviceConfig.args || []);
 		if(argsExtend && argsExtend instanceof Array)
@@ -202,6 +205,32 @@ var ServiceContainer = createClass(
 		{
 			if(overwrite) this.config.services.unshift(services);
 			else this.config.services.push(services);
+		}
+	},
+
+	registerFactories: function(factories, overwrite)
+	{
+		if(factories instanceof Array)
+		{
+			if(overwrite) this.config.services = factories.map(factoryService).concat(this.config.services);
+			else this.config.services = this.config.services.concat(factories.map(factoryService));
+		}
+		else
+		{
+			var factoryServices = {};
+			for(var factory in factories)
+			{
+				if(factories[factory] instanceof Service)
+				{
+					factoryServices[factory] = factories[factory];
+				}
+				else
+				{
+					factoryServices[factory] = factoryService(factories[factory]);
+				}
+			}
+			if(overwrite) this.config.services.unshift(factoryServices);
+			else this.config.services.push(factoryServices);
 		}
 	},
 

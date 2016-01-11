@@ -15,20 +15,17 @@ describe('kff.ServiceContainer', function()
 			'service1':
 			{
 				construct: Service1,
-				type: 'class',
 			    args: ['foo', 'haf']
 			},
 			'service2':
 			{
 				construct: Service2,
-				type: 'class',
 			    args: ['@service1', 'foo is not a bar'],
 			    shared: true
 			},
 			'service3':
 			{
 				construct: Service1,
-				type: 'class',
 			    args: ['foo', { o1: 1, o2: 2 }]
 			},
 			'service4':
@@ -43,10 +40,13 @@ describe('kff.ServiceContainer', function()
 			},
 			'Service6': {
 				construct: Service6,
-				type: 'class',
 			},
 			'Service7': Service7,
 			'Service7 #1': Service7
+		},
+		factories:
+		{
+			'factory1': Service4
 		}
 	};
 
@@ -155,6 +155,13 @@ describe('kff.ServiceContainer', function()
 		{
 			expect(container.getService('Service7 #1')).to.equal(Service7);
 		});
+
+		it('should create service using factory1', function()
+		{
+			expect(container.getService('factory1')).to.equal('s4');
+		});
+
+
 
 	});
 
