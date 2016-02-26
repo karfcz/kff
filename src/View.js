@@ -1055,7 +1055,7 @@ var View = createClass(
 				{
 					if(modelArgs[k].charAt(0) === '@')
 					{
-						modelArgs[k] = modelArgs[k].slice(1).split('.');
+						modelArgs[k] = modelArgs[k].slice(1).replace(leadingPeriodRegex, '*.').replace(trailingPeriodRegex, '.*').split('.');
 					}
 				}
 			}
