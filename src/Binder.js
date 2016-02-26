@@ -7,6 +7,9 @@ var View = require('./View');
 var convertValueType = require('./functions/convertValueType');
 var callModelAsFunction = require('./functions/callModelAsFunction');
 
+var leadingPeriodRegex = /^\./;
+var trailingPeriodRegex = /\.$/;
+
 var Binder = createClass(
 /** @lends Binder.prototype */
 {
@@ -165,7 +168,7 @@ var Binder = createClass(
 	{
 		if(typeof value === 'string' && value.charAt(0) === '@')
 		{
-			return this.view.getCursor(value.slice(1));
+			return this.view.getCursor(value.slice(1).replace(leadingPeriodRegex, '*.').replace(trailingPeriodRegex, '.*'));
 		}
 		else
 		{
