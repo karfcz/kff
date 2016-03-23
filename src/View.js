@@ -627,6 +627,29 @@ var View = createClass(
 		});
 	},
 
+	/**
+	 * Registers a new view service to the local service container
+	 *
+	 * @public
+	 */
+	registerSubview: function(viewName, construct, options)
+	{
+		if(this.parentView.serviceContainer === this.serviceContainer)
+		{
+			this.serviceContainer = new ServiceContainer();
+			this.serviceContainer.setParent(this.parentView.serviceContainer);
+		}
+
+		var services = {};
+
+		services[viewName] = {
+			construct: construct,
+			args: [options]
+		};
+
+		this.serviceContainer.registerServices(services, true);
+	},
+
 	setSubviewsArgs: function(subviewsArgs)
 	{
 		if(subviewsArgs)

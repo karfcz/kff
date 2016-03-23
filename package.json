@@ -1,6 +1,6 @@
 {
   "name": "kff",
-  "version": "3.0.0-alpha.1",
+  "version": "3.0.0-alpha.2",
   "description": "KFF is a JavaScript framework for building client-side applications or large websites.",
   "repository": {
     "type": "git",
