@@ -45,7 +45,6 @@ module.exports = {
 	Route: require('./Route'),
 	Router: require('./Router'),
 	HashStateHandler: require('./HashStateHandler'),
-	FrontController: require('./FrontController'),
 	Dispatcher: require('./Dispatcher'),
 	'$': require('./dollar'),
 
