@@ -2,7 +2,7 @@
 var createClass = require('./functions/createClass');
 var ServiceContainer = require('./ServiceContainer');
 var Service = require('./Service');
-var PageView = require('./PageView');
+var View = require('./View');
 var Dispatcher = require('./Dispatcher');
 
 var App = createClass(
@@ -13,49 +13,49 @@ var App = createClass(
 	 * container with preddefined services:
 	 *
 	 * * Dispatcher
-	 * * PageView
+	 * * View
 	 *
 	 * @constructs
 	 */
 	constructor: function(options)
 	{
-		var scope, element, dispatcher;
-		this.options = options = options || {};
-		scope = options.scope || {};
-		element = options.element || null;
-		var modules = options.modules || null;
-		this.env = options.env || { document: document, window: window };
-		this.dispatcher = null;
+		if(typeof options !== 'object' || options === null) options = {};
 
+		var scope = options.scope || {};
+		var modules = options.modules || null;
+		var env = options.env || { document: document, window: window };
+		var element = options.element || env.document.body;
 		var AppDispatcher;
 
+		var actions;
+
 		// Dependency injection container configuration:
-		if(this.options.dispatcher)
+		if(options.actions)
 		{
-			AppDispatcher = new Service({
-				construct: Dispatcher,
-				args: [this.options.dispatcher.actions || {}],
-				shared: true
-			});
+			actions = options.actions;
+		}
+		else if(options.dispatcher && options.dispatcher.actions)
+		{
+			actions = options.dispatcher.actions
 		}
 
-		var AppPageView = new Service({
-			construct: PageView,
-			args: [{
-				serviceContainer: '@',
-				dispatcher: '@AppDispatcher',
-				element: element,
-				scope: scope,
-				env: this.env
-			}]
-		});
-
 		this.serviceContainer = new ServiceContainer();
-		this.serviceContainer.registerServices(options.services);
-
 		this.serviceContainer.registerServices({
-			AppPageView: AppPageView,
-			AppDispatcher: AppDispatcher
+			AppPageView: {
+				construct: View,
+				args: [{
+					serviceContainer: '@',
+					dispatcher: '@AppDispatcher',
+					element: element,
+					scope: scope,
+					env: env
+				}]
+			},
+			AppDispatcher: {
+				construct: Dispatcher,
+				args: [actions || {}],
+				shared: true
+			}
 		});
 
 		if('services' in options) this.serviceContainer.registerServices(options.services);
@@ -96,6 +96,5 @@ var App = createClass(
 	}
 
 });
-
 
 module.exports = App;

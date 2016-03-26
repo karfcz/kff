@@ -513,7 +513,13 @@ var View = createClass(
 		var event, i, l, fn;
 		this.undelegateEvents(events, element);
 		events = events || this.domEvents;
-		element = element || this.element;
+
+		if(!element)
+		{
+			element = this.element;
+			if(this.env && element === this.env.document.body) element = this.env.document;
+		}
+
 		for(i = 0, l = events.length; i < l; i++)
 		{
 			event = events[i];
@@ -548,7 +554,12 @@ var View = createClass(
 		events = events || this.domEvents;
 		if(!this.handlers) this.handlers = {};
 
-		element = element || this.element;
+		if(!element)
+		{
+			element = this.element;
+			if(this.env && element === this.env.document.body) element = this.env.document;
+		}
+
 		for(i = 0, l = events.length; i < l; i++)
 		{
 			event = events[i];

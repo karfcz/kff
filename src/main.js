@@ -37,7 +37,6 @@ module.exports = {
 	Service: require('./Service'),
 	ServiceContainer: require('./ServiceContainer'),
 	View: require('./View'),
-	PageView: require('./PageView'),
 	BinderMap: require('./BinderMap'),
 	Binder: require('./Binder'),
 	CollectionBinder: require('./CollectionBinder'),
