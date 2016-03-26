@@ -26,8 +26,6 @@ module.exports = {
 
 	defaultItemAlias: '_item',
 
-	debug: false,
-
 	useJquery: true
 
 };
