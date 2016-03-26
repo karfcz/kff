@@ -1,9 +1,5 @@
-
-var settings = require('./settings');
-
 var createClass = require('./functions/createClass');
 var log = require('./functions/log');
-
 var EventStream = require('./EventStream');
 
 function filterByEventType(type)
@@ -30,6 +26,7 @@ var Dispatcher = createClass(
 			this.processors = this.processors.concat(processors);
 		}
 		this.registerActions(actions);
+		this.callbacks = [];
 	},
 
 	createCallback: function(fn)
@@ -62,7 +59,6 @@ var Dispatcher = createClass(
 
 	registerActions: function(actions)
 	{
-		var callbacks;
 		if(typeof actions === 'object')
 		{
 			for(var action in actions)
@@ -94,14 +90,28 @@ var Dispatcher = createClass(
 	on: function(type, fn)
 	{
 		if(!(type in this.actionStreams)) this.actionStreams[type] = this.eventStream.filter(filterByEventType(type));
-		this.actionStreams[type].on(this.createCallback(fn));
+
+		var callback = this.createCallback(fn);
+		this.callbacks.push({
+			type: type,
+			fn: fn,
+			callback: callback
+		});
+
+		this.actionStreams[type].on(callback);
 	},
 
 	off: function(type, fn)
 	{
-		// if(type in this.actionStreams) this.actionStreams[action].on(this.createCallback(fn));
+		for(var i = this.callbacks.length - 1; i >= 0; i--)
+		{
+			if(this.callbacks[i].type === type && this.callbacks[i].fn === fn)
+			{
+				if(type in this.actionStreams) this.actionStreams[type].off(this.callbacks[i].callback);
+				this.callbacks.splice(i, 1);
+			}
+		}
 	},
-
 
 	hasAction: function(action)
 	{
