@@ -25,6 +25,7 @@ module.exports = {
 	factoryService: require('./functions/factoryService'),
 	noop: require('./functions/noop'),
 	afterRepaint: require('./functions/afterRepaint'),
+	classWithOptions: require('./functions/classWithOptions'),
 	// on: require('./Dom').on,
 	// off: require('./Dom').off,
 

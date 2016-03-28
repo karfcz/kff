@@ -145,6 +145,7 @@ function processsActionEvent(dispatcher, event)
 {
 	if(event != null && typeof event === 'object' && 'type' in event)
 	{
-		dispatcher.eventStream.trigger(event);
+		if(dispatcher.hasAction(event.type)) dispatcher.eventStream.trigger(event);
+		else dispatcher.eventStream.trigger({ type: 'dispatcher:noaction', value: event });
 	}
 }

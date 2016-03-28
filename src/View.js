@@ -12,6 +12,7 @@ var on = require('./Dom').on;
 var off = require('./Dom').off;
 var findViewElements = require('./functions/findViewElements');
 var nextNode = require('./functions/nextNode');
+var classWithOptions = require('./functions/classWithOptions');
 
 var ServiceContainer = require('./ServiceContainer');
 var Dispatcher = require('./Dispatcher');
@@ -147,7 +148,7 @@ var View = createClass(
 		}
 		else this.dispatcher = null;
 
-		if(options.actions && this.dispatcher)
+		if(options.actions)
 		{
 			this.actions = options.actions;
 		}
@@ -237,6 +238,7 @@ var View = createClass(
 			{
 				this.dispatcher.on('refresh', this.f('refreshAll'));
 				this.dispatcher.on('refreshFromRoot', this.f('refreshFromRoot'));
+				this.dispatcher.on('dispatcher:noaction', this.f('dispatchNoAction'));
 			}
 
 			if(typeof this.afterRender === 'function') this.afterRender();
@@ -246,6 +248,14 @@ var View = createClass(
 			this.refreshOwnBinders(true);
 		}
 		this._isRunning = true;
+	},
+
+	dispatchNoAction: function(event)
+	{
+		if(this.parentView)
+		{
+			this.parentView.dispatchEvent(event.value);
+		}
 	},
 
 	requestRefreshAll: function()
@@ -332,6 +342,7 @@ var View = createClass(
 		{
 			this.dispatcher.off('refresh', this.f('refreshAll'));
 			this.dispatcher.off('refreshFromRoot', this.f('refreshFromRoot'));
+			this.dispatcher.off('dispatcher:noaction', this.f('dispatchNoAction'));
 		}
 
 		if(this.destroy !== noop) this.destroy();
@@ -606,6 +617,7 @@ var View = createClass(
 		options.parentView = this;
 
 		if(viewName === 'View') subView = new View(options);
+		else if(viewName in this.scope) subView = new this.scope[viewName](options);
 		else subView = this.serviceContainer.getService(viewName, [options]);
 		if(subView instanceof View)
 		{
