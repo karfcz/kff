@@ -594,9 +594,6 @@ var View = createClass(
 
 	/**
 	 * Creates a new subview and adds it to the internal subviews list.
-	 * The new subview is created using the viewFactory and gets properly set
-	 * parentView.
-	 *
 	 * Do not use this method directly, use addSubview method instead.
 	 *
 	 * @private
