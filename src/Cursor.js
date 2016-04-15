@@ -9,21 +9,25 @@ var Cursor = createClass(
 {
 	constructor: function(root, keyPath)
 	{
-		this.root = root;
 		if(typeof keyPath === 'string') keyPath = keyPath.split('.');
 		this.keyPath = keyPath || [];
+
+		if(root instanceof Cursor)
+		{
+			this.superRoot = root.superRoot;
+			this.keyPath = arrayConcat(root.keyPath, this.keyPath);
+		}
+		else this.superRoot = { root: root };
 	},
 
 	refine: function(keyPath)
 	{
-		if(typeof keyPath === 'string') keyPath = keyPath.split('.');
-		return new Cursor(this.root, arrayConcat(this.keyPath, keyPath));
+		return new Cursor(this, keyPath);
 	},
 
 	get: function()
 	{
 		return this.getInPath(this.keyPath);
-
 	},
 
 	getIn: function(keyPath)
@@ -35,7 +39,7 @@ var Cursor = createClass(
 	getInPath: function(path)
 	{
 		var part,
-			obj = this.root,
+			obj = this.superRoot.root,
 			i, l;
 
 		for(i = 0, l = path.length; i < l; i++)
@@ -49,23 +53,7 @@ var Cursor = createClass(
 
 	set: function(value)
 	{
-		var prop;
-		if(this.keyPath.length === 0)
-		{
-			if(typeof value === 'object' && value !== null)
-			{
-				for(prop in value)
-				{
-					this.root[prop] = imset([], value[prop], this.root[prop]);
-				}
-			}
-		}
-		else
-		{
-			prop = this.keyPath[0];
-			var keyPath = this.keyPath.slice(1);
-			this.root[prop] = imset(keyPath, value, this.root[prop]);
-		}
+		this.superRoot.root = imset(this.keyPath, value, this.superRoot.root);
 	},
 
 	setIn: function(path, value)
@@ -75,23 +63,17 @@ var Cursor = createClass(
 
 	update: function(fn)
 	{
-		if(this.keyPath.length < 1) return;
-		var prop = this.keyPath[0];
-		var keyPath = this.keyPath.slice(1);
-		this.root[prop] = imset(keyPath, fn, this.root[prop]);
+		this.superRoot.root = imset(this.keyPath, fn, this.superRoot.root);
 	},
 
 	remove: function()
 	{
-		if(this.keyPath.length < 1) return;
-		var prop = this.keyPath[0];
-		var keyPath = this.keyPath.slice(1);
-		this.root[prop] = imremove(keyPath, this.root[prop]);
+		this.superRoot.root = imremove(this.keyPath, this.superRoot.root);
 	},
 
 	equalsTo: function(cursor)
 	{
-		if(!cursor || cursor.root !== this.root) return false;
+		if(!cursor || cursor.superRoot.root !== this.superRoot.root) return false;
 		return compareArrays(this.keyPath, cursor.keyPath);
 	}
 

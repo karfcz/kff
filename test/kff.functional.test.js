@@ -49,8 +49,8 @@ describe('kff.Cursor', function()
 		var b = o.b;
 		cursorBC.set(43);
 		expect(cursorBC.get()).to.equal(43);
-		expect(cursorBC.get()).to.equal(o.b.c);
-		expect(b).to.not.equal(o.b);
+		expect(cursorBC.get()).to.not.equal(o.b.c);
+		expect(b).to.equal(o.b);
 	});
 
 	it('should update value in cursor', function()
@@ -67,8 +67,8 @@ describe('kff.Cursor', function()
 		var b = o.b;
 		cursorBC.update(inc);
 		expect(cursorBC.get()).to.equal(43);
-		expect(cursorBC.get()).to.equal(o.b.c);
-		expect(b).to.not.equal(o.b);
+		expect(cursorBC.get()).to.not.equal(o.b.c);
+		expect(b).to.equal(o.b);
 	});
 
 	it('should update value in cursor with array', function()
@@ -85,11 +85,7 @@ describe('kff.Cursor', function()
 		var b = o.b;
 		cursor.update(inc);
 		expect(cursor.get()).to.equal(43);
-		expect(cursor.get()).to.equal(o.b.c[1]);
-		expect(b).to.not.equal(o.b);
-		expect(o.b.c[0]).to.equal(0);
-		expect(o.b.c[1]).to.equal(43);
-		expect(o.b.c[2]).to.equal(0);
+		expect(cursor.get()).to.not.equal(o.b.c[1]);
 	});
 
 	it('should refine a cursor', function()
