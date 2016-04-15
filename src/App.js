@@ -25,8 +25,6 @@ var App = createClass(
 		var modules = options.modules || null;
 		var env = options.env || { document: document, window: window };
 		var element = options.element || env.document.body;
-		var AppDispatcher;
-
 		var actions;
 
 		// Dependency injection container configuration:
@@ -34,28 +32,42 @@ var App = createClass(
 		{
 			actions = options.actions;
 		}
-		else if(options.dispatcher && options.dispatcher.actions)
+		else if(typeof options.dispatcher === 'object' && options.dispatcher.actions)
 		{
 			actions = options.dispatcher.actions
 		}
 
+		var AppDispatcher = {
+			construct: Dispatcher,
+			args: [actions || {}],
+			shared: true
+		};
+
+		if(typeof options.dispatcher === 'function')
+		{
+			AppDispatcher.construct = options.dispatcher;
+		}
+
+		var AppView = {
+			construct: View,
+			args: [{
+				serviceContainer: '@',
+				dispatcher: '@AppDispatcher',
+				element: element,
+				scope: scope,
+				env: env
+			}]
+		};
+
+		if(typeof options.view === 'function')
+		{
+			AppView.construct = options.view;
+		}
+
 		this.serviceContainer = new ServiceContainer();
 		this.serviceContainer.registerServices({
-			AppPageView: {
-				construct: View,
-				args: [{
-					serviceContainer: '@',
-					dispatcher: '@AppDispatcher',
-					element: element,
-					scope: scope,
-					env: env
-				}]
-			},
-			AppDispatcher: {
-				construct: Dispatcher,
-				args: [actions || {}],
-				shared: true
-			}
+			AppView: AppView,
+			AppDispatcher: AppDispatcher
 		});
 
 		if('services' in options) this.serviceContainer.registerServices(options.services);
@@ -71,7 +83,7 @@ var App = createClass(
 	 */
 	init: function()
 	{
-		var appPageView = this.serviceContainer.getService('AppPageView');
+		var appPageView = this.serviceContainer.getService('AppView');
 		appPageView.renderAll();
 		appPageView.runAll();
 	},
@@ -81,7 +93,7 @@ var App = createClass(
 	 */
 	destroy: function()
 	{
-		var appPageView = this.serviceContainer.getService('AppPageView');
+		var appPageView = this.serviceContainer.getService('AppView');
 		appPageView.destroyAll();
 	},
 
