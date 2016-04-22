@@ -84,8 +84,7 @@ var App = createClass(
 	init: function()
 	{
 		var appPageView = this.serviceContainer.getService('AppView');
-		appPageView.renderAll();
-		appPageView.runAll();
+		appPageView.initAll();
 	},
 
 	/**

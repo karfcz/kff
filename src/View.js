@@ -192,6 +192,12 @@ var View = createClass(
 	 */
 	destroy: noop,
 
+	initAll: function()
+	{
+		this.renderAll();
+		this.runAll();
+	},
+
 	/**
 	 * Renders the view. It will be called automatically. Should not be called
 	 * directly.
@@ -454,8 +460,7 @@ var View = createClass(
 	{
 		this.destroyAll();
 		if(html !== undefined) this.element.innerHTML = html;
-		this.renderAll();
-		this.runAll();
+		this.initAll();
 	},
 
 
