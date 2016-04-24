@@ -176,10 +176,12 @@ var View = createClass(
 	render: noop,
 
 	/**
-	 * Renders the view. It will be called automatically. Should not be called
+	 * Runs the view. It will be called automatically. Should not be called
 	 * directly.
 	 */
 	run: noop,
+
+	afterRun: noop,
 
 	/**
 	 * Method for refreshing the view. Does nothing in this base class, it's intended to be overloaded in subclasses.
@@ -196,6 +198,7 @@ var View = createClass(
 	{
 		this.renderAll();
 		this.runAll();
+		this.afterRunAll();
 	},
 
 	/**
@@ -254,6 +257,19 @@ var View = createClass(
 			this.refreshOwnBinders(true);
 		}
 		this._isRunning = true;
+	},
+
+	afterRunAll: function()
+	{
+		if(this._collectionBinder)
+		{
+			this.afterRunSubviews();
+		}
+		else
+		{
+			if(this.afterRun !== noop) this.afterRun();
+			this.afterRunSubviews();
+		}
 	},
 
 	dispatchNoAction: function(event)
@@ -421,6 +437,17 @@ var View = createClass(
 				{
 					this.subviews[i].runAll();
 				}
+			}
+		}
+	},
+
+	afterRunSubviews: function()
+	{
+		if(this.subviews)
+		{
+			for(var i = 0, l = this.subviews.length; i < l; i++)
+			{
+				this.subviews[i].afterRunAll();
 			}
 		}
 	},

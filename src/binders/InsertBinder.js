@@ -57,10 +57,12 @@ var createInsertBinder = function(negate, force){
 
 				this.renderSubviews = this.view.renderSubviews;
 				this.runSubviews = this.view.runSubviews;
+				this.afterRunSubviews = this.view.afterRunSubviews;
 				this.destroySubviews = this.view.destroySubviews;
 
 				this.view.renderSubviews = noop;
 				this.view.runSubviews = noop;
+				this.view.afterRunSubviews = noop;
 				this.view.destroySubviews = noop;
 			}
 
@@ -76,6 +78,7 @@ var createInsertBinder = function(negate, force){
 			{
 				this.view.renderSubviews = this.renderSubviews;
 				this.view.runSubviews = this.runSubviews;
+				this.view.afterRunSubviews = this.afterRunSubviews;
 				this.view.destroySubviews = this.destroySubviews;
 			}
 			if(!this.isInserted && this.anchor)
@@ -136,6 +139,7 @@ var createInsertBinder = function(negate, force){
 					if(!this.isRun)
 					{
 						this.runSubviews.call(this.view);
+						this.afterRunSubviews.call(this.view);
 						this.isRun = true;
 					}
 				}

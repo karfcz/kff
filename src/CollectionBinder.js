@@ -221,6 +221,7 @@ var CollectionBinder = createClass(
 					for(i = 0; i < l; i++)
 					{
 						this.boundViews[i].runAll();
+						this.boundViews[i].afterRunAll();
 					}
 				}
 			}
@@ -277,6 +278,7 @@ var CollectionBinder = createClass(
 						boundView = this.createBoundView(item);
 						boundView.setBindingIndex(i);
 						boundView.runAll();
+						boundView.afterRunAll();
 					}
 					positions[i] = boundView;
 				}
