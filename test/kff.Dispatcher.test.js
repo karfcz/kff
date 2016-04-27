@@ -41,4 +41,13 @@ describe('kff.Dispatcher', function()
 		dispatcher.trigger({ type: 'test' });
 	});
 
+	it('should process a promise based event', function(done)
+	{
+		var dispatcher = new kff.Dispatcher({
+			done: event => done(),
+			promiseAction: event => new Promise((resolve, reject) => setTimeout(() => resolve({ type: 'done' }), 0))
+		});
+		dispatcher.trigger({ type: 'promiseAction' });
+	});
+
 });

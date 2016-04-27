@@ -13,7 +13,7 @@ var Dispatcher = createClass(
 	{
 		this.eventStream = new EventStream();
 		this.actionStreams = {};
-		this.processors = [processsArrayEvent, processsEventStreamEvent, processsActionEvent];
+		this.processors = [processsArrayEvent, processsEventStreamEvent, processsPromiseEvent, processsActionEvent];
 		if(processors && Array.isArray(processors))
 		{
 			if(process.env.NODE_ENV !== 'production')
@@ -147,5 +147,13 @@ function processsActionEvent(dispatcher, event)
 	{
 		if(dispatcher.hasAction(event.type)) dispatcher.eventStream.trigger(event);
 		else dispatcher.eventStream.trigger({ type: 'dispatcher:noaction', value: event });
+	}
+}
+
+function processsPromiseEvent(dispatcher, event)
+{
+	if(event != null && typeof event === 'object' && typeof event.then === 'function')
+	{
+		event.then(dispatcher.f('trigger'));
 	}
 }
