@@ -1,6 +1,6 @@
 var mixins = require('./mixins');
 
-function classWithOptions(ctor, defaultOptions)
+function viewClassFactory(ctor, defaultOptions)
 {
 	return function(options)
 	{
@@ -8,4 +8,5 @@ function classWithOptions(ctor, defaultOptions)
 	}
 }
 
-module.exports = classWithOptions;
+module.exports = viewClassFactory;
+// module.exports = classWithOptions;

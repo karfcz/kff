@@ -12,7 +12,6 @@ var on = require('./Dom').on;
 var off = require('./Dom').off;
 var findViewElements = require('./functions/findViewElements');
 var nextNode = require('./functions/nextNode');
-var classWithOptions = require('./functions/classWithOptions');
 
 var ServiceContainer = require('./ServiceContainer');
 var Dispatcher = require('./Dispatcher');
