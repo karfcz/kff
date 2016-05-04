@@ -276,31 +276,42 @@ var View = createClass(
 		}
 	},
 
+	isSuspended: function()
+	{
+		return this._isSuspended;
+	},
+
 	suspendAll: function()
 	{
-		if(this._collectionBinder)
+		if(!this._isSuspended)
 		{
-			this.suspendSubviews();
-		}
-		else
-		{
-			if(this.suspend !== noop) this.suspend();
-			this.suspendSubviews();
-			this._isSuspended = true;
+			if(this._collectionBinder)
+			{
+				this.suspendSubviews();
+			}
+			else
+			{
+				if(this.suspend !== noop) this.suspend();
+				this.suspendSubviews();
+				this._isSuspended = true;
+			}
 		}
 	},
 
 	resumeAll: function()
 	{
-		if(this._collectionBinder)
+		if(this._isSuspended)
 		{
-			this.resumeSubviews();
-		}
-		else
-		{
-			if(this.resume !== noop) this.resume();
-			this.resumeSubviews();
-			this._isSuspended = false;
+			if(this._collectionBinder)
+			{
+				this.resumeSubviews();
+			}
+			else
+			{
+				if(this.resume !== noop) this.resume();
+				this.resumeSubviews();
+				this._isSuspended = false;
+			}
 		}
 	},
 
@@ -848,7 +859,7 @@ var View = createClass(
 	 */
 	dispatchEvent: function(event)
 	{
-		if(this._isRunning && !this._isSuspended)
+		if(!this._isSuspended)
 		{
 			var res, view = this;
 			while(view)
