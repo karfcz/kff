@@ -108,6 +108,7 @@ var View = createClass(
 		this._pendingRefresh = false;
 		this._subviewsArgs = null;
 		this._isRunning = false;
+		this._isSuspended = false;
 		this.subviews = null;
 		this.serviceContainer = null;
 
@@ -181,6 +182,10 @@ var View = createClass(
 	run: noop,
 
 	afterRun: noop,
+
+	suspend: noop,
+
+	resume: noop,
 
 	/**
 	 * Method for refreshing the view. Does nothing in this base class, it's intended to be overloaded in subclasses.
@@ -271,6 +276,34 @@ var View = createClass(
 		}
 	},
 
+	suspendAll: function()
+	{
+		if(this._collectionBinder)
+		{
+			this.suspendSubviews();
+		}
+		else
+		{
+			if(this.suspend !== noop) this.suspend();
+			this.suspendSubviews();
+			this._isSuspended = true;
+		}
+	},
+
+	resumeAll: function()
+	{
+		if(this._collectionBinder)
+		{
+			this.resumeSubviews();
+		}
+		else
+		{
+			if(this.resume !== noop) this.resume();
+			this.resumeSubviews();
+			this._isSuspended = false;
+		}
+	},
+
 	dispatchNoAction: function(event)
 	{
 		if(this.parentView)
@@ -297,7 +330,7 @@ var View = createClass(
 	 */
 	refreshAll: function()
 	{
-		if(this._isRunning)
+		if(this._isRunning && !this._isSuspended)
 		{
 			var shouldRefresh = true;
 			if(typeof this.shouldRefresh === 'function') shouldRefresh = this.shouldRefresh();
@@ -373,6 +406,7 @@ var View = createClass(
 		this._explicitSubviewsStruct = null;
 		this.subviews = null;
 		this._isRunning = false;
+		this._isSuspended = false;
 
 		this.clearRegions(this.regions);
 	},
@@ -447,6 +481,28 @@ var View = createClass(
 			for(var i = 0, l = this.subviews.length; i < l; i++)
 			{
 				this.subviews[i].afterRunAll();
+			}
+		}
+	},
+
+	suspendSubviews: function()
+	{
+		if(this.subviews)
+		{
+			for(var i = 0, l = this.subviews.length; i < l; i++)
+			{
+				this.subviews[i].suspendAll();
+			}
+		}
+	},
+
+	resumeSubviews: function()
+	{
+		if(this.subviews)
+		{
+			for(var i = 0, l = this.subviews.length; i < l; i++)
+			{
+				this.subviews[i].resumeAll();
 			}
 		}
 	},
@@ -792,15 +848,18 @@ var View = createClass(
 	 */
 	dispatchEvent: function(event)
 	{
-		var res, view = this;
-		while(view)
+		if(this._isRunning && !this._isSuspended)
 		{
-			if(view.dispatcher !== null && view.dispatcher.hasAction(event.type))
+			var res, view = this;
+			while(view)
 			{
-				view.dispatcher.trigger(event);
-				break;
+				if(view.dispatcher !== null && view.dispatcher.hasAction(event.type))
+				{
+					view.dispatcher.trigger(event);
+					break;
+				}
+				view = view.parentView;
 			}
-			view = view.parentView;
 		}
 	},
 
