@@ -866,13 +866,37 @@ var View = createClass(
 			{
 				if(view.dispatcher !== null && view.dispatcher.hasAction(event.type))
 				{
-					view.dispatcher.trigger(event);
+					if(process.env.NODE_ENV !== 'production')
+					{
+						try {
+							view.dispatcher.trigger(event);
+						}
+						catch(e)
+						{
+							console.error('Caught exception in ' + this.element.getAttribute('data-kff-view') + '#dispatchEvent');
+							console.info('View element', this.element);
+							console.info('View object', this);
+							console.info('Action object', event);
+							console.info('Original error follows…');
+							if(this.element)
+							{
+								this.element.scrollIntoView();
+								this.element.style.outline = '2px dashed red';
+							}
+							throw(e);
+						}
+					}
+					else
+					{
+						view.dispatcher.trigger(event);
+					}
 					break;
 				}
 				view = view.parentView;
 			}
 		}
 	},
+
 
 	/**
 	 * Returns index of item in bound collection (closest collection in the view scope)
