@@ -26,7 +26,7 @@ var CollectionBinder = createClass(
 		this.viewTemplate = null;
 		this.filter = options.filter;
 		this.sort = options.sort;
-		// this.animate = options.animate;
+		this.animate = options.animate;
 	},
 
 	/**
@@ -109,7 +109,7 @@ var CollectionBinder = createClass(
 			this.elementTemplate = null;
 		}
 		this.viewTemplate = null;
-		if(this.filteredCollection) this.filteredCollection = null;
+		if(this.collection) this.collection = null;
 	},
 
 	refreshAll: function()
@@ -154,54 +154,28 @@ var CollectionBinder = createClass(
 		var docFragment = null;
 		var lastView, lastChild, parentNode, item;
 		var nodeInsert = insertBefore;
+		var nodeRemove = removeChild;
+		var oldCollection = this.collection;
 
 		if(this.animate)
 		{
 			nodeInsert = this.view.scope[this.animate]['insert'];
+			nodeRemove = this.view.scope[this.animate]['remove'];
 		}
 
 		this.rebindCollection();
 
+		// if(oldCollection === this.collection) return;
+
 		if(this.boundViews === null) this.boundViews = [];
-
-		if(this.collectionFilter || this.collectionSorter)
-		{
-			if(this.collectionFilter)
-			{
-				this.filteredCollection = [];
-				collectionFilter = this.collectionFilter;
-
-				a = this.collection;
-				for(i = 0, l = a.length; i < l; i++)
-				{
-					item = a[i];
-					var render = !!collectionFilter(item);
-
-					if(render) this.filteredCollection.push(item);
-				}
-			}
-			else
-			{
-				this.filteredCollection = this.collection.slice();
-			}
-
-			if(this.collectionSorter)
-			{
-				this.filteredCollection.sort(this.collectionSorter);
-			}
-		}
-		else
-		{
-			this.filteredCollection = this.collection;
-		}
 
 		if(this.boundViews.length === 0)
 		{
 			// Fast initial rendering:
-			l = this.filteredCollection.length;
+			l = this.collection.length;
 			if(l > 0)
 			{
-				a = this.filteredCollection;
+				a = this.collection;
 				lastChild = this.anchor;
 				if(this.anchor && this.anchor.parentNode)
 				{
@@ -210,10 +184,7 @@ var CollectionBinder = createClass(
 					{
 						boundView = this.createBoundView(a[i]);
 						el = boundView.element;
-
 						nodeInsert(parentNode, lastChild.nextSibling, el);
-
-						// parentNode.insertBefore(el, lastChild.nextSibling);
 						boundView.setBindingIndex(i);
 						lastChild = el;
 					}
@@ -229,126 +200,123 @@ var CollectionBinder = createClass(
 		else
 		{
 			// Diff based rendering:
-			var positions = new Array(this.filteredCollection.length);
-			var toRemoveViews = [];
-			var pos;
-			var lastViewIndex = null;
-			for(i = 0, l = this.boundViews.length; i < l; i++)
-			{
-				boundView = this.boundViews[i];
-				item = boundView.scope['*'].get();
-				if(typeof(item) !== 'object') newIndex = -1;
-				else newIndex = arrayIndexOf(this.filteredCollection, item);
-				pos = boundView;
-				if(newIndex !== -1)
-				{
-					positions[newIndex] = pos;
-					lastView = boundView;
-					lastViewIndex = i;
-				}
-				else {
-					toRemoveViews.push(pos);
-				}
-			}
+			var newBoundViews = [];
+			var recycledViews = [];
 
-			for(i = 0, l = positions.length; i < l; i++)
+			// Merge old and new bound view arrays:
+			var tempBoundViews = [];
+			var newCollection = this.collection;
+			for(i = 0, l = Math.max(oldCollection.length, newCollection.length); i < l; i++)
 			{
-				item = this.filteredCollection[i];
-				if(!positions[i])
+				if(oldCollection[i] && arrayIndexOf(newCollection, oldCollection[i]) === -1)
 				{
-					pos = toRemoveViews.shift();
-					if(pos)
+					// Item is in the old collection but not in the new one
+					boundView = this.boundViews[i];
+					if(this.animate)
 					{
-						boundView = pos;
-						if(this.filteredCollection === this.collection)
-						{
-							boundView.scope['*'] = this.cursor.refine([i]);
-						}
-						else
-						{
-							boundView.scope['*'] = this.cursor.refine([this.collection.indexOf(item)]);
-						}
+						tempBoundViews.push(boundView);
+						lastView = boundView;
+					}
+					else lastView = null;
+					recycledViews.push(boundView);
+				}
+				if(newCollection[i])
+				{
+					// Item is in the new collection
+					var oldIndex = arrayIndexOf(oldCollection, newCollection[i]);
+					if(oldIndex !== -1)
+					{
+						// Item is already rendered, reuse its view
+						boundView = this.boundViews[oldIndex];
+						tempBoundViews.push(boundView);
+						boundView.scope['*'] = this.cursor.refine([i]);
 						if(this.view._itemAlias) boundView.scope[this.view._itemAlias] = boundView.scope['*'];
 						boundView.setBindingIndex(i);
-						boundView.refreshAll();
-						if(i >= lastViewIndex) lastView = boundView;
+						newBoundViews.push(boundView);
+						lastView = boundView;
 					}
 					else
 					{
-						boundView = this.createBoundView(item);
-						boundView.setBindingIndex(i);
-						boundView.runAll();
-						boundView.afterRunAll();
+						// Item is new, create new binding view
+						if(this.animate || recycledViews.length === 0)
+						{
+							boundView = this.createBoundView(newCollection[i]);
+							boundView.scope['*'] = this.cursor.refine([i]);
+							if(this.view._itemAlias) boundView.scope[this.view._itemAlias] = boundView.scope['*'];
+							boundView.setBindingIndex(i);
+							boundView.runAll();
+							boundView.afterRunAll();
+						}
+						else
+						{
+							boundView = recycledViews.shift();
+							boundView.scope['*'] = this.cursor.refine([i]);
+							if(this.view._itemAlias) boundView.scope[this.view._itemAlias] = boundView.scope['*'];
+							boundView.setBindingIndex(i);
+						}
+						tempBoundViews.push(boundView);
+						newBoundViews.push(boundView);
+						lastView = null;
 					}
-					positions[i] = boundView;
 				}
 			}
-
-			// Remove old views:
-			for(i = 0, l = toRemoveViews.length; i < l; i++)
-			{
-				toRemoveViews[i].destroyAll();
-				if(toRemoveViews[i].element && toRemoveViews[i].element.parentNode)
-				{
-					toRemoveViews[i].element.parentNode.removeChild(toRemoveViews[i].element);
-				}
-			}
-
-			var newBoundViews = new Array(positions.length);
 
 			if(lastView)
 			{
 				// Reordering elements from the last one:
 				lastChild = lastView.element;
-				i = positions.length - 1;
+				i = tempBoundViews.length - 1;
 
-				el = positions[i].element;
-				if(el !== lastChild && lastChild.parentNode && lastChild.parentNode.nodeType === 1)
+				el = tempBoundViews[i].element;
+				if(el !== lastChild && lastChild.parentNode && lastChild.parentNode.nodeType === 1 && el !== lastChild.nextSibling)
 				{
 					nodeInsert(lastChild.parentNode, lastChild.nextSibling, el);
-					// lastChild.parentNode.insertBefore(el, lastChild.nextSibling);
 					lastChild = el;
 				}
 
 				for(; i >= 0; i--)
 				{
-					el = positions[i].element;
-
-					if(el !== lastChild && el.nextSibling !== lastChild && lastChild.parentNode && lastChild.parentNode.nodeType === 1)
+					el = tempBoundViews[i].element;
+					var nextSibling = el.nextSibling;
+					if(el !== lastChild && nextSibling !== lastChild && lastChild.parentNode && lastChild.parentNode.nodeType === 1)
 					{
 						nodeInsert(lastChild.parentNode, lastChild, el);
-						// lastChild.parentNode.insertBefore(el, lastChild);
 					}
-
 					lastChild = el;
-					newBoundViews[i] = positions[i];
-					newBoundViews[i].setBindingIndex(i);
-					newBoundViews[i].refreshIndexedBinders(true);
+					tempBoundViews[i].refreshIndexedBinders(true);
 				}
 			}
 			else
 			{
+				// Add elements after anchor text node:
 				lastChild = this.anchor;
 				if(this.anchor.parentNode)
 				{
 					parentNode = this.anchor.parentNode;
 				}
-				for(i = 0, l = positions.length; i < l; i++)
+				for(i = 0, l = tempBoundViews.length; i < l; i++)
 				{
-					el = positions[i].element;
+					el = tempBoundViews[i].element;
 
 					if(el !== lastChild.nextSibling)
 					{
 						nodeInsert(parentNode, lastChild.nextSibling, el);
-						// parentNode.insertBefore(el, lastChild.nextSibling);
 					}
-					newBoundViews[i] = positions[i];
-					newBoundViews[i].setBindingIndex(i);
-					newBoundViews[i].refreshIndexedBinders(true);
+					tempBoundViews[i].refreshIndexedBinders(true);
 					lastChild = el;
 				}
 			}
 			this.boundViews = newBoundViews;
+
+			// Remove old views:
+			for(i = 0, l = recycledViews.length; i < l; i++)
+			{
+				var viewToRemove = recycledViews[i];
+				if(viewToRemove.element && viewToRemove.element.parentNode)
+				{
+					removeNodeAsync(viewToRemove, nodeRemove);
+				}
+			}
 		}
 	},
 
@@ -448,7 +416,7 @@ var CollectionBinder = createClass(
 			i = this.boundViews.length - 1;
 
 
-			if(this.filteredCollection === this.collection)
+			if(this.collection === this.collection)
 			{
 				boundView.scope['*'] = this.cursor.refine([i]);
 			}
@@ -477,7 +445,7 @@ var CollectionBinder = createClass(
 			this.boundViews.push(boundView);
 			i = this.boundViews.length - 1;
 
-			if(this.filteredCollection === this.collection)
+			if(this.collection === this.collection)
 			{
 				boundView.scope['*'] = this.cursor.refine([i]);
 			}
@@ -526,5 +494,14 @@ var CollectionBinder = createClass(
 		else return -1;
 	}
 });
+
+function removeNodeAsync(view, removeFn)
+{
+	view.suspendAll();
+	removeFn(view.element.parentNode, view.element, function()
+	{
+		view.destroyAll();
+	});
+}
 
 module.exports = CollectionBinder;
