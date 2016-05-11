@@ -1,12 +1,10 @@
 
 var settings = require('./settings');
-
 var createClass = require('./functions/createClass');
 var arrayIndexOf = require('./functions/arrayIndexOf');
 var callModelAsFunction = require('./functions/callModelAsFunction');
-var insertBefore = require('./functions/nodeMan').insertBefore;
-var removeChild = require('./functions/nodeMan').removeChild;
-var $ = require('./dollar');
+var defaultInsertBefore = require('./functions/nodeMan').insertBefore;
+var defaultRemoveChild = require('./functions/nodeMan').removeChild;
 
 var CollectionBinder = createClass(
 /** @lends Binder.prototype */
@@ -24,8 +22,6 @@ var CollectionBinder = createClass(
 		this.boundViews = null;
 		this.anchor = null;
 		this.viewTemplate = null;
-		this.filter = options.filter;
-		this.sort = options.sort;
 		this.animate = options.animate;
 	},
 
@@ -54,10 +50,6 @@ var CollectionBinder = createClass(
 		this.boundViewName = this.view.element.getAttribute(settings.DATA_VIEW_ATTR);
 		var opt = this.view.element.getAttribute(settings.DATA_OPTIONS_ATTR);
 
-		this.initCollectionFilter();
-		this.initCollectionSorter();
-		// this.initCollectionCounter();
-
 		this.boundViewOptions = opt ? JSON.parse(opt) : {};
 		this.boundViewOptions.parentView = this.view;
 		this.boundViewOptions.serviceContainer = this.view.serviceContainer;
@@ -83,7 +75,6 @@ var CollectionBinder = createClass(
 			{
 				boundView = this.boundViews[i];
 				boundView.destroyAll();
-				// boundView.$element.remove();
 				if(boundView.element && boundView.element.parentNode) boundView.element.parentNode.removeChild(boundView.element);
 			}
 			this.boundViews = null;
@@ -100,8 +91,6 @@ var CollectionBinder = createClass(
 		}
 		if(this.elementTemplate)
 		{
-
-			// this.$elementTemplate.remove();
 			if(this.elementTemplate.parentNode)
 			{
 				this.elementTemplate.parentNode.removeChild(this.elementTemplate);
@@ -150,21 +139,21 @@ var CollectionBinder = createClass(
 	 */
 	refreshBoundViewsAll: function()
 	{
-		var collectionFilter, filterModel, filterFnName, boundView, i, l, newIndex, el, a;
-		var docFragment = null;
+		var boundView, i, l, el, a;
 		var lastView, lastChild, parentNode, item;
-		var nodeInsert = insertBefore;
-		var nodeRemove = removeChild;
+		var insertBefore = defaultInsertBefore;
+		var removeChild = defaultRemoveChild;
 		var oldCollection = this.collection;
 
 		if(this.animate)
 		{
-			nodeInsert = this.view.scope[this.animate]['insert'];
-			nodeRemove = this.view.scope[this.animate]['remove'];
+			insertBefore = this.view.scope[this.animate]['insert'];
+			removeChild = this.view.scope[this.animate]['remove'];
 		}
 
 		this.rebindCollection();
 
+		// This will speed up rendering but requires strictly immutable collections
 		// if(oldCollection === this.collection) return;
 
 		if(this.boundViews === null) this.boundViews = [];
@@ -184,7 +173,7 @@ var CollectionBinder = createClass(
 					{
 						boundView = this.createBoundView(a[i]);
 						el = boundView.element;
-						nodeInsert(parentNode, lastChild.nextSibling, el);
+						insertBefore(parentNode, lastChild.nextSibling, el);
 						boundView.setBindingIndex(i);
 						lastChild = el;
 					}
@@ -270,7 +259,7 @@ var CollectionBinder = createClass(
 				el = tempBoundViews[i].element;
 				if(el !== lastChild && lastChild.parentNode && lastChild.parentNode.nodeType === 1 && el !== lastChild.nextSibling)
 				{
-					nodeInsert(lastChild.parentNode, lastChild.nextSibling, el);
+					insertBefore(lastChild.parentNode, lastChild.nextSibling, el);
 					lastChild = el;
 				}
 
@@ -280,7 +269,7 @@ var CollectionBinder = createClass(
 					var nextSibling = el.nextSibling;
 					if(el !== lastChild && nextSibling !== lastChild && lastChild.parentNode && lastChild.parentNode.nodeType === 1)
 					{
-						nodeInsert(lastChild.parentNode, lastChild, el);
+						insertBefore(lastChild.parentNode, lastChild, el);
 					}
 					lastChild = el;
 					tempBoundViews[i].refreshIndexedBinders(true);
@@ -300,7 +289,7 @@ var CollectionBinder = createClass(
 
 					if(el !== lastChild.nextSibling)
 					{
-						nodeInsert(parentNode, lastChild.nextSibling, el);
+						insertBefore(parentNode, lastChild.nextSibling, el);
 					}
 					tempBoundViews[i].refreshIndexedBinders(true);
 					lastChild = el;
@@ -314,58 +303,9 @@ var CollectionBinder = createClass(
 				var viewToRemove = recycledViews[i];
 				if(viewToRemove.element && viewToRemove.element.parentNode)
 				{
-					removeNodeAsync(viewToRemove, nodeRemove);
+					removeNodeAsync(viewToRemove, removeChild);
 				}
 			}
-		}
-	},
-
-	/**
-	 * Inits filtering of collection items
-	 *
-	 * @private
-	 */
-	initCollectionFilter: function()
-	{
-		if(this.filter)
-		{
-			this.collectionFilter = this.view.getCursor(this.filter).get();
-			if(typeof this.collectionFilter !== 'function') this.collectionFilter = null;
-		}
-	},
-
-	/**
-	 * Inits sorting of collection
-	 *
-	 * @private
-	 */
-	initCollectionSorter: function()
-	{
-		if(this.sort)
-		{
-			this.collectionSorter = this.view.getCursor(this.sort).get();
-			if(typeof this.collectionSorter !== 'function') this.collectionSorter = null;
-		}
-	},
-
-	/**
-	 * Removes a view at given index (rendered index)
-	 *
-	 * @private
-	 * @param  {number} renderIndex Rendered index of item
-	 */
-	removeBoundViewAt: function(renderIndex)
-	{
-		var boundView = this.boundViews[renderIndex];
-		if(boundView)
-		{
-			this.boundViews.splice(renderIndex, 1);
-
-			removeChild(boundView.element.parentNode, boundView.element);
-			// boundView.$element[0].parentNode.removeChild(boundView.$element[0]);
-			boundView.destroyAll();
-
-			this.reindexBoundviews(renderIndex);
 		}
 	},
 
@@ -415,19 +355,8 @@ var CollectionBinder = createClass(
 			this.boundViews.push(boundView);
 			i = this.boundViews.length - 1;
 
-
-			if(this.collection === this.collection)
-			{
-				boundView.scope['*'] = this.cursor.refine([i]);
-			}
-			else
-			{
-				boundView.scope['*'] = this.cursor.refine([this.collection.indexOf(item)]);
-			}
-
-
+			boundView.scope['*'] = this.cursor.refine([i]);
 			if(this.view._itemAlias) boundView.scope[this.view._itemAlias] = boundView.scope['*'];
-
 
 			boundView.setBindingIndex(i);
 
@@ -445,15 +374,7 @@ var CollectionBinder = createClass(
 			this.boundViews.push(boundView);
 			i = this.boundViews.length - 1;
 
-			if(this.collection === this.collection)
-			{
-				boundView.scope['*'] = this.cursor.refine([i]);
-			}
-			else
-			{
-				boundView.scope['*'] = this.cursor.refine([this.collection.indexOf(item)]);
-			}
-
+			boundView.scope['*'] = this.cursor.refine([i]);
 			if(this.view._itemAlias) boundView.scope[this.view._itemAlias] = boundView.scope['*'];
 
 			boundView.setBindingIndex(i);
