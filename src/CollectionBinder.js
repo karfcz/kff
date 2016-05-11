@@ -172,16 +172,11 @@ var CollectionBinder = createClass(
 					for(i = 0; i < l; i++)
 					{
 						boundView = this.createBoundView(a[i]);
-						el = boundView.element;
-						insertBefore(parentNode, lastChild.nextSibling, el);
-						boundView.setBindingIndex(i);
-						lastChild = el;
-					}
-
-					for(i = 0; i < l; i++)
-					{
 						this.boundViews[i].runAll();
 						this.boundViews[i].afterRunAll();
+						el = boundView.element;
+						insertBefore(parentNode, lastChild.nextSibling, el);
+						lastChild = el;
 					}
 				}
 			}
