@@ -7,12 +7,13 @@ function insertBefore(parentNode, anchorNode, node)
 	}
 }
 
-function removeChild(parentNode, node)
+function removeChild(parentNode, node, fn)
 {
 	if(parentNode)
 	{
 		parentNode.removeChild(node);
 	}
+	fn();
 }
 
 module.exports = {
