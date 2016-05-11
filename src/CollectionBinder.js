@@ -23,6 +23,7 @@ var CollectionBinder = createClass(
 		this.anchor = null;
 		this.viewTemplate = null;
 		this.animate = options.animate;
+		this.keyProp = options.keyProp;
 	},
 
 	/**
@@ -154,7 +155,7 @@ var CollectionBinder = createClass(
 		this.rebindCollection();
 
 		// This will speed up rendering but requires strictly immutable collections
-		// if(oldCollection === this.collection) return;
+		if(settings.immutableCollections && oldCollection === this.collection) return;
 
 		if(this.boundViews === null) this.boundViews = [];
 
@@ -184,15 +185,31 @@ var CollectionBinder = createClass(
 		else
 		{
 			// Diff based rendering:
+			var newCollection = this.collection;
 			var newBoundViews = [];
 			var recycledViews = [];
+			var oldCollectionKeyMap;
+			var newCollectionKeyMap;
+			if(this.keyProp)
+			{
+				oldCollectionKeyMap = {};
+				for(i = 0, l = oldCollection.length; i < l; i++)
+				{
+					oldCollectionKeyMap[oldCollection[i][this.keyProp]] = i;
+				}
+
+				newCollectionKeyMap = {};
+				for(i = 0, l = newCollection.length; i < l; i++)
+				{
+					newCollectionKeyMap[newCollection[i][this.keyProp]] = i;
+				}
+			}
 
 			// Merge old and new bound view arrays:
 			var tempBoundViews = [];
-			var newCollection = this.collection;
 			for(i = 0, l = Math.max(oldCollection.length, newCollection.length); i < l; i++)
 			{
-				if(oldCollection[i] && arrayIndexOf(newCollection, oldCollection[i]) === -1)
+				if(oldCollection[i] && getKeyedItemIndex(newCollection, oldCollection[i], this.keyProp, newCollectionKeyMap) === -1)
 				{
 					// Item is in the old collection but not in the new one
 					boundView = this.boundViews[i];
@@ -207,7 +224,7 @@ var CollectionBinder = createClass(
 				if(newCollection[i])
 				{
 					// Item is in the new collection
-					var oldIndex = arrayIndexOf(oldCollection, newCollection[i]);
+					var oldIndex = getKeyedItemIndex(oldCollection, newCollection[i], this.keyProp, oldCollectionKeyMap);
 					if(oldIndex !== -1)
 					{
 						// Item is already rendered, reuse its view
@@ -418,6 +435,20 @@ function removeNodeAsync(view, removeFn)
 	{
 		view.destroyAll();
 	});
+}
+
+function getKeyedItemIndex(collection, item, keyProp, keyMap)
+{
+	if(keyProp && keyProp in item)
+	{
+		var key = item[keyProp];
+		if(key in keyMap) return keyMap[key];
+		else return -1;
+	}
+	else
+	{
+		return arrayIndexOf(collection, item);
+	}
 }
 
 module.exports = CollectionBinder;

@@ -351,7 +351,6 @@ var View = createClass(
 				if(this._collectionBinder)
 				{
 					this._collectionBinder.refreshBoundViews();
-					// if(this._collectionBinder.refreshBoundViews() !== false) ;
 					this._collectionBinder.refreshAll();
 				}
 				else
@@ -970,6 +969,8 @@ var View = createClass(
 			{
 				view: clonedView,
 				keyPath: this._collectionBinder.keyPath,
+				animate: this._collectionBinder.animate,
+				keyProp: this._collectionBinder.keyProp,
 				collection: null,
 				collectionPathArray: this._collectionBinder.collectionPathArray
 			});
@@ -1243,7 +1244,8 @@ var View = createClass(
 						collectionArgs: modelArgs,
 						filter: (ret.filter && ret.filter.length > 0) ? ret.filter[0] : null,
 						sort: (ret.sort && ret.sort.length > 0) ? ret.sort[0] : null,
-						animate: (ret.animate && ret.animate.length > 0) ? ret.animate[0] : null
+						animate: (ret.animate && ret.animate.length > 0) ? ret.animate[0] : null,
+						keyProp: (ret.keyProp && ret.keyProp.length > 0) ? ret.keyProp[0] : null
 					});
 					if(ret.itemAliases && ret.itemAliases.length > 0)
 					{
@@ -1266,7 +1268,6 @@ var View = createClass(
 				var modelBinder = new View.binders[ret.binderName]({
 					view: this,
 					element: this.element,
-					// $element: this.$element,
 					params: ret.binderParams,
 					keyPath: keyPath,
 					modelArgs: modelArgs,
@@ -1316,6 +1317,7 @@ var View = createClass(
 			watchModelPath: false,
 			nopreventdef: false,
 			animate: [],
+			keyProp: [],
 			itemAliases: [],
 			filter: [],
 			sort: []
@@ -1375,6 +1377,9 @@ var View = createClass(
 						break;
 					case 'animate':
 						this.parseSetters(modifierParams, ret.animate);
+						break;
+					case 'key':
+						this.parseSetters(modifierParams, ret.keyProp);
 						break;
 					case 'fill':
 						ret.fill = true;
