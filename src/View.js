@@ -291,9 +291,9 @@ var View = createClass(
 			}
 			else
 			{
+				this._isSuspended = true;
 				if(this.suspend !== noop) this.suspend();
 				this.suspendSubviews();
-				this._isSuspended = true;
 			}
 		}
 	},
@@ -308,9 +308,9 @@ var View = createClass(
 			}
 			else
 			{
+				this._isSuspended = false;
 				if(this.resume !== noop) this.resume();
 				this.resumeSubviews();
-				this._isSuspended = false;
 			}
 		}
 	},
