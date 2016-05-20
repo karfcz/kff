@@ -42,7 +42,6 @@ var Binder = createClass(
 			if(this.element && this.options.events !== null) this.delegateEvents(this.options.events);
 		}
 		this.rebindCursor();
-		if(this.options.fill) this.fill();
 	},
 
 	/**
@@ -53,6 +52,11 @@ var Binder = createClass(
 		if(this.element && this.options.events !== null) this.undelegateEvents(this.options.events);
 		this.currentValue = null;
 		this.value = null;
+	},
+
+	afterRun: function()
+	{
+		if(this.options.fill) this.fill();
 	},
 
 	/**

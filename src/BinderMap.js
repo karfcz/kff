@@ -87,6 +87,15 @@ var BinderMap = createClass(
 	},
 
 	/**
+	 * Run binders' afterRun methods
+	 */
+	afterRun: function(force)
+	{
+		for(var i = 0, l = this.binders.length; i < l; i++) this.binders[i].afterRun();
+	},
+
+
+	/**
 	 * Rebinds models of all binders
 	 */
 	rebindCursors: function()

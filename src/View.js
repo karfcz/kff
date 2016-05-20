@@ -265,6 +265,10 @@ var View = createClass(
 
 	afterRunAll: function()
 	{
+		if(this._modelBindersMap)
+		{
+			this._modelBindersMap.afterRun();
+		}
 		if(this._collectionBinder)
 		{
 			this.afterRunSubviews();
