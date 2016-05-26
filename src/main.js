@@ -1,6 +1,5 @@
 
 module.exports = {
-
 	settings: require('./settings'),
 	arrayConcat: require('./functions/arrayConcat'),
 	arrayIndexOf: require('./functions/arrayIndexOf'),
@@ -8,7 +7,6 @@ module.exports = {
 	bindFn: require('./functions/bindFn'),
 	createClass: require('./functions/createClass'),
 	deepMixins: require('./functions/deepMixins'),
-	// evalObjectPath: require('./functions/evalObjectPath'),
 	extend: require('./functions/extend'),
 	isPlainObject: require('./functions/isPlainObject'),
 	log: require('./functions/log'),
@@ -27,8 +25,6 @@ module.exports = {
 	afterRepaint: require('./functions/afterRepaint'),
 	classWithOptions: require('./functions/viewClassFactory'),
 	viewClassFactory: require('./functions/viewClassFactory'),
-	// on: require('./Dom').on,
-	// off: require('./Dom').off,
 
 	App: require('./App'),
 	Cursor: require('./Cursor'),
@@ -43,8 +39,6 @@ module.exports = {
 	Binder: require('./Binder'),
 	CollectionBinder: require('./CollectionBinder'),
 	ModelView: require('./ModelView'),
-	Route: require('./Route'),
-	Router: require('./Router'),
 	Dispatcher: require('./Dispatcher'),
 
 	EventBinder: require('./binders/EventBinder'),
