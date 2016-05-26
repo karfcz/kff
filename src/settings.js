@@ -26,7 +26,5 @@ module.exports = {
 
 	defaultItemAlias: '_item',
 
-	useJquery: true,
-
 	immutableCollections: true
 };
