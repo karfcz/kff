@@ -58,11 +58,25 @@ var createClassBinder = function(negate)
 			{
 				if(this.matchValue())
 				{
-					this.element.classList.add(this.className);
+					if(this.animate)
+					{
+						this.view.scope[this.animate]['addClass'](this.element, this.className);
+					}
+					else
+					{
+						this.element.classList.add(this.className);
+					}
 				}
 				else
 				{
-					this.element.classList.remove(this.className);
+					if(this.animate)
+					{
+						this.view.scope[this.animate]['removeClass'](this.element, this.className);
+					}
+					else
+					{
+						this.element.classList.remove(this.className);
+					}
 				}
 			}
 		},
