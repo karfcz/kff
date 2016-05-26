@@ -12,6 +12,5 @@ Main features:
 * Changes to the state are done inside actions that are simple composable functions,
 * Refresh all from root with minimal DOM operations
 * Efficient array-diff-based rerendering of nested lists,
-* Front controller and router for building single-page applications,
 * Supports all modern browsers including IE8 (with polyfills),
 * Small footprint, no dependencies.
