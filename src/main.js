@@ -46,7 +46,6 @@ module.exports = {
 	Route: require('./Route'),
 	Router: require('./Router'),
 	Dispatcher: require('./Dispatcher'),
-	'$': require('./dollar'),
 
 	EventBinder: require('./binders/EventBinder'),
 	AttrBinder: require('./binders/AttrBinder'),

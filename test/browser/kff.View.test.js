@@ -21,12 +21,12 @@ describe('kff.View', function()
 
 		render: function()
 		{
-			this.$element.html(testString);
+			this.element.innerHTML = testString;
 		},
 
 		destroy: function()
 		{
-			this.$element.html('');
+			this.element.innerHTML = '';
 		},
 
 		click: function()
@@ -199,7 +199,7 @@ describe('kff.View', function()
 					'testViewA': {
 						construct: TestView2,
 						args: [{
-							element: $mainDiv,
+							element: $mainDiv[0],
 							serviceContainer: '@'
 						}]
 					},
@@ -238,7 +238,7 @@ describe('kff.View', function()
 					'testViewA': {
 						construct: TestView2,
 						args: [{
-							element: $mainDiv,
+							element: $mainDiv[0],
 							serviceContainer: '@'
 						}]
 					},

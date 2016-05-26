@@ -117,7 +117,7 @@ describe('kff.View', function()
 		var view = new kff.View(
 		{
 			env: env,
-			element: $div,
+			element: $div[0],
 			scope: {
 				collection: new kff.Cursor(collection)
 			}

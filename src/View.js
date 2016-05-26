@@ -7,7 +7,6 @@ var evalObjectPath = require('./functions/evalObjectPath');
 var noop = require('./functions/noop');
 var arrayConcat = require('./functions/arrayConcat');
 var isPlainObject = require('./functions/isPlainObject');
-var $ = require('./dollar');
 var on = require('./Dom').on;
 var off = require('./Dom').off;
 var findViewElements = require('./functions/findViewElements');
@@ -137,8 +136,7 @@ var View = createClass(
 
 		if(options.element)
 		{
-			this.$element = $(options.element);
-			this.element = this.$element[0];
+			this.element = options.element
 			options.element = null;
 		}
 
@@ -618,7 +616,7 @@ var View = createClass(
 	 * The third item is the view method name (string) that acts as an event handler
 	 *
 	 * @param {Array} events Array of arrays of binding config
-	 * @param {jQuery} $element A jQuery object that holds the DOM element to bind. If not provided, the view element will be used.
+	 * @param {DOMElement} element A DOM element to bind. If not provided, the view element will be used.
 	 */
 	delegateEvents: function(events, element)
 	{
@@ -657,8 +655,7 @@ var View = createClass(
 	 * the delegateEvents method.
 	 *
 	 * @param {Array} events Array of arrays of binding config
-	 * @param {jQuery} $element A jQuery object that holds the DOM element to
-	 * unbind. If not provided, the view element will be used.
+	 * @param {DOMElement} element A DOM element to unbind. If not provided, the view element will be used.
 	 */
 	undelegateEvents: function(events, element)
 	{
@@ -1041,8 +1038,7 @@ var View = createClass(
 	{
 		var i, l;
 
-		this.$element = $(element);
-		this.element = this.$element[0];
+		this.element = element;
 
 		this.rebindSubViews(element, {
 			subviewIndex: 0,

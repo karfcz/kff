@@ -98,20 +98,6 @@ var createClassBinder = function(negate)
 		}
 	});
 
-	if(typeof document === 'object' && document !== null)
-	{
-		if(!('classList' in document.documentElement))
-		{
-			ClassBinder.prototype.refresh = function(value)
-			{
-				if(this.className)
-				{
-					this.$element[this.matchValue() ? 'addClass' : 'removeClass'](this.className);
-				}
-			};
-		}
-	}
-
 	return ClassBinder;
 
 };
