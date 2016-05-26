@@ -45,7 +45,6 @@ module.exports = {
 	ModelView: require('./ModelView'),
 	Route: require('./Route'),
 	Router: require('./Router'),
-	HashStateHandler: require('./HashStateHandler'),
 	Dispatcher: require('./Dispatcher'),
 	'$': require('./dollar'),
 
