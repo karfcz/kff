@@ -130,7 +130,7 @@ var CollectionBinder = createClass(
 		{
 			this.collection = callModelAsFunction.call(this.view, this.collection, this.collectionArgs);
 		}
-		if(!(this.collection instanceof Array)) this.collection = [];
+		if(!Array.isArray(this.collection)) this.collection = [];
 	},
 
 	/**
@@ -420,7 +420,7 @@ var CollectionBinder = createClass(
 
 	getCollectionIndex: function(item)
 	{
-		if(this.collection instanceof Array)
+		if(Array.isArray(this.collection))
 		{
 			return arrayIndexOf(this.collection, item);
 		}

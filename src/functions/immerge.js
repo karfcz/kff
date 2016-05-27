@@ -14,7 +14,7 @@ function immerge(source, target)
 		}
 		return clone;
 	}
-	else if(source instanceof Array && target instanceof Array)
+	else if(Array.isArray(source) && Array.isArray(target))
 	{
 		clone = source.slice();
 		for(var i = 0, l = Math.max(source.length, target.length); i < l; i++)

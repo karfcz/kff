@@ -83,7 +83,7 @@ var ServiceContainer = createClass(
 		if(typeof Ctor !== 'function' || serviceConfig.type === 'function') return Ctor;
 
 		args = this.resolveParameters(serviceConfig.args || []);
-		if(argsExtend && argsExtend instanceof Array)
+		if(argsExtend && Array.isArray(argsExtend))
 		{
 			argsExtended = [];
 			for(i = 0, l = argsExtend.length; i < l; i++)
@@ -108,7 +108,7 @@ var ServiceContainer = createClass(
 		}
 
 		calls = serviceConfig.calls;
-		if(calls instanceof Array)
+		if(Array.isArray(calls))
 		{
 			if(typeof calls[0] === 'string')
 			{
@@ -165,7 +165,7 @@ var ServiceContainer = createClass(
 				ret = params;
 			}
 		}
-		else if(params instanceof Array)
+		else if(Array.isArray(params))
 		{
 			ret = [];
 			for(i = 0, l = params.length; i < l; i++)
@@ -196,7 +196,7 @@ var ServiceContainer = createClass(
 	 */
 	registerServices: function(services, overwrite)
 	{
-		if(services instanceof Array)
+		if(Array.isArray(services))
 		{
 			if(overwrite) this.config.services = services.concat(this.config.services);
 			else this.config.services = this.config.services.concat(services);
@@ -210,7 +210,7 @@ var ServiceContainer = createClass(
 
 	registerFactories: function(factories, overwrite)
 	{
-		if(factories instanceof Array)
+		if(Array.isArray(factories))
 		{
 			if(overwrite) this.config.services = factories.map(factoryService).concat(this.config.services);
 			else this.config.services = this.config.services.concat(factories.map(factoryService));
@@ -251,7 +251,7 @@ var ServiceContainer = createClass(
 		while(container)
 		{
 			services = container.config.services;
-			if(services instanceof Array)
+			if(Array.isArray(services))
 			{
 				for(var i = 0, l = services.length; i < l; i++)
 				{

@@ -124,7 +124,7 @@ module.exports = Dispatcher;
 
 function processsArrayEvent(dispatcher, event)
 {
-	if(event instanceof Array)
+	if(Array.isArray(event))
 	{
 		for(var j = 0; j < event.length; j++)
 		{

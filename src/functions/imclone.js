@@ -1,7 +1,7 @@
 
 function imclone(obj)
 {
-	if(obj instanceof Array) return obj.slice();
+	if(Array.isArray(obj)) return obj.slice();
 	if(typeof obj === 'object')
 	{
 		var ret = {};

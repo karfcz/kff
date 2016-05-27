@@ -64,7 +64,7 @@ function createClass(meta, properties)
 	{
 		meta.mixins = [];
 	}
-	else if(!(meta.mixins instanceof Array)) meta.mixins = [meta.mixins];
+	else if(!Array.isArray(meta.mixins)) meta.mixins = [meta.mixins];
 
 	meta.mixins.push(classMixin);
 

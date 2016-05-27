@@ -15,7 +15,7 @@ function imremove(keypath, obj)
 		{
 			prev = prev[keypath[i]] = imclone(prev[keypath[i]]);
 		}
-		if(prev instanceof Array)
+		if(Array.isArray(prev))
 		{
 			prev = prev.splice(keypath[i], 1);
 		}

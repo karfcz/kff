@@ -111,7 +111,7 @@ var ValueBinder = createClass(
 
 	setArrayValue: function(val)
 	{
-		if(!(val instanceof Array)) val = [val];
+		if(!Array.isArray(val)) val = [val];
 		var options = this.element && this.element.options;
 		var option;
 

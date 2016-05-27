@@ -18,7 +18,7 @@ function evalObjectPath(path, obj)
 	var part, i, l;
 	obj = obj || scope;
 	if(typeof path === 'string') path = path.split('.');
-	if(!(path instanceof Array)) return null;
+	if(!Array.isArray(path)) return null;
 	for(i = 0, l = path.length; i < l; i++)
 	{
 		part = path[i];

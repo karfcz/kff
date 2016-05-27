@@ -33,7 +33,7 @@ var Events = createClass(
 			if(!this.subscribers[eventType]) this.subscribers[eventType] = [];
 			if(arrayIndexOf(this.subscribers[eventType], fn) === -1)	this.subscribers[eventType].push(fn);
 		}
-		else if(eventType instanceof Array)
+		else if(Array.isArray(eventType))
 		{
 			for(var i = 0, l = eventType.length; i < l; i++)
 			{
@@ -84,13 +84,13 @@ var Events = createClass(
 		}
 		if(typeof eventType === 'string')
 		{
-			if(this.subscribers[eventType] instanceof Array)
+			if(Array.isArray(this.subscribers[eventType]))
 			{
 				i = arrayIndexOf(this.subscribers[eventType], fn);
 				if(i !== -1) this.subscribers[eventType].splice(i, 1);
 			}
 		}
-		else if(eventType instanceof Array)
+		else if(Array.isArray(eventType))
 		{
 			for(i = 0, l = eventType.length; i < l; i++)
 			{
@@ -122,7 +122,7 @@ var Events = createClass(
 
 		if(typeof eventType === 'string')
 		{
-			if(this.subscribers[eventType] instanceof Array)
+			if(Array.isArray(this.subscribers[eventType]))
 			{
 				for(i = 0, l = this.subscribers[eventType].length; i < l; i++)
 				{
@@ -140,7 +140,7 @@ var Events = createClass(
 				}
 			}
 		}
-		else if(eventType instanceof Array)
+		else if(Array.isArray(eventType))
 		{
 			for(i = 0, l = eventType.length; i < l; i++)
 			{

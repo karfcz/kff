@@ -590,12 +590,12 @@ var View = createClass(
 	 */
 	addEvents: function(events)
 	{
-		if(!(events instanceof Array))
+		if(!Array.isArray(events))
 		{
 			if(arguments.length === 2 || arguments.length === 3) this.domEvents.push(Array.prototype.slice.apply(arguments));
 			return;
 		}
-		else if(!(events[0] instanceof Array))
+		else if(!Array.isArray(events[0]))
 		{
 			events = Array.prototype.slice.apply(arguments);
 		}
@@ -703,7 +703,7 @@ var View = createClass(
 	{
 		var subView, args;
 
-		if(this._subviewsArgs && this._subviewsArgs[viewName] instanceof Array)
+		if(this._subviewsArgs && Array.isArray(this._subviewsArgs[viewName]))
 		{
 			args = this._subviewsArgs[viewName];
 			if(typeof args[0] === 'object' && args[0] !== null) options = immerge(options, args[0]);

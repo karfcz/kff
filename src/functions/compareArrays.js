@@ -8,7 +8,7 @@
  */
 function compareArrays(value1, value2)
 {
-	if((value1 instanceof Array) && (value2 instanceof Array))
+	if(Array.isArray(value1) && Array.isArray(value2))
 	{
 		var l = value1.length;
 		if(l !== value2.length) return false;

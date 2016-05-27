@@ -132,7 +132,7 @@ var Binder = createClass(
 	{
 		var i, l, event;
 		this.value = value;
-		if(value instanceof Array)
+		if(Array.isArray(value))
 		{
 			for(i = 0, l = value.length; i < l; i++) value[i] = this.parse(value[i]);
 		}
@@ -195,7 +195,7 @@ var Binder = createClass(
 		var i, l, j, k, value2;
 		for(i = 0, l = this.options.formatters.length; i < l; i++)
 		{
-			if(value instanceof Array)
+			if(Array.isArray(value))
 			{
 				value2 = [];
 				for(j = 0, k = value.length; j < k; j++) value2[j] = this.options.formatters[i].fn.apply(this, arrayConcat([value[j]], this.options.formatters[i].args));
@@ -217,7 +217,7 @@ var Binder = createClass(
 		var i, l, j, k, value2;
 		for(i = 0, l = this.options.parsers.length; i < l; i++)
 		{
-			if(value instanceof Array)
+			if(Array.isArray(value))
 			{
 				value2 = [];
 				for(j = 0, k = value.length; j < k; j++) value2[j] = this.options.parsers[i].fn.apply(this, arrayConcat([value[j]], this.options.parsers[i].args));
