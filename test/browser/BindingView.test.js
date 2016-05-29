@@ -38,11 +38,11 @@ describe('kff.View', function()
 	it('should bind a collection with text binder on the same element', function(done)
 	{
 		var collection = [];
-		var collectionCursor = new kff.Cursor(collection);
 		var model1 = { name: 'foo' };
 		var model2 = { name: 'bar' };
 		collection.push(model1);
 		collection.push(model2);
+		var collectionCursor = new kff.Cursor(collection);
 		var $div1 = $('<div/>');
 		var $div2 = $('<div data-kff-bind="collection:each .name:text"/>');
 		$div1.append($div2);
@@ -113,13 +113,14 @@ describe('kff.View', function()
 		var model2 = { name: 'bar' };
 		collection.push(model1);
 		collection.push(model2);
+		var collectionCursor =  new kff.Cursor(collection);
 		var $div = $('<div data-kff-bind="collection.length:text"/>');
 		var view = new kff.View(
 		{
 			env: env,
 			element: $div[0],
 			scope: {
-				collection: new kff.Cursor(collection)
+				collection: collectionCursor
 			}
 		});
 		view.renderAll();
@@ -127,7 +128,7 @@ describe('kff.View', function()
 
 		setTimeout(function(){
 			expect($div.text()).to.equal('2');
-			collection.splice(0, 1);
+			collectionCursor.set(v => v.concat().splice(0, 1));
 			view.refreshAll();
 			expect($div.text()).to.equal('1');
 		}, 0);

@@ -9,17 +9,18 @@ describe('kff.TextBinder', function()
 		var myModel = {
 			name: 'Karel'
 		};
+		var myModelCursor = new kff.Cursor(myModel);
 		var view = new kff.View(
 		{
 			element: $div[0],
 			scope: {
-				myModel: new kff.Cursor(myModel)
+				myModel: myModelCursor
 			}
 		});
 		view.renderAll();
 		view.runAll();
 		expect($div.text()).to.equal('Karel');
-		myModel.name = 'Petr';
+		myModelCursor.setIn('name', 'Petr');
 		view.refreshAll();
 		expect($div.text()).to.equal('Petr');
 	});
@@ -30,12 +31,12 @@ describe('kff.TextBinder', function()
 		var myModel = {
 			name: function(){ return 'foo' }
 		};
-
+		var myModelCursor = new kff.Cursor(myModel);
 		var view = new kff.View(
 		{
 			element: $div[0],
 			scope: {
-				myModel: new kff.Cursor(myModel)
+				myModel: myModelCursor
 			}
 		});
 		view.renderAll();
