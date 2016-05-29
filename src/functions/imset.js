@@ -1,5 +1,6 @@
 
 var imclone = require('./imclone');
+var deepFreeze = require('./deepFreeze');
 
 function imset(keypath, value, obj)
 {
@@ -26,6 +27,11 @@ function imset(keypath, value, obj)
 	else
 	{
 		root = fn(obj);
+	}
+
+	if(process.env.NODE_ENV !== 'production')
+	{
+		deepFreeze(root);
 	}
 
 	return root;

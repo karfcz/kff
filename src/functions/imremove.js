@@ -1,5 +1,6 @@
 
 var imclone = require('./imclone');
+var deepFreeze = require('./deepFreeze');
 
 function imremove(keypath, obj)
 {
@@ -25,6 +26,10 @@ function imremove(keypath, obj)
 		}
 	}
 
+	if(process.env.NODE_ENV !== 'production')
+	{
+		deepFreeze(root);
+	}
 	return root;
 }
 

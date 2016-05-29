@@ -4,6 +4,7 @@ var compareArrays = require('./functions/compareArrays');
 var arrayConcat = require('./functions/arrayConcat');
 var imset = require('./functions/imset');
 var imremove = require('./functions/imremove');
+var deepFreeze = require('./functions/deepFreeze');
 
 var Cursor = createClass(
 {
@@ -17,7 +18,14 @@ var Cursor = createClass(
 			this.superRoot = root.superRoot;
 			this.keyPath = arrayConcat(root.keyPath, this.keyPath);
 		}
-		else this.superRoot = { root: root };
+		else
+		{
+			this.superRoot = { root: root };
+			if(process.env.NODE_ENV !== 'production')
+			{
+				deepFreeze(root);
+			}
+		}
 	},
 
 	refine: function(keyPath)
