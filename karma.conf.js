@@ -8,6 +8,8 @@ module.exports = function(config) {
     basePath: '',
 
 
+    autoWatch: true,
+
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['mocha', 'chai'],
