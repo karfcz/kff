@@ -9,7 +9,7 @@
  */
 function isPlainObject(obj)
 {
-	return obj !== null && typeof obj === 'object' && obj.constructor === Object;
+	return obj !== null && typeof obj === 'object' && (obj.constructor === Object || obj.constructor === undefined);
 }
 
 module.exports = isPlainObject;
