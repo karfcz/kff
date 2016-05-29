@@ -156,6 +156,7 @@ var View = createClass(
 		{
 			this.env = options.env;
 		}
+		else this.env = { document: document, window: window };
 
 		if(options.regions)
 		{
