@@ -26,8 +26,6 @@ module.exports = {
 	Cursor: require('./Cursor'),
 	Dom: require('./Dom').Dom,
 	EventStream: require('./EventStream'),
-	Events: require('./Events'),
-	EventsMixin: require('./EventsMixin'),
 	View: require('./View'),
 	BinderMap: require('./BinderMap'),
 	Binder: require('./Binder'),
