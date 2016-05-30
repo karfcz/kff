@@ -53,7 +53,6 @@ var CollectionBinder = createClass(
 
 		this.boundViewOptions = opt ? JSON.parse(opt) : {};
 		this.boundViewOptions.parentView = this.view;
-		this.boundViewOptions.serviceContainer = this.view.serviceContainer;
 		this.boundViewOptions.env = this.view.env;
 		this.boundViewOptions.isBoundView = true;
 

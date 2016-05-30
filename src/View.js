@@ -12,7 +12,6 @@ var off = require('./Dom').off;
 var findViewElements = require('./functions/findViewElements');
 var nextNode = require('./functions/nextNode');
 
-var ServiceContainer = require('./ServiceContainer');
 var Dispatcher = require('./Dispatcher');
 var Cursor = require('./Cursor');
 var CollectionBinder = require('./CollectionBinder');
@@ -109,7 +108,6 @@ var View = createClass(
 		this._isRunning = false;
 		this._isSuspended = false;
 		this.subviews = null;
-		this.serviceContainer = null;
 
 		if(options.scope)
 		{
@@ -117,11 +115,6 @@ var View = createClass(
 			options.scope = null;
 		}
 		else this.scope = {};
-
-		if(options.serviceContainer)
-		{
-			this.serviceContainer = options.serviceContainer;
-		}
 
 		if(options.parentView)
 		{
@@ -213,7 +206,6 @@ var View = createClass(
 		if(!this._modelBindersMap) this.initBinding();
 		if(!this._collectionBinder)
 		{
-			if(!this.serviceContainer) this.serviceContainer = new ServiceContainer();
 			this._explicitSubviewsStruct = null;
 			this.renderRegions(this.regions);
 			if(this.render !== noop) this.render();
@@ -714,7 +706,6 @@ var View = createClass(
 
 		if(viewName === 'View') subView = new View(options);
 		else if(viewName in this.scope) subView = new this.scope[viewName](options);
-		else subView = this.serviceContainer.getService(viewName, [options]);
 		if(subView instanceof View)
 		{
 			if(this.subviews === null) this.subviews = [];
@@ -744,29 +735,6 @@ var View = createClass(
 			element: element,
 			options: options || {}
 		});
-	},
-
-	/**
-	 * Registers a new view service to the local service container
-	 *
-	 * @public
-	 */
-	registerSubview: function(viewName, construct, options)
-	{
-		if(this.parentView.serviceContainer === this.serviceContainer)
-		{
-			this.serviceContainer = new ServiceContainer();
-			this.serviceContainer.setParent(this.parentView.serviceContainer);
-		}
-
-		var services = {};
-
-		services[viewName] = {
-			construct: construct,
-			args: [options]
-		};
-
-		this.serviceContainer.registerServices(services, true);
 	},
 
 	setSubviewsArgs: function(subviewsArgs)
@@ -938,7 +906,6 @@ var View = createClass(
 		options.env = this.env;
 
 		var clonedView = new this.constructor(options);
-		clonedView.serviceContainer = this.serviceContainer;
 
 		if(this.subviews !== null)
 		{
@@ -1005,18 +972,6 @@ var View = createClass(
 			{
 				key = keys[i];
 				this.scope[key] = oldScope[key];
-			}
-		}
-
-		if(parentView.serviceContainer !== this.serviceContainer)
-		{
-			if(this.serviceContainer)
-			{
-				this.serviceContainer.setParent(parentView.serviceContainer);
-			}
-			else
-			{
-				this.serviceContainer = parentView.serviceContainer;
 			}
 		}
 

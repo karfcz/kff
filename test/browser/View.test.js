@@ -187,79 +187,58 @@ describe('kff.View', function()
 
 		it('should render subView', function()
 		{
-			var $mainDiv = $('<div/>');
-			var $intermediateDiv = $('<div></div>');
-			var $innerDiv = $('<div data-kff-view="testViewB"/>');
+			var mainDiv = document.createElement('div');
+			var intermediateDiv = document.createElement('div');
+			var innerDiv = document.createElement('div');
+			innerDiv.setAttribute('data-kff-view', 'TestViewB');
 
-			$intermediateDiv.append($innerDiv);
-			$mainDiv.append($intermediateDiv);
+			intermediateDiv.appendChild(innerDiv);
+			mainDiv.appendChild(intermediateDiv);
 
-			var config = {
-				services: {
-					'testViewA': {
-						construct: TestView2,
-						args: [{
-							element: $mainDiv[0],
-							serviceContainer: '@'
-						}]
-					},
-					'testViewB': {
-						construct: TestView2
-					}
+			var view1 = new TestView2({
+				element: mainDiv,
+				scope: {
+					TestViewB: TestView2
 				}
-			};
+			});
 
-			var container = new kff.ServiceContainer(config);
-			var view1 = container.getService('testViewA');
-			view1.renderAll();
-			view1.runAll();
+			view1.initAll();
 
-			expect($mainDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
-			expect($innerDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
+			expect(mainDiv.getAttribute(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
+			expect(innerDiv.getAttribute(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
 
 			view1.destroyAll();
 
-			expect($mainDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.be.undefined;
-			expect($innerDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.be.undefined;
+			expect(mainDiv.getAttribute(kff.settings.DATA_RENDERED_ATTR)).to.be.null;
+			expect(innerDiv.getAttribute(kff.settings.DATA_RENDERED_ATTR)).to.be.null;
 		});
 
 
 		it('should render subView and trigger an event on it', function(done)
 		{
-			var $mainDiv = $('<div/>');
-			var $intermediateDiv = $('<div></div>');
-			var $innerDiv = $('<div data-kff-view="testViewB"/>');
+			var mainDiv = document.createElement('div');
+			var intermediateDiv = document.createElement('div');
+			var innerDiv = document.createElement('div');
+			innerDiv.setAttribute('data-kff-view', 'TestViewB');
 
-			$intermediateDiv.append($innerDiv);
-			$mainDiv.append($intermediateDiv);
+			intermediateDiv.appendChild(innerDiv);
+			mainDiv.appendChild(intermediateDiv);
 
-			var config = {
-				services: {
-					'testViewA': {
-						construct: TestView2,
-						args: [{
-							element: $mainDiv[0],
-							serviceContainer: '@'
-						}]
-					},
-					'testViewB': {
-						construct: TestView2,
-						args: [{
-							done: done
-						}]
-					}
+			var TestViewB = kff.viewClassFactory(TestView2, { done: done });
+
+			var view1 = new TestView2({
+				element: mainDiv,
+				scope: {
+					TestViewB: TestViewB
 				}
-			};
+			});
 
-			var container = new kff.ServiceContainer(config);
-			var view1 = container.getService('testViewA');
-			view1.renderAll();
-			view1.runAll();
+			view1.initAll();
 
-			expect($mainDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
-			expect($innerDiv.attr(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
+			expect(mainDiv.getAttribute(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
+			expect(innerDiv.getAttribute(kff.settings.DATA_RENDERED_ATTR)).to.equal('true');
 
-			emitEvent($innerDiv[0], 'click');
+			emitEvent(innerDiv, 'click');
 		});
 	});
 

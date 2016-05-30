@@ -9,4 +9,3 @@ function viewClassFactory(ctor, defaultOptions)
 }
 
 module.exports = viewClassFactory;
-// module.exports = classWithOptions;
