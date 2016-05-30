@@ -17,11 +17,7 @@ function bindFn(obj, fnName, args)
 	if(fnName in obj._boundFns) return obj._boundFns[fnName];
 	else
 	{
-		obj._boundFns[fnName] = function()
-		{
-			if(args) return obj[fnName].apply(obj, args.concat(Array.prototype.slice.call(arguments)));
-			else return obj[fnName].apply(obj, arguments);
-		};
+		obj._boundFns[fnName] = Function.prototype.bind.apply(obj[fnName], args ? [obj].concat(args) : [obj]);
 	}
 	return obj._boundFns[fnName];
 }

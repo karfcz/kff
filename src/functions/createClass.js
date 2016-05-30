@@ -6,15 +6,10 @@ var bindFn = require('./bindFn');
 var classMixin = {
 	f: function(fnName, args)
 	{
-		var obj = this;
-		if(typeof fnName === 'string') return bindFn(obj, fnName, args);
+		if(typeof fnName === 'string') return bindFn(this, fnName, args);
 		if(typeof fnName === 'function')
 		{
-			return function()
-			{
-				if(args) return fnName.apply(obj, args.concat(Array.prototype.slice.call(arguments)));
-				else return fnName.apply(obj, arguments);
-			};
+			return Function.prototype.bind.apply(fnName, args ? [this].concat(args) : [this]);
 		}
 		throw new TypeError("Expected function: " + fnName + ' (f)');
 	}
