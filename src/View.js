@@ -7,8 +7,8 @@ var evalObjectPath = require('./functions/evalObjectPath');
 var noop = require('./functions/noop');
 var arrayConcat = require('./functions/arrayConcat');
 var isPlainObject = require('./functions/isPlainObject');
-var on = require('./Dom').on;
-var off = require('./Dom').off;
+var on = require('./functions/on');
+var off = require('./functions/off');
 var findViewElements = require('./functions/findViewElements');
 var nextNode = require('./functions/nextNode');
 
