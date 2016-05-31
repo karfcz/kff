@@ -4,7 +4,7 @@ function viewClassFactory(ctor, defaultOptions)
 {
 	return function(options)
 	{
-		return new ctor(mixins({}, defaultOptions || {}, options || {}));
+		return new ctor(mixins({}, (typeof defaultOptions === 'function' ? defaultOptions() : defaultOptions) || {}, options || {}));
 	}
 }
 
