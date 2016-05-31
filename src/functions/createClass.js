@@ -23,8 +23,6 @@ var classMixin = {
  * * extend - reference to base class to be extended
  * * statics - object with static properties of the class. These properties will be set directly to the constructor
  *   function
- * * service, args, shared - shorthands for service constructor annotations. These will be included into the
- *   statics.service object
  *
  * @param {Object} meta Object with metadata describing inheritance and static properties of the class
  * @param {Object} properties Properties of a class prototype (or class members)
@@ -66,35 +64,10 @@ function createClass(meta, properties)
 	for(var i = 0, l = meta.mixins.length; i < l; i++) mixins(properties, meta.mixins[i]);
 
 	// Static properties of constructor
-
 	if(meta.statics)
 	{
 		mixins(constructor, meta.statics);
 	}
-
-	if(meta.service)
-	{
-		constructor.service = meta.service;
-	}
-
-	if(!('service' in constructor)) constructor.service = {};
-
-	if(meta.args)
-	{
-		constructor.service.args = meta.args;
-	}
-
-	if(meta.calls)
-	{
-		constructor.service.calls = meta.calls;
-	}
-
-	if(meta.shared)
-	{
-		constructor.service.shared = meta.shared;
-	}
-
-	constructor.service.type = 'class';
 
 	// Add properties to prototype
 	mixins(constructor.prototype, properties);
