@@ -118,77 +118,7 @@ function off(handlers, element, type, selector)
 	}
 }
 
-var Dom = createClass(
-/** @lends Dom.prototype	*/
-{
-	/**
-	 * @constructs
-	 * @param  {DOMElement} element DOM element
-	 */
-	constructor: function(element)
-	{
-		this['0'] = element;
-		this.handlers = null;
-	},
-
-	/**
-	 * Delegates DOM events on this element
-	 *
-	 * @param  {string} type      Event type (i.e. 'click')
-	 * @param  {string} selector  CSS selector
-	 * @param  {function} handler Event handler
-	 */
-	on: function(type, selector, handler)
-	{
-		if(!this.handlers) this.handlers = {};
-		if(arguments.length === 3)
-		{
-			on(this.handlers, this['0'], type, selector, handler);
-		}
-		else if(arguments.length === 2)
-		{
-			on(this.handlers, this['0'], type, selector);
-		}
-	},
-
-	/**
-	 * Unbinds delegated DOM event handler from this element
-	 *
-	 * @param  {string} type      Event type (i.e. 'click')
-	 * @param  {string} selector  CSS selector
-	 * @param  {function} handler Previously bound event handler
-	 */
-	off: function(type, selector)
-	{
-		if(!this.handlers) this.handlers = {};
-		off(this.handlers, this['0'], type, selector);
-	},
-
-	/**
-	 * Sets innerHTML of element
-	 *
-	 * @param  {string} html HTML string to be set
-	 */
-	html: function(html)
-	{
-		this['0'].innerHTML = html;
-	},
-
-	/**
-	 * Removes element from the DOM
-	 */
-	remove: function()
-	{
-		if(this['0'].parentNode)
-		{
-			this['0'].parentNode.removeChild(this['0']);
-			this['0'] = null;
-		}
-	}
-});
-
 module.exports = {
 	on: on,
-	off: off,
-	Dom: Dom,
+	off: off
 };

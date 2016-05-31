@@ -24,7 +24,6 @@ module.exports = {
 	viewClassFactory: require('./functions/viewClassFactory'),
 
 	Cursor: require('./Cursor'),
-	Dom: require('./Dom').Dom,
 	EventStream: require('./EventStream'),
 	View: require('./View'),
 	BinderMap: require('./BinderMap'),
