@@ -103,6 +103,27 @@ describe('kff.mixins', function()
 	});
 });
 
+
+describe('immerge', function()
+{
+	it('should merge properties from two objects into new one', function()
+	{
+		var a = { prop1: 'prop1' };
+		var b = { prop2: 'prop2' };
+		var c;
+
+		c = kff.immerge(a, b);
+
+		expect(c).to.have.property('prop1');
+		expect(c).to.have.property('prop2');
+		expect(c.prop1).to.equal(a.prop1);
+		expect(c.prop2).to.equal(b.prop2);
+		expect(Object.keys(c).length).to.equal(2);
+	});
+
+
+});
+
 describe('kff.createClass', function()
 {
 	var A = kff.createClass(

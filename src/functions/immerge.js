@@ -1,12 +1,13 @@
 
 var deepFreeze = require('./deepFreeze');
+var imclone = require('./imclone');
 
 function immerge(source, target)
 {
 	var clone;
 	if(typeof target === 'object' && target !== null && typeof source === 'object' && source !== null)
 	{
-		clone = {};
+		clone = imclone(source);
 		var keys = Object.keys(target);
 		var key;
 		for(var j = 0, k = keys.length; j < k; j++)
