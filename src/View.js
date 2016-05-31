@@ -1192,6 +1192,19 @@ var View = createClass(
 
 			if(ret.binderName === 'each')
 			{
+				if(process.env.NODE_ENV !== 'production')
+				{
+					if(this._collectionBinder)
+					{
+						if(this.element && this.element.parentNode)
+						{
+							this.element.parentNode.scrollIntoView();
+							this.element.parentNode.style.outline = '2px dashed red';
+						}
+						console.error('You cannot have two :each binders on the same element');
+						console.log(this.element);
+					}
+				}
 				if(!this.options.isBoundView)
 				{
 					this._collectionBinder = new CollectionBinder({
@@ -1242,6 +1255,35 @@ var View = createClass(
 				this._modelBindersMap.add(modelBinder);
 			}
 		}
+
+		// Check for invalid combination of :each and :if binders:
+		if(process.env.NODE_ENV !== 'production')
+		{
+			var ifBinders = this._modelBindersMap.binders.filter(function(binder){ return binder instanceof View.binders.if || binder instanceof View.binders.ifnot; });
+
+			if(this._collectionBinder && ifBinders.length > 0)
+			{
+				if(this.element && this.element.parentNode)
+				{
+					this.element.parentNode.scrollIntoView();
+					this.element.parentNode.style.outline = '2px dashed red';
+				}
+				console.error('You cannot combine :each binder with :if binder on the same element');
+				console.log(this.element);
+			}
+
+			if(ifBinders.length > 2)
+			{
+				if(this.element && this.element.parentNode)
+				{
+					this.element.parentNode.scrollIntoView();
+					this.element.parentNode.style.outline = '2px dashed red';
+				}
+				console.error('You cannot combine multiple :if binders on the same element');
+				console.log(this.element);
+			}
+		}
+
 	},
 
 	/**
