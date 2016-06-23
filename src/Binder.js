@@ -28,6 +28,7 @@ var Binder = createClass(
 		this.keyPath = options.keyPath;
 		this.subKeyPath = this.keyPath.slice(1);
 		this.rootCursorName = this.keyPath[0];
+		this.rootCursor = null;
 		this.dispatch = options.dispatch;
 		this.dispatchNamedParams = options.dispatchNamedParams;
 		this.currentValue = null;
@@ -267,13 +268,17 @@ var Binder = createClass(
 	rebindCursor: function()
 	{
 		var rootCursor = this.view.scope[this.rootCursorName];
-		if(rootCursor instanceof Cursor)
+		if(this.rootCursor !== rootCursor)
 		{
-			this.cursor = rootCursor.refine(this.subKeyPath);
-		}
-		else
-		{
-			this.cursor = new Cursor(rootCursor, this.subKeyPath);
+			this.rootCursor = rootCursor;
+			if(rootCursor instanceof Cursor)
+			{
+				this.cursor = rootCursor.refine(this.subKeyPath);
+			}
+			else
+			{
+				this.cursor = new Cursor(rootCursor, this.subKeyPath);
+			}
 		}
 		return this.cursor;
 	},
