@@ -26,5 +26,5 @@ module.exports = {
 
 	defaultItemAlias: '_item',
 
-	immutableCollections: true
+	immutableCollections: false
 };
