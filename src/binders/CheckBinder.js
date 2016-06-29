@@ -2,6 +2,7 @@
 var createClass = require('../functions/createClass');
 var Binder = require('../Binder');
 var View = require('../View');
+var Cursor = require('../Cursor');
 
 var CheckBinder = createClass(
 {
@@ -26,16 +27,55 @@ var CheckBinder = createClass(
 		];
 		Binder.call(this, options);
 		if(this.options.fill) this.fillVal = this.element.checked;
+		this.equalsTo = undefined;
+		this.valueCursor = undefined;
+	},
+
+	init: function()
+	{
+		this.equalsTo = true;
+		if(this.options.params[0])
+		{
+			this.equalsTo = this.convertBindingValue(this.options.params[0]);
+			if(this.equalsTo instanceof Cursor)
+			{
+				this.valueCursor = this.equalsTo;
+				this.equalsTo = this.valueCursor.get();
+			}
+			if(this.equalsTo == null) this.equalsTo = null;
+		}
+		CheckBinder._super.init.call(this);
 	},
 
 	inputChange: function(event)
 	{
-		this.updateModel(this.element.checked, event);
+		this.updateEqualsToValue();
+		this.updateModel(this.element.checked ? this.equalsTo : false, event);
 	},
 
 	refresh: function()
 	{
-		this.element.checked = !!this.value;
+		this.element.checked = this.matchValue();
+	},
+
+	matchValue: function()
+	{
+		var value = this.value;
+		if(value == null) value = null;
+		this.updateEqualsToValue();
+		return value === this.equalsTo;
+	},
+
+	updateEqualsToValue: function()
+	{
+		if(this.options.params.length > 0)
+		{
+			if(this.valueCursor)
+			{
+				this.equalsTo = this.valueCursor.get();
+				if(this.equalsTo == null) this.equalsTo = null;
+			}
+		}
 	},
 
 	fill: function()
