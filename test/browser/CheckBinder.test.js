@@ -4,9 +4,7 @@ describe('kff.CheckBinder', function()
 {
 	it('should bind check binder', function()
 	{
-		var myModel = new kff.Cursor({
-			checked: true
-		});
+		var state = new kff.Cursor(true);
 
 		var dispatcher = new kff.Dispatcher({
 			set: function(event)
@@ -18,28 +16,72 @@ describe('kff.CheckBinder', function()
 			}
 		});
 
-		var $input = $('<input type="checkbox" data-kff-bind="myModel.checked:check"/>');
+		var input = document.createElement('input');
+		input.setAttribute('type', 'checkbox');
+		input.setAttribute('data-kff-bind', 'state:check');
+
 		var view = new kff.View(
 		{
-			element: $input[0],
+			element: input,
 			scope: {
-				myModel: myModel
+				state: state
 			},
 			dispatcher: dispatcher
 		});
-		view.renderAll();
-		view.runAll();
+		view.initAll();
 
-		expect($input.is(':checked')).to.equal(true);
-		myModel.setIn('checked', false);
+		expect(input.checked).to.equal(true);
+		state.set(false);
 		view.refreshAll();
 
-		expect($input.is(':checked')).to.equal(false);
+		expect(input.checked).to.equal(false);
 
-		$input[0].dispatchEvent(new MouseEvent('click'));
-		// emitEvent($input[0], 'click');
+		input.dispatchEvent(new MouseEvent('click'));
+		// emitEvent(input, 'click');
 
-		expect(myModel.getIn('checked')).to.equal(true);
+		expect(state.get()).to.equal(true);
+	});
+
+
+	it('should bind check binder to non-boolean state', function()
+	{
+		var checkedValue = 'checkedValue';
+		var state = new kff.Cursor(checkedValue);
+
+		var dispatcher = new kff.Dispatcher({
+			set: function(event)
+			{
+				event.cursor.set(event.value);
+				return {
+					type: 'refresh'
+				};
+			}
+		});
+
+		var input = document.createElement('input');
+		input.setAttribute('type', 'checkbox');
+		input.setAttribute('data-kff-bind', 'state:check(checkedValue)');
+
+		var view = new kff.View(
+		{
+			element: input,
+			scope: {
+				state: state
+			},
+			dispatcher: dispatcher
+		});
+		view.initAll();
+
+		expect(input.checked).to.equal(true);
+		state.set('uncheckedValue');
+		view.refreshAll();
+
+		expect(input.checked).to.equal(false);
+
+		input.dispatchEvent(new MouseEvent('click'));
+		// emitEvent(input, 'click');
+
+		expect(state.get()).to.equal(checkedValue);
 	});
 
 });
