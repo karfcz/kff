@@ -1,8 +1,8 @@
 if(typeof require === 'function') var kff = require('../build/kff.js');
 
-describe('kff.CheckBinder', function()
+describe('kff.DisabledBinder', function()
 {
-	it('should bind check binder', function()
+	it('should bind disabled binder', function()
 	{
 		var state = new kff.Cursor(true);
 
@@ -27,7 +27,7 @@ describe('kff.CheckBinder', function()
 	});
 
 
-	it('should bind check binder to non-boolean state', function()
+	it('should bind disabled binder to non-boolean state', function()
 	{
 		var disabledValue = 'disabledValue';
 		var state = new kff.Cursor(disabledValue);

@@ -68,7 +68,7 @@ var DisabledBinder = createClass(
 
 	fill: function()
 	{
-		if(!this.fillVal) this.fillVal = !!this.element.disabled;
+		if(!this.fillVal) this.fillVal = this.element.disabled ? this.equalsTo : false;
 		this.updateModel(this.fillVal);
 	}
 
