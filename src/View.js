@@ -46,6 +46,20 @@ function parseNamedParams(params)
 	return namedParams;
 }
 
+function mixin(obj, properties)
+{
+	var key;
+	var keys = Object.keys(properties);
+
+	for(var j = 0, k = keys.length; j < k; j++)
+	{
+		key = keys[j];
+		obj[key] = properties[key];
+	}
+
+	return obj;
+}
+
 var View = createClass(
 {
 	statics: {
@@ -109,17 +123,15 @@ var View = createClass(
 		this._isSuspended = false;
 		this.subviews = null;
 
-		if(options.scope)
-		{
-			this.scope = options.scope;
-			options.scope = null;
-		}
-		else this.scope = {};
-
 		if(options.parentView)
 		{
+			this.scope = options.scope || null;
 			this.setParentView(options.parentView);
 		}
+		else if(options.scope) this.scope = mixin({}, options.scope);
+		else this.scope = {};
+
+		options.scope = null;
 
 		if(options.events)
 		{
