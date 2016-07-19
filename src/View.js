@@ -116,11 +116,11 @@ var View = createClass(
 
 		this._subviewsStruct = null;
 		this._explicitSubviewsStruct = null;
-		this._cachedRegions = null;
 		this._pendingRefresh = false;
 		this._subviewsArgs = null;
 		this._isRunning = false;
 		this._isSuspended = false;
+		this._template = null;
 		this.subviews = null;
 
 		if(options.parentView)
@@ -162,12 +162,6 @@ var View = createClass(
 			this.env = options.env;
 		}
 		else this.env = { document: document, window: window };
-
-		if(options.regions)
-		{
-			this.regions = options.regions;
-		}
-		else this.regions = null;
 
 		this.options = options;
 	},
@@ -219,7 +213,9 @@ var View = createClass(
 		if(!this._collectionBinder)
 		{
 			this._explicitSubviewsStruct = null;
-			this.renderRegions(this.regions);
+
+			if(this._template) this.element.innerHTML = this._template;
+
 			if(this.render !== noop) this.render();
 			this.renderSubviews();
 		}
@@ -424,8 +420,6 @@ var View = createClass(
 		this.subviews = null;
 		this._isRunning = false;
 		this._isSuspended = false;
-
-		this.clearRegions(this.regions);
 	},
 
 	/**
@@ -773,18 +767,9 @@ var View = createClass(
 		}
 	},
 
-	setTemplate: function(region, template)
+	setTemplate: function(template)
 	{
-		if(arguments.length === 1)
-		{
-			template = region;
-			region = 'self';
-		}
-		if(this.regions == null)
-		{
-			this.regions = {};
-		}
-		this.regions[region] = template;
+		this._template = template;
 	},
 
 	/**
@@ -938,11 +923,6 @@ var View = createClass(
 		{
 			clonedView._explicitSubviewsStruct = this._explicitSubviewsStruct.slice();
 		}
-		if(this._cachedRegions)
-		{
-			clonedView._cachedRegions = this._cachedRegions;
-			clonedView.cloneCachedRegions();
-		}
 
 		if(this._collectionBinder)
 		{
@@ -1051,113 +1031,6 @@ var View = createClass(
 					else doSubviews = true;
 				}
 				ids.index++;
-			}
-		}
-	},
-
-	renderRegions: function(regions)
-	{
-		var selector, env = this.env;
-
-		var saveRegion = function(regions, cachedRegions, nodes, selector)
-		{
-			var node, fragment, childNodes;
-			for(var i = 0, l = nodes.length; i < l; i++)
-			{
-				node = nodes[i];
-				if(node.hasChildNodes())
-				{
-					if(!cachedRegions[selector]) cachedRegions[selector] = [];
-
-					cachedRegions[selector][i] = fragment = env.document.createDocumentFragment();
-
-					childNodes = new Array(node.childNodes.length);
-					for(var i2 = 0, l2 = childNodes.length; i2 < l2; i2++)
-					{
-						childNodes[i2] = node.childNodes[i2];
-					}
-					for(i2 = 0, l2 = childNodes.length; i2 < l2; i2++)
-					{
-						fragment.appendChild(childNodes[i2]);
-					}
-				}
-				node.innerHTML = regions[selector];
-			}
-		};
-
-		if(isPlainObject(regions))
-		{
-			if(!this._cachedRegions) this._cachedRegions = {};
-			if('self' in regions) saveRegion(regions, this._cachedRegions, [this.element], 'self');
-			for(selector in regions)
-			{
-				if(selector !== 'self')
-				{
-					saveRegion(regions, this._cachedRegions, this.element.querySelectorAll(selector), selector);
-				}
-
-			}
-		}
-	},
-
-	clearRegions: function(regions)
-	{
-		var selector, i, l, nodes, node, fragment;
-
-		var unsaveRegion = function(regions, cachedRegions, nodes, sel)
-		{
-			var node, fragment;
-			for(var i = nodes.length - 1; i >= 0; i--)
-			{
-				node = nodes[i];
-				node.innerHTML = '';
-				if(cachedRegions[sel])
-				{
-					fragment = cachedRegions[sel][i];
-					if(fragment)
-					{
-						node.appendChild(fragment);
-						cachedRegions[sel][i] = null;
-					}
-				}
-			}
-		};
-
-		if(isPlainObject(regions))
-		{
-			if('self' in regions) unsaveRegion(regions, this._cachedRegions, [this.element], 'self');
-			for(selector in regions)
-			{
-				if(selector !== 'self')
-				{
-					unsaveRegion(regions, this._cachedRegions, this.element.querySelectorAll(selector), selector);
-				}
-			}
-		}
-	},
-
-	cloneCachedRegions: function()
-	{
-		var selector, i, l, nodes, node, fragment;
-		if(this._cachedRegions)
-		{
-			for(selector in this._cachedRegions)
-			{
-				fragments = this._cachedRegions[selector];
-				for(i = 0, l = fragments.length; i < l; i++)
-				{
-					if(fragments[i].hasChildNodes())
-					{
-						childNodes = fragments[i].childNodes;
-						fragment = this.env.document.createDocumentFragment();
-
-						for(i2 = 0, l2 = childNodes.length; i2 < l2; i2++)
-						{
-							fragment.appendChild(childNodes[i2].cloneNode(true));
-						}
-						fragments[i] = fragment;
-					}
-				}
 			}
 		}
 	},
