@@ -121,7 +121,13 @@ var View = createClass(
 		this._isRunning = false;
 		this._isSuspended = false;
 		this._template = null;
+		this._isolated = false;
 		this.subviews = null;
+
+		if(options.isolated)
+		{
+			this._isolated = true;
+		}
 
 		if(options.parentView)
 		{
@@ -953,19 +959,23 @@ var View = createClass(
 
 		this.parentView = parentView;
 
-		oldScope = this.scope || null;
-
-		this.scope = Object.create(parentView.scope);
-
-		if(oldScope)
+		if(!this._isolated)
 		{
-			var keys = Object.keys(oldScope);
-			for(i = 0, l = keys.length; i < l; i++)
+			oldScope = this.scope || null;
+			this.scope = Object.create(parentView.scope);
+
+			if(oldScope)
 			{
-				key = keys[i];
-				this.scope[key] = oldScope[key];
+				var keys = Object.keys(oldScope);
+				for(i = 0, l = keys.length; i < l; i++)
+				{
+					key = keys[i];
+					this.scope[key] = oldScope[key];
+				}
 			}
 		}
+
+		if(!this.scope) this.scope = {};
 
 		if(this.subviews !== null)
 		{
