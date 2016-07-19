@@ -1242,9 +1242,11 @@ var View = createClass(
 				}
 
 				switch(modifierName){
+					case 'format':
 					case 'f':
 						this.parseHelpers(modifierParams, ret.formatters);
 						break;
+					case 'parse':
 					case 'p':
 						this.parseHelpers(modifierParams, ret.parsers);
 						break;
