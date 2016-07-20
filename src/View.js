@@ -973,7 +973,8 @@ var View = createClass(
 					}
 					break;
 				}
-				view = view.parentView;
+				if(view._isolated) view = null;
+				else view = view.parentView;
 			}
 		}
 	},
