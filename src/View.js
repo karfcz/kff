@@ -29,6 +29,8 @@ var leadingPeriodRegex = /^\./;
 
 var trailingPeriodRegex = /\.$/;
 
+var push = Array.prototype.push;
+
 function parseNamedParams(params)
 {
 	var namedParams = {};
@@ -44,6 +46,36 @@ function parseNamedParams(params)
 		}
 	}
 	return namedParams;
+}
+
+/**
+ * Parses modifier parameters of binding. Used to create parsers and formatters.
+ *
+ * @param {Array} modifierParams An arrray with modifier names
+ * @returns {Array} Array of objects containg modifier classes that corresponds to modifier names
+ */
+function parseHelpers(modifierParams, scope)
+{
+	var modifierParam, modifierArgs, modifiers = [];
+
+	for(var j = 0, l = modifierParams.length; j < l; j++)
+	{
+		modifierParam = modifierParams[j];
+
+		if(j + 1 < l && modifierParams[j + 1].indexOf('{') === 0)
+		{
+			modifierArgs = modifierParams[j + 1].match(/([^,{}]+)/g);
+			j++;
+		}
+		else
+		{
+			modifierArgs = [];
+		}
+		if(scope[modifierParam]) modifiers.push({ fn: scope[modifierParam], args: modifierArgs });
+		else if(View.helpers[modifierParam]) modifiers.push({ fn: View.helpers[modifierParam], args: modifierArgs });
+	}
+
+	return modifiers;
 }
 
 function mixin(obj, properties)
@@ -1244,37 +1276,37 @@ var View = createClass(
 				switch(modifierName){
 					case 'format':
 					case 'f':
-						this.parseHelpers(modifierParams, ret.formatters);
+						push.apply(ret.formatters, parseHelpers(modifierParams, this.scope));
 						break;
 					case 'parse':
 					case 'p':
-						this.parseHelpers(modifierParams, ret.parsers);
+						push.apply(ret.parsers, parseHelpers(modifierParams, this.scope));
 						break;
 					case 'on':
-						this.parseSetters(modifierParams, ret.eventNames);
+						push.apply(ret.eventNames, modifierParams);
 						break;
 					case 'as':
-						this.parseSetters(modifierParams, ret.itemAliases);
+						push.apply(ret.itemAliases, modifierParams);
 						break;
 					case 'evf':
-						this.parseHelpers(modifierParams, ret.eventFilters);
+						push.apply(ret.eventFilters, parseHelpers(modifierParams, this.scope));
 						break;
 					case 'dispatch':
 						ret.dispatch = [];
-						this.parseSetters(modifierParams, ret.dispatch);
+						push.apply(ret.dispatch, modifierParams);
 						ret.dispatchNamedParams = parseNamedParams(ret.dispatch);
 						break;
 					case 'filter':
-						this.parseSetters(modifierParams, ret.filter);
+						push.apply(ret.filter, modifierParams);
 						break;
 					case 'sort':
-						this.parseSetters(modifierParams, ret.sort);
+						push.apply(ret.sort, modifierParams);
 						break;
 					case 'animate':
-						this.parseSetters(modifierParams, ret.animate);
+						push.apply(ret.animate, modifierParams);
 						break;
 					case 'key':
-						this.parseSetters(modifierParams, ret.keyProp);
+						push.apply(ret.keyProp, modifierParams);
 						break;
 					case 'fill':
 						ret.fill = true;
@@ -1287,78 +1319,6 @@ var View = createClass(
 			i++;
 		}
 		return ret;
-	},
-
-	/**
-	 * Parses modifier parameters of binding. Used to create parsers and formatters.
-	 *
-	 * @param {Array} modifierParams An arrray with modifier names
-	 * @param {Array} modifiers An empty array that will be filled by modifier classes that corresponds to modifier names
-	 */
-	parseHelpers: function(modifierParams, modifiers)
-	{
-		var modifierParam, modifierArgs;
-
-		for(var j = 0, l = modifierParams.length; j < l; j++)
-		{
-			modifierParam = modifierParams[j];
-
-			if(j + 1 < l && modifierParams[j + 1].indexOf('{') === 0)
-			{
-				modifierArgs = modifierParams[j + 1].match(/([^,{}]+)/g);
-				j++;
-			}
-			else
-			{
-				modifierArgs = [];
-			}
-			if(this.scope[modifierParam]) modifiers.push({ fn: this.scope[modifierParam], args: modifierArgs });
-			else if(View.helpers[modifierParam]) modifiers.push({ fn: View.helpers[modifierParam], args: modifierArgs });
-		}
-	},
-
-	/**
-	 * Parses modifier that accepts one or more parameters
-	 * @param  {Array} modifierParams Array of modifier params
-	 * @param  {Array} modifiers      Array of modifiers
-	 */
-	parseGetters: function(modifierParams, modifiers)
-	{
-		var modifierParam, modifierArgs;
-
-		for(var j = 0, l = modifierParams.length; j < l; j++)
-		{
-			modifierParam = modifierParams[j];
-
-			if(j + 1 < l && modifierParams[j + 1].indexOf('{') === 0)
-			{
-				modifierArgs = modifierParams[j + 1].match(/([^,{}]+)/g);
-				j++;
-			}
-			else
-			{
-				modifierArgs = [];
-			}
-			for(var i = 0, n = modifierArgs.length; i < n; i++)
-			{
-				modifierArgs[i] = modifierArgs[i].replace(/^\s+|\s+$/g, '').replace(/^\./, '*.');
-			}
-			modifiers.push({ fn: modifierParam, args: modifierArgs });
-		}
-	},
-
-	/**
-	 * Parses modifier parameters of binding. Used to create parsers and formatters.
- 	 *
-	 * @param {Array} modifierParams An arrray with modifier names
-	 * @param {Array} modifiers An empty array that will be filled by modifier classes that corresponds to modifier names
-	 */
-	parseSetters: function(modifierParams, modifiers)
-	{
-		for(var j = 0; j < modifierParams.length; j++)
-		{
-			modifiers.push(modifierParams[j]);
-		}
 	},
 
 	/**
