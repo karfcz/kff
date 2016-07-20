@@ -78,6 +78,115 @@ function parseHelpers(modifierParams, scope)
 	return modifiers;
 }
 
+/**
+ * Parses single binding expression
+ *
+ * @private
+ * @param  {string} result           binding subexpression
+ * @param  {object} scope  	A view scope where helper functions reside
+ * @return {object}                  Object with parsed binding data
+ */
+function parseBindingRegexp(result, scope)
+{
+	var result2, i, modifierName, modifierParams;
+
+	operatorsRegex.lastIndex = 0;
+
+	var ret = {
+		binderName: null,
+		binderParams: null,
+		formatters: [],
+		parsers: [],
+		setters: [],
+		getters: [],
+		eventNames: [],
+		eventFilters: [],
+		dispatch: null,
+		dispatchNamedParams: null,
+		fill: false,
+		watchModelPath: false,
+		nopreventdef: false,
+		animate: [],
+		keyProp: [],
+		itemAliases: [],
+		filter: [],
+		sort: []
+	};
+
+	i = 0;
+	while((result2 = operatorsRegex.exec(result[3])) !== null)
+	{
+		if(i === 0)
+		{
+			// Parse binder name and params
+			ret.binderName = result2[1];
+			ret.binderParams = result2[2];
+
+			if(ret.binderParams)
+			{
+				ret.binderParams = ret.binderParams.split(commaSeparateRegex);
+			}
+			else ret.binderParams = [];
+		}
+		else
+		{
+			modifierName = result2[1];
+			modifierParams = [];
+
+			if(result2[2])
+			{
+				modifierParams = result2[2].match(modifierSeparateRegex);
+			}
+
+			switch(modifierName){
+				case 'format':
+				case 'f':
+					push.apply(ret.formatters, parseHelpers(modifierParams, scope));
+					break;
+				case 'parse':
+				case 'p':
+					push.apply(ret.parsers, parseHelpers(modifierParams, scope));
+					break;
+				case 'on':
+					push.apply(ret.eventNames, modifierParams);
+					break;
+				case 'as':
+					push.apply(ret.itemAliases, modifierParams);
+					break;
+				case 'evf':
+					push.apply(ret.eventFilters, parseHelpers(modifierParams, scope));
+					break;
+				case 'dispatch':
+					ret.dispatch = [];
+					push.apply(ret.dispatch, modifierParams);
+					ret.dispatchNamedParams = parseNamedParams(ret.dispatch);
+					break;
+				case 'filter':
+					push.apply(ret.filter, modifierParams);
+					break;
+				case 'sort':
+					push.apply(ret.sort, modifierParams);
+					break;
+				case 'animate':
+					push.apply(ret.animate, modifierParams);
+					break;
+				case 'key':
+					push.apply(ret.keyProp, modifierParams);
+					break;
+				case 'fill':
+					ret.fill = true;
+					break;
+				case 'nopreventdef':
+					ret.nopreventdef = true;
+					break;
+			}
+		}
+		i++;
+	}
+	return ret;
+}
+
+
 function mixin(obj, properties)
 {
 	var key;
@@ -164,7 +273,7 @@ var View = createClass(
 		if(options.parentView)
 		{
 			this.scope = options.scope || null;
-			this.setParentView(options.parentView);
+			this._setParentView(options.parentView);
 		}
 		else if(options.scope) this.scope = mixin({}, options.scope);
 		else this.scope = {};
@@ -247,7 +356,7 @@ var View = createClass(
 	 */
 	renderAll: function()
 	{
-		if(!this._modelBindersMap) this.initBinding();
+		if(!this._modelBindersMap) this._initBinding();
 		if(!this._collectionBinder)
 		{
 			this._explicitSubviewsStruct = null;
@@ -288,14 +397,14 @@ var View = createClass(
 			{
 				this.dispatcher.on('refresh', this.f('refreshAll'));
 				this.dispatcher.on('refreshFromRoot', this.f('refreshFromRoot'));
-				this.dispatcher.on('dispatcher:noaction', this.f('dispatchNoAction'));
+				this.dispatcher.on('dispatcher:noaction', this.f('_dispatchNoAction'));
 			}
 
 			if(typeof this.afterRender === 'function') this.afterRender();
 
 			this.element.setAttribute(settings.DATA_RENDERED_ATTR, true);
 
-			this.refreshOwnBinders(true);
+			this._refreshOwnBinders(true);
 		}
 		this._isRunning = true;
 	},
@@ -356,14 +465,6 @@ var View = createClass(
 		}
 	},
 
-	dispatchNoAction: function(event)
-	{
-		if(this.parentView)
-		{
-			this.parentView.dispatchEvent(event.value);
-		}
-	},
-
 	requestRefreshAll: function()
 	{
 		if(this.env.window.requestAnimationFrame)
@@ -396,8 +497,8 @@ var View = createClass(
 				}
 				else
 				{
-					this.rebindCursors();
-					this.refreshOwnBinders();
+					this._rebindCursors();
+					this._refreshOwnBinders();
 					if(this.subviews !== null)
 					{
 						for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].refreshAll();
@@ -431,7 +532,7 @@ var View = createClass(
 	 */
 	destroyAll: function()
 	{
-		this.destroyBinding();
+		this._destroyBinding();
 
 		if(this._collectionBinder) this._collectionBinder.destroyBoundViews();
 
@@ -447,7 +548,7 @@ var View = createClass(
 		{
 			this.dispatcher.off('refresh', this.f('refreshAll'));
 			this.dispatcher.off('refreshFromRoot', this.f('refreshFromRoot'));
-			this.dispatcher.off('dispatcher:noaction', this.f('dispatchNoAction'));
+			this.dispatcher.off('dispatcher:noaction', this.f('_dispatchNoAction'));
 		}
 
 		if(this.destroy !== noop) this.destroy();
@@ -781,30 +882,6 @@ var View = createClass(
 		});
 	},
 
-	setSubviewsArgs: function(subviewsArgs)
-	{
-		if(subviewsArgs)
-		{
-			if(this.parentView === null)
-			{
-				this._subviewsArgs = subviewsArgs;
-			}
-			else if(this._subviewsArgs)
-			{
-				var keys = Object.keys(subviewsArgs);
-				for(var i = 0, l = keys.length; i < l; i++)
-				{
-					key = keys[i];
-					this._subviewsArgs[key] = subviewsArgs[key];
-				}
-			}
-			else
-			{
-				this._subviewsArgs = subviewsArgs;
-			}
-		}
-	},
-
 	setTemplate: function(template)
 	{
 		this._template = template;
@@ -823,7 +900,7 @@ var View = createClass(
 		}
 		else
 		{
-			this.refreshOwnBinders(force);
+			this._refreshOwnBinders(force);
 			if(this.subviews !== null)
 			{
 				for(var i = 0, l = this.subviews.length; i < l; i++) this.subviews[i].refreshBinders(force);
@@ -925,13 +1002,20 @@ var View = createClass(
 		this._bindingIndex = index;
 	},
 
+	_dispatchNoAction: function(event)
+	{
+		if(this.parentView)
+		{
+			this.parentView.dispatchEvent(event.value);
+		}
+	},
 
 	/**
 	 * Clones this binding view
 	 *
 	 * @return {View} Cloned view
 	 */
-	clone: function()
+	_clone: function()
 	{
 		var l;
 		var clonedSubview;
@@ -948,7 +1032,7 @@ var View = createClass(
 			clonedView.subviews = new Array(l);
 			while(l--)
 			{
-				clonedSubview = this.subviews[l].clone();
+				clonedSubview = this.subviews[l]._clone();
 				clonedView.subviews[l] = clonedSubview;
 			}
 		}
@@ -985,7 +1069,7 @@ var View = createClass(
 		return clonedView;
 	},
 
-	setParentView: function(parentView)
+	_setParentView: function(parentView)
 	{
 		var oldScope, key, i, l;
 
@@ -1013,7 +1097,7 @@ var View = createClass(
 		{
 			for(i = 0, l = this.subviews.length; i < l; i++)
 			{
-				this.subviews[i].setParentView(this);
+				this.subviews[i]._setParentView(this);
 			}
 		}
 	},
@@ -1024,13 +1108,13 @@ var View = createClass(
 	 * @private
 	 * @param  {DOMELement} element New DOM element of the view
 	 */
-	rebindElement: function(element)
+	_rebindElement: function(element)
 	{
 		var i, l;
 
 		this.element = element;
 
-		this.rebindSubViews(element, {
+		this._rebindSubViews(element, {
 			subviewIndex: 0,
 			subviewsStructIndex: 0,
 			index: 0
@@ -1048,7 +1132,7 @@ var View = createClass(
 
 	},
 
-	rebindSubViews: function(el, ids)
+	_rebindSubViews: function(el, ids)
 	{
 		var node = el, doSubviews = true;
 		var subviews = this.subviews, subviewsStruct = this._subviewsStruct;
@@ -1065,7 +1149,7 @@ var View = createClass(
 					{
 						if(subviews[ids.subviewIndex])
 						{
-							subviews[ids.subviewIndex].rebindElement(node);
+							subviews[ids.subviewIndex]._rebindElement(node);
 						}
 						ids.subviewIndex++;
 						doSubviews = false;
@@ -1077,14 +1161,12 @@ var View = createClass(
 		}
 	},
 
-	/* Methods from former BindingView */
-
 	/**
 	 * Initializes all bindings.
 	 *
 	 * Parses data-kff-bind attribute of view element and creates appropriate binder objects.
 	 */
-	initBinding: function()
+	_initBinding: function()
 	{
 		var model, attr, result, result2, modelPathArray, i, ret, modelArgs;
 		var dataBindAttr = this.element.getAttribute(settings.DATA_BIND_ATTR);
@@ -1115,7 +1197,7 @@ var View = createClass(
 			var keyPath = modelPathArray;
 			if(keyPath.length > 1 && keyPath[keyPath.length - 1] === '*') keyPath.pop();
 
-			ret = this.parseBindingRegexp(result, true);
+			ret = parseBindingRegexp(result, this.scope);
 
 			if(ret.binderName === 'each')
 			{
@@ -1214,117 +1296,9 @@ var View = createClass(
 	},
 
 	/**
-	 * Parses single binding expression
-	 *
-	 * @private
-	 * @param  {string} result           binding subexpression
-	 * @param  {boolean} parseBinderName False for collection binder, true for regular binder
-	 * @return {object}                  Object with parsed binding data
-	 */
-	parseBindingRegexp: function(result, parseBinderName)
-	{
-		var result2, i, modifierName, modifierParams;
-
-		operatorsRegex.lastIndex = 0;
-
-		var ret = {
-			binderName: null,
-			binderParams: null,
-			formatters: [],
-			parsers: [],
-			setters: [],
-			getters: [],
-			eventNames: [],
-			eventFilters: [],
-			dispatch: null,
-			dispatchNamedParams: null,
-			fill: false,
-			watchModelPath: false,
-			nopreventdef: false,
-			animate: [],
-			keyProp: [],
-			itemAliases: [],
-			filter: [],
-			sort: []
-		};
-
-		i = 0;
-		while((result2 = operatorsRegex.exec(result[3])) !== null)
-		{
-			if(parseBinderName && i === 0)
-			{
-				// Parse binder name and params
-				ret.binderName = result2[1];
-				ret.binderParams = result2[2];
-
-				if(ret.binderParams)
-				{
-					ret.binderParams = ret.binderParams.split(commaSeparateRegex);
-				}
-				else ret.binderParams = [];
-			}
-			else
-			{
-				modifierName = result2[1];
-				modifierParams = [];
-
-				if(result2[2])
-				{
-					modifierParams = result2[2].match(modifierSeparateRegex);
-				}
-
-				switch(modifierName){
-					case 'format':
-					case 'f':
-						push.apply(ret.formatters, parseHelpers(modifierParams, this.scope));
-						break;
-					case 'parse':
-					case 'p':
-						push.apply(ret.parsers, parseHelpers(modifierParams, this.scope));
-						break;
-					case 'on':
-						push.apply(ret.eventNames, modifierParams);
-						break;
-					case 'as':
-						push.apply(ret.itemAliases, modifierParams);
-						break;
-					case 'evf':
-						push.apply(ret.eventFilters, parseHelpers(modifierParams, this.scope));
-						break;
-					case 'dispatch':
-						ret.dispatch = [];
-						push.apply(ret.dispatch, modifierParams);
-						ret.dispatchNamedParams = parseNamedParams(ret.dispatch);
-						break;
-					case 'filter':
-						push.apply(ret.filter, modifierParams);
-						break;
-					case 'sort':
-						push.apply(ret.sort, modifierParams);
-						break;
-					case 'animate':
-						push.apply(ret.animate, modifierParams);
-						break;
-					case 'key':
-						push.apply(ret.keyProp, modifierParams);
-						break;
-					case 'fill':
-						ret.fill = true;
-						break;
-					case 'nopreventdef':
-						ret.nopreventdef = true;
-						break;
-				}
-			}
-			i++;
-		}
-		return ret;
-	},
-
-	/**
 	 * Destroys all bindings
 	 */
-	destroyBinding: function()
+	_destroyBinding: function()
 	{
 		if(this._modelBindersMap)
 		{
@@ -1338,7 +1312,7 @@ var View = createClass(
 	 *
 	 * @private
 	 */
-	rebindCursors: function()
+	_rebindCursors: function()
 	{
 		if(this._modelBindersMap) this._modelBindersMap.rebindCursors();
 	},
@@ -1348,7 +1322,7 @@ var View = createClass(
 	 *
 	 * @private
 	 */
-	refreshOwnBinders: function(force)
+	_refreshOwnBinders: function(force)
 	{
 		if(this._modelBindersMap) this._modelBindersMap.refreshBinders(force);
 	}

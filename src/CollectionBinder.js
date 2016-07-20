@@ -373,14 +373,14 @@ var CollectionBinder = createClass(
 
 			boundView.renderAll();
 
-			this.viewTemplate = boundView.clone();
+			this.viewTemplate = boundView._clone();
 			this.elementTemplate = element.cloneNode(true);
 		}
 		else
 		{
 			element = this.elementTemplate.cloneNode(true);
-			boundView = this.viewTemplate.clone();
-			boundView.setParentView(this.view);
+			boundView = this.viewTemplate._clone();
+			boundView._setParentView(this.view);
 
 			this.boundViews.push(boundView);
 			i = this.boundViews.length - 1;
@@ -389,7 +389,7 @@ var CollectionBinder = createClass(
 			if(this.view._itemAlias) boundView.scope[this.view._itemAlias] = boundView.scope['*'];
 
 			boundView.setBindingIndex(i);
-			boundView.rebindElement(element);
+			boundView._rebindElement(element);
 		}
 
 		element.setAttribute(settings.DATA_RENDERED_ATTR, true);
