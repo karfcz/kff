@@ -201,6 +201,14 @@ function mixin(obj, properties)
 	return obj;
 }
 
+function actionSet(event)
+{
+	event.cursor.set(event.value);
+	return {
+		type: 'refreshFromRoot'
+	};
+}
+
 var View = createClass(
 {
 	statics: {
@@ -286,12 +294,6 @@ var View = createClass(
 		}
 		else this.domEvents = [];
 
-		if(options.element)
-		{
-			this.element = options.element
-			options.element = null;
-		}
-
 		if(options.dispatcher)
 		{
 			this.dispatcher = options.dispatcher;
@@ -300,7 +302,15 @@ var View = createClass(
 
 		if(options.actions)
 		{
-			this.actions = options.actions;
+			this.actions = mixin({
+				set: actionSet
+			}, options.actions);
+		}
+		else if(this.parentView || this._isolated)
+		{
+			this.actions = {
+				set: actionSet
+			};
 		}
 		else this.actions = null;
 
@@ -309,6 +319,13 @@ var View = createClass(
 			this.env = options.env;
 		}
 		else this.env = { document: document, window: window };
+
+		if(options.element)
+		{
+			this.element = options.element
+			options.element = null;
+		}
+		else this.element = this.env.document.body;
 
 		this.options = options;
 	},
