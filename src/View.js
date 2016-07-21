@@ -306,7 +306,7 @@ var View = createClass(
 				set: actionSet
 			}, options.actions);
 		}
-		else if(this.parentView || this._isolated)
+		else if(this.parentView == null || this._isolated)
 		{
 			this.actions = {
 				set: actionSet
