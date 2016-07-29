@@ -119,16 +119,6 @@ var createInsertBinder = function(negate, force){
 
 			if(this.matchValue())
 			{
-				if(!this.isInserted)
-				{
-					parentNode = this.anchor.parentNode;
-
-					if(parentNode)
-					{
-						nodeInsert(parentNode, this.anchor, this.element);
-					}
-					this.isInserted = true;
-				}
 				if(force)
 				{
 					if(!this.isRendered)
@@ -141,6 +131,16 @@ var createInsertBinder = function(negate, force){
 						this.runSubviews.call(this.view);
 						this.afterRunSubviews.call(this.view);
 						this.isRun = true;
+					}
+				}
+				if(!this.isInserted)
+				{
+					parentNode = this.anchor.parentNode;
+
+					if(parentNode)
+					{
+						nodeInsert(parentNode, this.anchor, this.element);
+						this.isInserted = true;
 					}
 				}
 			}
