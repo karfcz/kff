@@ -306,7 +306,7 @@ var View = createClass(
 				set: actionSet
 			}, options.actions);
 		}
-		else if(this.parentView == null || this._isolated)
+		else if((this.parentView == null || this._isolated )&& !options._clone)
 		{
 			this.actions = {
 				set: actionSet
@@ -1041,6 +1041,7 @@ var View = createClass(
 
 		options.parentView = null;
 		options.env = this.env;
+		options._clone = true;
 
 		var clonedView = new this.constructor(options);
 
