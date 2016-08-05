@@ -89,7 +89,7 @@ var ValueBinder = createClass(
 
 	setValue: function(val)
 	{
-		this.element.value = val;
+		if(val == '' || this.element.type !== 'file') this.element.value = val;
 	},
 
 	getArrayValue: function()
