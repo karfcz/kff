@@ -17,7 +17,7 @@ var Cursor = require('./Cursor');
 var CollectionBinder = require('./CollectionBinder');
 var BinderMap = require('./BinderMap');
 
-var bindingRegex = /(?:([_.a-zA-Z0-9*-]+))(?:\(([@.a-zA-Z0-9*,\s-]+)*\))?((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g;
+var bindingRegex = /(?:([_\.a-zA-Z0-9*-]+))(?:\(([@\/.a-zA-Z0-9*,\s-]+)*\))?((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g;
 
 var operatorsRegex = /:([a-zA-Z0-9]+)(?:\(([^()]*)\))?/g;
 
