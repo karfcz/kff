@@ -1,5 +1,5 @@
 
-var requestAnimationFrame = (window ? window.requestAnimationFrame : false) || function(fn){ setTimeout(fn, 1000/60); };
+var requestAnimationFrame = (typeof window === 'object' ? window.requestAnimationFrame : false) || function(fn){ setTimeout(fn, 1000/60); };
 
 function afterRepaint(fn)
 {

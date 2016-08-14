@@ -22,6 +22,7 @@ module.exports = {
 	noop: require('./functions/noop'),
 	afterRepaint: require('./functions/afterRepaint'),
 	viewClassFactory: require('./functions/viewClassFactory'),
+	parser: require('./functions/parseBinding'),
 
 	Cursor: require('./Cursor'),
 	EventStream: require('./EventStream'),
