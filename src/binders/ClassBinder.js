@@ -32,7 +32,7 @@ var createClassBinder = function(negate)
 
 		init: function()
 		{
-			this.className = this.options.params[0] || null;
+			this.className = this.convertBindingValue(this.options.params[0]) || null;
 			this.equalsTo = true;
 			this.valueCursor = undefined;
 

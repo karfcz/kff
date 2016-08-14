@@ -24,8 +24,8 @@ var StyleBinder = createClass(
 
 	init: function()
 	{
-		this.styleProperty = this.options.params[0] || null;
-		this.styleUnit = this.options.params[1] || '';
+		this.styleProperty = this.options.params[0] ? this.convertBindingValue(this.options.params[0]) : null;
+		this.styleUnit = this.options.params[1] ? this.convertBindingValue(this.options.params[1]) : '';
 		StyleBinder._super.init.call(this);
 	},
 

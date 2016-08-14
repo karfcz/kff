@@ -30,7 +30,7 @@ var Binder = createClass(
 		this.rootCursorName = this.keyPath[0];
 		this.rootCursor = null;
 		this.dispatch = options.dispatch;
-		this.dispatchNamedParams = options.dispatchNamedParams;
+		// this.dispatchNamedParams = options.dispatchNamedParams;
 		this.currentValue = null;
 		this.value = null;
 		this.animate = options.animate;
@@ -91,7 +91,9 @@ var Binder = createClass(
 
 		if(typeof modelValue === 'function')
 		{
-			modelValue = callModelAsFunction(this.view, modelValue, this.options.modelArgs);
+			modelValue = callModelAsFunction(this.view, modelValue, this.options.modelArgs.map(this.f(function(arg){
+				return this.convertBindingValue(arg);
+			})));
 		}
 
 		if(modelValue !== 'undefined')
@@ -163,30 +165,39 @@ var Binder = createClass(
 
 		if(this.dispatch && this.dispatch.length > 0)
 		{
-			event.type = this.dispatch[0];
+			event.type = this.convertBindingValue(this.dispatch[0]);
+
 			for(i = 1, l = this.dispatch.length; i < l; i++)
 			{
-				params.push(this.convertBindingValue(this.dispatch[i]));
-			}
-			for(var p in this.dispatchNamedParams)
-			{
-				event[p] = this.convertBindingValue(this.dispatchNamedParams[p]);
+				var p = this.convertBindingValue(this.dispatch[i]);
+				if(p !== null && typeof p === 'object')
+				{
+					event[p.key] = p.value;
+				}
 			}
 		}
+
+		console.log('dspatch event', event);
 
 		this.view.dispatchEvent(event);
 	},
 
 	convertBindingValue: function(value)
 	{
-		if(typeof value === 'string' && value.charAt(0) === '@')
+		if(value == null) return value;
+		switch(value.type)
 		{
-			return this.view.getCursor(value.slice(1).replace(leadingPeriodRegex, '*.').replace(trailingPeriodRegex, '.*'));
-		}
-		else
-		{
-			if(this.options.parsers.length === 0) return convertValueType(value);
-			else return this.parse(value);
+			case 'ident':
+				return value.value;
+			case 'namedParam':
+				return {
+					key: value.name,
+					value: this.convertBindingValue(value.operand)
+				};
+			case 'cursor':
+				return this.view.getCursor(value.keyPath);
+			default:
+				return value.value;
 		}
 	},
 

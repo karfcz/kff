@@ -16,6 +16,7 @@ var Dispatcher = require('./Dispatcher');
 var Cursor = require('./Cursor');
 var CollectionBinder = require('./CollectionBinder');
 var BinderMap = require('./BinderMap');
+var matchBindings = require('./functions/parseBinding').matchBindings;
 
 var bindingRegex = /(?:([_\.a-zA-Z0-9*-]+))(?:\(([@\/.a-zA-Z0-9*,\s-]+)*\))?((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g;
 
@@ -97,20 +98,15 @@ function parseBindingRegexp(result, scope)
 		binderParams: null,
 		formatters: [],
 		parsers: [],
-		setters: [],
-		getters: [],
 		eventNames: [],
 		eventFilters: [],
 		dispatch: null,
 		dispatchNamedParams: null,
 		fill: false,
-		watchModelPath: false,
 		nopreventdef: false,
 		animate: [],
 		keyProp: [],
-		itemAliases: [],
-		filter: [],
-		sort: []
+		itemAliases: []
 	};
 
 	i = 0;
@@ -160,12 +156,6 @@ function parseBindingRegexp(result, scope)
 					ret.dispatch = [];
 					push.apply(ret.dispatch, modifierParams);
 					ret.dispatchNamedParams = parseNamedParams(ret.dispatch);
-					break;
-				case 'filter':
-					push.apply(ret.filter, modifierParams);
-					break;
-				case 'sort':
-					push.apply(ret.sort, modifierParams);
 					break;
 				case 'animate':
 					push.apply(ret.animate, modifierParams);
@@ -1195,94 +1185,291 @@ var View = createClass(
 
 		this._modelBindersMap = new BinderMap();
 
-		while((result = bindingRegex.exec(dataBindAttr)) !== null)
+		if(dataBindAttr == null) return;
+
+		// console.log('dataBindAttr', dataBindAttr)
+
+		var parsedBindings = matchBindings(dataBindAttr);
+
+		if(parsedBindings.match && parsedBindings.match.bindings)
 		{
-			modelPathArray = result[1].replace(leadingPeriodRegex, '*.').replace(trailingPeriodRegex, '.*').split('.');
+			parsedBindings = parsedBindings.match.bindings;
 
-			modelArgs = result[2];
-
-			if(modelArgs)
+			for(var i = 0, l = parsedBindings.length; i < l; i++)
 			{
-				modelArgs = modelArgs.split(commaSeparateRegex);
-				for(var k = 0, kl = modelArgs.length; k < kl; k++)
+				var parsedBinding = parsedBindings[i];
+				// console.log(parsedBinding);
+
+				if(parsedBinding.binder === 'each')
 				{
-					if(modelArgs[k].charAt(0) === '@')
+					if(process.env.NODE_ENV !== 'production')
 					{
-						modelArgs[k] = modelArgs[k].slice(1).replace(leadingPeriodRegex, '*.').replace(trailingPeriodRegex, '.*').split('.');
-					}
-				}
-			}
-
-			var keyPath = modelPathArray;
-			if(keyPath.length > 1 && keyPath[keyPath.length - 1] === '*') keyPath.pop();
-
-			ret = parseBindingRegexp(result, this.scope);
-
-			if(ret.binderName === 'each')
-			{
-				if(process.env.NODE_ENV !== 'production')
-				{
-					if(this._collectionBinder)
-					{
-						if(this.element && this.element.parentNode)
+						if(this._collectionBinder)
 						{
-							this.element.parentNode.scrollIntoView();
-							this.element.parentNode.style.outline = '2px dashed red';
+							if(this.element && this.element.parentNode)
+							{
+								this.element.parentNode.scrollIntoView();
+								this.element.parentNode.style.outline = '2px dashed red';
+							}
+							console.error('You cannot have two :each binders on the same element');
+							console.log(this.element);
 						}
-						console.error('You cannot have two :each binders on the same element');
-						console.log(this.element);
 					}
-				}
-				if(!this.options.isBoundView)
-				{
-					this._collectionBinder = new CollectionBinder({
-						view: this,
-						keyPath: keyPath,
-						collectionArgs: modelArgs,
-						filter: (ret.filter && ret.filter.length > 0) ? ret.filter[0] : null,
-						sort: (ret.sort && ret.sort.length > 0) ? ret.sort[0] : null,
-						animate: (ret.animate && ret.animate.length > 0) ? ret.animate[0] : null,
-						keyProp: (ret.keyProp && ret.keyProp.length > 0) ? ret.keyProp[0] : null
-					});
-					if(ret.itemAliases && ret.itemAliases.length > 0)
+					if(!this.options.isBoundView)
 					{
-						this._itemAlias = ret.itemAliases[0];
+						var animate = null;
+						var keyProp = null;
+						var alias = null;
+
+						if(parsedBinding.operators)
+						{
+							for(var j = 0, k = parsedBinding.operators.length; j < k; j++)
+							{
+								var operator = parsedBinding.operators[j];
+								if(operator.args && operator.args.length >= 1 && operator.args[0].type === 'ident')
+								{
+									if(operator.name === 'animate') animate = operator.args[0].value;
+									if(operator.name === 'key') keyProp = operator.args[0].value;
+									if(operator.name === 'as') alias = operator.args[0].value;
+								}
+							}
+						}
+
+						this._collectionBinder = new CollectionBinder({
+							view: this,
+							keyPath: parsedBinding.keyPath,
+							collectionArgs: parsedBinding.modelArgs,
+							animate: animate,
+							keyProp: keyProp
+						});
+
+						if(alias)
+						{
+							this._itemAlias = alias;
+						}
+						else this._itemAlias = settings.defaultItemAlias;
 					}
-					else this._itemAlias = settings.defaultItemAlias;
 				}
-			}
-			else
-			{
-				if(!ret.binderName || !(ret.binderName in View.binders)) break;
-
-				var indexed = false;
-
-				for(var j = ret.formatters.length - 1; j >= 0; j--)
+				else
 				{
-					if(ret.formatters[j].fn.indexed === true) indexed = true;
+					if(!(parsedBinding.binder in View.binders)) break;
+
+					// var indexed = false;
+					// var formatters = [];
+					// var parsers = [];
+					// var dispatch = null;
+					// var eventNames = [];
+					// var eventFilters = [];
+					var scope = this.scope;
+					var hasValue = function(v){ return v != null && 'value' in v; }
+					var isIdent = function(v){ return v != null && v.type === 'ident'; }
+					var identToParser = function(v)
+					{
+						if(scope[v.value]) return { fn: scope[v.value], args: [] };
+						else if(View.helpers[v.value]) return { fn: View.helpers[v.value], args: [] };
+					}
+					var argToValue = function(v)
+					{
+						return v.value;
+					}
+					var isNotNull = function(v)
+					{
+						return v != null;
+					}
+
+					// console.log('keyPath', parsedBinding.keyPath)
+
+					var binderConfig = {
+						view: this,
+						element: this.element,
+						params: (parsedBinding.binderArgs || []).filter(isNotNull),
+						keyPath: parsedBinding.keyPath,
+						modelArgs: (parsedBinding.modelArgs || []).filter(isNotNull),
+						formatters: [],
+						parsers: [],
+						dispatch: null,
+						// dispatchNamedParams: ret.dispatchNamedParams,
+						eventNames: [],
+						eventFilters: null,
+						fill: false,
+						nopreventdef: false,
+						animate: null,
+						indexed: false
+					};
+
+
+					if(parsedBinding.operators)
+					{
+						for(var j = 0, k = parsedBinding.operators.length; j < k; j++)
+						{
+							var operator = parsedBinding.operators[j];
+							switch(operator.name)
+							{
+								case 'format':
+								case 'f':
+									binderConfig.formatters = operator.args.filter(isIdent).map(identToParser);
+									break;
+								case 'parse':
+								case 'p':
+									binderConfig.parsers = operator.args.filter(isIdent).map(identToParser);
+									break;
+								case 'dispatch':
+									if(operator.args && operator.args.length > 0)
+									{
+										binderConfig.dispatch = operator.args;
+										console.log('dispatch', binderConfig.dispatch);
+									}
+									break;
+								case 'on':
+									if(operator.args && operator.args.length > 0)
+									{
+										binderConfig.eventNames = operator.args.filter(isIdent).map(argToValue);
+									}
+									break;
+								case 'evf':
+									binderConfig.eventFilters = operator.args.filter(isIdent).map(identToParser);
+									break;
+								case 'fill':
+									binderConfig.fill = true;
+									break;
+								case 'nopreventdef':
+									binderConfig.nopreventdef = true;
+									break;
+								case 'animate':
+									binderConfig.animate = operator.args[0].value;
+									break;
+
+							}
+
+							// if(operator.args)
+							// {
+							// 	if(operator.name === 'animate')
+
+							// 		animate = operator.args[0].value;
+							// 	if(operator.name === 'key') keyProp = operator.args[0].value;
+							// 	if(operator.name === 'as') alias = operator.args[0].value;
+							// }
+						}
+					}
+
+					for(var j = binderConfig.formatters.length - 1; j >= 0; j--)
+					{
+						if(binderConfig.formatters[j].fn.indexed === true) binderConfig.indexed = true;
+					}
+
+					var modelBinder = new View.binders[parsedBinding.binder](binderConfig);
+
+					// var modelBinder = new View.binders[parsedBinding.binder]({
+					// 	view: this,
+					// 	element: this.element,
+					// 	// params: ret.binderParams,
+					// 	keyPath: parsedBinding.binder.keyPath,
+					// 	modelArgs: modelArgs,
+					// 	formatters: formatters,
+					// 	parsers: parsers,
+					// 	dispatch: dispatch,
+					// 	// dispatchNamedParams: ret.dispatchNamedParams,
+					// 	eventNames: ret.eventNames,
+					// 	eventFilters: ret.eventFilters,
+					// 	fill: ret.fill,
+					// 	nopreventdef: ret.nopreventdef,
+					// 	animate: (ret.animate && ret.animate.length > 0) ? ret.animate[0] : null,
+					// 	indexed: indexed
+					// });
+
+					this._modelBindersMap.add(modelBinder);
 				}
-
-				var modelBinder = new View.binders[ret.binderName]({
-					view: this,
-					element: this.element,
-					params: ret.binderParams,
-					keyPath: keyPath,
-					modelArgs: modelArgs,
-					formatters: ret.formatters,
-					parsers: ret.parsers,
-					dispatch: ret.dispatch,
-					dispatchNamedParams: ret.dispatchNamedParams,
-					eventNames: ret.eventNames,
-					eventFilters: ret.eventFilters,
-					fill: ret.fill,
-					nopreventdef: ret.nopreventdef,
-					animate: (ret.animate && ret.animate.length > 0) ? ret.animate[0] : null,
-					indexed: indexed
-				});
-
-				this._modelBindersMap.add(modelBinder);
 			}
 		}
+
+
+
+		// while((result = bindingRegex.exec(dataBindAttr)) !== null)
+		// {
+		// 	modelPathArray = result[1].replace(leadingPeriodRegex, '*.').replace(trailingPeriodRegex, '.*').split('.');
+
+		// 	modelArgs = result[2];
+
+		// 	if(modelArgs)
+		// 	{
+		// 		modelArgs = modelArgs.split(commaSeparateRegex);
+		// 		for(var k = 0, kl = modelArgs.length; k < kl; k++)
+		// 		{
+		// 			if(modelArgs[k].charAt(0) === '@')
+		// 			{
+		// 				modelArgs[k] = modelArgs[k].slice(1).replace(leadingPeriodRegex, '*.').replace(trailingPeriodRegex, '.*').split('.');
+		// 			}
+		// 		}
+		// 	}
+
+		// 	var keyPath = modelPathArray;
+		// 	if(keyPath.length > 1 && keyPath[keyPath.length - 1] === '*') keyPath.pop();
+
+		// 	ret = parseBindingRegexp(result, this.scope);
+
+		// 	if(ret.binderName === 'each')
+		// 	{
+		// 		if(process.env.NODE_ENV !== 'production')
+		// 		{
+		// 			if(this._collectionBinder)
+		// 			{
+		// 				if(this.element && this.element.parentNode)
+		// 				{
+		// 					this.element.parentNode.scrollIntoView();
+		// 					this.element.parentNode.style.outline = '2px dashed red';
+		// 				}
+		// 				console.error('You cannot have two :each binders on the same element');
+		// 				console.log(this.element);
+		// 			}
+		// 		}
+		// 		if(!this.options.isBoundView)
+		// 		{
+		// 			this._collectionBinder = new CollectionBinder({
+		// 				view: this,
+		// 				keyPath: keyPath,
+		// 				collectionArgs: modelArgs,
+		// 				animate: (ret.animate && ret.animate.length > 0) ? ret.animate[0] : null,
+		// 				keyProp: (ret.keyProp && ret.keyProp.length > 0) ? ret.keyProp[0] : null
+		// 			});
+		// 			if(ret.itemAliases && ret.itemAliases.length > 0)
+		// 			{
+		// 				this._itemAlias = ret.itemAliases[0];
+		// 			}
+		// 			else this._itemAlias = settings.defaultItemAlias;
+		// 		}
+		// 	}
+		// 	else
+		// 	{
+		// 		if(!ret.binderName || !(ret.binderName in View.binders)) break;
+
+		// 		var indexed = false;
+
+		// 		for(var j = ret.formatters.length - 1; j >= 0; j--)
+		// 		{
+		// 			if(ret.formatters[j].fn.indexed === true) indexed = true;
+		// 		}
+
+		// 		var modelBinder = new View.binders[ret.binderName]({
+		// 			view: this,
+		// 			element: this.element,
+		// 			params: ret.binderParams,
+		// 			keyPath: keyPath,
+		// 			modelArgs: modelArgs,
+		// 			formatters: ret.formatters,
+		// 			parsers: ret.parsers,
+		// 			dispatch: ret.dispatch,
+		// 			dispatchNamedParams: ret.dispatchNamedParams,
+		// 			eventNames: ret.eventNames,
+		// 			eventFilters: ret.eventFilters,
+		// 			fill: ret.fill,
+		// 			nopreventdef: ret.nopreventdef,
+		// 			animate: (ret.animate && ret.animate.length > 0) ? ret.animate[0] : null,
+		// 			indexed: indexed
+		// 		});
+
+		// 		this._modelBindersMap.add(modelBinder);
+		// 	}
+		// }
 
 		// Check for invalid combination of :each and :if binders:
 		if(process.env.NODE_ENV !== 'production')

@@ -11,7 +11,7 @@
  * @returns {mixed} Property at the end of object chain or null if not found
  */
 
-var scope = window  || this;
+var scope = typeof window === 'object' ? window : this;
 
 function evalObjectPath(path, obj)
 {

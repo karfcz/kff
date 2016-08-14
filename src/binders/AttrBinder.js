@@ -24,9 +24,9 @@ var AttrBinder = createClass(
 
 	init: function()
 	{
-		this.attribute = this.options.params[0] || null;
-		this.prefix = this.options.params[1] || '';
-		this.suffix = this.options.params[2] || '';
+		this.attribute = this.options.params[0] ? this.convertBindingValue(this.options.params[0]) : null;
+		this.prefix = this.options.params[1] ? this.convertBindingValue(this.options.params[1]) : '';
+		this.suffix = this.options.params[2] ? this.convertBindingValue(this.options.params[2]) : '';
 		AttrBinder._super.init.call(this);
 	},
 
