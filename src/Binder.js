@@ -34,6 +34,7 @@ var Binder = createClass(
 		this.currentValue = null;
 		this.value = null;
 		this.animate = options.animate;
+		this.willFill = options.fill;
 	},
 
 	/**
@@ -60,7 +61,11 @@ var Binder = createClass(
 
 	afterRun: function()
 	{
-		if(this.options.fill) this.fill();
+		if(this.options.fill)
+		{
+			this.fill();
+			this.willFill = false;
+		}
 	},
 
 	/**
@@ -92,7 +97,7 @@ var Binder = createClass(
 		if(modelValue !== 'undefined')
 		{
 			formattedValue = this.format(modelValue);
-			if(force || !this.compareValues(formattedValue, this.value))
+			if(!this.willFill && (force || !this.compareValues(formattedValue, this.value)))
 			{
 				this.value = formattedValue;
 				this.currentValue = modelValue;
