@@ -18,7 +18,7 @@ function matchBindingOperatorName(input)
 
 function matchIdentifier(input)
 {
-	var match = /^[a-zA-Z_$*][0-9a-zA-Z_$-]*/.exec(input);
+	var match = /^[a-zA-Z_$*%][0-9a-zA-Z_$-]*/.exec(input);
 	if(match)
 	{
 		return { match: match[0], rest: input.slice(match[0].length)};
@@ -31,10 +31,14 @@ function matchIdentifier(input)
 
 function matchString(input)
 {
-	var match = /^\'([^\']*)\'/.exec(input);
+	var match = /^'((\\\'|\\|[^'\\]+)*)'/.exec(input);
+
+	if(match) console.log(match[1])
+
+	// var match = /^\'([^\']*)\'/.exec(input);
 	if(match)
 	{
-		return { match: match[1], rest: input.slice(match[0].length)};
+		return { match: match[1].replace("\'", '\''), rest: input.slice(match[0].length)};
 	}
 	else
 	{
@@ -57,7 +61,7 @@ function matchNumber(input)
 
 function matchBoolean(input)
 {
-	var match = /^(true|false)[^a-zA-Z0-9_$*]]/.exec(input);
+	var match = /^(true|false)[^a-zA-Z0-9_$*]/.exec(input);
 	if(match)
 	{
 		return { match: match[1], rest: input.slice(match[1].length)};
@@ -65,6 +69,19 @@ function matchBoolean(input)
 	else
 	{
 		return { error: 'Syntax error: expecting boolean ' + input };
+	}
+}
+
+function matchNull(input)
+{
+	var match = /^(null)[^a-zA-Z0-9_$*]/.exec(input);
+	if(match)
+	{
+		return { match: match[1], rest: input.slice(match[1].length)};
+	}
+	else
+	{
+		return { error: 'Syntax error: expecting null ' + input };
 	}
 }
 
@@ -101,10 +118,10 @@ var matchOr = curry(function(args, input)
 {
 	for(var i = 0; i < args.length; i++)
 	{
-		var match = args[i](input);
-		if(!match.error)
+		var result = args[i](input);
+		if(!result.error)
 		{
-			return match;
+			return result;
 		}
 	}
 
@@ -117,18 +134,18 @@ var matchSequence = curry(function(args, input)
 
 	for(var i = 0; i < args.length; i++)
 	{
-		var match = args[i](input);
-		if(!match.error)
+		var result = args[i](input);
+		if(!result.error)
 		{
-			sequence.push(match.match);
-			input = match.rest;
+			sequence.push(result.match);
+			input = result.rest;
 		}
 		else break;
 	}
 
 	if(sequence.length !== args.length)
 	{
-		return match;
+		return result;
 	}
 
 	return { match: sequence, rest: input };
@@ -143,12 +160,12 @@ function flattenArray(arr)
 
 var flattenMatch = curry(function(fn, input)
 {
-	var match = fn(input);
-	if(!match.error)
+	var result = fn(input);
+	if(!result.error)
 	{
-		return { match: flattenArray(match.match), rest: match.rest };
+		return { match: flattenArray(result.match), rest: result.rest };
 	}
-	else return match;
+	else return result;
 });
 
 var matchMultiple = curry(function(fn, input)
@@ -156,11 +173,11 @@ var matchMultiple = curry(function(fn, input)
 	var matches = [];
 
 	do {
-		var match = fn(input);
-		if(!match.error)
+		var result = fn(input);
+		if(!result.error)
 		{
-			matches.push(match.match);
-			input = match.rest;
+			matches.push(result.match);
+			input = result.rest;
 		}
 		else break;
 	} while(true)
@@ -175,19 +192,19 @@ var matchMultiple = curry(function(fn, input)
 
 var matchOptional = curry(function(fn, input)
 {
-	var match = fn(input);
+	var result = fn(input);
 
-	if(!match.error)
+	if(!result.error)
 	{
-		return match;
+		return result;
 	}
 
 	return { match: null, rest: input };
 });
 
-function getRest(match)
+function getRest(result)
 {
-	return match.rest;
+	return result.rest;
 }
 
 function odds(element, i)
@@ -200,25 +217,25 @@ function notNull(element, i)
 	return element != null;
 }
 
-function convertNullToStar(match)
+function convertNullToStar(result)
 {
-	if(match.match == null)
+	if(result.match == null)
 	{
-		match.match = '*';
+		result.match = '*';
 	}
-	return match;
+	return result;
 }
 
 function matchKeyPath(input)
 {
-	var ret = flattenMatch(matchSequence([
+	var result = flattenMatch(matchSequence([
 		matchPostProcess(convertNullToStar, matchOptional(matchIdentifier)),
 		compose(matchOptional, flattenMatch, matchMultiple, matchSequence)([matchPeriod, matchOptional(matchIdentifier) ])
 	]))(input);
 
-	if(!ret.error) ret.match = ret.match.filter(odds).filter(notNull);
+	if(!result.error) result.match = result.match.filter(odds).filter(notNull);
 
-	return ret;
+	return result;
 }
 
 var skipWhiteSpace = function(fn)
@@ -228,146 +245,160 @@ var skipWhiteSpace = function(fn)
 
 var matchPostProcess = curry(function(ppFn, fn, input)
 {
-	var match = fn(input);
+	var result = fn(input);
 
-	if(!match.error)
+	if(!result.error)
 	{
-		return ppFn(match);
+		return ppFn(result);
 	}
 
-	return match;
+	return result;
 });
 
 
-var matchCursor = matchPostProcess(function(match)
+var matchCursor = matchPostProcess(function(result)
 {
 	return {
 		match: {
 			type: 'cursor',
-			keyPath: match.match[1]
+			keyPath: result.match[1]
 		},
-		rest: match.rest
+		rest: result.rest
 	};
 }, matchSequence([matchAt, matchKeyPath]));
 
 
-var matchFunction = matchPostProcess(function(match)
+var matchFunction = matchPostProcess(function(result)
 {
 	return {
 		match: {
 			type: 'function',
-			name: match.match[0],
-			params: match.match[1]
+			name: result.match[0],
+			params: result.match[1]
 		},
-		rest: match.rest
+		rest: result.rest
 	};
 }, matchSequence([matchIdentifier, matchOperatorParams]));
 
-var matchNumberObject = matchPostProcess(function(match)
+var matchNumberObject = matchPostProcess(function(result)
 {
 	return {
 		match: {
 			type: 'number',
-			value: match.match
+			value: result.match
 		},
-		rest: match.rest
+		rest: result.rest
 	};
 }, matchNumber);
 
-var matchIdentifierObject = matchPostProcess(function(match)
+var matchIdentifierObject = matchPostProcess(function(result)
 {
 	return {
 		match: {
 			type: 'ident',
-			value: match.match
+			value: result.match
 		},
-		rest: match.rest
+		rest: result.rest
 	};
 }, matchIdentifier);
 
-var matchStringObject = matchPostProcess(function(match)
+var matchStringObject = matchPostProcess(function(result)
 {
 	return {
 		match: {
 			type: 'string',
-			value: match.match
+			value: result.match
 		},
-		rest: match.rest
+		rest: result.rest
 	};
 }, matchString);
 
-var matchBooleanObject = matchPostProcess(function(match)
+var matchBooleanObject = matchPostProcess(function(result)
 {
 	return {
 		match: {
 			type: 'boolean',
-			value: match.match === 'true'
+			value: result.match === 'true'
 		},
-		rest: match.rest
+		rest: result.rest
 	};
 }, matchBoolean);
 
-var matchNamedParam = matchPostProcess(function(match)
+var matchNullObject = matchPostProcess(function(result)
+{
+	return {
+		match: {
+			type: 'null',
+			value: null
+		},
+		rest: result.rest
+	};
+}, matchNull);
+
+
+var operands = [matchNullObject, matchBooleanObject, matchNumberObject, matchStringObject, matchIdentifierObject, matchCursor];
+
+var matchNamedParam = matchPostProcess(function(result)
 {
 	return {
 		match: {
 			type: 'namedParam',
-			name: match.match[0],
-			operand: match.match[2]
+			name: result.match[0],
+			operand: result.match[2]
 		},
-		rest: match.rest
+		rest: result.rest
 	};
-}, matchSequence([skipWhiteSpace(matchIdentifier), skipWhiteSpace(matchSingleChar(':')), skipWhiteSpace(matchOr([ matchBooleanObject, matchNumberObject, matchStringObject, matchIdentifierObject, matchCursor]))]));
+}, matchSequence([skipWhiteSpace(matchIdentifier), skipWhiteSpace(matchSingleChar(':')), skipWhiteSpace(matchOr(operands))]));
 
 
-var matchOperand = matchOr([matchBooleanObject, matchNumberObject, matchStringObject, matchNamedParam, matchFunction, matchIdentifierObject, matchCursor]);
+var matchOperand = matchOr([matchNamedParam, matchFunction].concat(operands));
 
 
 function matchOperatorParams(input)
 {
-	var match = flattenMatch(matchSequence([
+	var result = flattenMatch(matchSequence([
 		matchSingleChar('('),
 		skipWhiteSpace(matchOperand),
 		compose(matchOptional, flattenMatch, matchMultiple, matchSequence)([skipWhiteSpace(matchComma), skipWhiteSpace(matchOperand)]),
 		skipWhiteSpace(matchSingleChar(')'))
 	]))(input);
 
-	if(match.match)
+	if(result.match)
 	{
-		match = {
+		result = {
 			type: 'params',
-			match: match.match.filter(function(item){ return item !== ',' && item !== '(' && item !== ')'; }),
-			rest: match.rest
+			match: result.match.filter(function(item){ return item !== null && item !== ',' && item !== '(' && item !== ')'; }),
+			rest: result.rest
 		};
 	}
-	return match;
+	return result;
 }
 
-var matchBindingOperator = matchPostProcess(function(match)
+var matchBindingOperator = matchPostProcess(function(result)
 {
 	return {
 		match: {
 			type: 'operator',
-			name: match.match[0],
-			args: match.match[1]
+			name: result.match[0],
+			args: result.match[1] || []
 		},
-		rest: match.rest
+		rest: result.rest
 	};
 }, matchSequence([matchBindingOperatorName, matchOptional(matchOperatorParams)]));
 
 
-var matchBinding = matchPostProcess(function(match)
+var matchBinding = matchPostProcess(function(result)
 {
 	return {
 		match: {
 			type: 'binding',
-			keyPath: match.match[0],
-			modelArgs: match.match[1],
-			binder: match.match[2],
-			binderArgs: match.match[3],
-			operators: match.match[4]
+			keyPath: result.match[0],
+			modelArgs: result.match[1] || [],
+			binder: result.match[2],
+			binderArgs: result.match[3] || [],
+			operators: result.match[4] || []
 		},
-		rest: match.rest
+		rest: result.rest
 	};
 }, skipWhiteSpace(matchSequence([
 		matchKeyPath,
@@ -378,13 +409,13 @@ var matchBinding = matchPostProcess(function(match)
 	])));
 
 
-var matchBindings = matchPostProcess(function(match)
+var matchBindings = matchPostProcess(function(result)
 {
 	return {
 		match: {
-			bindings: match.match.filter(function(item){ return item !== 'eos'; }),
+			bindings: result.match.filter(function(item){ return item !== 'eos'; }),
 		},
-		rest: match.rest
+		rest: result.rest
 	};
 }, flattenMatch(matchSequence([skipWhiteSpace(matchMultiple(matchBinding)), skipWhiteSpace(matchEos)])));
 

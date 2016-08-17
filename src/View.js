@@ -18,164 +18,8 @@ var CollectionBinder = require('./CollectionBinder');
 var BinderMap = require('./BinderMap');
 var matchBindings = require('./functions/parseBinding').matchBindings;
 
-var bindingRegex = /(?:([_\.a-zA-Z0-9*-]+))(?:\(([@\/.a-zA-Z0-9*,\s-]+)*\))?((?::[a-zA-Z0-9]+(?:\((?:[^()]*)\))?)*)/g;
-
-var operatorsRegex = /:([a-zA-Z0-9]+)(?:\(([^()]*)\))?/g;
-
-var commaSeparateRegex = /\s*,\s*/;
-
-var modifierSeparateRegex = /([^{},\s]+)|({[a-zA-Z0-9,\[\]_\-\.\s@*]+})/g;
-
-var leadingPeriodRegex = /^\./;
-
-var trailingPeriodRegex = /\.$/;
 
 var push = Array.prototype.push;
-
-function parseNamedParams(params)
-{
-	var namedParams = {};
-	var param;
-	for(var j = params.length - 2; j >= 1; j -= 2)
-	{
-		param = params[j];
-		if(param[param.length - 1] === ':')
-		{
-			param = param.slice(0, -1);
-			namedParams[param] = params[j + 1];
-			params.splice(j, 2);
-		}
-	}
-	return namedParams;
-}
-
-/**
- * Parses modifier parameters of binding. Used to create parsers and formatters.
- *
- * @param {Array} modifierParams An arrray with modifier names
- * @returns {Array} Array of objects containg modifier classes that corresponds to modifier names
- */
-function parseHelpers(modifierParams, scope)
-{
-	var modifierParam, modifierArgs, modifiers = [];
-
-	for(var j = 0, l = modifierParams.length; j < l; j++)
-	{
-		modifierParam = modifierParams[j];
-
-		if(j + 1 < l && modifierParams[j + 1].indexOf('{') === 0)
-		{
-			modifierArgs = modifierParams[j + 1].match(/([^,{}]+)/g);
-			j++;
-		}
-		else
-		{
-			modifierArgs = [];
-		}
-		if(scope[modifierParam]) modifiers.push({ fn: scope[modifierParam], args: modifierArgs });
-		else if(View.helpers[modifierParam]) modifiers.push({ fn: View.helpers[modifierParam], args: modifierArgs });
-	}
-
-	return modifiers;
-}
-
-/**
- * Parses single binding expression
- *
- * @private
- * @param  {string} result           binding subexpression
- * @param  {object} scope  	A view scope where helper functions reside
- * @return {object}                  Object with parsed binding data
- */
-function parseBindingRegexp(result, scope)
-{
-	var result2, i, modifierName, modifierParams;
-
-	operatorsRegex.lastIndex = 0;
-
-	var ret = {
-		binderName: null,
-		binderParams: null,
-		formatters: [],
-		parsers: [],
-		eventNames: [],
-		eventFilters: [],
-		dispatch: null,
-		dispatchNamedParams: null,
-		fill: false,
-		nopreventdef: false,
-		animate: [],
-		keyProp: [],
-		itemAliases: []
-	};
-
-	i = 0;
-	while((result2 = operatorsRegex.exec(result[3])) !== null)
-	{
-		if(i === 0)
-		{
-			// Parse binder name and params
-			ret.binderName = result2[1];
-			ret.binderParams = result2[2];
-
-			if(ret.binderParams)
-			{
-				ret.binderParams = ret.binderParams.split(commaSeparateRegex);
-			}
-			else ret.binderParams = [];
-		}
-		else
-		{
-			modifierName = result2[1];
-			modifierParams = [];
-
-			if(result2[2])
-			{
-				modifierParams = result2[2].match(modifierSeparateRegex);
-			}
-
-			switch(modifierName){
-				case 'format':
-				case 'f':
-					push.apply(ret.formatters, parseHelpers(modifierParams, scope));
-					break;
-				case 'parse':
-				case 'p':
-					push.apply(ret.parsers, parseHelpers(modifierParams, scope));
-					break;
-				case 'on':
-					push.apply(ret.eventNames, modifierParams);
-					break;
-				case 'as':
-					push.apply(ret.itemAliases, modifierParams);
-					break;
-				case 'evf':
-					push.apply(ret.eventFilters, parseHelpers(modifierParams, scope));
-					break;
-				case 'dispatch':
-					ret.dispatch = [];
-					push.apply(ret.dispatch, modifierParams);
-					ret.dispatchNamedParams = parseNamedParams(ret.dispatch);
-					break;
-				case 'animate':
-					push.apply(ret.animate, modifierParams);
-					break;
-				case 'key':
-					push.apply(ret.keyProp, modifierParams);
-					break;
-				case 'fill':
-					ret.fill = true;
-					break;
-				case 'nopreventdef':
-					ret.nopreventdef = true;
-					break;
-			}
-		}
-		i++;
-	}
-	return ret;
-}
-
 
 function mixin(obj, properties)
 {
@@ -1181,15 +1025,26 @@ var View = createClass(
 		var dataBindAttr = this.element.getAttribute(settings.DATA_BIND_ATTR);
 		var modelName;
 
-		bindingRegex.lastIndex = 0;
-
 		this._modelBindersMap = new BinderMap();
 
 		if(dataBindAttr == null) return;
 
-		// console.log('dataBindAttr', dataBindAttr)
-
 		var parsedBindings = matchBindings(dataBindAttr);
+
+		if(process.env.NODE_ENV !== 'production')
+		{
+			if(parsedBindings.error)
+			{
+				if(this.element && this.element.parentNode)
+				{
+					this.element.parentNode.scrollIntoView();
+					this.element.parentNode.style.outline = '2px dashed red';
+				}
+				console.error('Error parsing binding expression: ');
+				console.error(parsedBindings.error);
+				console.log(this.element);
+			}
+		}
 
 		if(parsedBindings.match && parsedBindings.match.bindings)
 		{
@@ -1198,7 +1053,6 @@ var View = createClass(
 			for(var i = 0, l = parsedBindings.length; i < l; i++)
 			{
 				var parsedBinding = parsedBindings[i];
-				// console.log(parsedBinding);
 
 				if(parsedBinding.binder === 'each')
 				{
@@ -1226,7 +1080,7 @@ var View = createClass(
 							for(var j = 0, k = parsedBinding.operators.length; j < k; j++)
 							{
 								var operator = parsedBinding.operators[j];
-								if(operator.args && operator.args.length >= 1 && operator.args[0].type === 'ident')
+								if(operator.args.length >= 1 && operator.args[0].type === 'ident')
 								{
 									if(operator.name === 'animate') animate = operator.args[0].value;
 									if(operator.name === 'key') keyProp = operator.args[0].value;
@@ -1254,14 +1108,7 @@ var View = createClass(
 				{
 					if(!(parsedBinding.binder in View.binders)) break;
 
-					// var indexed = false;
-					// var formatters = [];
-					// var parsers = [];
-					// var dispatch = null;
-					// var eventNames = [];
-					// var eventFilters = [];
 					var scope = this.scope;
-					var hasValue = function(v){ return v != null && 'value' in v; }
 					var isIdent = function(v){ return v != null && v.type === 'ident'; }
 					var identToParser = function(v)
 					{
@@ -1277,14 +1124,12 @@ var View = createClass(
 						return v != null;
 					}
 
-					// console.log('keyPath', parsedBinding.keyPath)
-
 					var binderConfig = {
 						view: this,
 						element: this.element,
-						params: (parsedBinding.binderArgs || []).filter(isNotNull),
+						params: parsedBinding.binderArgs.filter(isNotNull),
 						keyPath: parsedBinding.keyPath,
-						modelArgs: (parsedBinding.modelArgs || []).filter(isNotNull),
+						modelArgs: parsedBinding.modelArgs.filter(isNotNull),
 						formatters: [],
 						parsers: [],
 						dispatch: null,
@@ -1298,57 +1143,43 @@ var View = createClass(
 					};
 
 
-					if(parsedBinding.operators)
+					for(var j = 0, k = parsedBinding.operators.length; j < k; j++)
 					{
-						for(var j = 0, k = parsedBinding.operators.length; j < k; j++)
+						var operator = parsedBinding.operators[j];
+						switch(operator.name)
 						{
-							var operator = parsedBinding.operators[j];
-							switch(operator.name)
-							{
-								case 'format':
-								case 'f':
-									binderConfig.formatters = operator.args.filter(isIdent).map(identToParser);
-									break;
-								case 'parse':
-								case 'p':
-									binderConfig.parsers = operator.args.filter(isIdent).map(identToParser);
-									break;
-								case 'dispatch':
-									if(operator.args && operator.args.length > 0)
-									{
-										binderConfig.dispatch = operator.args;
-										console.log('dispatch', binderConfig.dispatch);
-									}
-									break;
-								case 'on':
-									if(operator.args && operator.args.length > 0)
-									{
-										binderConfig.eventNames = operator.args.filter(isIdent).map(argToValue);
-									}
-									break;
-								case 'evf':
-									binderConfig.eventFilters = operator.args.filter(isIdent).map(identToParser);
-									break;
-								case 'fill':
-									binderConfig.fill = true;
-									break;
-								case 'nopreventdef':
-									binderConfig.nopreventdef = true;
-									break;
-								case 'animate':
-									binderConfig.animate = operator.args[0].value;
-									break;
-
-							}
-
-							// if(operator.args)
-							// {
-							// 	if(operator.name === 'animate')
-
-							// 		animate = operator.args[0].value;
-							// 	if(operator.name === 'key') keyProp = operator.args[0].value;
-							// 	if(operator.name === 'as') alias = operator.args[0].value;
-							// }
+							case 'format':
+							case 'f':
+								binderConfig.formatters = operator.args.filter(isIdent).map(identToParser);
+								break;
+							case 'parse':
+							case 'p':
+								binderConfig.parsers = operator.args.filter(isIdent).map(identToParser);
+								break;
+							case 'dispatch':
+								if(operator.args.length > 0)
+								{
+									binderConfig.dispatch = operator.args;
+								}
+								break;
+							case 'on':
+								if(operator.args.length > 0)
+								{
+									binderConfig.eventNames = operator.args.filter(isIdent).map(argToValue);
+								}
+								break;
+							case 'evf':
+								binderConfig.eventFilters = operator.args.filter(isIdent).map(identToParser);
+								break;
+							case 'fill':
+								binderConfig.fill = true;
+								break;
+							case 'nopreventdef':
+								binderConfig.nopreventdef = true;
+								break;
+							case 'animate':
+								binderConfig.animate = operator.args[0].value;
+								break;
 						}
 					}
 
@@ -1359,117 +1190,10 @@ var View = createClass(
 
 					var modelBinder = new View.binders[parsedBinding.binder](binderConfig);
 
-					// var modelBinder = new View.binders[parsedBinding.binder]({
-					// 	view: this,
-					// 	element: this.element,
-					// 	// params: ret.binderParams,
-					// 	keyPath: parsedBinding.binder.keyPath,
-					// 	modelArgs: modelArgs,
-					// 	formatters: formatters,
-					// 	parsers: parsers,
-					// 	dispatch: dispatch,
-					// 	// dispatchNamedParams: ret.dispatchNamedParams,
-					// 	eventNames: ret.eventNames,
-					// 	eventFilters: ret.eventFilters,
-					// 	fill: ret.fill,
-					// 	nopreventdef: ret.nopreventdef,
-					// 	animate: (ret.animate && ret.animate.length > 0) ? ret.animate[0] : null,
-					// 	indexed: indexed
-					// });
-
 					this._modelBindersMap.add(modelBinder);
 				}
 			}
 		}
-
-
-
-		// while((result = bindingRegex.exec(dataBindAttr)) !== null)
-		// {
-		// 	modelPathArray = result[1].replace(leadingPeriodRegex, '*.').replace(trailingPeriodRegex, '.*').split('.');
-
-		// 	modelArgs = result[2];
-
-		// 	if(modelArgs)
-		// 	{
-		// 		modelArgs = modelArgs.split(commaSeparateRegex);
-		// 		for(var k = 0, kl = modelArgs.length; k < kl; k++)
-		// 		{
-		// 			if(modelArgs[k].charAt(0) === '@')
-		// 			{
-		// 				modelArgs[k] = modelArgs[k].slice(1).replace(leadingPeriodRegex, '*.').replace(trailingPeriodRegex, '.*').split('.');
-		// 			}
-		// 		}
-		// 	}
-
-		// 	var keyPath = modelPathArray;
-		// 	if(keyPath.length > 1 && keyPath[keyPath.length - 1] === '*') keyPath.pop();
-
-		// 	ret = parseBindingRegexp(result, this.scope);
-
-		// 	if(ret.binderName === 'each')
-		// 	{
-		// 		if(process.env.NODE_ENV !== 'production')
-		// 		{
-		// 			if(this._collectionBinder)
-		// 			{
-		// 				if(this.element && this.element.parentNode)
-		// 				{
-		// 					this.element.parentNode.scrollIntoView();
-		// 					this.element.parentNode.style.outline = '2px dashed red';
-		// 				}
-		// 				console.error('You cannot have two :each binders on the same element');
-		// 				console.log(this.element);
-		// 			}
-		// 		}
-		// 		if(!this.options.isBoundView)
-		// 		{
-		// 			this._collectionBinder = new CollectionBinder({
-		// 				view: this,
-		// 				keyPath: keyPath,
-		// 				collectionArgs: modelArgs,
-		// 				animate: (ret.animate && ret.animate.length > 0) ? ret.animate[0] : null,
-		// 				keyProp: (ret.keyProp && ret.keyProp.length > 0) ? ret.keyProp[0] : null
-		// 			});
-		// 			if(ret.itemAliases && ret.itemAliases.length > 0)
-		// 			{
-		// 				this._itemAlias = ret.itemAliases[0];
-		// 			}
-		// 			else this._itemAlias = settings.defaultItemAlias;
-		// 		}
-		// 	}
-		// 	else
-		// 	{
-		// 		if(!ret.binderName || !(ret.binderName in View.binders)) break;
-
-		// 		var indexed = false;
-
-		// 		for(var j = ret.formatters.length - 1; j >= 0; j--)
-		// 		{
-		// 			if(ret.formatters[j].fn.indexed === true) indexed = true;
-		// 		}
-
-		// 		var modelBinder = new View.binders[ret.binderName]({
-		// 			view: this,
-		// 			element: this.element,
-		// 			params: ret.binderParams,
-		// 			keyPath: keyPath,
-		// 			modelArgs: modelArgs,
-		// 			formatters: ret.formatters,
-		// 			parsers: ret.parsers,
-		// 			dispatch: ret.dispatch,
-		// 			dispatchNamedParams: ret.dispatchNamedParams,
-		// 			eventNames: ret.eventNames,
-		// 			eventFilters: ret.eventFilters,
-		// 			fill: ret.fill,
-		// 			nopreventdef: ret.nopreventdef,
-		// 			animate: (ret.animate && ret.animate.length > 0) ? ret.animate[0] : null,
-		// 			indexed: indexed
-		// 		});
-
-		// 		this._modelBindersMap.add(modelBinder);
-		// 	}
-		// }
 
 		// Check for invalid combination of :each and :if binders:
 		if(process.env.NODE_ENV !== 'production')

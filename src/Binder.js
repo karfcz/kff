@@ -170,14 +170,13 @@ var Binder = createClass(
 			for(i = 1, l = this.dispatch.length; i < l; i++)
 			{
 				var p = this.convertBindingValue(this.dispatch[i]);
-				if(p !== null && typeof p === 'object')
+				if(p !== null && typeof p === 'object' && 'key' in p)
 				{
 					event[p.key] = p.value;
 				}
+				else params.push(p);
 			}
 		}
-
-		console.log('dspatch event', event);
 
 		this.view.dispatchEvent(event);
 	},
