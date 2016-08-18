@@ -815,7 +815,7 @@ var View = createClass(
 								this.element.scrollIntoView();
 								this.element.style.outline = '2px dashed red';
 							}
-							throw(e);
+							throw e;
 						}
 					}
 					else
