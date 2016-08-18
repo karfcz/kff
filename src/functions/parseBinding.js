@@ -32,10 +32,6 @@ function matchIdentifier(input)
 function matchString(input)
 {
 	var match = /^'((\\\'|\\|[^'\\]+)*)'/.exec(input);
-
-	if(match) console.log(match[1])
-
-	// var match = /^\'([^\']*)\'/.exec(input);
 	if(match)
 	{
 		return { match: match[1].replace("\'", '\''), rest: input.slice(match[0].length)};
