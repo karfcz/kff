@@ -25,7 +25,20 @@ function matchIdentifier(input)
 	}
 	else
 	{
-		return { error: 'Syntax error: expectin identifier ' + input };
+		return { error: 'Syntax error: expecting identifier ' + input };
+	}
+}
+
+function matchUnquotedString(input)
+{
+	var match = /^[^,()):]*/.exec(input);
+	if(match)
+	{
+		return { match: match[0], rest: input.slice(match[0].length)};
+	}
+	else
+	{
+		return { error: 'Syntax error: expecting unquoted string ' + input };
 	}
 }
 
@@ -298,6 +311,17 @@ var matchIdentifierObject = matchPostProcess(function(result)
 	};
 }, matchIdentifier);
 
+var matchUnquotedStringObject = matchPostProcess(function(result)
+{
+	return {
+		match: {
+			type: 'ident',
+			value: result.match
+		},
+		rest: result.rest
+	};
+}, matchUnquotedString);
+
 var matchStringObject = matchPostProcess(function(result)
 {
 	return {
@@ -332,7 +356,7 @@ var matchNullObject = matchPostProcess(function(result)
 }, matchNull);
 
 
-var operands = [matchNullObject, matchBooleanObject, matchNumberObject, matchStringObject, matchIdentifierObject, matchCursor];
+var operands = [matchNullObject, matchBooleanObject, matchNumberObject, matchCursor, matchStringObject, matchUnquotedStringObject];
 
 var matchNamedParam = matchPostProcess(function(result)
 {

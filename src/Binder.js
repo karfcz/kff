@@ -187,6 +187,7 @@ var Binder = createClass(
 		switch(value.type)
 		{
 			case 'ident':
+			case 'string':
 				return value.value;
 			case 'namedParam':
 				return {
