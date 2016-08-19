@@ -350,12 +350,29 @@ var matchNamedParam = matchPostProcess(function(result)
 var matchOperand = matchOr([matchNamedParam, matchFunction].concat(operands));
 
 
+function matchOperatorParamsList(input)
+{
+	var result = flattenMatch(matchSequence([
+		skipWhiteSpace(matchOperand),
+		compose(matchOptional, flattenMatch, matchMultiple, matchSequence)([skipWhiteSpace(matchComma), skipWhiteSpace(matchOperand)])
+	]))(input);
+
+	if(result.match)
+	{
+		result = {
+			type: 'params',
+			match: result.match.filter(function(item){ return item !== null && item !== ','; }),
+			rest: result.rest
+		};
+	}
+	return result;
+}
+
 function matchOperatorParams(input)
 {
 	var result = flattenMatch(matchSequence([
 		matchSingleChar('('),
-		skipWhiteSpace(matchOperand),
-		compose(matchOptional, flattenMatch, matchMultiple, matchSequence)([skipWhiteSpace(matchComma), skipWhiteSpace(matchOperand)]),
+		matchOptional(matchOperatorParamsList),
 		skipWhiteSpace(matchSingleChar(')'))
 	]))(input);
 
@@ -363,7 +380,7 @@ function matchOperatorParams(input)
 	{
 		result = {
 			type: 'params',
-			match: result.match.filter(function(item){ return item !== null && item !== ',' && item !== '(' && item !== ')'; }),
+			match: result.match.filter(function(item){ return item !== '(' && item !== ')'; }),
 			rest: result.rest
 		};
 	}
