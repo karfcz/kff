@@ -12,11 +12,42 @@ describe('matchIdentifier', function()
 		expect(result.match).to.equal(4);
 	});
 
+	it('should match a positive float number', function()
+	{
+		var result = kff.parser.matchNumber('+42.57889842');
+		expect(result.match).to.equal(42.57889842);
+	});
+
 	it('should match a negative float number', function()
 	{
 		var result = kff.parser.matchNumber('-42.85');
 		expect(result.match).to.equal(-42.85);
 	});
+
+	it('should match a positive float number with exponent', function()
+	{
+		var result = kff.parser.matchNumber('+42.5788e-12');
+		expect(result.match).to.equal(42.5788e-12);
+	});
+
+	it('should match a hexadecimal number', function()
+	{
+		var result = kff.parser.matchNumber('0x08af');
+		expect(result.match).to.equal(0x08af);
+	});
+
+	it('should match an octal number', function()
+	{
+		var result = kff.parser.matchNumber('0o573');
+		expect(result.match).to.equal(0o573);
+	});
+
+	it('should match a binary number', function()
+	{
+		var result = kff.parser.matchNumber('0b0110101110');
+		expect(result.match).to.equal(0b0110101110);
+	});
+
 
 	it('should match an indentifier', function()
 	{
