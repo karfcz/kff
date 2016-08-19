@@ -5,11 +5,11 @@ describe('kff.ClassBinder', function()
 	it('should set a class through class binder', function()
 	{
 		var myModel = new kff.Cursor({
-			name: 'Karel'
+			name: 'foo'
 		});
 
 		var div = document.createElement('div');
-		div.setAttribute('data-kff-bind', 'myModel.name:class(myClass, Petr)');
+		div.setAttribute('data-kff-bind', 'myModel.name:class(myClass, bar)');
 		var view = new kff.View(
 		{
 			element: div,
@@ -17,10 +17,31 @@ describe('kff.ClassBinder', function()
 				myModel: myModel
 			}
 		});
-		view.renderAll();
-		view.runAll();
+		view.initAll();
 		expect(div.classList.contains('myClass')).to.equal(false);
-		myModel.setIn('name', 'Petr');
+		myModel.setIn('name', 'bar');
+		view.refreshAll();
+		expect(div.classList.contains('myClass')).to.equal(true);
+	});
+
+	it('should set a class through class binder using truthy value', function()
+	{
+		var myModel = new kff.Cursor({
+			name: 0
+		});
+
+		var div = document.createElement('div');
+		div.setAttribute('data-kff-bind', 'myModel.name:class(myClass)');
+		var view = new kff.View(
+		{
+			element: div,
+			scope: {
+				myModel: myModel
+			}
+		});
+		view.initAll();
+		expect(div.classList.contains('myClass')).to.equal(false);
+		myModel.setIn('name', 1);
 		view.refreshAll();
 		expect(div.classList.contains('myClass')).to.equal(true);
 	});
@@ -28,8 +49,8 @@ describe('kff.ClassBinder', function()
 	it('should set a class through class binder using dynamic scope value lookup', function()
 	{
 		var myModel = new kff.Cursor({
-			name: 'Karel',
-			value: 'Petr'
+			name: 'foo',
+			value: 'bar'
 		});
 
 		var div = document.createElement('div');
@@ -42,10 +63,9 @@ describe('kff.ClassBinder', function()
 				myModel: myModel
 			}
 		});
-		view.renderAll();
-		view.runAll();
+		view.initAll();
 		expect(div.classList.contains('myClass')).to.equal(false);
-		myModel.setIn('name', 'Petr');
+		myModel.setIn('name', 'bar');
 		view.refreshAll();
 		expect(div.classList.contains('myClass')).to.equal(true);
 	});
@@ -53,11 +73,11 @@ describe('kff.ClassBinder', function()
 	it('should set a class through classnot binder', function()
 	{
 		var myModel = new kff.Cursor({
-			name: 'Karel'
+			name: 'foo'
 		});
 
 		var div = document.createElement('div');
-		div.setAttribute('data-kff-bind', 'myModel.name:classnot(myClass, Petr)');
+		div.setAttribute('data-kff-bind', 'myModel.name:classnot(myClass, bar)');
 
 		var view = new kff.View(
 		{
@@ -66,10 +86,9 @@ describe('kff.ClassBinder', function()
 				myModel: myModel
 			}
 		});
-		view.renderAll();
-		view.runAll();
+		view.initAll();
 		expect(div.classList.contains('myClass')).to.equal(true);
-		myModel.setIn('name', 'Petr');
+		myModel.setIn('name', 'bar');
 		view.refreshAll();
 		expect(div.classList.contains('myClass')).to.equal(false);
 	});

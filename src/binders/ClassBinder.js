@@ -92,9 +92,11 @@ var createClassBinder = function(negate)
 					this.equalsTo = this.valueCursor.get();
 					if(this.equalsTo == null) this.equalsTo = null;
 				}
+				if(negate) return value !== this.equalsTo;
+				else return value === this.equalsTo;
 			}
-			if(negate) return value !== this.equalsTo;
-			else return value === this.equalsTo;
+			if(negate) return !value;
+			else return !!value;
 		}
 	});
 
