@@ -57,7 +57,8 @@ function matchString(input)
 
 function matchNumber(input)
 {
-	var match = /^[+-]?\d+(\.\d+)?/.exec(input);
+	var match = /^[+-]?((0(b|B)[0|1]+)|(0(o|O)[0-7]+)|(0(x|X)[0-9a-fA-F]+)|(\d+(\.\d+)?((e|E)(\+|\-)?\d+)?))/.exec(input);
+
 	if(match)
 	{
 		return { match: Number(match[0]), rest: input.slice(match[0].length)};
