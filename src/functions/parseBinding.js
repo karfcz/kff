@@ -95,6 +95,19 @@ function matchNull(input)
 	}
 }
 
+function matchUndefined(input)
+{
+	var match = /^(undefined)[^a-zA-Z0-9_$*]/.exec(input);
+	if(match)
+	{
+		return { match: match[1], rest: input.slice(match[1].length)};
+	}
+	else
+	{
+		return { error: 'Syntax error: expecting undefined ' + input };
+	}
+}
+
 function matchEos(input)
 {
 	var match = input.length === 0;
@@ -356,8 +369,19 @@ var matchNullObject = matchPostProcess(function(result)
 	};
 }, matchNull);
 
+var matchUndefinedObject = matchPostProcess(function(result)
+{
+	return {
+		match: {
+			type: 'undefined',
+			value: undefined
+		},
+		rest: result.rest
+	};
+}, matchUndefined);
 
-var operands = [matchNullObject, matchBooleanObject, matchNumberObject, matchCursor, matchStringObject, matchUnquotedStringObject];
+
+var operands = [matchNullObject, matchUndefinedObject, matchBooleanObject, matchNumberObject, matchCursor, matchStringObject, matchUnquotedStringObject];
 
 var matchNamedParam = matchPostProcess(function(result)
 {
