@@ -152,7 +152,9 @@ var createInsertBinder = function(negate, force){
 
 					if(parentNode)
 					{
-						nodeRemove(parentNode, this.element, this.f(function()
+						var removeFn = this.isRun ? nodeRemove : removeChild;
+
+						removeFn(parentNode, this.element, this.f(function()
 						{
 							if(force && this.isRendered)
 							{
