@@ -1,9 +1,11 @@
 
 function deepFreeze(o)
 {
+		try {
 	if(typeof o === 'object' && o !== null)
 	{
 		if(!Object.isFrozen(o)) Object.freeze(o);
+
 
 		Object.getOwnPropertyNames(o).forEach(function (prop)
 		{
@@ -14,6 +16,10 @@ function deepFreeze(o)
 		});
 
 	}
+		}
+		catch(e) {
+			console.log('fr', o);
+		}
 
 	return o;
 };

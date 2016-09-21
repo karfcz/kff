@@ -29,10 +29,10 @@ function imset(keypath, value, obj)
 		root = fn(obj);
 	}
 
-	if(process.env.NODE_ENV !== 'production')
-	{
-		deepFreeze(root);
-	}
+	// if(process.env.NODE_ENV !== 'production')
+	// {
+	// 	deepFreeze(root);
+	// }
 
 	return root;
 }

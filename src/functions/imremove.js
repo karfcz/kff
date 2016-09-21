@@ -26,10 +26,10 @@ function imremove(keypath, obj)
 		}
 	}
 
-	if(process.env.NODE_ENV !== 'production')
-	{
-		deepFreeze(root);
-	}
+	// if(process.env.NODE_ENV !== 'production')
+	// {
+	// 	deepFreeze(root);
+	// }
 	return root;
 }
 

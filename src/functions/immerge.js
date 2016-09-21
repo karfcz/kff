@@ -16,20 +16,20 @@ function immerge(source, target)
 			if(source.hasOwnProperty(key))
 			{
 				clone[key] = immerge(source[key], target[key]);
-				if(process.env.NODE_ENV !== 'production')
-				{
-					deepFreeze(clone[key]);
-				}
+				// if(process.env.NODE_ENV !== 'production')
+				// {
+				// 	deepFreeze(clone[key]);
+				// }
 			}
 			else
 			{
 				clone[key] = target[key];
 			}
 		}
-		if(process.env.NODE_ENV !== 'production')
-		{
-			Object.freeze(clone);
-		}
+		// if(process.env.NODE_ENV !== 'production')
+		// {
+		// 	Object.freeze(clone);
+		// }
 		return clone;
 	}
 	else if(Array.isArray(source) && Array.isArray(target))
@@ -39,10 +39,10 @@ function immerge(source, target)
 		{
 			if(i in target) clone[i] = immerge(clone[i], target[i]);
 		}
-		if(process.env.NODE_ENV !== 'production')
-		{
-			deepFreeze(clone);
-		}
+		// if(process.env.NODE_ENV !== 'production')
+		// {
+		// 	deepFreeze(clone);
+		// }
 		return clone;
 	}
 	else

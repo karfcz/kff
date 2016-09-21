@@ -21,10 +21,10 @@ var Cursor = createClass(
 		else
 		{
 			this.superRoot = { root: root };
-			if(process.env.NODE_ENV !== 'production')
-			{
-				deepFreeze(root);
-			}
+			// if(process.env.NODE_ENV !== 'production')
+			// {
+			// 	deepFreeze(root);
+			// }
 		}
 	},
 
