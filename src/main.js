@@ -51,6 +51,8 @@ module.exports = {
 	TextBinder: require('./binders/TextBinder'),
 	ValueBinder: require('./binders/ValueBinder'),
 	IfBinder: require('./binders/InsertBinder').IfBinder,
-	IfNotBinder: require('./binders/InsertBinder').IfNotBinder
+	IfNotBinder: require('./binders/InsertBinder').IfNotBinder,
+	TextAppendBinder: require('./binders/TextAppendBinder'),
+	TextPrependBinder: require('./binders/TextPrependBinder')
 };
 
