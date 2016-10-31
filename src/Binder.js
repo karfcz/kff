@@ -196,6 +196,10 @@ var Binder = createClass(
 				};
 			case 'cursor':
 				return this.view.getCursor(value.keyPath);
+			case 'cursorValue':
+				var cursor = this.view.getCursor(value.keyPath);
+				if(cursor instanceof Cursor) return cursor.get();
+				else return undefined;
 			default:
 				return value.value;
 		}

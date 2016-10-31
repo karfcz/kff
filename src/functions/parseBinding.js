@@ -290,6 +290,17 @@ var matchCursor = matchPostProcess(function(result)
 	};
 }, matchSequence([matchAt, matchKeyPath]));
 
+var matchCursorValue = matchPostProcess(function(result)
+{
+	return {
+		match: {
+			type: 'cursorValue',
+			keyPath: result.match[2]
+		},
+		rest: result.rest
+	};
+}, matchSequence([matchAt, matchAt, matchKeyPath]));
+
 
 var matchFunction = matchPostProcess(function(result)
 {
@@ -381,7 +392,7 @@ var matchUndefinedObject = matchPostProcess(function(result)
 }, matchUndefined);
 
 
-var operands = [matchNullObject, matchUndefinedObject, matchBooleanObject, matchNumberObject, matchCursor, matchStringObject, matchUnquotedStringObject];
+var operands = [matchNullObject, matchUndefinedObject, matchBooleanObject, matchNumberObject, matchCursorValue, matchCursor, matchStringObject, matchUnquotedStringObject];
 
 var matchNamedParam = matchPostProcess(function(result)
 {
@@ -498,6 +509,7 @@ module.exports = {
 	matchBindingOperatorName: matchBindingOperatorName,
 	matchOr: matchOr,
 	matchCursor: matchCursor,
+	matchCursorValue: matchCursorValue,
 	skipWhiteSpace: skipWhiteSpace,
 	matchOperatorParams: matchOperatorParams,
 	matchBinding: matchBinding,
