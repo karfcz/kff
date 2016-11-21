@@ -22,7 +22,8 @@ export {default as noop} from './functions/noop.js';
 export {default as afterRepaint} from './functions/afterRepaint.js';
 export {default as viewClassFactory} from './functions/viewClassFactory.js';
 
-export * from './functions/parseBinding.js';
+import * as parser from './functions/parseBinding.js';
+export {parser};
 
 export {default as Cursor} from './Cursor.js';
 export {default as EventStream} from './EventStream.js';

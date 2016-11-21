@@ -1,4 +1,4 @@
-if(typeof require === 'function') var kff = require('../build/kff.js');
+if(typeof require === 'function') var kff = require('../dist/kff-cjs.js');
 
 describe('kff.extends', function()
 {

@@ -441,7 +441,7 @@
 			root = fn(obj);
 		}
 
-		// if(process.env.NODE_ENV !== 'production')
+		// if("production" !== 'production')
 		// {
 		// 	deepFreeze(root);
 		// }
@@ -473,7 +473,7 @@
 			}
 		}
 
-		// if(process.env.NODE_ENV !== 'production')
+		// if("production" !== 'production')
 		// {
 		// 	deepFreeze(root);
 		// }
@@ -494,7 +494,7 @@
 				if(source.hasOwnProperty(key))
 				{
 					clone[key] = immerge(source[key], target[key]);
-					// if(process.env.NODE_ENV !== 'production')
+					// if("production" !== 'production')
 					// {
 					// 	deepFreeze(clone[key]);
 					// }
@@ -504,7 +504,7 @@
 					clone[key] = target[key];
 				}
 			}
-			// if(process.env.NODE_ENV !== 'production')
+			// if("production" !== 'production')
 			// {
 			// 	Object.freeze(clone);
 			// }
@@ -517,7 +517,7 @@
 			{
 				if(i in target) clone[i] = immerge(clone[i], target[i]);
 			}
-			// if(process.env.NODE_ENV !== 'production')
+			// if("production" !== 'production')
 			// {
 			// 	deepFreeze(clone);
 			// }
@@ -1044,6 +1044,23 @@
 		return string.slice(first);
 	}
 
+
+
+
+	var parseBinding = Object.freeze({
+		matchIdentifier: matchIdentifier,
+		matchNumber: matchNumber,
+		matchKeyPath: matchKeyPath,
+		matchBindingOperatorName: matchBindingOperatorName,
+		matchOr: matchOr,
+		matchCursor: matchCursor,
+		matchCursorValue: matchCursorValue,
+		skipWhiteSpace: skipWhiteSpace,
+		matchOperatorParams: matchOperatorParams,
+		matchBinding: matchBinding,
+		matchBindings: matchBindings
+	});
+
 	var Cursor = createClass(
 	{
 		constructor: function(root, keyPath)
@@ -1059,7 +1076,7 @@
 			else
 			{
 				this.superRoot = { root: root };
-				// if(process.env.NODE_ENV !== 'production')
+				// if("production" !== 'production')
 				// {
 				// 	deepFreeze(root);
 				// }
@@ -1581,13 +1598,6 @@
 			this.processors = [processsArrayEvent, processsEventStreamEvent, processsPromiseEvent, processsActionEvent];
 			if(processors && Array.isArray(processors))
 			{
-				if(process.env.NODE_ENV !== 'production')
-				{
-					if(!Array.isArray(processors))
-					{
-						log('Second argument of Dispatcher must be an Array', processors);
-					}
-				}
 				this.processors = this.processors.concat(processors);
 			}
 			this.registerActions(actions);
@@ -1631,15 +1641,7 @@
 					if(typeof actions[action] === 'function') {
 						this.actionStreams[action] = this.eventStream.filter(filterByEventType(action)).on(this.createCallback(actions[action]));
 					}
-					else if(process.env.NODE_ENV !== 'production')
-					{
-						if(action !== '__esModule')
-						{
-							log('Dispatcher action "' + action + '" is not a function (registerActions)');
-							log('Actions object:');
-							log(actions);
-						}
-					}
+					else {}
 				}
 			}
 		},
@@ -3081,27 +3083,6 @@
 				{
 					if(view.dispatcher !== null && view.dispatcher.hasAction(event.type))
 					{
-						if(process.env.NODE_ENV !== 'production')
-						{
-							try {
-								view.dispatcher.trigger(event);
-							}
-							catch(e)
-							{
-								console.error('Caught exception in ' + this.element.getAttribute('data-kff-view') + '#dispatchEvent');
-								console.info('View element', this.element);
-								console.info('View object', this);
-								console.info('Action object', event);
-								console.info('Original error follows…');
-								if(this.element)
-								{
-									this.element.scrollIntoView();
-									this.element.style.outline = '2px dashed red';
-								}
-								throw e;
-							}
-						}
-						else
 						{
 							view.dispatcher.trigger(event);
 						}
@@ -3314,21 +3295,6 @@
 
 			var parsedBindings = matchBindings(dataBindAttr);
 
-			if(process.env.NODE_ENV !== 'production')
-			{
-				if(parsedBindings.error)
-				{
-					if(this.element && this.element.parentNode)
-					{
-						this.element.parentNode.scrollIntoView();
-						this.element.parentNode.style.outline = '2px dashed red';
-					}
-					console.error('Error parsing binding expression: ');
-					console.error(parsedBindings.error);
-					console.log(this.element);
-				}
-			}
-
 			if(parsedBindings.match && parsedBindings.match.bindings)
 			{
 				parsedBindings = parsedBindings.match.bindings;
@@ -3339,19 +3305,6 @@
 
 					if(parsedBinding.binder === 'each')
 					{
-						if(process.env.NODE_ENV !== 'production')
-						{
-							if(this._collectionBinder)
-							{
-								if(this.element && this.element.parentNode)
-								{
-									this.element.parentNode.scrollIntoView();
-									this.element.parentNode.style.outline = '2px dashed red';
-								}
-								console.error('You cannot have two :each binders on the same element');
-								console.log(this.element);
-							}
-						}
 						if(!this.options.isBoundView)
 						{
 							var animate = null;
@@ -3479,32 +3432,7 @@
 			}
 
 			// Check for invalid combination of :each and :if binders:
-			if(process.env.NODE_ENV !== 'production')
-			{
-				var ifBinders = this._modelBindersMap.binders.filter(function(binder){ return binder instanceof View.binders.if || binder instanceof View.binders.ifnot; });
-
-				if(this._collectionBinder && ifBinders.length > 0)
-				{
-					if(this.element && this.element.parentNode)
-					{
-						this.element.parentNode.scrollIntoView();
-						this.element.parentNode.style.outline = '2px dashed red';
-					}
-					console.error('You cannot combine :each binder with :if binder on the same element');
-					console.log(this.element);
-				}
-
-				if(ifBinders.length > 2)
-				{
-					if(this.element && this.element.parentNode)
-					{
-						this.element.parentNode.scrollIntoView();
-						this.element.parentNode.style.outline = '2px dashed red';
-					}
-					console.error('You cannot combine multiple :if binders on the same element');
-					console.log(this.element);
-				}
-			}
+			
 
 		},
 
@@ -5147,6 +5075,7 @@
 
 
 	var kff$1 = Object.freeze({
+		parser: parseBinding,
 		settings: settings,
 		arrayConcat: arrayConcat,
 		arrayIndexOf: arrayIndexOf,
@@ -5197,18 +5126,7 @@
 		ClassBinder: ClassBinder,
 		ClassNotBinder: ClassNotBinder,
 		IfBinder: IfBinder,
-		IfNotBinder: IfNotBinder,
-		matchIdentifier: matchIdentifier,
-		matchNumber: matchNumber,
-		matchKeyPath: matchKeyPath,
-		matchBindingOperatorName: matchBindingOperatorName,
-		matchOr: matchOr,
-		matchCursor: matchCursor,
-		matchCursorValue: matchCursorValue,
-		skipWhiteSpace: skipWhiteSpace,
-		matchOperatorParams: matchOperatorParams,
-		matchBinding: matchBinding,
-		matchBindings: matchBindings
+		IfNotBinder: IfNotBinder
 	});
 
 	return kff$1;

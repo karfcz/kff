@@ -1,3 +1,7 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
 var settings = {
 	/**
 	 * Data-attribute name used for view names
@@ -5212,4 +5216,56 @@ var kff$1 = Object.freeze({
 	IfNotBinder: IfNotBinder
 });
 
-export { parseBinding as parser, settings, arrayConcat, arrayIndexOf, compareArrays, bindFn, createClass, deepMixins, extend, isPlainObject, log, mixins, setImmediate$1 as setImmediate, curry, compose, map, imclone, imset, imremove, immerge, noop, afterRepaint, viewClassFactory, Cursor, EventStream, View, BinderMap, Binder, CollectionBinder, ModelView, Dispatcher, EventBinder, AttrBinder, CheckBinder, DisabledBinder, DisabledNotBinder, StyleBinder, ClickBinder, DoubleClickBinder, FocusBinder, BlurBinder, FocusBlurBinder, HtmlBinder, RadioBinder, TextBinder, ValueBinder, TextAppendBinder, TextPrependBinder, ClassBinder, ClassNotBinder, IfBinder, IfNotBinder };export default kff$1;
+exports['default'] = kff$1;
+exports.parser = parseBinding;
+exports.settings = settings;
+exports.arrayConcat = arrayConcat;
+exports.arrayIndexOf = arrayIndexOf;
+exports.compareArrays = compareArrays;
+exports.bindFn = bindFn;
+exports.createClass = createClass;
+exports.deepMixins = deepMixins;
+exports.extend = extend;
+exports.isPlainObject = isPlainObject;
+exports.log = log;
+exports.mixins = mixins;
+exports.setImmediate = setImmediate$1;
+exports.curry = curry;
+exports.compose = compose;
+exports.map = map;
+exports.imclone = imclone;
+exports.imset = imset;
+exports.imremove = imremove;
+exports.immerge = immerge;
+exports.noop = noop;
+exports.afterRepaint = afterRepaint;
+exports.viewClassFactory = viewClassFactory;
+exports.Cursor = Cursor;
+exports.EventStream = EventStream;
+exports.View = View;
+exports.BinderMap = BinderMap;
+exports.Binder = Binder;
+exports.CollectionBinder = CollectionBinder;
+exports.ModelView = ModelView;
+exports.Dispatcher = Dispatcher;
+exports.EventBinder = EventBinder;
+exports.AttrBinder = AttrBinder;
+exports.CheckBinder = CheckBinder;
+exports.DisabledBinder = DisabledBinder;
+exports.DisabledNotBinder = DisabledNotBinder;
+exports.StyleBinder = StyleBinder;
+exports.ClickBinder = ClickBinder;
+exports.DoubleClickBinder = DoubleClickBinder;
+exports.FocusBinder = FocusBinder;
+exports.BlurBinder = BlurBinder;
+exports.FocusBlurBinder = FocusBlurBinder;
+exports.HtmlBinder = HtmlBinder;
+exports.RadioBinder = RadioBinder;
+exports.TextBinder = TextBinder;
+exports.ValueBinder = ValueBinder;
+exports.TextAppendBinder = TextAppendBinder;
+exports.TextPrependBinder = TextPrependBinder;
+exports.ClassBinder = ClassBinder;
+exports.ClassNotBinder = ClassNotBinder;
+exports.IfBinder = IfBinder;
+exports.IfNotBinder = IfNotBinder;

@@ -19,7 +19,7 @@ module.exports = function(config) {
     files: [
         './lib/jquery.js',
         './lib/bind.js',
-        './build/kff.js',
+        './dist/kff.js',
         './test/*.js',
         './test/browser/*.js'
     ],
