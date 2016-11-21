@@ -8,7 +8,8 @@
  *
  * @param  {function}  fn Callback function
  */
-var setImmediate;
+
+var setImmediate = null;
 
 var callbacks = [], messageName = 'kff-setimmediate-msg';
 
@@ -38,4 +39,4 @@ else
 	};
 }
 
-module.exports = setImmediate;
+export default setImmediate;

@@ -1,9 +1,9 @@
 
-var createClass = require('../functions/createClass');
-var convertValueType = require('../functions/convertValueType');
-var Binder = require('../Binder');
-var View = require('../View');
-var Cursor = require('../Cursor');
+import createClass from '../functions/createClass.js';
+import convertValueType from '../functions/convertValueType.js';
+import Binder from '../Binder.js';
+import View from '../View.js';
+import Cursor from '../Cursor.js';
 
 var createClassBinder = function(negate)
 {
@@ -104,13 +104,8 @@ var createClassBinder = function(negate)
 
 };
 
-var ClassBinder = createClassBinder(false);
-var ClassNotBinder = createClassBinder(true);
+export var ClassBinder = createClassBinder(false);
+export var ClassNotBinder = createClassBinder(true);
 
 View.registerBinder('class', ClassBinder);
 View.registerBinder('classnot', ClassNotBinder);
-
-module.exports = {
-	ClassBinder: ClassBinder,
-	ClassNotBinder: ClassNotBinder
-};

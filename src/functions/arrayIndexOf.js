@@ -8,7 +8,7 @@
  * @param  {mixed} item  The item to look for
  * @return {number}      Index of the item
  */
-function arrayIndexOf(array, item)
+export default function arrayIndexOf(array, item)
 {
 	for(var i = 0, l = array.length; i < l; i++)
 	{
@@ -16,5 +16,3 @@ function arrayIndexOf(array, item)
 	}
 	return -1;
 }
-
-module.exports = arrayIndexOf;

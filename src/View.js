@@ -1,22 +1,22 @@
 
-var settings = require('./settings');
-var createClass = require('./functions/createClass');
-var mixins = require('./functions/mixins');
-var immerge = require('./functions/immerge');
-var evalObjectPath = require('./functions/evalObjectPath');
-var noop = require('./functions/noop');
-var arrayConcat = require('./functions/arrayConcat');
-var isPlainObject = require('./functions/isPlainObject');
-var on = require('./functions/on');
-var off = require('./functions/off');
-var findViewElements = require('./functions/findViewElements');
-var nextNode = require('./functions/nextNode');
+import settings from './settings.js';
+import createClass from './functions/createClass.js';
+import mixins from './functions/mixins.js';
+import immerge from './functions/immerge.js';
+// import evalObjectPath from './functions/evalObjectPath.js';
+import noop from './functions/noop.js';
+import arrayConcat from './functions/arrayConcat.js';
+import isPlainObject from './functions/isPlainObject.js';
+import on from './functions/on.js';
+import off from './functions/off.js';
+import findViewElements from './functions/findViewElements.js';
+import nextNode from './functions/nextNode.js';
 
-var Dispatcher = require('./Dispatcher');
-var Cursor = require('./Cursor');
-var CollectionBinder = require('./CollectionBinder');
-var BinderMap = require('./BinderMap');
-var matchBindings = require('./functions/parseBinding').matchBindings;
+import Dispatcher from './Dispatcher.js';
+import Cursor from './Cursor.js';
+import CollectionBinder from './CollectionBinder.js';
+import BinderMap from './BinderMap.js';
+import {matchBindings} from './functions/parseBinding.js';
 
 
 var push = Array.prototype.push;
@@ -1318,5 +1318,4 @@ View.registerHelper('string', function(v)
 	return v.toString();
 });
 
-module.exports = View;
-
+export default View;

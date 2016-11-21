@@ -1,5 +1,5 @@
 
-var arrayIndexOf = require('./arrayIndexOf');
+import arrayIndexOf from './arrayIndexOf.js';
 
 if(typeof document === 'object' && document !== null)
 {
@@ -33,7 +33,7 @@ function matches(el, target, selector)
  * @param  {function} handler Event handler
  * @param  {DOMEvent} event   DOM event
  */
-function delegatedEventHandler(el, selector, handler, event)
+export default function delegatedEventHandler(el, selector, handler, event)
 {
 	var target = event.target;
 
@@ -60,5 +60,3 @@ function delegatedEventHandler(el, selector, handler, event)
 		target = target.parentNode;
 	}
 }
-
-module.exports = delegatedEventHandler;

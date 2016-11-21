@@ -1,10 +1,10 @@
 
-var createClass = require('./functions/createClass');
-var compareArrays = require('./functions/compareArrays');
-var arrayConcat = require('./functions/arrayConcat');
-var imset = require('./functions/imset');
-var imremove = require('./functions/imremove');
-var deepFreeze = require('./functions/deepFreeze');
+import createClass from './functions/createClass.js';
+import compareArrays from './functions/compareArrays.js';
+import arrayConcat from './functions/arrayConcat.js';
+import imset from './functions/imset.js';
+import imremove from './functions/imremove.js';
+import deepFreeze from './functions/deepFreeze.js';
 
 var Cursor = createClass(
 {
@@ -87,4 +87,4 @@ var Cursor = createClass(
 
 });
 
-module.exports = Cursor;
+export default Cursor;

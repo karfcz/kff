@@ -7,11 +7,9 @@
  * @param {function} child Child class
  * @param {function} parent Parent class
  */
-function extend(child, parent)
+export default function extend(child, parent)
 {
 	child.prototype = Object.create(parent.prototype);
 	child._super = parent.prototype;
 	child.prototype.constructor = child;
 }
-
-module.exports = extend;

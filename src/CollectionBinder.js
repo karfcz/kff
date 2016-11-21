@@ -1,10 +1,10 @@
 
-var settings = require('./settings');
-var createClass = require('./functions/createClass');
-var arrayIndexOf = require('./functions/arrayIndexOf');
-var callModelAsFunction = require('./functions/callModelAsFunction');
-var defaultInsertBefore = require('./functions/nodeMan').insertBefore;
-var defaultRemoveChild = require('./functions/nodeMan').removeChild;
+import settings from './settings.js';
+import createClass from './functions/createClass.js';
+import arrayIndexOf from './functions/arrayIndexOf.js';
+import callModelAsFunction from './functions/callModelAsFunction.js';
+import {insertBefore as defaultInsertBefore} from './functions/nodeMan.js';
+import {removeChild as defaultRemoveChild} from './functions/nodeMan.js';
 
 var CollectionBinder = createClass(
 /** @lends Binder.prototype */
@@ -450,4 +450,4 @@ function getKeyedItemIndex(collection, item, keyProp, keyMap)
 	}
 }
 
-module.exports = CollectionBinder;
+export default CollectionBinder;

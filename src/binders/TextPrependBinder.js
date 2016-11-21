@@ -1,7 +1,7 @@
 
-var createClass = require('../functions/createClass');
-var Binder = require('../Binder');
-var View = require('../View');
+import createClass from '../functions/createClass.js';
+import Binder from '../Binder.js';
+import View from '../View.js';
 
 var TextPrependBinder = createClass(
 {
@@ -70,4 +70,4 @@ var TextPrependBinder = createClass(
 
 View.registerBinder('textprepend', TextPrependBinder);
 
-module.exports = TextPrependBinder;
+export default TextPrependBinder;

@@ -1,12 +1,12 @@
 
-var createClass = require('./functions/createClass');
-var arrayConcat = require('./functions/arrayConcat');
-var noop = require('./functions/noop');
-var View = require('./View');
-var Cursor = require('./Cursor');
+import createClass from './functions/createClass.js';
+import arrayConcat from './functions/arrayConcat.js';
+import noop from './functions/noop.js';
+import View from './View.js';
+import Cursor from './Cursor.js';
 
-var convertValueType = require('./functions/convertValueType');
-var callModelAsFunction = require('./functions/callModelAsFunction');
+import convertValueType from './functions/convertValueType.js';
+import callModelAsFunction from './functions/callModelAsFunction.js';
 
 var leadingPeriodRegex = /^\./;
 var trailingPeriodRegex = /\.$/;
@@ -333,4 +333,4 @@ var Binder = createClass(
 
 });
 
-module.exports = Binder;
+export default Binder;

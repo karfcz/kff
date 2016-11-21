@@ -1,5 +1,5 @@
 
-function imclone(obj)
+export default function imclone(obj)
 {
 	if(obj instanceof Array) return obj.slice();
 	if(typeof obj === 'object' && obj !== null)
@@ -16,5 +16,3 @@ function imclone(obj)
 	}
 	return obj;
 }
-
-module.exports = imclone;

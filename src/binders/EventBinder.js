@@ -1,9 +1,9 @@
 
-var createClass = require('../functions/createClass');
-var convertValueType = require('../functions/convertValueType');
-var Binder = require('../Binder');
-var View = require('../View');
-var Cursor = require('../Cursor');
+import createClass from '../functions/createClass.js';
+import convertValueType from '../functions/convertValueType.js';
+import Binder from '../Binder.js';
+import View from '../View.js';
+import Cursor from '../Cursor.js';
 
 var EventBinder = createClass(
 {
@@ -71,5 +71,4 @@ var EventBinder = createClass(
 
 View.registerBinder('event', EventBinder);
 
-module.exports = EventBinder;
-
+export default EventBinder;

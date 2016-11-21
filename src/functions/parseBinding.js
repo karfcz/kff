@@ -1,7 +1,7 @@
 
-var curry = require('./curry');
-var compose = require('./compose');
-var immerge = require('./immerge');
+import curry from './curry.js';
+import compose from './compose.js';
+import immerge from './immerge.js';
 
 function matchBindingOperatorName(input)
 {
@@ -500,18 +500,14 @@ function skipSpace(string)
 	return string.slice(first);
 }
 
-
-
-module.exports = {
-	matchIdentifier: matchIdentifier,
-	matchNumber: matchNumber,
-	matchKeyPath: matchKeyPath,
-	matchBindingOperatorName: matchBindingOperatorName,
-	matchOr: matchOr,
-	matchCursor: matchCursor,
-	matchCursorValue: matchCursorValue,
-	skipWhiteSpace: skipWhiteSpace,
-	matchOperatorParams: matchOperatorParams,
-	matchBinding: matchBinding,
-	matchBindings: matchBindings
-};
+export {matchIdentifier};
+export {matchNumber};
+export {matchKeyPath};
+export {matchBindingOperatorName};
+export {matchOr};
+export {matchCursor};
+export {matchCursorValue};
+export {skipWhiteSpace};
+export {matchOperatorParams};
+export {matchBinding};
+export {matchBindings};

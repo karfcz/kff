@@ -1,8 +1,8 @@
 
-var imclone = require('./imclone');
-var deepFreeze = require('./deepFreeze');
+import imclone from './imclone.js';
+import deepFreeze from './deepFreeze.js';
 
-function imset(keypath, value, obj)
+export default function imset(keypath, value, obj)
 {
 	var fn = value;
 	var root;
@@ -36,6 +36,3 @@ function imset(keypath, value, obj)
 
 	return root;
 }
-
-module.exports = imset;
-

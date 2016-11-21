@@ -1,5 +1,5 @@
 
-function curry(fn, arity)
+export default function curry(fn, arity)
 {
 	var __slice = Array.prototype.slice;
 	arity = arity || fn.length;
@@ -19,5 +19,3 @@ function curry(fn, arity)
 		};
 	}
 }
-
-module.exports = curry;

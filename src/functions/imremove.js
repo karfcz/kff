@@ -1,8 +1,8 @@
 
-var imclone = require('./imclone');
-var deepFreeze = require('./deepFreeze');
+import imclone from './imclone.js';
+import deepFreeze from './deepFreeze.js';
 
-function imremove(keypath, obj)
+export default function imremove(keypath, obj)
 {
 	var root;
 	if(typeof keypath === 'string') keypath = keypath.split('.');
@@ -32,5 +32,3 @@ function imremove(keypath, obj)
 	// }
 	return root;
 }
-
-module.exports = imremove;

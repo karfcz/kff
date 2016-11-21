@@ -1,8 +1,8 @@
 
-var createClass = require('../functions/createClass');
-var Binder = require('../Binder');
-var View = require('../View');
-var Cursor = require('../Cursor');
+import createClass from '../functions/createClass.js';
+import Binder from '../Binder.js';
+import View from '../View.js';
+import Cursor from '../Cursor.js';
 
 var DisabledNotBinder = createClass(
 {
@@ -75,4 +75,4 @@ var DisabledNotBinder = createClass(
 
 View.registerBinder('disablednot', DisabledNotBinder);
 
-module.exports = DisabledNotBinder;
+export default DisabledNotBinder;

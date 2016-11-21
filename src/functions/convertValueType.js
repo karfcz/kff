@@ -11,7 +11,7 @@
  * @param  {string} value Original value
  * @return {mixed}        Converted value
  */
-function convertValueType(value)
+export default function convertValueType(value)
 {
 	if(value === 'null') return null;
 	if(value === 'true') return true;
@@ -20,5 +20,3 @@ function convertValueType(value)
 	if(n == value) return n;
 	return value;
 }
-
-module.exports = convertValueType;

@@ -1,5 +1,5 @@
 
-module.exports = {
+var settings = {
 	/**
 	 * Data-attribute name used for view names
 	 * @constant
@@ -28,3 +28,5 @@ module.exports = {
 
 	immutableCollections: false
 };
+
+export default settings;

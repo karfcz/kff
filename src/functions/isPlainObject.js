@@ -7,9 +7,7 @@
  * @param  {mixed}  obj Object to detect
  * @return {Boolean} True if object is a plain object, false otherwise
  */
-function isPlainObject(obj)
+export default function isPlainObject(obj)
 {
 	return obj !== null && typeof obj === 'object' && (obj.constructor === Object || obj.constructor === undefined);
 }
-
-module.exports = isPlainObject;

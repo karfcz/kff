@@ -1,5 +1,5 @@
 
-var delegatedEventHandler = require('./delegatedEventHandler');
+import delegatedEventHandler from './delegatedEventHandler.js';
 
 /**
  * Delegates DOM events on this element
@@ -8,7 +8,7 @@ var delegatedEventHandler = require('./delegatedEventHandler');
  * @param  {string} selector  CSS selector
  * @param  {function} handler Event handler
  */
-function on(handlers, element, type, selector, handler)
+export default function on(handlers, element, type, selector, handler)
 {
 	var types = type.split(/\s+/);
 	for(var i = 0, l = types.length; i < l; i++)
@@ -28,5 +28,3 @@ function on(handlers, element, type, selector, handler)
 		}
 	}
 }
-
-module.exports = on;

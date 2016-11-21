@@ -13,7 +13,7 @@
 
 var scope = typeof window === 'object' ? window : this;
 
-function evalObjectPath(path, obj)
+export default function evalObjectPath(path, obj)
 {
 	var part, i, l;
 	obj = obj || scope;
@@ -27,5 +27,3 @@ function evalObjectPath(path, obj)
 	}
 	return obj;
 }
-
-module.exports = evalObjectPath;

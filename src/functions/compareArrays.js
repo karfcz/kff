@@ -6,7 +6,7 @@
  * @param  {Array} value2 Array 2
  * @return {boolean}      Result of comparsion
  */
-function compareArrays(value1, value2)
+export default function compareArrays(value1, value2)
 {
 	if(Array.isArray(value1) && Array.isArray(value2))
 	{
@@ -20,5 +20,3 @@ function compareArrays(value1, value2)
 	}
 	else return false;
 }
-
-module.exports = compareArrays;

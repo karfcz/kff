@@ -9,7 +9,7 @@
  * @param {Object} properties Extending object(s)
  * @returns {Object} Extended object (=== obj)
  */
-function mixins(obj, properties)
+export default function mixins(obj, properties)
 {
 	var i = 1, l = arguments.length, key, props;
 
@@ -25,5 +25,3 @@ function mixins(obj, properties)
 	}
 	return obj;
 }
-
-module.exports = mixins;

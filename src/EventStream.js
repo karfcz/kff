@@ -1,6 +1,6 @@
 
-var createClass = require('./functions/createClass');
-var arrayIndexOf = require('./functions/arrayIndexOf');
+import createClass from './functions/createClass.js';
+import arrayIndexOf from './functions/arrayIndexOf.js';
 
 var EventStream = createClass({
 	statics: {
@@ -254,5 +254,4 @@ var EventStream = createClass({
 	}
 });
 
-module.exports = EventStream;
-
+export default EventStream;

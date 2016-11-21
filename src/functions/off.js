@@ -6,7 +6,7 @@
  * @param  {string} selector  CSS selector
  * @param  {function} handler Previously bound event handler
  */
-function off(handlers, element, type, selector)
+export default function off(handlers, element, type, selector)
 {
 	var types = type.split(/\s+/);
 	for(var i = 0, l = types.length; i < l; i++)
@@ -25,5 +25,3 @@ function off(handlers, element, type, selector)
 		}
 	}
 }
-
-module.exports = off;

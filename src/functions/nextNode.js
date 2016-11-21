@@ -9,7 +9,7 @@
  * @param  {boolean} deep if true, search in child nodes too
  * @return {Node} next found node
  */
-function nextNode(root, node, deep)
+export default function nextNode(root, node, deep)
 {
 	var parentNode, nextSibling, tempNode;
 	do {
@@ -33,5 +33,3 @@ function nextNode(root, node, deep)
 	} while (node && node.nodeType !== 1);
 	return node;
 }
-
-module.exports = nextNode;

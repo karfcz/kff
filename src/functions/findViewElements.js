@@ -1,5 +1,5 @@
-var nextNode = require('./nextNode');
-var settings = require('../settings');
+import nextNode from './nextNode.js';
+import settings from '../settings.js';
 
 /**
  * Finds possible subview elements inside an element
@@ -7,7 +7,7 @@ var settings = require('../settings');
  * @param  {DOM Element} el Root element from which search starts
  * @return {Object} array of found views metadata {viewName, index, element, options}
  */
-function findViewElements(el)
+export default function findViewElements(el)
 {
 	var node = el, viewName = null, rendered, onAttr, optAttr, index = 0, subviewsStruct = null;
 
@@ -41,5 +41,3 @@ function findViewElements(el)
 	return subviewsStruct;
 }
 
-
-module.exports = findViewElements;

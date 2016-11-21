@@ -1,58 +1,56 @@
 
-module.exports = {
-	settings: require('./settings'),
-	arrayConcat: require('./functions/arrayConcat'),
-	arrayIndexOf: require('./functions/arrayIndexOf'),
-	compareArrays: require('./functions/compareArrays'),
-	bindFn: require('./functions/bindFn'),
-	createClass: require('./functions/createClass'),
-	deepMixins: require('./functions/deepMixins'),
-	extend: require('./functions/extend'),
-	isPlainObject: require('./functions/isPlainObject'),
-	log: require('./functions/log'),
-	mixins: require('./functions/mixins'),
-	setImmediate: require('./functions/setImmediate'),
-	curry: require('./functions/curry'),
-	compose: require('./functions/compose'),
-	map: require('./functions/map'),
-	imclone: require('./functions/imclone'),
-	imset: require('./functions/imset'),
-	imremove: require('./functions/imremove'),
-	immerge: require('./functions/immerge'),
-	noop: require('./functions/noop'),
-	afterRepaint: require('./functions/afterRepaint'),
-	viewClassFactory: require('./functions/viewClassFactory'),
-	parser: require('./functions/parseBinding'),
+export {default as settings} from './settings.js';
+export {default as arrayConcat} from './functions/arrayConcat.js';
+export {default as arrayIndexOf} from './functions/arrayIndexOf.js';
+export {default as compareArrays} from './functions/compareArrays.js';
+export {default as bindFn} from './functions/bindFn.js';
+export {default as createClass} from './functions/createClass.js';
+export {default as deepMixins} from './functions/deepMixins.js';
+export {default as extend} from './functions/extend.js';
+export {default as isPlainObject} from './functions/isPlainObject.js';
+export {default as log} from './functions/log.js';
+export {default as mixins} from './functions/mixins.js';
+export {default as setImmediate} from './functions/setImmediate.js';
+export {default as curry} from './functions/curry.js';
+export {default as compose} from './functions/compose.js';
+export {default as map} from './functions/map.js';
+export {default as imclone} from './functions/imclone.js';
+export {default as imset} from './functions/imset.js';
+export {default as imremove} from './functions/imremove.js';
+export {default as immerge} from './functions/immerge.js';
+export {default as noop} from './functions/noop.js';
+export {default as afterRepaint} from './functions/afterRepaint.js';
+export {default as viewClassFactory} from './functions/viewClassFactory.js';
 
-	Cursor: require('./Cursor'),
-	EventStream: require('./EventStream'),
-	View: require('./View'),
-	BinderMap: require('./BinderMap'),
-	Binder: require('./Binder'),
-	CollectionBinder: require('./CollectionBinder'),
-	ModelView: require('./ModelView'),
-	Dispatcher: require('./Dispatcher'),
+export * from './functions/parseBinding.js';
 
-	EventBinder: require('./binders/EventBinder'),
-	AttrBinder: require('./binders/AttrBinder'),
-	CheckBinder: require('./binders/CheckBinder'),
-	DisabledBinder: require('./binders/DisabledBinder'),
-	DisabledNotBinder: require('./binders/DisabledNotBinder'),
-	ClassBinder: require('./binders/ClassBinder').ClassBinder,
-	ClassNotBinder: require('./binders/ClassBinder').ClassNotBinder,
-	StyleBinder: require('./binders/StyleBinder'),
-	ClickBinder: require('./binders/ClickBinder'),
-	DoubleClickBinder: require('./binders/DoubleClickBinder'),
-	FocusBinder: require('./binders/FocusBinder'),
-	BlurBinder: require('./binders/BlurBinder'),
-	FocusBlurBinder: require('./binders/FocusBlurBinder'),
-	HtmlBinder: require('./binders/HtmlBinder'),
-	RadioBinder: require('./binders/RadioBinder'),
-	TextBinder: require('./binders/TextBinder'),
-	ValueBinder: require('./binders/ValueBinder'),
-	IfBinder: require('./binders/InsertBinder').IfBinder,
-	IfNotBinder: require('./binders/InsertBinder').IfNotBinder,
-	TextAppendBinder: require('./binders/TextAppendBinder'),
-	TextPrependBinder: require('./binders/TextPrependBinder')
-};
+export {default as Cursor} from './Cursor.js';
+export {default as EventStream} from './EventStream.js';
+export {default as View} from './View.js';
+export {default as BinderMap} from './BinderMap.js';
+export {default as Binder} from './Binder.js';
+export {default as CollectionBinder} from './CollectionBinder.js';
+export {default as ModelView} from './ModelView.js';
+export {default as Dispatcher} from './Dispatcher.js';
 
+export {default as EventBinder} from './binders/EventBinder.js';
+export {default as AttrBinder} from './binders/AttrBinder.js';
+export {default as CheckBinder} from './binders/CheckBinder.js';
+export {default as DisabledBinder} from './binders/DisabledBinder.js';
+export {default as DisabledNotBinder} from './binders/DisabledNotBinder.js';
+export {default as StyleBinder} from './binders/StyleBinder.js';
+export {default as ClickBinder} from './binders/ClickBinder.js';
+export {default as DoubleClickBinder} from './binders/DoubleClickBinder.js';
+export {default as FocusBinder} from './binders/FocusBinder.js';
+export {default as BlurBinder} from './binders/BlurBinder.js';
+export {default as FocusBlurBinder} from './binders/FocusBlurBinder.js';
+export {default as HtmlBinder} from './binders/HtmlBinder.js';
+export {default as RadioBinder} from './binders/RadioBinder.js';
+export {default as TextBinder} from './binders/TextBinder.js';
+export {default as ValueBinder} from './binders/ValueBinder.js';
+export {default as TextAppendBinder} from './binders/TextAppendBinder.js';
+export {default as TextPrependBinder} from './binders/TextPrependBinder.js';
+export {ClassBinder} from './binders/ClassBinder.js';
+export {ClassNotBinder} from './binders/ClassBinder.js';
+export {IfBinder} from './binders/InsertBinder.js';
+export {IfNotBinder} from './binders/InsertBinder.js';

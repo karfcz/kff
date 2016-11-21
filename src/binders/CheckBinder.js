@@ -1,8 +1,8 @@
 
-var createClass = require('../functions/createClass');
-var Binder = require('../Binder');
-var View = require('../View');
-var Cursor = require('../Cursor');
+import createClass from '../functions/createClass.js';
+import Binder from '../Binder.js';
+import View from '../View.js';
+import Cursor from '../Cursor.js';
 
 var CheckBinder = createClass(
 {
@@ -87,4 +87,4 @@ var CheckBinder = createClass(
 
 View.registerBinder('check', CheckBinder);
 
-module.exports = CheckBinder;
+export default CheckBinder;

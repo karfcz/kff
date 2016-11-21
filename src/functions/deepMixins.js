@@ -1,5 +1,5 @@
 
-var isPlainObject = require('./isPlainObject');
+import isPlainObject from './isPlainObject.js';
 
 /**
  * Mixins (using a shallow copy) properties from one object to another.
@@ -11,7 +11,7 @@ var isPlainObject = require('./isPlainObject');
  * @param {Object} properties Extending object(s)
  * @returns {Object} Extended object (=== obj)
  */
-function deepMixins(obj, properties)
+export default function deepMixins(obj, properties)
 {
 	var i = 1, l = arguments.length, key, props, prop, objProp;
 	while(i < l)
@@ -36,5 +36,3 @@ function deepMixins(obj, properties)
 	}
 	return obj;
 }
-
-module.exports = deepMixins;

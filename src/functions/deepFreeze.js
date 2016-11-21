@@ -1,5 +1,5 @@
 
-function deepFreeze(o)
+export default function deepFreeze(o)
 {
 		try {
 	if(typeof o === 'object' && o !== null)
@@ -23,6 +23,4 @@ function deepFreeze(o)
 
 	return o;
 };
-
-module.exports = deepFreeze;
 

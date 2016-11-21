@@ -1,8 +1,8 @@
 
-var deepFreeze = require('./deepFreeze');
-var imclone = require('./imclone');
+import deepFreeze from './deepFreeze.js';
+import imclone from './imclone.js';
 
-function immerge(source, target)
+export default function immerge(source, target)
 {
 	var clone;
 	if(typeof target === 'object' && target !== null && typeof source === 'object' && source !== null)
@@ -50,5 +50,3 @@ function immerge(source, target)
 		return target;
 	}
 }
-
-module.exports = immerge;

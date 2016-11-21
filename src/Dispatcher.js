@@ -1,6 +1,6 @@
-var createClass = require('./functions/createClass');
-var log = require('./functions/log');
-var EventStream = require('./EventStream');
+import createClass from './functions/createClass.js';
+import log from './functions/log.js';
+import EventStream from './EventStream.js';
 
 function filterByEventType(type)
 {
@@ -119,9 +119,6 @@ var Dispatcher = createClass(
 	}
 });
 
-module.exports = Dispatcher;
-
-
 function processsArrayEvent(dispatcher, event)
 {
 	if(Array.isArray(event))
@@ -157,3 +154,5 @@ function processsPromiseEvent(dispatcher, event)
 		event.then(dispatcher.f('trigger'));
 	}
 }
+
+export default Dispatcher;

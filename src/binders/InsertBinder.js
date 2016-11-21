@@ -1,12 +1,12 @@
 
-var createClass = require('../functions/createClass');
-var convertValueType = require('../functions/convertValueType');
-var noop = require('../functions/noop');
-var Binder = require('../Binder');
-var View = require('../View');
-var insertBefore = require('../functions/nodeMan').insertBefore;
-var removeChild = require('../functions/nodeMan').removeChild;
-var Cursor = require('../Cursor');
+import createClass from '../functions/createClass.js';
+import convertValueType from '../functions/convertValueType.js';
+import noop from '../functions/noop.js';
+import Binder from '../Binder.js';
+import View from '../View.js';
+import Cursor from '../Cursor.js';
+import {insertBefore} from '../functions/nodeMan.js';
+import {removeChild} from '../functions/nodeMan.js';
 
 var createInsertBinder = function(negate, force){
 
@@ -197,13 +197,8 @@ var createInsertBinder = function(negate, force){
 
 };
 
-var IfBinder = createInsertBinder(false, true);
-var IfNotBinder = createInsertBinder(true, true);
+export var IfBinder = createInsertBinder(false, true);
+export var IfNotBinder = createInsertBinder(true, true);
 
 View.registerBinder('if', IfBinder);
 View.registerBinder('ifnot', IfNotBinder);
-
-module.exports = {
-	IfBinder: IfBinder,
-	IfNotBinder: IfNotBinder
-};

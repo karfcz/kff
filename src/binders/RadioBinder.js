@@ -1,6 +1,6 @@
-var createClass = require('../functions/createClass');
-var Binder = require('../Binder');
-var View = require('../View');
+import createClass from '../functions/createClass.js';
+import Binder from '../Binder.js';
+import View from '../View.js';
 
 var RadioBinder = createClass(
 {
@@ -53,5 +53,4 @@ var RadioBinder = createClass(
 
 View.registerBinder('radio', RadioBinder);
 
-module.exports = RadioBinder;
-
+export default RadioBinder;

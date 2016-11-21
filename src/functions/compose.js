@@ -1,5 +1,5 @@
 
-function compose()
+export default function compose()
 {
 	var fns = arguments;
 	return function(result)
@@ -11,5 +11,3 @@ function compose()
 		return result;
 	};
 }
-
-module.exports = compose;

@@ -1,3 +1,7 @@
+var babel = require('rollup-plugin-babel');
+var uglify = require('rollup-plugin-uglify');
+var replace = require('rollup-plugin-replace');
+
 module.exports = function(grunt)
 {
 
@@ -5,6 +9,59 @@ module.exports = function(grunt)
 	grunt.initConfig({
 
 		pkg: grunt.file.readJSON('package.json'),
+
+		rollup: {
+			umd: {
+				options: {
+					format: 'umd',
+					moduleName: 'kff',
+					moduleId: 'kff',
+					exports: 'default',
+					plugins: [
+						// babel({
+						// 	exclude: './node_modules/**'
+						// })
+					]
+				},
+				files: {
+					'./dist/kff.js': './src/entry-umd.js'
+				},
+			},
+			es: {
+				options: {
+					format: 'es',
+					moduleName: 'kff',
+					moduleId: 'kff',
+					plugins: [
+						// babel({
+						// 	exclude: './node_modules/**'
+						// })
+					]
+				},
+				files: {
+					'./dist/kff-es.js': './src/entry-es.js'
+				},
+			},
+			min: {
+				options: {
+					format: 'umd',
+					moduleName: 'kff',
+					moduleId: 'kff',
+					plugins: [
+						replace({
+							'process.env.NODE_ENV': JSON.stringify('production')
+						}),
+						// babel({
+						// 	exclude: './node_modules/**'
+						// }),
+						uglify()
+					]
+				},
+				files: {
+					'./dist/kff.min.js': './src/entry-umd.js'
+				},
+			}
+		},
 
 		browserify: {
 			options: {},
@@ -14,6 +71,7 @@ module.exports = function(grunt)
 				},
 				options: {
 					transform: [
+						['babelify', { presets: ["es2015-loose"], plugins: ['transform-es3-property-literals'] } ],
 						['envify', {
 							NODE_ENV: 'development'
 						}]
@@ -34,6 +92,7 @@ module.exports = function(grunt)
 				},
 				options: {
 					transform: [
+						['babelify', { presets: ["es2015-loose"], plugins: ['transform-es3-property-literals'] } ],
 						['envify', {
 							NODE_ENV: 'development'
 						}]
@@ -54,6 +113,7 @@ module.exports = function(grunt)
 				},
 				options: {
 					transform: [
+						['babelify', { presets: ["es2015-loose"], plugins: ['transform-es3-property-literals'] } ],
 						['envify', {
 							NODE_ENV: 'production'
 						}]
@@ -112,6 +172,7 @@ module.exports = function(grunt)
 
 	});
 
+	grunt.loadNpmTasks('grunt-rollup');
 	grunt.loadNpmTasks('grunt-browserify');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-jshint');

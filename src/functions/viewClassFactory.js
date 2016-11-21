@@ -1,11 +1,9 @@
-var mixins = require('./mixins');
+import mixins from './mixins.js';
 
-function viewClassFactory(ctor, defaultOptions)
+export default function viewClassFactory(ctor, defaultOptions)
 {
 	return function(options)
 	{
 		return new ctor(mixins({}, (typeof defaultOptions === 'function' ? defaultOptions() : defaultOptions) || {}, options || {}));
 	}
 }
-
-module.exports = viewClassFactory;

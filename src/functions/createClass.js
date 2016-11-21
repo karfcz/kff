@@ -1,7 +1,7 @@
 
-var mixins = require('./mixins');
-var extend = require('./extend');
-var bindFn = require('./bindFn');
+import mixins from './mixins.js';
+import extend from './extend.js';
+import bindFn from './bindFn.js';
 
 var classMixin = {
 	f: function(fnName, args)
@@ -28,7 +28,7 @@ var classMixin = {
  * @param {Object} properties Properties of a class prototype (or class members)
  * @returns {function} A constructor function (class)
  */
-function createClass(meta, properties)
+export default function createClass(meta, properties)
 {
 	var constructor;
 	if(arguments.length === 0) meta = properties = {};
@@ -77,5 +77,3 @@ function createClass(meta, properties)
 
 	return constructor;
 }
-
-module.exports = createClass;

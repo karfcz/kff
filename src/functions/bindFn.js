@@ -10,7 +10,7 @@
  * @param {string} fnName Method name to bind
  * @returns {function} Bound function
  */
-function bindFn(obj, fnName, args)
+export default function bindFn(obj, fnName, args)
 {
 	if(typeof obj[fnName] !== 'function') throw new TypeError('Expected function: ' + fnName + ' in object ' + obj + '  (bindFn)');
 	if(!('_boundFns' in obj)) obj._boundFns = {};
@@ -21,5 +21,3 @@ function bindFn(obj, fnName, args)
 	}
 	return obj._boundFns[fnName];
 }
-
-module.exports = bindFn;

@@ -1,5 +1,5 @@
 
-function insertBefore(parentNode, anchorNode, node)
+export function insertBefore(parentNode, anchorNode, node)
 {
 	if(parentNode)
 	{
@@ -7,7 +7,7 @@ function insertBefore(parentNode, anchorNode, node)
 	}
 }
 
-function removeChild(parentNode, node, fn)
+export function removeChild(parentNode, node, fn)
 {
 	if(parentNode)
 	{
@@ -15,8 +15,3 @@ function removeChild(parentNode, node, fn)
 	}
 	fn();
 }
-
-module.exports = {
-	insertBefore: insertBefore,
-	removeChild: removeChild
-};

@@ -1,7 +1,7 @@
 
-var createClass = require('../functions/createClass');
-var Binder = require('../Binder');
-var View = require('../View');
+import createClass from '../functions/createClass.js';
+import Binder from '../Binder.js';
+import View from '../View.js';
 
 var AttrBinder = createClass(
 {
@@ -43,4 +43,4 @@ var AttrBinder = createClass(
 
 View.registerBinder('attr', AttrBinder);
 
-module.exports = AttrBinder;
+export default AttrBinder;
