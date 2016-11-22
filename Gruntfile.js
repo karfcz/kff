@@ -4,8 +4,6 @@ var replace = require('rollup-plugin-replace');
 
 module.exports = function(grunt)
 {
-
-	// Project configuration.
 	grunt.initConfig({
 
 		pkg: grunt.file.readJSON('package.json'),
@@ -17,10 +15,11 @@ module.exports = function(grunt)
 					moduleName: 'kff',
 					moduleId: 'kff',
 					exports: 'named',
+					banner: grunt.file.read('./src/banner.js'),
 					plugins: [
-						// babel({
-						// 	exclude: './node_modules/**'
-						// })
+						babel({
+							exclude: './node_modules/**'
+						})
 					]
 				},
 				files: {
@@ -32,10 +31,11 @@ module.exports = function(grunt)
 					format: 'es',
 					moduleName: 'kff',
 					moduleId: 'kff',
+					banner: grunt.file.read('./src/banner.js'),
 					plugins: [
-						// babel({
-						// 	exclude: './node_modules/**'
-						// })
+						babel({
+							exclude: './node_modules/**'
+						})
 					]
 				},
 				files: {
@@ -47,13 +47,14 @@ module.exports = function(grunt)
 					format: 'umd',
 					moduleName: 'kff',
 					moduleId: 'kff',
+					banner: grunt.file.read('./src/banner.js'),
 					plugins: [
 						replace({
 							'process.env.NODE_ENV': JSON.stringify('production')
 						}),
-						// babel({
-						// 	exclude: './node_modules/**'
-						// }),
+						babel({
+							exclude: './node_modules/**'
+						}),
 					]
 				},
 				files: {
@@ -65,14 +66,19 @@ module.exports = function(grunt)
 					format: 'umd',
 					moduleName: 'kff',
 					moduleId: 'kff',
+					banner: grunt.file.read('./src/banner.js'),
 					plugins: [
 						replace({
 							'process.env.NODE_ENV': JSON.stringify('production')
 						}),
-						// babel({
-						// 	exclude: './node_modules/**'
-						// }),
-						uglify()
+						babel({
+							exclude: './node_modules/**'
+						}),
+						uglify({
+							output: {
+								comments: (node, comment) => comment.type === 'comment2' ? comment.value.indexOf('License') !== -1 : undefined
+							}
+						})
 					]
 				},
 				files: {
@@ -100,12 +106,12 @@ module.exports = function(grunt)
 		},
 
 		shell: {
-			docs: {
-				options: {
-					stderr: true
-				},
-				command: '"./node_modules/.bin/jsdoc" ./build/kff.js --destination ./docs'
-			}
+			options: {
+				stderr: true
+			},
+			rollup: {
+	            command: '"./node_modules/.bin/rollup" -c rollup-watch-config.js -o ./dist/kff-es.js -w'
+	        }
 		}
 
 	});
@@ -116,9 +122,8 @@ module.exports = function(grunt)
 	grunt.loadNpmTasks('grunt-karma');
 
 	grunt.registerTask('build', ['rollup']);
-	grunt.registerTask('docs', ['shell:docs']);
 	grunt.registerTask('test', ['build', 'karma']);
 	grunt.registerTask('default', ['build']);
-	// grunt.registerTask('w', ['browserify:devwatch']);
+	grunt.registerTask('w', ['shell:rollup']);
 
 };

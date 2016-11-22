@@ -1,6 +1,6 @@
 {
   "name": "kff",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.3",
   "description": "KFF is a JavaScript framework for building client-side applications or large websites.",
   "repository": {
     "type": "git",
@@ -10,6 +10,11 @@
     "name": "Karel Fučík",
     "email": "karf@karf.cz"
   },
+  "files": [
+    "LICENSE",
+    "dist/kff-cjs.js",
+    "dist/kff-es.js"
+  ],
   "dependencies": {
     "envify": "^3.0.0"
   },
@@ -19,20 +24,14 @@
     ]
   },
   "devDependencies": {
-    "babel-plugin-transform-es3-property-literals": "^6.5.0",
-    "babel-plugin-transform-strict-mode": "^6.8.0",
+    "babel-plugin-external-helpers": "^6.18.0",
     "babel-preset-es2015": "^6.18.0",
-    "babel-preset-es2015-loose": "^7.0.0",
     "chai": "^3.2.0",
-    "envify": "^3.4.0",
-    "es3ify": "^0.2.1",
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "~0.10.0",
-    "grunt-contrib-uglify": "^0.9.1",
     "grunt-karma": "^1.0.0",
     "grunt-rollup": "^1.0.1",
     "grunt-shell": "~0.6.4",
-    "jsdoc": "~3.3.0-alpha4",
     "karma": "^1.1.1",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^0.2.3",
@@ -43,12 +42,16 @@
     "phantomjs-prebuilt": "^2.1.4",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-replace": "^1.1.1",
-    "rollup-plugin-uglify": "^1.0.1"
+    "rollup-plugin-uglify": "^1.0.1",
+    "rollup-watch": "^2.5.0"
   },
   "license": "MIT",
   "engines": {
     "node": ">=0.8"
   },
   "main": "./dist/kff-cjs.js",
-  "jsnext:main": "dist/kff-es.js"
+  "jsnext:main": "dist/kff-es.js",
+  "scripts": {
+    "prepublish": "grunt build"
+  }
 }
