@@ -22,7 +22,7 @@ var ValueBinder = createClass(
 	 */
 	constructor: function(options)
 	{
-		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'keypress keydown drop change';
+		var eventNames = options.eventNames.length > 0 ? options.eventNames.join(' ') : 'keypress keydown input drop change';
 		options.events = [
 			[eventNames, 'inputChange']
 		];
