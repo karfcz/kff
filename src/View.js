@@ -38,7 +38,7 @@ function actionSet(event)
 {
 	event.cursor.set(event.value);
 	return {
-		type: 'refreshFromRoot'
+		type: 'refreshFromRootRaf'
 	};
 }
 
