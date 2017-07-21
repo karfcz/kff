@@ -17,9 +17,9 @@ module.exports = function(grunt)
 					exports: 'named',
 					banner: grunt.file.read('./src/banner.js'),
 					plugins: [
-						babel({
-							exclude: './node_modules/**'
-						})
+						// babel({
+						// 	exclude: './node_modules/**'
+						// })
 					]
 				},
 				files: {
@@ -33,9 +33,9 @@ module.exports = function(grunt)
 					moduleId: 'kff',
 					banner: grunt.file.read('./src/banner.js'),
 					plugins: [
-						babel({
-							exclude: './node_modules/**'
-						})
+						// babel({
+						// 	exclude: './node_modules/**'
+						// })
 					]
 				},
 				files: {
@@ -52,9 +52,9 @@ module.exports = function(grunt)
 						replace({
 							'process.env.NODE_ENV': JSON.stringify('production')
 						}),
-						babel({
-							exclude: './node_modules/**'
-						}),
+						// babel({
+						// 	exclude: './node_modules/**'
+						// }),
 					]
 				},
 				files: {
@@ -71,9 +71,9 @@ module.exports = function(grunt)
 						replace({
 							'process.env.NODE_ENV': JSON.stringify('production')
 						}),
-						babel({
-							exclude: './node_modules/**'
-						}),
+						// babel({
+						// 	exclude: './node_modules/**'
+						// }),
 						uglify({
 							output: {
 								comments: (node, comment) => comment.type === 'comment2' ? comment.value.indexOf('License') !== -1 : undefined
