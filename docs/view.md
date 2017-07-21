@@ -13,9 +13,9 @@ Basic lifecycle of the view consist of these steps:
 
 * The constructor is called. It is passed an options object. You always have to call super(options) in your constructor to properly intialice the view internals.
 
-* The first lifecycle method is `render`. It renders the template HTML for the view. It is not nessesary to implement the render method. In that case, the view will work with existing DOM inside the element and will not touch it unless you implement your own DOM manipulations inside the view. You should not do any instance-dependent initializations, state changes or event handling in the render method. The reason for it is that this method is not always called on every view. Fr example, when the view is inside the `:each` binding, the DOM subtree will be cloned and the render method will be called only for the first collection element. For cloned views the render call is suppressed because the rendered DOM tree is cloned instead. Only the constructor and then the `run` method are called (and subsequent lifecycle methods as well).
+* The first lifecycle method is `render`. It renders the template HTML for the view. It is not nessesary to implement the render method. In that case, the view will work with existing DOM inside the element and will not touch it unless you implement your own DOM manipulations inside the view. You should not do any instance-dependent initializations, state changes or event handling in the render method. The reason for it is that this method is not always called on every view. For example, when the view is inside the `:each` binding, the DOM subtree will be cloned and the render method will be called only for the first collection element. For cloned views the render call is suppressed because the rendered DOM tree is cloned instead. Only the constructor and then the `run` method are called (and subsequent lifecycle methods as well).
 
-* After the `render` method is called, the framework will look for any subviews (elements with `data-kff-view` or `data-kff-bind` attributes), will internally store them, recursivelly create subviews and call their render methods. The component tree is created in this phase.
+* After the `render` method is called, the framework will look for any subviews (elements with `data-kff-view` or `data-kff-bind` attributes), will internally store them, recursively create subviews and call their render methods. The component tree is created in this phase.
 
 * The `run` method will initialize the view. You should place any event listeners, timers and other initializations here.
 
@@ -23,9 +23,9 @@ Basic lifecycle of the view consist of these steps:
 
 * The `refresh` method is called on any state change. You do any DOM updating according to the new state here. Usually it is being called many times during the life cycle for the whole component tree. You should carefully decide when to do actual DOM manipulations and when not. Do not blindly make changes to the DOM for every `refresh` call as it leads to bad performance and UX.
 
-* The `destroy` method is called when the view is being destroyed (and the element is usualy removed from teh DOM). This occurs when the view is inside the `:each` od `:if` binder, or when some ancestor view called the destroyAll method manually. You should clean up any local state and remove any listeners, timers etc. here.
+* The `destroy` method is called when the view is being destroyed (and the element is usualy removed from teh DOM). This occurs when the view is inside the `:each` od `:if` binder, or when some ancestor view called the `destroyAll` method manually. You should clean up any local state and remove any listeners, timers etc. here.
 
-The lifecycle methods has no arguments.
+The lifecycle methods have no arguments.
 
 ### Hello World Example
 
