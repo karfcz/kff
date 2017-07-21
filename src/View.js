@@ -3,7 +3,6 @@ import settings from './settings.js';
 import createClass from './functions/createClass.js';
 import mixins from './functions/mixins.js';
 import immerge from './functions/immerge.js';
-// import evalObjectPath from './functions/evalObjectPath.js';
 import noop from './functions/noop.js';
 import arrayConcat from './functions/arrayConcat.js';
 import isPlainObject from './functions/isPlainObject.js';
@@ -100,6 +99,7 @@ var View = createClass(
 		this._subviewsStruct = null;
 		this._explicitSubviewsStruct = null;
 		this._pendingRefresh = false;
+		this._pendingRefreshRoot = false;
 		this._subviewsArgs = null;
 		this._isRunning = false;
 		this._isSuspended = false;
@@ -248,6 +248,8 @@ var View = createClass(
 			{
 				this.dispatcher.on('refresh', this.f('refreshAll'));
 				this.dispatcher.on('refreshFromRoot', this.f('refreshFromRoot'));
+				this.dispatcher.on('refreshRaf', this.f('requestRefreshAll'));
+				this.dispatcher.on('refreshFromRootRaf', this.f('requestRefreshAllFromRoot'));
 				this.dispatcher.on('dispatcher:noaction', this.f('_dispatchNoAction'));
 			}
 
@@ -329,6 +331,19 @@ var View = createClass(
 		else this.refreshAll();
 	},
 
+	requestRefreshAllFromRoot: function()
+	{
+		if(this.env.window.requestAnimationFrame)
+		{
+			if(!this._pendingRefreshRoot)
+			{
+				this._pendingRefreshRoot = true;
+				this.env.window.requestAnimationFrame(this.f('refreshFromRoot'));
+			}
+		}
+		else this.refreshFromRoot();
+	},
+
 	/**
 	 * Refreshes all binders, subviews and bound views
 	 */
@@ -374,6 +389,7 @@ var View = createClass(
 		if(view.dispatcher !== null)
 		{
 			view.dispatcher.trigger({ type: 'refresh' });
+			this._pendingRefreshRoot = false;
 		}
 	},
 
@@ -399,6 +415,8 @@ var View = createClass(
 		{
 			this.dispatcher.off('refresh', this.f('refreshAll'));
 			this.dispatcher.off('refreshFromRoot', this.f('refreshFromRoot'));
+			this.dispatcher.off('refreshRaf', this.f('requestRefreshAll'));
+			this.dispatcher.off('refreshFromRootRaf', this.f('requestRefreshAllFromRoot'));
 			this.dispatcher.off('dispatcher:noaction', this.f('_dispatchNoAction'));
 		}
 
