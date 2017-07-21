@@ -50,7 +50,7 @@ function ajaxFetchAction({url, cursor, errorCursor})
         try
         {
             const response = await fetch(url);
-            const responseJson = await processedResponse.json();
+            const responseJson = await response.json();
 
             dispatch({
                 type: 'set',
