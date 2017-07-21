@@ -88,3 +88,5 @@ There is one special default action:
 ```
 
 This action is called from bindings that need to set some value to the state (for example `:val`, `:click` etc.). The action performs immutable set operation on the state and dispatches the `refreshFromRootRaf` action causing refresh of the DOM tree on the next animation frame.
+
+You can redefine this default set action by something else (for example to refresh immediately instead of on the next animation frame), but it's not recommended as it can cause breaking the behaviour of the bindings.
