@@ -74,8 +74,8 @@ There are four special events the view listens to that can be used to refresh he
 
 * `refresh` - refreshes the view tree starting from the current view immediately
 * `refreshFromRoot` - refreshes the view tree starting from the root view immediately
-* `refreshRaf` - refreshes the view tree starting from the current view on the next requestAnimationframe cycle
-* `refreshFromRootRaf` - refreshes the view tree starting from the root view on the next requestAnimationframe cycle
+* `refreshRaf` - refreshes the view tree starting from the current view on the next requestAnimationFrame cycle
+* `refreshFromRootRaf` - refreshes the view tree starting from the root view on the next requestAnimationFrame cycle
 
 There is one special default action:
 
@@ -87,4 +87,4 @@ There is one special default action:
 }
 ```
 
-This action is called from bindings that need to set some value to the state (for example `:val`, `:click` etc.). The action performs immutable set operation on the state and dispatches the `refreshFromRoot` action causing immediate refresh of the DOM tree. Note that in future versions this will probably change to refresh on requestAnimationFrame. You can
+This action is called from bindings that need to set some value to the state (for example `:val`, `:click` etc.). The action performs immutable set operation on the state and dispatches the `refreshFromRootRaf` action causing refresh of the DOM tree on the next animation frame.
