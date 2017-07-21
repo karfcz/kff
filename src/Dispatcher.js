@@ -13,7 +13,7 @@ var Dispatcher = createClass(
 	{
 		this.eventStream = new EventStream();
 		this.actionStreams = {};
-		this.processors = [processsArrayEvent, processsEventStreamEvent, processsPromiseEvent, processsActionEvent];
+		this.processors = [processsArrayEvent, processsEventStreamEvent, processsPromiseEvent, processsActionEvent, processsFunctionEvent];
 		if(processors && Array.isArray(processors))
 		{
 			if(process.env.NODE_ENV !== 'production')
@@ -152,6 +152,15 @@ function processsPromiseEvent(dispatcher, event)
 	if(event != null && typeof event === 'object' && typeof event.then === 'function')
 	{
 		event.then(dispatcher.f('trigger'));
+	}
+}
+
+
+function processsFunctionEvent(dispatcher, event)
+{
+	if(typeof event === 'function')
+	{
+		event(dispatcher.trigger.bind(dispatcher));
 	}
 }
 
