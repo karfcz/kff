@@ -7,3 +7,4 @@
 - [Cursor](/docs/cursor.md)
 - [Dispatcher](/docs/dispatcher.md)
 - [Data binding](/docs/databinding.md)
+- [Animations](/docs/animations.md)
