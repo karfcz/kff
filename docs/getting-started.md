@@ -5,7 +5,7 @@ In KFF, the basic building block of the UI is the **view**. Despite the name it 
 
 Every view is bound to a single DOM element. Views are declared in the `data-kff-view` attribute of the element. Every view can contain subviews which are nested views bound to descendant elements of the view element.
 
-Every view can also contain **bindings**. A binding is just a simple way to bind some data to some properties of the DOM element such as the text content, attribute, class, input value etc. Whenever the data change, the DOM is efficiently updated. Some of the bindings are two-way but not in the MVC style but rather in the flux-like style. Bindings are declared in the `data-kff-bind` attribute.
+Every view can also contain **bindings**. A binding is just a simple way to bind some data to some properties of the DOM element such as the text content, attribute, class, input value etc. Whenever the data change, the DOM is efficiently updated. Some of the bindings are two-way but not in the MVC style – it's more like the flux style. Whenever the value changes as a result of user interaction, an action is dispatched, the state is changed and the whole view tree is rerendered (but only nessesary DOM modifications are applied). Bindings are declared in the `data-kff-bind` attribute.
 
 ### Hello World example
 
@@ -32,14 +32,14 @@ const myView = new View({
 myView.initAll();
 ```
 
-A state is a simple javascript object. As you can see, the state is wrapped in something called `Cursor`. Cursor is a wrapper around the state and allows to point to some property deep in the state object and change it in immutable way. More about cursors see Cursors.
+A state is a simple javascript object. As you can see, the state is wrapped in something called `Cursor`. Cursor is a wrapper around the state and allows to point to some property deep in the state object and change it in immutable way. More about cursors see [Cursor](/docs/cursor.md).
 
 The example above can also be rewritten as follows:
 
 ```html
 <html>
-	<body>
-    	<p data-kff-bind="hello:text"></p>
+    <body>
+        <p data-kff-bind="hello:text"></p>
     </body>
 </html>
 ```
@@ -48,7 +48,7 @@ The example above can also be rewritten as follows:
 import {View, Cursor} from 'kff';
 
 const stateCursor = new Cursor({
-	hello: 'Hello World'
+    hello: 'Hello World'
 });
 
 const helloCursor = stateCursor.refine('hello');
@@ -112,7 +112,7 @@ myView.initAll();
 
 ```html
 <html>
-	<body>
+    <body>
     	<p><input type="text" data-kff-bind="name:val" placeholder="Your name…"></p>
         <p data-kff-bind="name:if">Hello, <span data-kff-bind="name:text"></span></p>
     </body>
@@ -133,8 +133,4 @@ myView.initAll();
 ##### Notes:
 
 * You can create a Cursor of not only an object, but also of a primitive value, even of `null`. It's not a common case but it's perfectly possible.
-* Whenever you type in the input, the default 'set' action is dispatched and the entire view is refreshed with the new state.
-
-
-
-
+* Whenever you type in the input, the default `set` action is dispatched and the entire view is refreshed with the new state.
