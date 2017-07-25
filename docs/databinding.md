@@ -78,7 +78,7 @@ function add(firstCursor, number)
 }
 ```
 
-But the preffered way is to use 'dereferenced' cursor values (@@ operator gets the cursor value instead of cursor itself):
+But the preffered way is to use *dereferenced* cursor values (@@ operator gets the cursor value instead of cursor itself):
 
 `add(@state.some.property, @@state.some.other.property):text`
 
@@ -88,6 +88,19 @@ function add(firstCursor, number)
     return firstCursor.get() + number;
 }
 ```
+
+## Binding parsing types and values
+
+You can usually use any of the following data types inside the bindings (wherever a value is expected):
+
+* boolean literal (`true` or `false`)
+* number literal (decimal, hexadecimal, octal, binary integers or floating-point literals)
+* string literal (enclosed in single quotes – 'string literal')
+* null literal (`null`)
+* undefined literal (`undefined`)
+* identifier (must obey the following regex: `/^[a-zA-Z_$*%][0-9a-zA-Z_$-]*/`)
+* cursor reference (`@some.path.in.state`) – usually as an argument in `dispatch` – will pass the cursor object
+* cursor dereference (`@@some.path.in.state`) – will return a value from the cursor
 
 ## Modifiers
 
