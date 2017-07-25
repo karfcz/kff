@@ -134,3 +134,6 @@ myView.initAll();
 
 * You can create a Cursor of not only an object, but also of a primitive value, even of `null`. It's not a common case but it's perfectly possible.
 * Whenever you type in the input, the default `set` action is dispatched and the entire view is refreshed with the new state.
+
+More about creating custom [Views](/docs/view.md)
+More about [Data binding](/docs/databinding.md)
