@@ -89,7 +89,7 @@ function add(firstCursor, number)
 }
 ```
 
-## Binding parsing types and values
+## Bindings types and values
 
 You can usually use any of the following data types inside the bindings (wherever a value is expected):
 
