@@ -36,17 +36,17 @@ Alternatively you can download precompiled builds from https://github.com/karfcz
 
 ## Production vs. development mode
 
-Precompiled releases are available in two builds variants:
+Precompiled releases are available in two build variants:
 
 ##### kff.js
 
-Non-minified development build. It is slower, contains many runtime checks and can log some warning messages to the console.
+Non-minified development build. It's slower, contains many runtime checks and can log some warning messages to the console.
 
 ##### kff.min.js
 
 Minified production build. Suitable for production. It's faster and doesn't emit runtime warnings.
 
-When building using webpack, browserify or rollup, use `process.env.NODE_ENV` environment variable to set up `development` or `production` build. For productin build you should also minify the build by the uglify plugin with dead code elimination enabled.
+When building using webpack, browserify or rollup, use `process.env.NODE_ENV` environment variable to set up `development` or `production` build. For production build, you should also minify the build by the uglify plugin with dead code elimination enabled.
 
 ### Webpack configuration
 
