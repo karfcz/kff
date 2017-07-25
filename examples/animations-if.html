@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Animations – each</title>
+	<script src="../dist/kff.js"></script>
+</head>
+<body>
+	<style>
+		.box {
+			padding: 20px;
+			max-width: 30em;
+			background: #ff8;
+			opacity: 0;
+		}
+	</style>
+	<p class="box" data-kff-bind="state.showBox:if:animate(fade)">Lorem ipsum Ut laboris enim qui tempor tempor eu ad occaecat fugiat nulla ullamco non sit pariatur ea incididunt in in eiusmod sed ex proident enim commodo consequat.</p>
+	<p>
+		<button data-kff-bind="state.showBox:click:dispatch(toggle)">Toggle box</button>
+	</p>
+	<script>
+		const {View, Cursor, afterRepaint} = kff
+
+		const duration = 500
+		const fade = {
+			insert(parentNode, anchorNode, node)
+			{
+				node.style.opacity = 0
+				node.style.transition = `opacity ${duration/1000}s`
+				parentNode.insertBefore(node, anchorNode)
+				afterRepaint(() => {
+					node.style.opacity = 1
+				})
+			},
+
+			remove(parentNode, node, callback)
+			{
+				node.style.transition = `opacity ${duration/1000}s`
+				node.style.opacity = 1
+				afterRepaint(() => {
+					node.style.opacity = 0
+					setTimeout(() =>
+					{
+						parentNode.removeChild(node)
+						callback()
+					}, duration)
+				})
+			}
+		}
+
+		const state = new Cursor({
+			showBox: false
+		})
+
+		const myView = new View({
+			scope: { state, fade },
+			actions: {
+				toggle: ({cursor}) => ({
+					type: 'set',
+					cursor,
+					value: val => !val
+				})
+			}
+		})
+		myView.initAll()
+	</script>
+</body>
+</html>

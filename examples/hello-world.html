@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Hello World</title>
+	<script src="../dist/kff.js"></script>
+</head>
+<body>
+	<p data-kff-bind="state.hello:text"></p>
+	<script>
+		const {View, Cursor, afterRepaint} = kff;
+
+		const stateCursor = new Cursor({
+			hello: 'Hello World'
+		});
+
+		const myView = new View({
+			scope: {
+				state: stateCursor
+			}
+		});
+		myView.initAll();
+	</script>
+</body>
+</html>

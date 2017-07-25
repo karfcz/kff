@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Animations – class</title>
+	<script src="../dist/kff.js"></script>
+</head>
+<body>
+	<style>
+		.box {
+			padding: 20px;
+			max-width: 30em;
+			background: #ff8;
+			display: none;
+			transition: opacity 500ms;
+		}
+		.box-enter {
+			display: block;
+			opacity: 0;
+		}
+		.box-enter-active {
+			opacity: 1;
+		}
+		.box-leave {
+			display: block;
+			opacity: 1;
+		}
+		.box-leave-active {
+			opacity: 0;
+		}
+	</style>
+	<p class="box" data-kff-bind="state.showBox:class(box, true):animate(enterLeave)">Lorem ipsum Ut laboris enim qui tempor tempor eu ad occaecat fugiat nulla ullamco non sit pariatur ea incididunt in in eiusmod sed ex proident enim commodo consequat.</p>
+	<p>
+		<button data-kff-bind="state.showBox:click:dispatch(toggle)">Toggle box</button>
+	</p>
+	<script>
+		const {View, Cursor, afterRepaint} = kff
+
+		const duration = 500
+		const enterLeave = {
+			addClass(element, className)
+			{
+				if(document.body.hasAttribute('data-kff-rendered'))
+				{
+					element.classList.remove(className + '-leave')
+					element.classList.remove(className + '-leave-active')
+					element.classList.add(className + '-enter')
+
+					afterRepaint(() =>
+					{
+						element.classList.add(className + '-enter-active')
+					})
+				}
+				else
+				{
+					element.classList.add(className + '-enter')
+					element.classList.add(className + '-enter-active')
+				}
+			},
+
+			removeClass(element, className)
+			{
+				if(document.body.hasAttribute('data-kff-rendered'))
+				{
+					element.classList.remove(className + '-enter')
+					element.classList.remove(className + '-enter-active')
+					element.classList.add(className + '-leave')
+
+					afterRepaint(() =>
+					{
+						element.classList.add(className + '-leave-active')
+						setTimeout(() =>
+						{
+							element.classList.remove(className + '-leave')
+							element.classList.remove(className + '-leave-active')
+						}, duration)
+					})
+				}
+			}
+		}
+
+		const state = new Cursor({
+			showBox: false
+		})
+
+		const myView = new View({
+			scope: { state, enterLeave },
+			actions: {
+				toggle: ({cursor}) => ({
+					type: 'set',
+					cursor,
+					value: val => !val
+				})
+			}
+		})
+		myView.initAll()
+	</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Animations – each</title>
+	<script src="../dist/kff.js"></script>
+</head>
+<body>
+	<table>
+		<tr data-kff-bind="state.items:each:key(id):animate(fade)">
+			<td data-kff-bind=".name:text"></td>
+			<td><button data-kff-bind="state.items:click:dispatch(removeItem, id: @@.id)">Remove item</button></td>
+		</tr>
+	</table>
+	<p>
+		<button data-kff-bind="state.items:click:dispatch(addItem)">Add new item</button>
+	</p>
+	<script>
+		const {View, Cursor, afterRepaint} = kff
+
+		const duration = 500
+		const fade = {
+			insert(parentNode, anchorNode, node)
+			{
+				node.style.opacity = 0
+				node.style.transition = `opacity ${duration/1000}s`
+				parentNode.insertBefore(node, anchorNode)
+				afterRepaint(() => {
+					node.style.opacity = 1
+				})
+			},
+
+			remove(parentNode, node, callback)
+			{
+				node.style.transition = `opacity ${duration/1000}s`
+				node.style.opacity = 1
+				afterRepaint(() => {
+					node.style.opacity = 0
+					setTimeout(() =>
+					{
+						parentNode.removeChild(node)
+						callback()
+					}, duration)
+				})
+			}
+		}
+
+		const state = new Cursor({
+			items: [
+				{
+					id: '1',
+					name: 'Wolfgang Amadeus Mozart'
+				},
+				{
+					id: '2',
+					name: 'Ludwig van Beethoven'
+				}
+			]
+		})
+
+		const myView = new View({
+			scope: { state, fade },
+			actions: {
+				addItem: ({cursor}) => ({
+					type: 'set',
+					cursor,
+					value(items) {
+						const id = Math.round(Math.random() * 1000000)
+						return [...items, { id: 'id' + id, name: 'Composer #' +  id }]
+					}
+				}),
+				removeItem: ({cursor, id}) => ({
+					type: 'set',
+					cursor,
+					value: items => items.filter(item => item.id !== id)
+				})
+			}
+		})
+		myView.initAll()
+	</script>
+</body>
+</html>

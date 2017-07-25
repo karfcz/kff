@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Hello World</title>
+	<script src="../dist/kff.js"></script>
+</head>
+<body>
+	<p>
+		<input type="text" data-kff-bind="name:val" placeholder="Your name…"></p>
+		<p data-kff-bind="name:if">Hello, <span data-kff-bind="name:text"></span>
+	</p>
+	<script>
+		const {View, Cursor} = kff
+
+		const myView = new View({
+			scope: {
+				name: new Cursor(null)
+			}
+		});
+		myView.initAll()
+	</script>
+</body>
+</html>
