@@ -136,4 +136,5 @@ myView.initAll();
 * Whenever you type in the input, the default `set` action is dispatched and the entire view is refreshed with the new state.
 
 More about creating custom [Views](/docs/view.md)
+
 More about [Data binding](/docs/databinding.md)
